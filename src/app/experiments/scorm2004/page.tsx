@@ -90,6 +90,7 @@ const LOG_TYPE_COLORS: Record<LogEntry["type"], string> = {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function Scorm2004Page() {
+  const [contextOpen, setContextOpen] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);
   const logIdRef = useRef(0);
@@ -226,6 +227,35 @@ export default function Scorm2004Page() {
           {initialized ? "● 초기화됨" : "○ 대기중"}
         </div>
       </header>
+
+      {/* Context panel */}
+      <div className="border-b border-zinc-800 bg-zinc-900/30 shrink-0">
+        <div className="px-6 py-2">
+          <button
+            onClick={() => setContextOpen(!contextOpen)}
+            className="flex items-center w-full py-1.5 text-xs"
+          >
+            <span className="font-semibold text-zinc-400">실험 소개</span>
+            <span className="ml-auto text-zinc-600">{contextOpen ? "접기 ↑" : "펼치기 ↓"}</span>
+          </button>
+          {contextOpen && (
+            <div className="pb-3 grid grid-cols-3 gap-4 text-xs">
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">목적</p>
+                <p className="text-zinc-400">window.API_1484_11 설치 및 SCORM 2004 API 호출 추적</p>
+              </div>
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">1.2와의 차이</p>
+                <p className="text-zinc-400">메서드명 변경 (Initialize/Terminate), ISO 8601 시간 형식, completion_status + success_status 분리</p>
+              </div>
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">핵심 확인 포인트</p>
+                <p className="text-zinc-400">세분화된 에러코드 체계 (102~408), cmi.score.scaled (-1~1), 재개 시 cmi.entry 처리</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Main layout */}
       <div className="flex flex-1 min-h-0" style={{ height: "calc(100vh - 65px)" }}>

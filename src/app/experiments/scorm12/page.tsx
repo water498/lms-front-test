@@ -105,6 +105,7 @@ export default function Scorm12Page() {
   const [scormData, setScormData] = useState<ScormData>({ ...DEFAULT_DATA });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const [contextOpen, setContextOpen] = useState(true);
   const logIdRef = useRef(0);
   const logEndRef = useRef<HTMLDivElement>(null);
 
@@ -267,6 +268,35 @@ export default function Scorm12Page() {
         >
           초기화
         </button>
+      </div>
+
+      {/* Context panel */}
+      <div className="border-b border-zinc-800 bg-zinc-900/30 shrink-0">
+        <div className="px-6 py-2">
+          <button
+            onClick={() => setContextOpen(!contextOpen)}
+            className="flex items-center w-full py-1.5 text-xs"
+          >
+            <span className="font-semibold text-zinc-400">실험 소개</span>
+            <span className="ml-auto text-zinc-600">{contextOpen ? "접기 ↑" : "펼치기 ↓"}</span>
+          </button>
+          {contextOpen && (
+            <div className="pb-3 grid grid-cols-3 gap-4 text-xs">
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">목적</p>
+                <p className="text-zinc-400">window.API 설치 및 SCORM 1.2 API 호출 흐름 추적</p>
+              </div>
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">테스트 기술</p>
+                <p className="text-zinc-400">window.API mock, iframe 동일 도메인 직접 접근, React 클로저 기반 상태</p>
+              </div>
+              <div>
+                <p className="text-zinc-500 font-medium mb-1">핵심 확인 포인트</p>
+                <p className="text-zinc-400">LMSInitialize/Finish 흐름, cmi.core 데이터 모델, 에러코드 체계 (301 Not Initialized 등)</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Main layout */}

@@ -553,10 +553,44 @@ function Footer() {
 
 // ── Page ───────────────────────────────────────────────────────────────────
 
+function ContextPanel() {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className="bg-zinc-900/60 border-b border-zinc-800/70">
+      <div className="max-w-screen-xl mx-auto px-6 py-2">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center w-full py-1.5 text-xs"
+        >
+          <span className="font-semibold text-zinc-400">실험 소개</span>
+          <span className="ml-auto text-zinc-600">{open ? "접기 ↑" : "펼치기 ↓"}</span>
+        </button>
+        {open && (
+          <div className="pb-3 grid grid-cols-3 gap-4 text-xs">
+            <div>
+              <p className="text-zinc-500 font-medium mb-1">목적</p>
+              <p className="text-zinc-400">OTT 스타일 LMS 수강생 대시보드 UI/UX 프로토타입</p>
+            </div>
+            <div>
+              <p className="text-zinc-500 font-medium mb-1">테스트 기술</p>
+              <p className="text-zinc-400">Netflix 스타일 Hero 배너, 가로 스크롤 섹션, 카테고리 탭 필터, 반응형 레이아웃</p>
+            </div>
+            <div>
+              <p className="text-zinc-500 font-medium mb-1">핵심 확인 포인트</p>
+              <p className="text-zinc-400">수강 계속하기 UX, 카테고리 탐색 패턴, 정보 밀도 vs 가독성 트레이드오프</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function StudentHomePage() {
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
       <Navbar />
+      <ContextPanel />
       <HeroBanner />
 
       <div className="max-w-screen-xl mx-auto px-6 py-12 flex flex-col gap-14">
