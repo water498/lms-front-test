@@ -23,24 +23,39 @@ LMS 본 개발 전 프론트엔드 실험 공간. 각 실험은 독립적인 라
 ```
 src/
 ├── app/
-│   ├── page.tsx              ← 실험 목록 인덱스
-│   ├── globals.css           ← Tailwind v4 임포트
+│   ├── page.tsx                    ← 실험 목록 인덱스
+│   ├── globals.css                 ← Tailwind v4 임포트
 │   └── experiments/
 │       └── [실험명]/
-│           └── page.tsx      ← 각 실험 페이지
-└── components/               ← 실험 간 공유 컴포넌트 (필요 시)
+│           └── page.tsx            ← feature import wrapper (로직 없음)
+└── features/
+    └── (실험그룹명)/               ← 괄호 폴더로 실험별 그룹핑
+        ├── home/                   ← 메인 라우트 피처
+        │   ├── feature.tsx         ← 메인 컴포넌트 ("use client")
+        │   ├── store.ts            ← 실험 로컬 상태
+        │   ├── mockData.ts         ← 목 데이터
+        │   ├── components/         ← Navbar, CourseCard 등
+        │   └── sections/           ← HeroBanner, Tab 등 페이지 섹션
+        └── [서브라우트]/           ← cart, my 등 서브 페이지
+            ├── feature.tsx
+            └── sections/
 ```
 
 ---
 
 ## 실험 추가 방법
 
-1. `src/app/experiments/[실험명]/page.tsx` 생성
-2. `src/app/page.tsx`의 `experiments` 배열에 항목 추가:
+1. `src/features/(실험명)/home/feature.tsx` 생성 (메인 컴포넌트)
+2. `src/app/experiments/[실험명]/page.tsx` 생성 — feature import만:
+   ```tsx
+   import Feature from "@/features/(실험명)/home/feature";
+   export default function Page() { return <Feature />; }
+   ```
+3. `src/app/page.tsx`의 `experiments` 배열에 항목 추가
 
-```ts
-{ href: "/experiments/실험명", title: "제목", description: "설명" }
-```
+### 구조 전환 기준
+- 단일 page.tsx가 **200줄 이하**이고 서브 라우트 없음 → app에 직접 작성 가능
+- **200줄 초과** 또는 **서브 라우트 존재** → features 구조 필수
 
 ---
 
@@ -59,3 +74,32 @@ pnpm dev      # 개발 서버 (http://localhost:3000)
 pnpm build    # 프로덕션 빌드
 pnpm lint     # ESLint
 ```
+
+---
+
+## 비즈니스 컨텍스트
+
+### 최종 제품: B2B2C 멀티태넌트 LMS
+
+| 고객 유형 | 인증 방식 | 특징 |
+|----------|----------|------|
+| **B2C** | 이메일/소셜 (Google, Kakao 등) | 개인 학습자, 자유 결제·위시리스트 |
+| **B2B** | SSO (SAML/OIDC — Azure AD, Okta 등) | 기업 직원, 테넌트 관리자 존재, 개인 결제 없음 |
+
+### 실험 구조
+- `b2c-student`: B2C 대시보드 (결제, 장바구니, 위시리스트)
+- `b2b-student`: B2B 대시보드 (테넌트 브랜딩, 필수 수강, SSO 프로필)
+
+### 개발 원칙
+- 기능은 B2C·B2B **공통으로 구현**, 해당 컨텍스트에서 필요 없는 UI는 **hide만** (제거 X)
+- 테넌트 ID, 역할(role), 인증 방식(authProvider)은 User 모델의 핵심 필드
+- 브랜딩(로고, 컬러), 메뉴 구성이 테넌트별로 달라질 수 있음을 UI 설계에 반영
+
+### ⚠️ SSO 사용자 프로필 주의사항
+B2B SSO 사용자는 이름·이메일이 IdP(회사 디렉토리)에서 관리됨.
+LMS에서 자유 편집 허용 시 다음 SSO 로그인 때 IdP 값으로 덮어씌워짐.
+
+실제 구현 시:
+- `idpManagedFields: ("name" | "email" | "avatar")[]` → 해당 필드 read-only 처리
+- 비밀번호 변경 UI → SSO 사용자에게 완전히 숨김
+- 현재 B2C 실험에서는 모든 필드가 app-managed이므로 해당 없음
