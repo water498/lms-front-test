@@ -12,6 +12,11 @@ import {
   ChevronDown,
   Play,
   Search,
+  ShoppingCart,
+  Heart,
+  MapPin,
+  Calendar,
+  Users,
   Star,
   TrendingUp,
   User,
@@ -28,11 +33,32 @@ import {
   announcements,
   type Course,
   type EnrolledCourse,
+  type CourseType,
 } from "./mockData";
+import store from "./store";
+
+// ── Types ───────────────────────────────────────────────────────────────────
+
+type TypeFilter = "all" | CourseType;
+
+interface CardActions {
+  cart: Set<string>;
+  wishlist: Set<string>;
+  onAddToCart: (id: string) => void;
+  onToggleWishlist: (id: string) => void;
+}
+
+// ── Type Badge ──────────────────────────────────────────────────────────────
+
+const TYPE_BADGE: Record<CourseType, { label: string; cls: string }> = {
+  online:  { label: "온라인",  cls: "bg-sky-500/25 text-sky-300 border border-sky-500/40" },
+  offline: { label: "오프라인", cls: "bg-amber-500/25 text-amber-300 border border-amber-500/40" },
+  blended: { label: "온+오프", cls: "bg-violet-500/25 text-violet-300 border border-violet-500/40" },
+};
 
 // ── Navbar ─────────────────────────────────────────────────────────────────
 
-function Navbar() {
+function Navbar({ cartCount }: { cartCount: number }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -53,7 +79,6 @@ function Navbar() {
             강의 탐색
           </button>
 
-          {/* Category dropdown */}
           <div
             className="relative"
             onMouseEnter={() => setCategoryOpen(true)}
@@ -114,12 +139,29 @@ function Navbar() {
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-400 rounded-full" />
           </button>
 
-          <button className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors">
+          {/* Cart */}
+          <Link
+            href="/experiments/student-home/cart"
+            className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          {/* My page */}
+          <Link
+            href="/experiments/student-home/my"
+            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+          >
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
               <User className="w-4 h-4 text-white" />
             </div>
             <span className="text-sm text-zinc-300 hidden md:block">홍길동</span>
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
@@ -136,11 +178,9 @@ function HeroBanner() {
       className="relative w-full overflow-hidden"
       style={{ background: course.thumbnail, minHeight: 400 }}
     >
-      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/50 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent" />
 
-      {/* Content */}
       <div className="relative z-10 max-w-screen-xl mx-auto px-6 py-16 md:py-24 flex flex-col gap-4 max-w-xl">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
@@ -167,7 +207,6 @@ function HeroBanner() {
           <span className="text-zinc-500">({course.reviewCount.toLocaleString()}개 리뷰)</span>
         </div>
 
-        {/* Progress */}
         <div className="flex flex-col gap-1.5 mt-1">
           <div className="flex items-center justify-between text-xs text-zinc-400">
             <span>진행률</span>
@@ -182,7 +221,6 @@ function HeroBanner() {
           <p className="text-xs text-zinc-500">다음 강의: {course.nextLessonTitle}</p>
         </div>
 
-        {/* CTA */}
         <div className="flex items-center gap-3 mt-2">
           <button className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm">
             <Play className="w-4 h-4 fill-white" />
@@ -207,9 +245,20 @@ function HeroBanner() {
 
 // ── Course Card ────────────────────────────────────────────────────────────
 
-function CourseCard({ course, showProgress = false }: { course: Course | EnrolledCourse; showProgress?: boolean }) {
+function CourseCard({
+  course,
+  showProgress = false,
+  actions,
+}: {
+  course: Course | EnrolledCourse;
+  showProgress?: boolean;
+  actions?: CardActions;
+}) {
   const enrolled = course as EnrolledCourse;
   const progress = showProgress && "progress" in enrolled ? enrolled.progress : null;
+  const typeBadge = TYPE_BADGE[course.type];
+  const isWishlisted = actions?.wishlist.has(course.id) ?? false;
+  const isInCart = actions?.cart.has(course.id) ?? false;
 
   return (
     <div className="w-56 md:w-60 shrink-0 group cursor-pointer">
@@ -225,7 +274,7 @@ function CourseCard({ course, showProgress = false }: { course: Course | Enrolle
           </div>
         </div>
 
-        {/* Badges */}
+        {/* Top left badges */}
         <div className="absolute top-2 left-2 flex gap-1">
           {course.isNew && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500 text-white">NEW</span>
@@ -233,6 +282,25 @@ function CourseCard({ course, showProgress = false }: { course: Course | Enrolle
           {course.isBestseller && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500 text-white">BEST</span>
           )}
+        </div>
+
+        {/* Wishlist button */}
+        {actions && (
+          <button
+            onClick={(e) => { e.stopPropagation(); actions.onToggleWishlist(course.id); }}
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors hover:bg-black/60"
+          >
+            <Heart
+              className={`w-3.5 h-3.5 transition-colors ${isWishlisted ? "fill-rose-400 text-rose-400" : "text-white/80"}`}
+            />
+          </button>
+        )}
+
+        {/* Type badge */}
+        <div className="absolute bottom-2 left-2">
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${typeBadge.cls}`}>
+            {typeBadge.label}
+          </span>
         </div>
 
         {/* Progress bar */}
@@ -268,6 +336,67 @@ function CourseCard({ course, showProgress = false }: { course: Course | Enrolle
             {course.price === 0 ? "무료" : `₩${course.price.toLocaleString()}`}
           </p>
         )}
+
+        {/* Offline fields */}
+        {course.type !== "online" && course.location && (
+          <div className="flex flex-col gap-0.5 mt-0.5">
+            <div className="flex items-center gap-1 text-xs text-zinc-500">
+              <MapPin className="w-3 h-3 shrink-0" />
+              <span className="truncate">{course.location}</span>
+            </div>
+            {course.nextSessionDate && (
+              <div className="flex items-center gap-1 text-xs text-zinc-500">
+                <Calendar className="w-3 h-3 shrink-0" />
+                <span>{course.nextSessionDate} 개강</span>
+              </div>
+            )}
+            {course.capacity !== undefined && course.enrolledCount !== undefined && (
+              <div className="flex items-center gap-1 text-xs text-zinc-500">
+                <Users className="w-3 h-3 shrink-0" />
+                <span>{course.enrolledCount}/{course.capacity}명</span>
+                <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden ml-1">
+                  <div
+                    className="h-full bg-amber-500/60 rounded-full"
+                    style={{ width: `${(course.enrolledCount / course.capacity) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Cart button for paid courses */}
+        {actions && course.price > 0 && progress === null && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isInCart) actions.onAddToCart(course.id);
+            }}
+            className={`mt-1.5 w-full py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              isInCart
+                ? "bg-zinc-700 text-zinc-400 cursor-default"
+                : "bg-zinc-800 hover:bg-violet-600 text-zinc-300 hover:text-white"
+            }`}
+          >
+            {isInCart ? "장바구니에 담김" : "장바구니 담기"}
+          </button>
+        )}
+        {actions && course.price === 0 && progress === null && (
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="mt-1.5 w-full py-1.5 rounded-lg text-xs font-medium bg-emerald-900/40 text-emerald-400 hover:bg-emerald-900/60 transition-colors"
+          >
+            무료 수강신청
+          </button>
+        )}
+        {actions && course.type === "offline" && (
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="mt-0.5 w-full py-1.5 rounded-lg text-xs font-medium bg-amber-900/30 text-amber-400 hover:bg-amber-900/50 transition-colors"
+          >
+            오프라인 신청
+          </button>
+        )}
       </div>
     </div>
   );
@@ -280,11 +409,13 @@ function ScrollSection({
   icon,
   courses,
   showProgress = false,
+  actions,
 }: {
   title: string;
   icon?: React.ReactNode;
   courses: Course[];
   showProgress?: boolean;
+  actions?: CardActions;
 }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -308,18 +439,18 @@ function ScrollSection({
 
   return (
     <div className="relative">
-      {/* Section header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-violet-400">{icon}</span>}
-          <h3 className="text-lg font-bold text-white">{title}</h3>
+      {title && (
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {icon && <span className="text-violet-400">{icon}</span>}
+            <h3 className="text-lg font-bold text-white">{title}</h3>
+          </div>
+          <button className="text-sm text-zinc-500 hover:text-violet-400 transition-colors">
+            전체 보기 →
+          </button>
         </div>
-        <button className="text-sm text-zinc-500 hover:text-violet-400 transition-colors">
-          전체 보기 →
-        </button>
-      </div>
+      )}
 
-      {/* Scroll buttons */}
       {canScrollLeft && (
         <button
           onClick={() => scroll("left")}
@@ -339,7 +470,6 @@ function ScrollSection({
         </button>
       )}
 
-      {/* Scroll container */}
       <div
         ref={rowRef}
         onScroll={updateScrollState}
@@ -347,7 +477,7 @@ function ScrollSection({
       >
         {courses.map((course) => (
           <div key={course.id} className="snap-start">
-            <CourseCard course={course} showProgress={showProgress} />
+            <CourseCard course={course} showProgress={showProgress} actions={actions} />
           </div>
         ))}
       </div>
@@ -357,9 +487,19 @@ function ScrollSection({
 
 // ── Category Section ───────────────────────────────────────────────────────
 
-function CategorySection() {
+const TYPE_FILTERS: { id: TypeFilter; label: string }[] = [
+  { id: "all",     label: "전체" },
+  { id: "online",  label: "온라인" },
+  { id: "offline", label: "오프라인" },
+  { id: "blended", label: "혼합" },
+];
+
+function CategorySection({ actions }: { actions?: CardActions }) {
   const [activeCategory, setActiveCategory] = useState("all");
-  const courses = coursesByCategory[activeCategory] ?? [];
+  const [activeType, setActiveType] = useState<TypeFilter>("all");
+
+  const base = coursesByCategory[activeCategory] ?? [];
+  const courses = activeType === "all" ? base : base.filter((c) => c.type === activeType);
 
   return (
     <div>
@@ -368,7 +508,30 @@ function CategorySection() {
         <h3 className="text-lg font-bold text-white">카테고리별 추천</h3>
       </div>
 
-      {/* Tabs */}
+      {/* Type filter row */}
+      <div className="flex gap-2 mb-3 overflow-x-auto scrollbar-hide pb-1">
+        {TYPE_FILTERS.map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setActiveType(f.id)}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
+              activeType === f.id
+                ? f.id === "online"
+                  ? "bg-sky-500/20 text-sky-300 border-sky-500/50"
+                  : f.id === "offline"
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/50"
+                  : f.id === "blended"
+                  ? "bg-violet-500/20 text-violet-300 border-violet-500/50"
+                  : "bg-zinc-700 text-white border-zinc-600"
+                : "bg-transparent text-zinc-500 border-zinc-700 hover:text-zinc-300 hover:border-zinc-600"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Category tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1">
         {categories.map((cat) => (
           <button
@@ -386,9 +549,9 @@ function CategorySection() {
       </div>
 
       {courses.length > 0 ? (
-        <ScrollSection title="" courses={courses} />
+        <ScrollSection title="" courses={courses} actions={actions} />
       ) : (
-        <p className="text-zinc-600 text-sm py-8 text-center">해당 카테고리 강의가 없습니다.</p>
+        <p className="text-zinc-600 text-sm py-8 text-center">해당 조건의 강의가 없습니다.</p>
       )}
     </div>
   );
@@ -551,7 +714,7 @@ function Footer() {
   );
 }
 
-// ── Page ───────────────────────────────────────────────────────────────────
+// ── Context Panel ──────────────────────────────────────────────────────────
 
 function ContextPanel() {
   const [open, setOpen] = useState(true);
@@ -569,15 +732,15 @@ function ContextPanel() {
           <div className="pb-3 grid grid-cols-3 gap-4 text-xs">
             <div>
               <p className="text-zinc-500 font-medium mb-1">목적</p>
-              <p className="text-zinc-400">OTT 스타일 LMS 수강생 대시보드 UI/UX 프로토타입</p>
+              <p className="text-zinc-400">OTT 스타일 LMS 수강생 대시보드 UI/UX 프로토타입 (온/오프라인 구분, 장바구니, 위시리스트, 마이페이지)</p>
             </div>
             <div>
               <p className="text-zinc-500 font-medium mb-1">테스트 기술</p>
-              <p className="text-zinc-400">Netflix 스타일 Hero 배너, 가로 스크롤 섹션, 카테고리 탭 필터, 반응형 레이아웃</p>
+              <p className="text-zinc-400">유형 필터, 모듈 레벨 상태 공유, 오프라인 강의 카드 UI, 카트·위시리스트 토글</p>
             </div>
             <div>
               <p className="text-zinc-500 font-medium mb-1">핵심 확인 포인트</p>
-              <p className="text-zinc-400">수강 계속하기 UX, 카테고리 탐색 패턴, 정보 밀도 vs 가독성 트레이드오프</p>
+              <p className="text-zinc-400">온/오프라인 카드 UI 차이, 장바구니 badge 업데이트, 소프트 네비게이션 간 상태 유지</p>
             </div>
           </div>
         )}
@@ -586,10 +749,30 @@ function ContextPanel() {
   );
 }
 
+// ── Page ───────────────────────────────────────────────────────────────────
+
 export default function StudentHomePage() {
+  const [cart, setCartState] = useState<Set<string>>(store.cart);
+  const [wishlist, setWishlistState] = useState<Set<string>>(store.wishlist);
+
+  const addToCart = (id: string) => {
+    store.cart = new Set([...store.cart, id]);
+    setCartState(new Set(store.cart));
+  };
+
+  const toggleWishlist = (id: string) => {
+    const next = new Set(store.wishlist);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    store.wishlist = next;
+    setWishlistState(new Set(store.wishlist));
+  };
+
+  const actions: CardActions = { cart, wishlist, onAddToCart: addToCart, onToggleWishlist: toggleWishlist };
+
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
-      <Navbar />
+      <Navbar cartCount={cart.size} />
       <ContextPanel />
       <HeroBanner />
 
@@ -609,6 +792,7 @@ export default function StudentHomePage() {
           title="추천 강의"
           icon={<Star className="w-5 h-5 fill-current" />}
           courses={recommendedCourses}
+          actions={actions}
         />
 
         {/* 지금 인기있는 강의 */}
@@ -616,10 +800,11 @@ export default function StudentHomePage() {
           title="지금 인기있는 강의"
           icon={<TrendingUp className="w-5 h-5" />}
           courses={popularCourses}
+          actions={actions}
         />
 
         {/* 카테고리별 추천 */}
-        <CategorySection />
+        <CategorySection actions={actions} />
 
         {/* 내 학습 현황 */}
         <StatsWidget />

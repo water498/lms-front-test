@@ -1,5 +1,7 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
+export type CourseType = "online" | "offline" | "blended";
+
 export type Course = {
   id: string;
   title: string;
@@ -16,6 +18,11 @@ export type Course = {
   price: number;
   isNew: boolean;
   isBestseller: boolean;
+  type: CourseType;
+  location?: string;        // 오프라인 전용
+  nextSessionDate?: string; // 오프라인 전용 (예: "2026-04-05")
+  capacity?: number;        // 오프라인 전용
+  enrolledCount?: number;   // 오프라인 전용
 };
 
 export type EnrolledCourse = Course & {
@@ -59,6 +66,7 @@ export const heroCourse: EnrolledCourse = {
   price: 89000,
   isNew: false,
   isBestseller: true,
+  type: "online",
   progress: 34,
   lastAccessedAt: "2026-03-11",
   nextLessonTitle: "7-3. 모델 성능 평가 지표 완전 정복",
@@ -84,6 +92,7 @@ export const inProgressCourses: EnrolledCourse[] = [
     price: 69000,
     isNew: true,
     isBestseller: false,
+    type: "online",
     progress: 67,
     lastAccessedAt: "2026-03-09",
     nextLessonTitle: "11-2. Zustand 전역 상태 관리 패턴",
@@ -104,6 +113,7 @@ export const inProgressCourses: EnrolledCourse[] = [
     price: 49000,
     isNew: false,
     isBestseller: true,
+    type: "online",
     progress: 12,
     lastAccessedAt: "2026-03-05",
     nextLessonTitle: "3-1. JOIN 완전 이해",
@@ -129,6 +139,7 @@ export const recommendedCourses: Course[] = [
     price: 79000,
     isNew: true,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "r-2",
@@ -146,6 +157,7 @@ export const recommendedCourses: Course[] = [
     price: 75000,
     isNew: false,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "r-3",
@@ -163,6 +175,7 @@ export const recommendedCourses: Course[] = [
     price: 59000,
     isNew: false,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "r-4",
@@ -180,6 +193,7 @@ export const recommendedCourses: Course[] = [
     price: 89000,
     isNew: false,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "r-5",
@@ -197,6 +211,7 @@ export const recommendedCourses: Course[] = [
     price: 89000,
     isNew: true,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "r-6",
@@ -214,6 +229,7 @@ export const recommendedCourses: Course[] = [
     price: 85000,
     isNew: false,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "r-7",
@@ -231,6 +247,7 @@ export const recommendedCourses: Course[] = [
     price: 0,
     isNew: false,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "r-8",
@@ -248,6 +265,51 @@ export const recommendedCourses: Course[] = [
     price: 95000,
     isNew: false,
     isBestseller: true,
+    type: "online",
+  },
+  {
+    id: "r-9",
+    title: "풀스택 개발 부트캠프 (오프라인 집중반)",
+    instructor: "이준혁",
+    category: "frontend",
+    categoryLabel: "프론트엔드",
+    thumbnail: "linear-gradient(135deg, #1a0040, #4a1090)",
+    accentColor: "#a78bfa",
+    rating: 4.9,
+    reviewCount: 320,
+    duration: "12주 · 주 3회",
+    level: "초급",
+    tags: ["React", "Node.js", "오프라인"],
+    price: 1200000,
+    isNew: true,
+    isBestseller: false,
+    type: "offline",
+    location: "서울 강남구 테헤란로 152",
+    nextSessionDate: "2026-04-07",
+    capacity: 20,
+    enrolledCount: 14,
+  },
+  {
+    id: "r-10",
+    title: "React 심화 & 성능 최적화 (블렌디드)",
+    instructor: "최유진",
+    category: "frontend",
+    categoryLabel: "프론트엔드",
+    thumbnail: "linear-gradient(135deg, #0a1628, #1e3a6e)",
+    accentColor: "#60a5fa",
+    rating: 4.8,
+    reviewCount: 180,
+    duration: "8주 (온라인 + 월 1회 오프라인)",
+    level: "고급",
+    tags: ["React", "성능", "블렌디드"],
+    price: 390000,
+    isNew: false,
+    isBestseller: false,
+    type: "blended",
+    location: "서울 마포구 홍대입구",
+    nextSessionDate: "2026-04-12",
+    capacity: 30,
+    enrolledCount: 22,
   },
 ];
 
@@ -270,6 +332,7 @@ export const popularCourses: Course[] = [
     price: 69000,
     isNew: true,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "p-2",
@@ -287,6 +350,7 @@ export const popularCourses: Course[] = [
     price: 79000,
     isNew: false,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "p-3",
@@ -304,6 +368,7 @@ export const popularCourses: Course[] = [
     price: 89000,
     isNew: false,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "p-4",
@@ -321,6 +386,7 @@ export const popularCourses: Course[] = [
     price: 110000,
     isNew: false,
     isBestseller: false,
+    type: "online",
   },
   {
     id: "p-5",
@@ -338,6 +404,7 @@ export const popularCourses: Course[] = [
     price: 55000,
     isNew: false,
     isBestseller: true,
+    type: "online",
   },
   {
     id: "p-6",
@@ -355,6 +422,29 @@ export const popularCourses: Course[] = [
     price: 39000,
     isNew: false,
     isBestseller: true,
+    type: "online",
+  },
+  {
+    id: "p-7",
+    title: "AI 실무 워크숍 (오프라인 1일)",
+    instructor: "김민준",
+    category: "ai",
+    categoryLabel: "AI/ML",
+    thumbnail: "linear-gradient(135deg, #0c1445, #1e3799)",
+    accentColor: "#818cf8",
+    rating: 4.8,
+    reviewCount: 95,
+    duration: "1일 (9h)",
+    level: "중급",
+    tags: ["AI", "실습", "오프라인"],
+    price: 180000,
+    isNew: true,
+    isBestseller: false,
+    type: "offline",
+    location: "부산 해운대구 센텀시티로",
+    nextSessionDate: "2026-04-19",
+    capacity: 25,
+    enrolledCount: 18,
   },
 ];
 
@@ -373,7 +463,11 @@ export const categories: Category[] = [
 
 // ── Courses by category ────────────────────────────────────────────────────
 
-const allCourses = [...recommendedCourses, ...popularCourses];
+export const allCourses: Course[] = [...recommendedCourses, ...popularCourses];
+
+export const courseById: Record<string, Course> = Object.fromEntries(
+  allCourses.map((c) => [c.id, c])
+);
 
 export const coursesByCategory: Record<string, Course[]> = {
   all:      allCourses,
