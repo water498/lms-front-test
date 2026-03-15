@@ -6,6 +6,8 @@ const experiments: { href: string; title: string; description: string }[] = [
   { href: "/experiments/b2c-student",  title: "B2C 학생 홈", description: "Netflix 스타일 LMS 수강생 대시보드 (B2C)" },
   { href: "/experiments/b2b-student",  title: "B2B 학생 홈", description: "기업 LMS 수강생 대시보드 (B2B · SSO 테넌트)" },
   { href: "/experiments/video-player", title: "Video Player", description: "Video.js HLS/MP4 재생 + 법정의무교육 모드 실험" },
+  { href: "/experiments/scorm-cdn-arch", title: "SCORM CDN 아키텍처", description: "CDN 서빙 구조, cross-origin 이슈, S3 CORS 전략 리서치 노트" },
+  { href: "/experiments/scorm-api-ref",  title: "SCORM API 레퍼런스", description: "SCORM 1.2 / 2004 API 함수·CMI 필드·에러 코드 비교 정리" },
 ];
 
 export default function Home() {

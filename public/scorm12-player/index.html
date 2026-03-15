@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>직장 내 괴롭힘 예방 교육</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ── */
+    #header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      height: 44px;
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      flex-shrink: 0;
+    }
+    #header .logo {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e94560;
+      letter-spacing: 0.5px;
+    }
+    #header .course-title {
+      font-size: 13px;
+      color: #a0aec0;
+      flex: 1;
+    }
+    #header .learner-name {
+      font-size: 12px;
+      color: #718096;
+    }
+    #header .status-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    #header .status-badge.not-attempted { background: #2d3748; color: #a0aec0; }
+    #header .status-badge.incomplete    { background: #744210; color: #fbd38d; }
+    #header .status-badge.completed     { background: #1c4532; color: #68d391; }
+    #header .status-badge.passed        { background: #1c4532; color: #68d391; }
+    #header .status-badge.failed        { background: #742a2a; color: #fc8181; }
+
+    /* ── Body ── */
+    #body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── TOC Sidebar ── */
+    #toc {
+      width: 200px;
+      flex-shrink: 0;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #toc .toc-header {
+      padding: 12px 14px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .toc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background 0.15s;
+    }
+    .toc-item:hover { background: #1a2a4a; }
+    .toc-item.active {
+      background: #1a2a4a;
+      border-left-color: #e94560;
+    }
+    .toc-item.visited .toc-num { color: #48bb78; }
+    .toc-item.locked { opacity: 0.4; cursor: not-allowed; }
+    .toc-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4a5568;
+      width: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .toc-item.active .toc-num { color: #e94560; }
+    .toc-label {
+      font-size: 12px;
+      color: #a0aec0;
+      line-height: 1.4;
+    }
+    .toc-item.active .toc-label { color: #e2e8f0; font-weight: 600; }
+
+    /* ── Slide Area ── */
+    #slide-area {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      padding: 40px 52px;
+      overflow-y: auto;
+      flex-direction: column;
+      gap: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+    .slide.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #e94560;
+    }
+    .slide-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #e2e8f0;
+      line-height: 1.3;
+    }
+    .slide-subtitle {
+      font-size: 14px;
+      color: #718096;
+      margin-top: -16px;
+    }
+    .divider {
+      height: 1px;
+      background: #0f3460;
+    }
+    .slide-body {
+      font-size: 14px;
+      color: #a0aec0;
+      line-height: 1.8;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .card-icon { font-size: 22px; margin-bottom: 8px; }
+    .card-title { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+    .card-desc  { font-size: 12px; color: #718096; line-height: 1.6; }
+
+    .highlight-box {
+      background: #1a2a4a;
+      border-left: 3px solid #e94560;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: #cbd5e0;
+      line-height: 1.7;
+    }
+
+    .checklist { display: flex; flex-direction: column; gap: 8px; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #a0aec0;
+      line-height: 1.6;
+      list-style: none;
+    }
+    .checklist li::before {
+      content: "▸";
+      color: #e94560;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .type-card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .type-card h4 { font-size: 12px; font-weight: 700; color: #e94560; margin-bottom: 8px; }
+    .type-card ul { display: flex; flex-direction: column; gap: 4px; list-style: none; }
+    .type-card ul li { font-size: 11px; color: #718096; }
+    .type-card ul li::before { content: "· "; color: #4a5568; }
+
+    .step-list { display: flex; flex-direction: column; gap: 12px; }
+    .step-item { display: flex; gap: 14px; align-items: flex-start; }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #e94560;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h4 { font-size: 13px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+    .step-content p  { font-size: 12px; color: #718096; line-height: 1.6; }
+
+    /* ── Quiz Slide ── */
+    .quiz-question {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 13px;
+      color: #a0aec0;
+    }
+    .quiz-option:hover { background: #1a2a4a; border-color: #2d4a7a; }
+    .quiz-option input[type="radio"] { accent-color: #e94560; }
+    .quiz-option.correct  { border-color: #48bb78; background: #1c4532; color: #c6f6d5; }
+    .quiz-option.incorrect{ border-color: #fc8181; background: #742a2a; color: #fed7d7; }
+    .quiz-feedback {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+    .quiz-feedback.correct  { background: #1c4532; color: #68d391; border: 1px solid #276749; }
+    .quiz-feedback.incorrect{ background: #742a2a; color: #fc8181; border: 1px solid #9b2c2c; }
+    .quiz-feedback.show { display: block; }
+
+    .quiz-submit {
+      padding: 11px 28px;
+      background: #e94560;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      align-self: flex-start;
+    }
+    .quiz-submit:hover { background: #c53030; }
+    .quiz-submit:disabled { background: #4a5568; cursor: not-allowed; }
+
+    /* ── Bottom Controls ── */
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 20px;
+      height: 52px;
+      background: #16213e;
+      border-top: 1px solid #0f3460;
+      flex-shrink: 0;
+    }
+    .ctrl-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid #2d4a7a;
+      background: transparent;
+      color: #a0aec0;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ctrl-btn:hover:not(:disabled) { background: #1a2a4a; color: #e2e8f0; }
+    .ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #seekbar {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .seek-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #2d4a7a;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .seek-dot.visited { background: #48bb78; }
+    .seek-dot.active  { background: #e94560; transform: scale(1.4); }
+    .seek-dot:hover   { background: #4a6fa5; }
+
+    #slide-counter {
+      font-size: 12px;
+      color: #4a5568;
+      font-variant-numeric: tabular-nums;
+      min-width: 36px;
+    }
+
+    #progress-text {
+      margin-left: auto;
+      font-size: 11px;
+      color: #4a5568;
+    }
+    #progress-bar-wrap {
+      width: 80px;
+      height: 4px;
+      background: #2d4a7a;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      background: #48bb78;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* ── Guest notice ── */
+    #guest-notice {
+      position: fixed;
+      bottom: 60px; right: 16px;
+      background: #744210;
+      color: #fbd38d;
+      font-size: 11px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #975a16;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <div id="header">
+    <span class="logo">iPlayer</span>
+    <span class="course-title">직장 내 괴롭힘 예방 교육</span>
+    <span class="learner-name" id="learner-name">—</span>
+    <span class="status-badge not-attempted" id="status-badge">수강 전</span>
+  </div>
+
+  <!-- Body -->
+  <div id="body">
+
+    <!-- TOC -->
+    <nav id="toc">
+      <div class="toc-header">목차</div>
+    </nav>
+
+    <!-- Slides -->
+    <div id="slide-area">
+
+      <!-- Slide 1: 학습 목표 -->
+      <div class="slide" data-index="0">
+        <span class="slide-tag">Overview</span>
+        <h1 class="slide-title">학습 목표</h1>
+        <div class="divider"></div>
+        <p class="slide-body">이 과정을 완료하면 다음을 수행할 수 있습니다.</p>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">📖</div>
+            <div class="card-title">개념 이해</div>
+            <div class="card-desc">직장 내 괴롭힘의 법적 정의와 판단 기준을 설명할 수 있다.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">유형 식별</div>
+            <div class="card-desc">언어적·신체적·업무적 괴롭힘을 구체적 사례로 구분할 수 있다.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📣</div>
+            <div class="card-title">대응 방법</div>
+            <div class="card-desc">피해 발생 시 신고 절차와 회사의 법적 의무를 설명할 수 있다.</div>
+          </div>
+        </div>
+        <div class="highlight-box">
+          이 과정은 「근로기준법」 제76조의2에 따라 사업주가 실시해야 하는
+          직장 내 괴롭힘 예방 교육 내용을 포함합니다.
+        </div>
+      </div>
+
+      <!-- Slide 2: 개념 정의 -->
+      <div class="slide" data-index="1">
+        <span class="slide-tag">Chapter 1</span>
+        <h1 class="slide-title">직장 내 괴롭힘이란?</h1>
+        <p class="slide-subtitle">법적 정의 및 판단 기준</p>
+        <div class="divider"></div>
+        <div class="highlight-box">
+          <strong>「근로기준법」 제76조의2 정의</strong><br />
+          사용자 또는 근로자가 직장에서의 지위 또는 관계 등의 우위를 이용하여
+          업무상 적정 범위를 넘어 다른 근로자에게 신체적·정신적 고통을 주거나
+          근무환경을 악화시키는 행위
+        </div>
+        <p class="slide-body">판단 3요소를 <strong>모두</strong> 충족해야 직장 내 괴롭힘에 해당합니다.</p>
+        <ul class="checklist">
+          <li>직장에서의 <strong>지위 또는 관계 등의 우위</strong>를 이용할 것</li>
+          <li><strong>업무상 적정 범위</strong>를 넘는 행위일 것</li>
+          <li>신체적·정신적 고통을 주거나 <strong>근무환경을 악화</strong>시킬 것</li>
+        </ul>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">⚠️</div>
+            <div class="card-title">해당 O</div>
+            <div class="card-desc">3가지 요소가 모두 충족된 경우</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">✅</div>
+            <div class="card-title">해당 X</div>
+            <div class="card-desc">정당한 업무 지시, 합리적 평가·징계 등 적정 범위 내 행위</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: 유형 및 사례 -->
+      <div class="slide" data-index="2">
+        <span class="slide-tag">Chapter 2</span>
+        <h1 class="slide-title">유형 및 사례</h1>
+        <p class="slide-subtitle">언어적·신체적·업무적 괴롭힘</p>
+        <div class="divider"></div>
+        <div class="type-grid">
+          <div class="type-card">
+            <h4>언어적 괴롭힘</h4>
+            <ul>
+              <li>폭언·욕설·인격 모독</li>
+              <li>반복적 비하 발언</li>
+              <li>공개적 망신 주기</li>
+              <li>사생활 침해 발언</li>
+              <li>성적 수치심 유발 언행</li>
+            </ul>
+          </div>
+          <div class="type-card">
+            <h4>신체적 괴롭힘</h4>
+            <ul>
+              <li>폭행·신체 접촉</li>
+              <li>물건 투척</li>
+              <li>공간 침범·위협</li>
+              <li>불필요한 신체 접촉</li>
+              <li>강제적 업무 환경 제한</li>
+            </ul>
+          </div>
+          <div class="type-card">
+            <h4>업무적 괴롭힘</h4>
+            <ul>
+              <li>업무 배제·왕따</li>
+              <li>과도하거나 불합리한 업무 부여</li>
+              <li>허드렛일만 지시</li>
+              <li>사적 심부름 강요</li>
+              <li>의사결정 과정 배제</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box">
+          <strong>주의:</strong> 동일한 행위라도 반복성, 권력 관계, 피해자의 주관적 고통 정도에 따라
+          괴롭힘 해당 여부가 달라질 수 있습니다. 단발성 행위도 심각성이 높으면 해당됩니다.
+        </div>
+      </div>
+
+      <!-- Slide 4: 대응 방법 -->
+      <div class="slide" data-index="3">
+        <span class="slide-tag">Chapter 3</span>
+        <h1 class="slide-title">신고 절차 및 회사의 의무</h1>
+        <div class="divider"></div>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>신고 접수</h4>
+              <p>피해 근로자 또는 신고인이 회사 담당 부서(HR/윤리위원회)에 서면 또는 구두로 신고.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>분리 조치 (즉시)</h4>
+              <p>사업주는 피해자 보호를 위해 근무장소 변경, 유급휴가 명령 등 즉각적 조치를 취해야 함.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>조사 실시</h4>
+              <p>지체 없이 사실 확인 조사 실시. 피해자·행위자·참고인 면담. 조사 내용 비밀 유지 의무.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>조치 결정 및 통보</h4>
+              <p>조사 결과에 따라 징계, 교육, 부서 이동 등 적절한 조치. 피해자에게 결과 통보.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <h4>불이익 금지</h4>
+              <p>신고자·피해자에게 불리한 처우를 한 경우 3년 이하 징역 또는 3천만 원 이하 벌금.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: 확인 퀴즈 -->
+      <div class="slide" data-index="4">
+        <span class="slide-tag">Quiz</span>
+        <h1 class="slide-title">확인 퀴즈</h1>
+        <p class="slide-subtitle">학습 내용을 확인합니다.</p>
+        <div class="divider"></div>
+        <p class="quiz-question">
+          다음 중 직장 내 괴롭힘의 판단 요소가 <strong>아닌</strong> 것은?
+        </p>
+        <div class="quiz-options" id="quiz-options">
+          <label class="quiz-option" id="opt-a">
+            <input type="radio" name="quiz" value="a" />
+            ① 직장에서의 지위 또는 관계 등의 우위를 이용할 것
+          </label>
+          <label class="quiz-option" id="opt-b">
+            <input type="radio" name="quiz" value="b" />
+            ② 행위자와 피해자의 연령 차이가 10세 이상일 것
+          </label>
+          <label class="quiz-option" id="opt-c">
+            <input type="radio" name="quiz" value="c" />
+            ③ 업무상 적정 범위를 넘는 행위일 것
+          </label>
+          <label class="quiz-option" id="opt-d">
+            <input type="radio" name="quiz" value="d" />
+            ④ 신체적·정신적 고통을 주거나 근무환경을 악화시킬 것
+          </label>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="quiz-submit" id="quiz-submit" onclick="submitQuiz()">제출</button>
+      </div>
+
+    </div><!-- /slide-area -->
+  </div><!-- /body -->
+
+  <!-- Bottom Controls -->
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-prev" onclick="goSlide(currentSlide - 1)" title="이전">◀</button>
+    <div id="seekbar"></div>
+    <button class="ctrl-btn" id="btn-next" onclick="goSlide(currentSlide + 1)" title="다음">▶</button>
+    <span id="slide-counter">1 / 5</span>
+    <span id="progress-text">진도 0%</span>
+    <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+  </div>
+
+</div><!-- /app -->
+
+<div id="guest-notice">⚠ SCORM API 없음 — 게스트 모드</div>
+
+<script>
+  // ── SCORM API lookup ───────────────────────────────────────────────────
+  function findAPI(win) {
+    let attempts = 0;
+    while (win.API == null && win.parent != null && win.parent !== win) {
+      if (++attempts > 7) break;
+      win = win.parent;
+    }
+    return win.API || null;
+  }
+
+  const API = findAPI(window);
+  const guestMode = !API;
+  if (guestMode) document.getElementById("guest-notice").style.display = "block";
+
+  // ── State ─────────────────────────────────────────────────────────────
+  const SLIDE_COUNT = 5;
+  let currentSlide = 0;
+  let visitedSlides = new Set();
+  let lessonStatus = "not attempted";
+  let quizAnswered = false;
+  let quizPassed = false;
+
+  // ── SCORM Init ────────────────────────────────────────────────────────
+  if (API) {
+    API.LMSInitialize("");
+
+    const name = API.LMSGetValue("cmi.core.student_name");
+    if (name) document.getElementById("learner-name").textContent = name;
+
+    const entry = API.LMSGetValue("cmi.core.entry");
+    const savedLocation = API.LMSGetValue("cmi.core.lesson_location");
+    const savedStatus = API.LMSGetValue("cmi.core.lesson_status");
+
+    if (savedStatus) lessonStatus = savedStatus;
+
+    // Resume from saved location
+    if (entry === "resume" && savedLocation !== "") {
+      const idx = parseInt(savedLocation, 10);
+      if (!isNaN(idx) && idx >= 0 && idx < SLIDE_COUNT) {
+        currentSlide = idx;
+        // Mark prior slides as visited
+        for (let i = 0; i < idx; i++) visitedSlides.add(i);
+      }
+    }
+  }
+
+  // ── Build TOC ─────────────────────────────────────────────────────────
+  const TOC_LABELS = [
+    "학습 목표",
+    "개념 정의",
+    "유형 및 사례",
+    "대응 방법",
+    "확인 퀴즈",
+  ];
+
+  const toc = document.getElementById("toc");
+  TOC_LABELS.forEach((label, i) => {
+    const item = document.createElement("div");
+    item.className = "toc-item";
+    item.id = `toc-item-${i}`;
+    item.innerHTML = `<span class="toc-num">${i + 1}</span><span class="toc-label">${label}</span>`;
+    item.onclick = () => goSlide(i);
+    toc.appendChild(item);
+  });
+
+  // ── Build Seekbar ──────────────────────────────────────────────────────
+  const seekbar = document.getElementById("seekbar");
+  for (let i = 0; i < SLIDE_COUNT; i++) {
+    const dot = document.createElement("div");
+    dot.className = "seek-dot";
+    dot.id = `dot-${i}`;
+    dot.title = TOC_LABELS[i];
+    dot.onclick = () => goSlide(i);
+    seekbar.appendChild(dot);
+  }
+
+  // ── Navigate ──────────────────────────────────────────────────────────
+  function goSlide(idx) {
+    if (idx < 0 || idx >= SLIDE_COUNT) return;
+
+    // Hide current
+    document.querySelector(`.slide[data-index="${currentSlide}"]`).classList.remove("active");
+    document.getElementById(`toc-item-${currentSlide}`).classList.remove("active");
+    document.getElementById(`dot-${currentSlide}`).classList.remove("active");
+
+    visitedSlides.add(currentSlide);
+    currentSlide = idx;
+
+    // Show new
+    document.querySelector(`.slide[data-index="${currentSlide}"]`).classList.add("active");
+    document.getElementById(`toc-item-${currentSlide}`).classList.add("active");
+
+    updateUI();
+    scormTrack();
+  }
+
+  function updateUI() {
+    // Slide counter
+    document.getElementById("slide-counter").textContent = `${currentSlide + 1} / ${SLIDE_COUNT}`;
+
+    // Prev / Next buttons
+    document.getElementById("btn-prev").disabled = currentSlide === 0;
+    document.getElementById("btn-next").disabled = currentSlide === SLIDE_COUNT - 1;
+
+    // Progress
+    const pct = Math.round((visitedSlides.size / SLIDE_COUNT) * 100);
+    document.getElementById("progress-text").textContent = `진도 ${pct}%`;
+    document.getElementById("progress-bar").style.width = pct + "%";
+
+    // Dots + TOC visited state
+    for (let i = 0; i < SLIDE_COUNT; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      dot.className = "seek-dot";
+      if (visitedSlides.has(i)) dot.classList.add("visited");
+      if (i === currentSlide)   dot.classList.add("active");
+
+      const tocItem = document.getElementById(`toc-item-${i}`);
+      tocItem.className = "toc-item";
+      if (visitedSlides.has(i)) tocItem.classList.add("visited");
+      if (i === currentSlide)   tocItem.classList.add("active");
+    }
+
+    // Status badge
+    const badge = document.getElementById("status-badge");
+    const statusMap = {
+      "not attempted": ["not-attempted", "수강 전"],
+      "incomplete":    ["incomplete",    "수강 중"],
+      "completed":     ["completed",     "완료"],
+      "passed":        ["passed",        "통과"],
+      "failed":        ["failed",        "미통과"],
+    };
+    const [cls, label] = statusMap[lessonStatus] || ["not-attempted", lessonStatus];
+    badge.className = `status-badge ${cls}`;
+    badge.textContent = label;
+  }
+
+  function scormTrack() {
+    if (!API) return;
+
+    API.LMSSetValue("cmi.core.lesson_location", String(currentSlide));
+
+    // Mark incomplete once started
+    if (lessonStatus === "not attempted") {
+      lessonStatus = "incomplete";
+      API.LMSSetValue("cmi.core.lesson_status", "incomplete");
+    }
+
+    // Complete when reached last slide (even without quiz)
+    if (currentSlide === SLIDE_COUNT - 1 && lessonStatus === "incomplete") {
+      lessonStatus = "incomplete"; // will update after quiz
+    }
+
+    API.LMSCommit("");
+  }
+
+  // ── Quiz ──────────────────────────────────────────────────────────────
+  function submitQuiz() {
+    if (quizAnswered) return;
+
+    const selected = document.querySelector('input[name="quiz"]:checked');
+    if (!selected) { alert("답을 선택해주세요."); return; }
+
+    quizAnswered = true;
+    document.getElementById("quiz-submit").disabled = true;
+
+    const isCorrect = selected.value === "b"; // ② is the correct answer
+    quizPassed = isCorrect;
+
+    // Style options
+    document.getElementById("opt-b").classList.add("correct");
+    if (!isCorrect) {
+      document.getElementById(`opt-${selected.value}`).classList.add("incorrect");
+    }
+
+    // Feedback
+    const fb = document.getElementById("quiz-feedback");
+    fb.className = `quiz-feedback show ${isCorrect ? "correct" : "incorrect"}`;
+    fb.textContent = isCorrect
+      ? "✓ 정답입니다! 연령 차이는 직장 내 괴롭힘 판단 요소가 아닙니다."
+      : "✗ 오답입니다. 정답은 ② 입니다. 연령 차이는 판단 요소가 아닙니다.";
+
+    // SCORM report
+    if (API) {
+      const score = isCorrect ? "100" : "0";
+      lessonStatus = isCorrect ? "passed" : "failed";
+
+      API.LMSSetValue("cmi.core.lesson_status", lessonStatus);
+      API.LMSSetValue("cmi.core.score.raw", score);
+      API.LMSSetValue("cmi.core.score.min", "0");
+      API.LMSSetValue("cmi.core.score.max", "100");
+      API.LMSCommit("");
+    }
+
+    updateUI();
+  }
+
+  // ── Unload ────────────────────────────────────────────────────────────
+  window.addEventListener("beforeunload", () => {
+    if (API) {
+      API.LMSSetValue("cmi.core.exit", quizAnswered ? "" : "suspend");
+      API.LMSFinish("");
+    }
+  });
+
+  // ── Boot ─────────────────────────────────────────────────────────────
+  visitedSlides.add(currentSlide);
+  document.querySelector(`.slide[data-index="${currentSlide}"]`).classList.add("active");
+  updateUI();
+  if (API) scormTrack();
+</script>
+</body>
+</html>
