@@ -1,5 +1,35 @@
 import { type Course, courses } from "../courses/mockData";
 
+// ── 오프라인 회차 ──────────────────────────────────────────────
+export type OfflineSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
+
+export interface OfflineSession {
+  id: string;
+  courseSessionId: string;
+  dayNum: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  instructors: string[];
+  maxCapacity: number;
+  status: OfflineSessionStatus;
+}
+
+// ── 출결 기록 ──────────────────────────────────────────────────
+export type AttendanceStatus = "PRESENT" | "LATE" | "ABSENT" | "EXCUSED";
+export type AttendanceMethod = "QR" | "MANUAL";
+
+export interface AttendanceRecord {
+  id: string;
+  offlineSessionId: string;
+  learnerId: string;
+  learnerName: string;
+  status: AttendanceStatus;
+  method: AttendanceMethod;
+  checkedAt?: string;
+}
+
 export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "LIVE";
 
 export interface Activity {
@@ -111,4 +141,45 @@ export function getSessions(courseId: string): CourseSession[] {
 
 export function getEnrollees(courseId: string): CourseEnrollee[] {
   return enrollees[courseId] ?? enrollees["c1"];
+}
+
+// ── 오프라인 회차 Mock 데이터 ──────────────────────────────────
+const offlineSessions: Record<string, OfflineSession[]> = {
+  se4: [
+    { id: "os1", courseSessionId: "se4", dayNum: 1, date: "2025-02-10", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "COMPLETED" },
+    { id: "os2", courseSessionId: "se4", dayNum: 2, date: "2025-02-17", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "COMPLETED" },
+    { id: "os3", courseSessionId: "se4", dayNum: 3, date: "2025-02-24", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "SCHEDULED" },
+  ],
+};
+
+const attendanceRecords: Record<string, AttendanceRecord[]> = {
+  os1: [
+    { id: "at1",  offlineSessionId: "os1", learnerId: "u1", learnerName: "김민준", status: "PRESENT", method: "QR",     checkedAt: "2025-02-10T10:03:00Z" },
+    { id: "at2",  offlineSessionId: "os1", learnerId: "u2", learnerName: "이서연", status: "LATE",    method: "QR",     checkedAt: "2025-02-10T10:22:00Z" },
+    { id: "at3",  offlineSessionId: "os1", learnerId: "u3", learnerName: "박지호", status: "PRESENT", method: "QR",     checkedAt: "2025-02-10T09:58:00Z" },
+    { id: "at4",  offlineSessionId: "os1", learnerId: "u4", learnerName: "최유진", status: "PRESENT", method: "MANUAL"  },
+    { id: "at5",  offlineSessionId: "os1", learnerId: "u5", learnerName: "정다은", status: "ABSENT",  method: "MANUAL"  },
+  ],
+  os2: [
+    { id: "at6",  offlineSessionId: "os2", learnerId: "u1", learnerName: "김민준", status: "PRESENT", method: "QR",     checkedAt: "2025-02-17T10:01:00Z" },
+    { id: "at7",  offlineSessionId: "os2", learnerId: "u2", learnerName: "이서연", status: "PRESENT", method: "QR",     checkedAt: "2025-02-17T09:55:00Z" },
+    { id: "at8",  offlineSessionId: "os2", learnerId: "u3", learnerName: "박지호", status: "ABSENT",  method: "MANUAL"  },
+    { id: "at9",  offlineSessionId: "os2", learnerId: "u4", learnerName: "최유진", status: "EXCUSED", method: "MANUAL"  },
+    { id: "at10", offlineSessionId: "os2", learnerId: "u5", learnerName: "정다은", status: "PRESENT", method: "QR",     checkedAt: "2025-02-17T10:05:00Z" },
+  ],
+  os3: [
+    { id: "at11", offlineSessionId: "os3", learnerId: "u1", learnerName: "김민준", status: "ABSENT",  method: "MANUAL"  },
+    { id: "at12", offlineSessionId: "os3", learnerId: "u2", learnerName: "이서연", status: "ABSENT",  method: "MANUAL"  },
+    { id: "at13", offlineSessionId: "os3", learnerId: "u3", learnerName: "박지호", status: "ABSENT",  method: "MANUAL"  },
+    { id: "at14", offlineSessionId: "os3", learnerId: "u4", learnerName: "최유진", status: "ABSENT",  method: "MANUAL"  },
+    { id: "at15", offlineSessionId: "os3", learnerId: "u5", learnerName: "정다은", status: "ABSENT",  method: "MANUAL"  },
+  ],
+};
+
+export function getOfflineSessions(courseSessionId: string): OfflineSession[] {
+  return offlineSessions[courseSessionId] ?? [];
+}
+
+export function getAttendanceRecords(offlineSessionId: string): AttendanceRecord[] {
+  return attendanceRecords[offlineSessionId] ?? [];
 }

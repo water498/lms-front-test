@@ -8,15 +8,9 @@ import InfoTab from "./tabs/info-tab";
 import CurriculumTab from "./tabs/curriculum-tab";
 import SessionsTab from "./tabs/sessions-tab";
 import EnrolleesTab from "./tabs/enrollees-tab";
+import OfflineTab from "./tabs/offline-tab";
 
-const TABS = [
-  { id: "info",       label: "과정 정보" },
-  { id: "curriculum", label: "커리큘럼" },
-  { id: "sessions",   label: "차수 관리" },
-  { id: "enrollees",  label: "수강생" },
-] as const;
-
-type TabId = (typeof TABS)[number]["id"];
+type TabId = "info" | "curriculum" | "sessions" | "enrollees" | "offline";
 
 export default function CourseDetailFeature({ courseId }: { courseId: string }) {
   const [activeTab, setActiveTab] = useState<TabId>("curriculum");
@@ -27,6 +21,16 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const enrollees = getEnrollees(courseId);
 
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
+
+  const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
+
+  const TABS: { id: TabId; label: string }[] = [
+    { id: "info",       label: "과정 정보" },
+    { id: "curriculum", label: "커리큘럼" },
+    { id: "sessions",   label: "차수 관리" },
+    { id: "enrollees",  label: "수강생" },
+    ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
+  ];
 
   return (
     <div className="flex flex-col gap-5">
@@ -63,6 +67,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
         {activeTab === "curriculum" && <CurriculumTab subjects={curriculum} />}
         {activeTab === "sessions"   && <SessionsTab sessions={sessions} />}
         {activeTab === "enrollees"  && <EnrolleesTab enrollees={enrollees} sessions={sessions} />}
+        {activeTab === "offline"    && <OfflineTab sessions={sessions} />}
       </div>
     </div>
   );
