@@ -16,7 +16,7 @@ const ACTIVITY_ICON: Record<ActivityType, string> = {
 const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
   VIDEO:      "영상",
   SCORM:      "SCORM",
-  QUIZ:       "퀴즈",
+  QUIZ:       "시험",
   ASSIGNMENT: "과제",
   LIVE:       "라이브",
 };

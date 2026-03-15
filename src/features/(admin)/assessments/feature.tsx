@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import QuizTable from "./sections/quiz-table";
+import ExamTable from "./sections/exam-table";
+import AssignmentTable from "./sections/assignment-table";
 import SurveyTable from "./sections/survey-table";
 
 const TABS = [
-  { id: "quiz",   label: "퀴즈 · 시험" },
-  { id: "survey", label: "설문" },
+  { id: "exam",       label: "시험" },
+  { id: "assignment", label: "과제" },
+  { id: "survey",     label: "설문" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
 export default function AssessmentsFeature() {
-  const [activeTab, setActiveTab] = useState<TabId>("quiz");
+  const [activeTab, setActiveTab] = useState<TabId>("exam");
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex gap-1 border-b border-slate-200">
+      <div className="flex items-center gap-1 border-b border-slate-200">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -31,8 +33,9 @@ export default function AssessmentsFeature() {
           </button>
         ))}
       </div>
-      {activeTab === "quiz"   && <QuizTable />}
-      {activeTab === "survey" && <SurveyTable />}
+      {activeTab === "exam"       && <ExamTable />}
+      {activeTab === "assignment" && <AssignmentTable />}
+      {activeTab === "survey"     && <SurveyTable />}
     </div>
   );
 }
