@@ -16,7 +16,12 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "activity",    label: "활동 로그" },
 ];
 
-export default function UserDetailFeature({ userId }: { userId: string }) {
+interface Props {
+  userId: string;
+  hideBackLink?: boolean;
+}
+
+export default function UserDetailFeature({ userId, hideBackLink }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const user = orgUsers.find((u) => u.id === userId);
 
@@ -36,12 +41,15 @@ export default function UserDetailFeature({ userId }: { userId: string }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <Link
-        href="/experiments/admin/users"
-        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors w-fit"
-      >
-        <ChevronLeft size={15} /> 유저 목록
-      </Link>
+      {!hideBackLink && (
+        <Link
+          href="/experiments/admin/users"
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors w-fit"
+        >
+          <ChevronLeft size={15} />
+          유저 목록
+        </Link>
+      )}
 
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-slate-200">

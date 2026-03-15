@@ -10,7 +10,7 @@ const ACTIVITY_ICON: Record<ActivityType, string> = {
   SCORM:      "📄",
   QUIZ:       "📝",
   ASSIGNMENT: "📋",
-  LIVE:       "🎥",
+  LIVE:       "🎙️",
 };
 
 const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {

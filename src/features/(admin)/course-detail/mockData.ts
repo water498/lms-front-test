@@ -8,6 +8,7 @@ export interface Activity {
   type: ActivityType;
   duration?: number;      // 분 (VIDEO일 때)
   questionCount?: number; // QUIZ/ASSIGNMENT일 때
+  mediaFileId?: string;   // 미디어 라이브러리 참조 (VIDEO/SCORM)
 }
 
 export interface Subject {
@@ -39,6 +40,7 @@ export interface CourseSession {
 
 export interface CourseEnrollee {
   id: string;
+  learnerId: string;
   learner: string;
   session: string;
   progress: number;
@@ -50,15 +52,15 @@ const curricula: Record<string, Subject[]> = {
     {
       id: "s1", title: "React 기초 개념", order: 1,
       activities: [
-        { id: "a1", title: "React란 무엇인가",    type: "VIDEO",      duration: 12 },
-        { id: "a2", title: "컴포넌트 개념",        type: "SCORM" },
+        { id: "a1", title: "React란 무엇인가",    type: "VIDEO",      duration: 12,  mediaFileId: "mf1" },
+        { id: "a2", title: "컴포넌트 개념",        type: "SCORM",                     mediaFileId: "mf6" },
         { id: "a3", title: "개념 확인 퀴즈",       type: "QUIZ",       questionCount: 5 },
       ],
     },
     {
       id: "s2", title: "State와 Props", order: 2,
       activities: [
-        { id: "a4", title: "useState 사용법",      type: "VIDEO",      duration: 18 },
+        { id: "a4", title: "useState 사용법",      type: "VIDEO",      duration: 18,  mediaFileId: "mf2" },
         { id: "a5", title: "Props 전달과 타입",    type: "VIDEO",      duration: 14 },
         { id: "a6", title: "실습 과제",             type: "ASSIGNMENT", questionCount: 1 },
       ],
@@ -66,8 +68,8 @@ const curricula: Record<string, Subject[]> = {
     {
       id: "s3", title: "이벤트와 폼 처리", order: 3,
       activities: [
-        { id: "a7", title: "이벤트 핸들링",        type: "VIDEO",      duration: 10 },
-        { id: "a8", title: "라이브 Q&A 세션",      type: "LIVE" },
+        { id: "a7", title: "이벤트 핸들링",        type: "VIDEO",      duration: 10,  mediaFileId: "mf2" },
+        { id: "a8", title: "폼 제출 실습 과제",    type: "ASSIGNMENT", questionCount: 1 },
       ],
     },
   ],
@@ -88,10 +90,10 @@ const sessions: Record<string, CourseSession[]> = {
 
 const enrollees: Record<string, CourseEnrollee[]> = {
   c1: [
-    { id: "e1", learner: "김민준", session: "2025-03기", progress: 45,  enrolledAt: "2025-03-14" },
-    { id: "e2", learner: "이서연", session: "2025-03기", progress: 30,  enrolledAt: "2025-03-13" },
-    { id: "e3", learner: "박지호", session: "2025-02기", progress: 100, enrolledAt: "2025-02-20" },
-    { id: "e4", learner: "최유진", session: "2025-02기", progress: 72,  enrolledAt: "2025-02-03" },
+    { id: "e1", learnerId: "u5", learner: "김민준", session: "3기 (2025 3분기)", progress: 45,  enrolledAt: "2025-03-14" },
+    { id: "e2", learnerId: "u6", learner: "이서연", session: "3기 (2025 3분기)", progress: 30,  enrolledAt: "2025-03-13" },
+    { id: "e3", learnerId: "u7", learner: "박지호", session: "2기 (2025 2분기)", progress: 100, enrolledAt: "2025-02-20" },
+    { id: "e4", learnerId: "u8", learner: "최유진", session: "2기 (2025 2분기)", progress: 72,  enrolledAt: "2025-02-03" },
   ],
 };
 
