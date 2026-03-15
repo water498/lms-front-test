@@ -25,7 +25,7 @@ export default function TemplateGrid() {
                   {t.active ? "활성" : "비활성"}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">연결 코스 {t.linkedCourses}개</p>
+              <p className="text-xs text-slate-400 mt-1">연결 과정 {t.linkedCourses}개</p>
             </div>
             <div className="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2 flex flex-col gap-1">
               <span>완료율 {t.completionRate}% 이상</span>

@@ -53,7 +53,7 @@ export default function CourseTable({ onCreateClick }: Props) {
         <div className="flex items-center gap-2 flex-1 max-w-xs">
           <input
             className="flex-1 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-            placeholder="코스명 또는 강사 검색"
+            placeholder="과정명 또는 강사 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -62,7 +62,7 @@ export default function CourseTable({ onCreateClick }: Props) {
           onClick={onCreateClick}
           className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
         >
-          + 새 코스
+          + 새 과정
         </button>
       </div>
 
@@ -70,10 +70,10 @@ export default function CourseTable({ onCreateClick }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="text-xs text-slate-400 border-b border-slate-100">
-            <th className="text-left px-5 py-3 font-medium">코스명</th>
+            <th className="text-left px-5 py-3 font-medium">과정명</th>
             <th className="text-left px-4 py-3 font-medium">강사</th>
             <th className="text-left px-4 py-3 font-medium">상태</th>
-            <th className="text-left px-4 py-3 font-medium">세션</th>
+            <th className="text-left px-4 py-3 font-medium">차수</th>
             <th className="text-left px-4 py-3 font-medium">수강생</th>
             <th className="text-left px-4 py-3 font-medium">생성일</th>
             <th className="text-left px-4 py-3 font-medium">액션</th>

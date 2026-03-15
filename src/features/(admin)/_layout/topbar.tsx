@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
 
 const PAGE_TITLE_MAP: { prefix: string; label: string }[] = [
-  { prefix: "/experiments/admin/courses/",      label: "코스 상세" },
-  { prefix: "/experiments/admin/courses",       label: "코스 관리" },
+  { prefix: "/experiments/admin/courses/",      label: "과정 상세" },
+  { prefix: "/experiments/admin/courses",       label: "과정 관리" },
   { prefix: "/experiments/admin/users/",        label: "유저 상세" },
   { prefix: "/experiments/admin/users",         label: "유저 관리" },
   { prefix: "/experiments/admin/enrollments",   label: "수강 관리" },

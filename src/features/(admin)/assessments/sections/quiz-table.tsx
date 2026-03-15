@@ -41,7 +41,7 @@ export default function QuizTable() {
           <tr className="text-xs text-slate-400 border-b border-slate-100">
             <th className="text-left px-5 py-3 font-medium">이름</th>
             <th className="text-left px-4 py-3 font-medium">유형</th>
-            <th className="text-left px-4 py-3 font-medium">연결 코스</th>
+            <th className="text-left px-4 py-3 font-medium">연결 과정</th>
             <th className="text-left px-4 py-3 font-medium">문항 수</th>
             <th className="text-left px-4 py-3 font-medium">통과 기준</th>
             <th className="text-left px-4 py-3 font-medium">시간제한</th>

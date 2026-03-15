@@ -12,7 +12,7 @@ const total = Object.values(courseStatusCounts).reduce((a, b) => a + b, 0);
 export default function CourseStatusOverview() {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h2 className="text-sm font-semibold text-slate-700 mb-4">코스 현황</h2>
+      <h2 className="text-sm font-semibold text-slate-700 mb-4">과정 현황</h2>
 
       {/* Bar */}
       <div className="flex rounded-full overflow-hidden h-3 mb-4">

@@ -31,7 +31,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "학습 관리",
     items: [
-      { href: "/experiments/admin/courses",     label: "코스 관리",      icon: BookOpen },
+      { href: "/experiments/admin/courses",     label: "과정 관리",      icon: BookOpen },
       { href: "/experiments/admin/enrollments", label: "수강 관리",      icon: GraduationCap },
       { href: "/experiments/admin/assessments", label: "평가 관리",      icon: ClipboardList },
       { href: "/experiments/admin/certificates",label: "수료증",         icon: Award },

@@ -93,7 +93,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                 <th className="text-left px-4 py-3 font-medium">유형</th>
                 <th className="text-left px-4 py-3 font-medium">크기</th>
                 <th className="text-left px-4 py-3 font-medium">업로드일</th>
-                <th className="text-left px-4 py-3 font-medium">연결 코스</th>
+                <th className="text-left px-4 py-3 font-medium">연결 과정</th>
                 <th className="text-left px-4 py-3 font-medium">액션</th>
               </tr>
             </thead>

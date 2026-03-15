@@ -24,7 +24,7 @@ export interface MessageHistory {
 }
 
 export const messageHistory: MessageHistory[] = [
-  { id: "m1", sentAt: "2025-03-14 09:00", recipient: "전체 학습자",            recipientCount: 8, channel: "EMAIL", subject: "3월 신규 코스 안내",   preview: "안녕하세요. 이번 달 신규 코스가 오픈되었습니다...", status: "SENT",      templateId: "t3" },
+  { id: "m1", sentAt: "2025-03-14 09:00", recipient: "전체 학습자",            recipientCount: 8, channel: "EMAIL", subject: "3월 신규 과정 안내",   preview: "안녕하세요. 이번 달 신규 과정이 오픈되었습니다...", status: "SENT",      templateId: "t3" },
   { id: "m2", sentAt: "2025-03-13 14:30", recipient: "React 기초 수강생",      recipientCount: 5, channel: "KAKAO",                                   preview: "[ACME] 과제 제출 마감이 3일 남았습니다.",          status: "SENT",      templateId: "t2" },
   { id: "m3", sentAt: "2025-03-12 10:00", recipient: "TypeScript 심화 수강생", recipientCount: 3, channel: "SMS",                                     preview: "[ACME] 세션 시작 1시간 전 알림입니다.",            status: "SENT",      templateId: "t1" },
   { id: "m4", sentAt: "2025-03-11 16:00", recipient: "홍민재",                 recipientCount: 1, channel: "EMAIL", subject: "가입을 환영합니다",      preview: "ACME Corp LMS에 오신 것을 환영합니다...",          status: "SENT",      templateId: "t5" },
@@ -71,10 +71,10 @@ export const messageTemplates: MessageTemplate[] = [
   },
   {
     id: "t3",
-    name: "신규 코스 안내 (이메일)",
+    name: "신규 과정 안내 (이메일)",
     channel: "EMAIL",
-    subject: "[ACME] {{month}} 신규 코스가 오픈되었습니다",
-    content: "안녕하세요, {{name}}님.\n\n이번 달 새로운 코스 {{courseList}}이 오픈되었습니다.\n지금 바로 확인해 보세요!",
+    subject: "[ACME] {{month}} 신규 과정이 오픈되었습니다",
+    content: "안녕하세요, {{name}}님.\n\n이번 달 새로운 과정 {{courseList}}이 오픈되었습니다.\n지금 바로 확인해 보세요!",
     variables: ["name", "month", "courseList"],
     createdAt: "2025-01-15",
   },
@@ -145,7 +145,7 @@ export const automationRules: AutomationRule[] = [
     id: "a1",
     trigger: "ENROLLMENT_CREATED",
     triggerLabel: "수강 등록 완료",
-    triggerDesc: "학습자가 코스에 수강 등록할 때",
+    triggerDesc: "학습자가 과정에 수강 등록할 때",
     channel: "EMAIL",
     templateId: "t5",
     active: true,
@@ -153,8 +153,8 @@ export const automationRules: AutomationRule[] = [
   {
     id: "a2",
     trigger: "COURSE_COMPLETED",
-    triggerLabel: "코스 완료",
-    triggerDesc: "학습자가 코스를 100% 완료할 때",
+    triggerLabel: "과정 완료",
+    triggerDesc: "학습자가 과정을 100% 완료할 때",
     channel: "KAKAO",
     templateId: "t4",
     active: true,

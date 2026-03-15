@@ -17,18 +17,24 @@ export interface Subject {
   activities: Activity[];
 }
 
-export type SessionStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
+export type SessionType = "SELF_PACED" | "COHORT"; // 상시 | 정규
+export type SessionStatus = "DRAFT" | "OPEN" | "ONGOING" | "CLOSED";
 
 export interface CourseSession {
   id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  capacity: number;
+  courseId: string;
+  name: string;           // 예: "1기 (2025 상반기)"
+  type: SessionType;
+  cohortNumber?: number;  // 정규일 때 기수
+  startDate?: string;     // 정규일 때
+  endDate?: string;       // 정규일 때
+  capacity: number;       // 0 = 무제한
   enrolled: number;
-  instructor: string;
   status: SessionStatus;
-  venue?: string; // 오프라인일 때
+  visible: boolean;
+  forSale: boolean;
+  instructors: string[];  // 강사 이름 목록
+  location?: string;      // 오프라인 장소
 }
 
 export interface CourseEnrollee {
@@ -69,13 +75,14 @@ const curricula: Record<string, Subject[]> = {
 
 const sessions: Record<string, CourseSession[]> = {
   c1: [
-    { id: "se1", name: "2025-01기", startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, instructor: "이준혁", status: "CLOSED" },
-    { id: "se2", name: "2025-02기", startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, instructor: "이준혁", status: "IN_PROGRESS" },
-    { id: "se3", name: "2025-03기", startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, instructor: "이준혁", status: "OPEN" },
+    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"] },
+    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"] },
+    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"] },
+    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"] },
   ],
   c4: [
-    { id: "se4", name: "2025-02기", startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, instructor: "김태호", status: "IN_PROGRESS", venue: "강남교육센터 3F" },
-    { id: "se5", name: "2025-04기", startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  instructor: "김태호", status: "OPEN",        venue: "강남교육센터 3F" },
+    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F" },
+    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F" },
   ],
 };
 

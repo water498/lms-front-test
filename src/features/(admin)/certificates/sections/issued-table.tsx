@@ -20,7 +20,7 @@ export default function IssuedTable() {
           value={courseFilter}
           onChange={(e) => setCourseFilter(e.target.value)}
         >
-          <option value="ALL">전체 코스</option>
+          <option value="ALL">전체 과정</option>
           {courses.map((c) => <option key={c}>{c}</option>)}
         </select>
         <span className="text-sm text-slate-500">{filtered.length}건</span>
@@ -30,7 +30,7 @@ export default function IssuedTable() {
           <tr className="text-xs text-slate-400 border-b border-slate-100">
             <th className="text-left px-5 py-3 font-medium">수료증 번호</th>
             <th className="text-left px-4 py-3 font-medium">수령인</th>
-            <th className="text-left px-4 py-3 font-medium">코스</th>
+            <th className="text-left px-4 py-3 font-medium">과정</th>
             <th className="text-left px-4 py-3 font-medium">발급일</th>
             <th className="text-left px-4 py-3 font-medium">다운로드</th>
           </tr>

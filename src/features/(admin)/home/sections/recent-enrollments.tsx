@@ -14,8 +14,8 @@ export default function RecentEnrollments() {
         <thead>
           <tr className="text-xs text-slate-400 border-b border-slate-100">
             <th className="text-left pb-2 font-medium">학습자</th>
-            <th className="text-left pb-2 font-medium">코스</th>
-            <th className="text-left pb-2 font-medium">세션</th>
+            <th className="text-left pb-2 font-medium">과정</th>
+            <th className="text-left pb-2 font-medium">차수</th>
             <th className="text-left pb-2 font-medium">상태</th>
             <th className="text-left pb-2 font-medium">신청일</th>
           </tr>

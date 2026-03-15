@@ -18,7 +18,7 @@ export default function CreateCourseModal({ onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-slate-800">새 코스 만들기</h2>
+          <h2 className="text-base font-semibold text-slate-800">새 과정 만들기</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X size={18} />
           </button>
@@ -26,10 +26,10 @@ export default function CreateCourseModal({ onClose }: Props) {
 
         <div className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">코스명</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">과정명</label>
             <input
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-              placeholder="코스 제목을 입력하세요"
+              placeholder="과정 제목을 입력하세요"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />

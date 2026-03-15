@@ -24,8 +24,8 @@ export default function EnrollmentsTab({ userId }: { userId: string }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="text-xs text-slate-400 border-b border-slate-100">
-            <th className="text-left px-5 py-3 font-medium">코스</th>
-            <th className="text-left px-4 py-3 font-medium">세션</th>
+            <th className="text-left px-5 py-3 font-medium">과정</th>
+            <th className="text-left px-4 py-3 font-medium">차수</th>
             <th className="text-left px-4 py-3 font-medium">진행률</th>
             <th className="text-left px-4 py-3 font-medium">상태</th>
             <th className="text-left px-4 py-3 font-medium">수료증</th>

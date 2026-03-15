@@ -1,6 +1,6 @@
 export const kpiStats = [
   { label: "총 수강생",      value: "1,284",  change: "+12%",  positive: true },
-  { label: "활성 코스",      value: "38",     change: "+3",    positive: true },
+  { label: "활성 과정",      value: "38",     change: "+3",    positive: true },
   { label: "이번 달 수료율", value: "74.2%",  change: "-1.8%", positive: false },
   { label: "진행 중 수강",   value: "3,512",  change: "+204",  positive: true },
 ];

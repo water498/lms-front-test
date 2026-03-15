@@ -62,8 +62,8 @@ export default function ProfileTab({ user }: { user: OrgUser }) {
         <h3 className="text-sm font-semibold text-slate-700">학습 현황</h3>
         <dl className="flex flex-col gap-3">
           {[
-            { label: "수강 코스",  value: `${user.enrolledCourses}개` },
-            { label: "완료 코스",  value: "1개" },
+            { label: "수강 과정",  value: `${user.enrolledCourses}개` },
+            { label: "완료 과정",  value: "1개" },
             { label: "수료증",     value: "1장" },
             { label: "부서",       value: user.department ?? "—" },
           ].map(({ label, value }) => (

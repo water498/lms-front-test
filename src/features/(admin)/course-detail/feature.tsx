@@ -10,9 +10,9 @@ import SessionsTab from "./tabs/sessions-tab";
 import EnrolleesTab from "./tabs/enrollees-tab";
 
 const TABS = [
-  { id: "info",       label: "코스 정보" },
+  { id: "info",       label: "과정 정보" },
   { id: "curriculum", label: "커리큘럼" },
-  { id: "sessions",   label: "세션 관리" },
+  { id: "sessions",   label: "차수 관리" },
   { id: "enrollees",  label: "수강생" },
 ] as const;
 
@@ -26,7 +26,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const sessions = getSessions(courseId);
   const enrollees = getEnrollees(courseId);
 
-  if (!course) return <p className="text-slate-500">코스를 찾을 수 없습니다.</p>;
+  if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
   return (
     <div className="flex flex-col gap-5">
@@ -34,7 +34,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
       <div className="flex items-center gap-2 text-sm text-slate-500">
         <Link href="/experiments/admin/courses" className="hover:text-violet-600 flex items-center gap-1.5 transition-colors">
           <ArrowLeft size={14} />
-          코스 관리
+          과정 관리
         </Link>
         <span>/</span>
         <span className="text-slate-700 font-medium">{course.title}</span>

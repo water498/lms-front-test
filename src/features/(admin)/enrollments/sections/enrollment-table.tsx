@@ -64,8 +64,8 @@ export default function EnrollmentTable() {
         <thead>
           <tr className="text-xs text-slate-400 border-b border-slate-100">
             <th className="text-left px-5 py-3 font-medium">학습자</th>
-            <th className="text-left px-4 py-3 font-medium">코스</th>
-            <th className="text-left px-4 py-3 font-medium">세션</th>
+            <th className="text-left px-4 py-3 font-medium">과정</th>
+            <th className="text-left px-4 py-3 font-medium">차수</th>
             <th className="text-left px-4 py-3 font-medium">상태</th>
             <th className="text-left px-4 py-3 font-medium">진행률</th>
             <th className="text-left px-4 py-3 font-medium">수강 신청일</th>

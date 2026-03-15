@@ -40,7 +40,7 @@ export default function InfoTab({ course }: { course: Course }) {
       </div>
 
       <div>
-        <label className="text-xs font-medium text-slate-600 mb-1 block">코스명</label>
+        <label className="text-xs font-medium text-slate-600 mb-1 block">과정명</label>
         <input
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
           value={title}

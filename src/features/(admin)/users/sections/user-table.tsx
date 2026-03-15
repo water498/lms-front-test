@@ -19,7 +19,7 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = 
 };
 
 function handleExport() {
-  const header = "이름,이메일,역할,상태,수강코스,마지막로그인\n";
+  const header = "이름,이메일,역할,상태,수강과정,마지막로그인\n";
   const rows = orgUsers
     .map((u) => `${u.name},${u.email},${ROLE_CONFIG[u.role].label},${STATUS_CONFIG[u.status].label},${u.enrolledCourses},${u.lastLogin}`)
     .join("\n");
@@ -121,7 +121,7 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onIm
               <th className="text-left px-5 py-3 font-medium">이름 / 이메일</th>
               <th className="text-left px-4 py-3 font-medium">역할</th>
               <th className="text-left px-4 py-3 font-medium">상태</th>
-              <th className="text-left px-4 py-3 font-medium">수강 코스</th>
+              <th className="text-left px-4 py-3 font-medium">수강 과정</th>
               <th className="text-left px-4 py-3 font-medium">마지막 로그인</th>
               <th className="text-left px-4 py-3 font-medium">액션</th>
             </tr>
