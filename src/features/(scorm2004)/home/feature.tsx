@@ -262,7 +262,7 @@ export default function Scorm2004Feature() {
         {/* Left: iframe */}
         <div className="flex-1 border-r border-zinc-800 bg-white">
           <iframe
-            src="/scorm2004/index.html"
+            src="/scorm2004-product-sample/res/index.html"
             sandbox="allow-scripts allow-same-origin allow-forms"
             className="w-full h-full border-0"
             title="SCORM 2004 Content"

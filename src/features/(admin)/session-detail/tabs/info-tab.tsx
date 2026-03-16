@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pencil } from "lucide-react";
 import { type CourseSession, type SessionStatus, type SessionType } from "../../course-detail/mockData";
+import { useOrgStructureStore } from "../../shared/org-structure-store";
 
 const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }> = {
   DRAFT:   { label: "준비중", className: "bg-slate-100 text-slate-500" },
@@ -63,6 +64,8 @@ interface DraftState {
   visible: boolean;
   forSale: boolean;
   completionThreshold: string;
+  targetDepartments: string[];
+  targetJobGrades: string[];
 }
 
 function toDraft(s: CourseSession): DraftState {
@@ -77,10 +80,13 @@ function toDraft(s: CourseSession): DraftState {
     visible: s.visible,
     forSale: s.forSale,
     completionThreshold: String(s.completionThreshold),
+    targetDepartments: s.targetAudience?.departments ?? [],
+    targetJobGrades: s.targetAudience?.jobGrades ?? [],
   };
 }
 
 export default function SessionInfoTab({ session }: { session: CourseSession }) {
+  const { departments, jobGrades } = useOrgStructureStore();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<DraftState>(() => toDraft(session));
 
@@ -120,8 +126,30 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       visible: draft.visible,
       forSale: draft.forSale,
       completionThreshold: Number(draft.completionThreshold),
+      targetAudience: {
+        departments: draft.targetDepartments,
+        jobGrades: draft.targetJobGrades,
+      },
     });
     setIsEditing(false);
+  }
+
+  function toggleDept(dept: string) {
+    setDraft((prev) => ({
+      ...prev,
+      targetDepartments: prev.targetDepartments.includes(dept)
+        ? prev.targetDepartments.filter((d) => d !== dept)
+        : [...prev.targetDepartments, dept],
+    }));
+  }
+
+  function toggleGrade(grade: string) {
+    setDraft((prev) => ({
+      ...prev,
+      targetJobGrades: prev.targetJobGrades.includes(grade)
+        ? prev.targetJobGrades.filter((g) => g !== grade)
+        : [...prev.targetJobGrades, grade],
+    }));
   }
 
   function set<K extends keyof DraftState>(key: K, value: DraftState[K]) {
@@ -265,6 +293,53 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
               <span className="text-sm text-slate-700">판매</span>
             </div>
           </div>
+
+          {/* 수강 대상 */}
+          <div className="col-span-2 flex flex-col gap-3 pt-1 border-t border-slate-100">
+            <span className="text-xs font-medium text-slate-500">
+              수강 대상 <span className="font-normal text-slate-400">(빈 값 = 제한 없음)</span>
+            </span>
+
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-slate-400">부서</span>
+              <div className="flex flex-wrap gap-1.5">
+                {departments.map((dept) => (
+                  <button
+                    key={dept}
+                    type="button"
+                    onClick={() => toggleDept(dept)}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                      draft.targetDepartments.includes(dept)
+                        ? "bg-violet-600 border-violet-600 text-white"
+                        : "border-slate-200 text-slate-600 hover:border-violet-300"
+                    }`}
+                  >
+                    {dept}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-slate-400">직급</span>
+              <div className="flex flex-wrap gap-1.5">
+                {jobGrades.map((grade) => (
+                  <button
+                    key={grade}
+                    type="button"
+                    onClick={() => toggleGrade(grade)}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                      draft.targetJobGrades.includes(grade)
+                        ? "bg-violet-600 border-violet-600 text-white"
+                        : "border-slate-200 text-slate-600 hover:border-violet-300"
+                    }`}
+                  >
+                    {grade}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -286,6 +361,21 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             </span>
           </Field>
           <Field label="수료 기준">{session.completionThreshold}%</Field>
+          {(session.targetAudience?.departments?.length || session.targetAudience?.jobGrades?.length) ? (
+            <div className="col-span-2 flex flex-col gap-1">
+              <span className="text-xs font-medium text-slate-500">수강 대상</span>
+              <div className="flex flex-wrap gap-1.5 mt-0.5">
+                {session.targetAudience?.departments?.map((d) => (
+                  <span key={d} className="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full">{d}</span>
+                ))}
+                {session.targetAudience?.jobGrades?.map((g) => (
+                  <span key={g} className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">{g}</span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <Field label="수강 대상"><span className="text-slate-400">제한 없음</span></Field>
+          )}
         </div>
       )}
 

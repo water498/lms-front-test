@@ -100,8 +100,8 @@ const STATUS_COLORS: Record<string, string> = {
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function Scorm12Feature() {
-  const [iframeSrc, setIframeSrc] = useState("/scorm12-player/index.html");
-  const [inputUrl, setInputUrl] = useState("/scorm12-player/index.html");
+  const [iframeSrc, setIframeSrc] = useState("/scorm12-product-sample/res/index.html");
+  const [inputUrl, setInputUrl] = useState("/scorm12-product-sample/res/index.html");
   const [scormData, setScormData] = useState<ScormData>({ ...DEFAULT_DATA });
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [initialized, setInitialized] = useState(false);

@@ -79,7 +79,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
       <div>
         {activeTab === "dashboard" && <DashboardTab session={session} enrollees={enrollees} />}
         {activeTab === "info"      && <SessionInfoTab session={session} />}
-        {activeTab === "enrollees" && <SessionEnrolleesTab enrollees={enrollees} />}
+        {activeTab === "enrollees" && <SessionEnrolleesTab enrollees={enrollees} sessionId={session.id} />}
         {activeTab === "offline"   && <SessionOfflineTab sessionId={session.id} />}
       </div>
     </div>

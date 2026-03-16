@@ -112,6 +112,15 @@ export default function SessionsTab({ sessions, courseId }: SessionsTabProps) {
                             편집
                           </button>
                           <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log("차수 복사", { sourceId: s.id, newName: s.name + " (복사)" });
+                            }}
+                            className="text-xs px-2 py-1 text-slate-500 hover:bg-slate-100 rounded transition-colors"
+                          >
+                            복사
+                          </button>
+                          <button
                             onClick={(e) => e.stopPropagation()}
                             className="text-xs px-2 py-1 text-slate-400 hover:bg-slate-100 rounded transition-colors"
                           >

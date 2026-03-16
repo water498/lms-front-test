@@ -3,19 +3,30 @@
 import { useState } from "react";
 import { type CourseEnrollee } from "../../course-detail/mockData";
 import UserDrawer from "../../course-detail/components/user-drawer";
+import AddLearnerModal from "../modals/add-learner-modal";
 
 interface Props {
   enrollees: CourseEnrollee[];
+  sessionId: string;
 }
 
-export default function SessionEnrolleesTab({ enrollees }: Props) {
+export default function SessionEnrolleesTab({ enrollees, sessionId }: Props) {
   const [selectedLearnerId, setSelectedLearnerId] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const enrolledLearnerIds = enrollees.map((e) => e.learnerId);
 
   return (
     <>
       <div className="max-w-3xl">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-500">{enrollees.length}명</span>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+          >
+            + 수강생 추가
+          </button>
         </div>
 
         {enrollees.length === 0 ? (
@@ -67,6 +78,14 @@ export default function SessionEnrolleesTab({ enrollees }: Props) {
         userId={selectedLearnerId}
         onClose={() => setSelectedLearnerId(null)}
       />
+
+      {showAddModal && (
+        <AddLearnerModal
+          sessionId={sessionId}
+          enrolledLearnerIds={enrolledLearnerIds}
+          onClose={() => setShowAddModal(false)}
+        />
+      )}
     </>
   );
 }
