@@ -8,8 +8,9 @@ import { getSessions, getEnrolleesBySession } from "../course-detail/mockData";
 import SessionInfoTab from "./tabs/info-tab";
 import SessionEnrolleesTab from "./tabs/enrollees-tab";
 import SessionOfflineTab from "./tabs/offline-tab";
+import DashboardTab from "./tabs/dashboard-tab";
 
-type TabId = "info" | "enrollees" | "offline";
+type TabId = "dashboard" | "info" | "enrollees" | "offline";
 
 interface Props {
   courseId: string;
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export default function SessionDetailFeature({ courseId, sessionId }: Props) {
-  const [activeTab, setActiveTab] = useState<TabId>("info");
+  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
 
   const course = getCourse(courseId);
   const sessions = getSessions(courseId);
@@ -29,6 +30,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
   const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
 
   const TABS: { id: TabId; label: string }[] = [
+    { id: "dashboard", label: "대시보드" },
     { id: "info",      label: "차수 정보" },
     { id: "enrollees", label: "수강생" },
     ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
@@ -75,6 +77,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
 
       {/* Tab content */}
       <div>
+        {activeTab === "dashboard" && <DashboardTab session={session} enrollees={enrollees} />}
         {activeTab === "info"      && <SessionInfoTab session={session} />}
         {activeTab === "enrollees" && <SessionEnrolleesTab enrollees={enrollees} />}
         {activeTab === "offline"   && <SessionOfflineTab sessionId={session.id} />}

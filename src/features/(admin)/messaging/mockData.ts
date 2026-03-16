@@ -45,6 +45,7 @@ export interface MessageTemplate {
   kakaoCode?: string;
   kakaoApproval?: KakaoApprovalStatus;
   kakaoButtons?: { text: string; url: string }[];
+  tags?: string[];
   createdAt: string;
 }
 
@@ -126,7 +127,43 @@ export const messageTemplates: MessageTemplate[] = [
     kakaoApproval: "PENDING",
     createdAt: "2025-03-01",
   },
+  {
+    id: "t9",
+    name: "수강 시작 독려 (이메일)",
+    channel: "EMAIL",
+    subject: "[ACME] {{courseName}} 수강을 시작해 보세요",
+    content: "안녕하세요, {{name}}님.\n\n아직 {{courseName}} 수강을 시작하지 않으셨네요.\n지금 바로 시작해 지식을 쌓아보세요!",
+    variables: ["name", "courseName"],
+    tags: ["독려"],
+    createdAt: "2025-03-10",
+  },
+  {
+    id: "t10",
+    name: "진도 독려 (알림톡)",
+    channel: "KAKAO",
+    content: "안녕하세요, {{name}}님.\n\n{{courseName}} 과정 수료까지 얼마 남지 않았습니다.\n마지막까지 화이팅!",
+    variables: ["name", "courseName"],
+    kakaoCode: "TMP_20250310_004",
+    kakaoApproval: "APPROVED",
+    kakaoButtons: [{ text: "학습 이어하기", url: "https://acme.lms.io/learn" }],
+    tags: ["독려"],
+    createdAt: "2025-03-10",
+  },
+  {
+    id: "t11",
+    name: "마감 임박 알림 (SMS)",
+    channel: "SMS",
+    content: "[ACME] {{name}}님, {{courseName}} 수강 마감이 {{daysLeft}}일 남았습니다. 빠른 수강을 권장드립니다.",
+    variables: ["name", "courseName", "daysLeft"],
+    charCount: 65,
+    tags: ["독려"],
+    createdAt: "2025-03-10",
+  },
 ];
+
+export function getEncourageTemplates() {
+  return messageTemplates.filter((t) => t.tags?.includes("독려"));
+}
 
 // ── 자동화 규칙 ───────────────────────────────────────────
 

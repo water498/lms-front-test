@@ -68,6 +68,7 @@ export interface CourseSession {
   forSale: boolean;
   instructors: string[];  // 강사 이름 목록
   location?: string;      // 오프라인 장소
+  completionThreshold: number; // 수료 인정 최소 진도율 (%)
 }
 
 export interface CourseEnrollee {
@@ -110,23 +111,34 @@ const curricula: Record<string, Subject[]> = {
 
 const sessions: Record<string, CourseSession[]> = {
   c1: [
-    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"] },
-    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"] },
-    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"] },
-    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"] },
+    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
+    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
+    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
+    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
   ],
   c4: [
-    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F" },
-    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F" },
+    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F", completionThreshold: 80 },
+    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F", completionThreshold: 80 },
   ],
 };
 
 const enrollees: Record<string, CourseEnrollee[]> = {
   c1: [
-    { id: "e1", learnerId: "u5", learner: "김민준", sessionId: "se3", session: "3기 (2025 3분기)", progress: 45,  enrolledAt: "2025-03-14" },
-    { id: "e2", learnerId: "u6", learner: "이서연", sessionId: "se3", session: "3기 (2025 3분기)", progress: 30,  enrolledAt: "2025-03-13" },
-    { id: "e3", learnerId: "u7", learner: "박지호", sessionId: "se2", session: "2기 (2025 2분기)", progress: 100, enrolledAt: "2025-02-20" },
-    { id: "e4", learnerId: "u8", learner: "최유진", sessionId: "se2", session: "2기 (2025 2분기)", progress: 72,  enrolledAt: "2025-02-03" },
+    { id: "e1",  learnerId: "u5",  learner: "김민준", sessionId: "se3", session: "3기 (2025 3분기)", progress: 45,  enrolledAt: "2025-03-14" },
+    { id: "e2",  learnerId: "u6",  learner: "이서연", sessionId: "se3", session: "3기 (2025 3분기)", progress: 30,  enrolledAt: "2025-03-13" },
+    { id: "e3",  learnerId: "u7",  learner: "박지호", sessionId: "se2", session: "2기 (2025 2분기)", progress: 100, enrolledAt: "2025-02-20" },
+    { id: "e4",  learnerId: "u8",  learner: "최유진", sessionId: "se2", session: "2기 (2025 2분기)", progress: 72,  enrolledAt: "2025-02-03" },
+    // se1 수강생 10명 (진도율 골고루 분포)
+    { id: "e10", learnerId: "u10", learner: "강지원", sessionId: "se1", session: "1기 (2025 1분기)", progress: 10,  enrolledAt: "2025-01-07" },
+    { id: "e11", learnerId: "u11", learner: "윤서준", sessionId: "se1", session: "1기 (2025 1분기)", progress: 25,  enrolledAt: "2025-01-07" },
+    { id: "e12", learnerId: "u12", learner: "임채원", sessionId: "se1", session: "1기 (2025 1분기)", progress: 40,  enrolledAt: "2025-01-08" },
+    { id: "e13", learnerId: "u13", learner: "오민서", sessionId: "se1", session: "1기 (2025 1분기)", progress: 55,  enrolledAt: "2025-01-08" },
+    { id: "e14", learnerId: "u14", learner: "한예린", sessionId: "se1", session: "1기 (2025 1분기)", progress: 65,  enrolledAt: "2025-01-09" },
+    { id: "e15", learnerId: "u15", learner: "송현우", sessionId: "se1", session: "1기 (2025 1분기)", progress: 75,  enrolledAt: "2025-01-09" },
+    { id: "e16", learnerId: "u16", learner: "배수아", sessionId: "se1", session: "1기 (2025 1분기)", progress: 82,  enrolledAt: "2025-01-10" },
+    { id: "e17", learnerId: "u17", learner: "장도윤", sessionId: "se1", session: "1기 (2025 1분기)", progress: 90,  enrolledAt: "2025-01-10" },
+    { id: "e18", learnerId: "u18", learner: "권나연", sessionId: "se1", session: "1기 (2025 1분기)", progress: 95,  enrolledAt: "2025-01-11" },
+    { id: "e19", learnerId: "u19", learner: "신재호", sessionId: "se1", session: "1기 (2025 1분기)", progress: 100, enrolledAt: "2025-01-11" },
   ],
 };
 
