@@ -35,7 +35,8 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/experiments/admin/enrollments", label: "수강 관리",      icon: GraduationCap },
       { href: "/experiments/admin/assessments", label: "평가 관리",      icon: ClipboardList },
       { href: "/experiments/admin/certificates",label: "수료증",         icon: Award },
-      { href: "/experiments/admin/media",       label: "미디어 라이브러리", icon: HardDrive },
+      { href: "/experiments/admin/media",          label: "미디어 라이브러리", icon: HardDrive },
+      { href: "/experiments/admin/announcements", label: "공지·메시지",       icon: Megaphone },
     ],
   },
   {
@@ -45,16 +46,10 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: "커뮤니케이션",
-    items: [
-      { href: "/experiments/admin/announcements", label: "공지·메시지",  icon: Megaphone },
-      { href: "/experiments/admin/messaging",     label: "메시지 발송",  icon: MessageSquare },
-    ],
-  },
-  {
     label: "운영",
     items: [
       { href: "/experiments/admin/payments",    label: "결제 내역",      icon: CreditCard },
+      { href: "/experiments/admin/messaging",   label: "메시징",         icon: MessageSquare },
       { href: "/experiments/admin/settings",    label: "설정",           icon: Settings },
     ],
   },
