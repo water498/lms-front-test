@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { courses, type Course, type CourseStatus } from "../mockData";
+import { courses, type Course, type CourseMode, type CourseStatus } from "../mockData";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {
   PUBLISHED: { label: "게시됨",   className: "bg-emerald-100 text-emerald-700" },
   DRAFT:     { label: "임시저장", className: "bg-amber-100 text-amber-700" },
   ARCHIVED:  { label: "보관됨",   className: "bg-slate-100 text-slate-600" },
+};
+
+const MODE_CONFIG: Record<CourseMode, { label: string; className: string }> = {
+  ONLINE:  { label: "온라인",  className: "bg-sky-100 text-sky-700" },
+  OFFLINE: { label: "오프라인", className: "bg-orange-100 text-orange-700" },
+  BLENDED: { label: "혼합",    className: "bg-purple-100 text-purple-700" },
 };
 
 const FILTERS: { value: CourseStatus | "ALL"; label: string }[] = [
@@ -98,12 +104,21 @@ export default function CourseTable({ onCreateClick }: Props) {
 
 function CourseRow({ course }: { course: Course }) {
   const badge = STATUS_CONFIG[course.status];
+  const modeBadge = MODE_CONFIG[course.mode];
   return (
     <tr className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-      <td className="px-5 py-3 font-medium text-slate-800">
-        <Link href={`/experiments/admin/courses/${course.id}`} className="hover:text-violet-600 transition-colors">
+      <td className="px-5 py-3">
+        <Link href={`/experiments/admin/courses/${course.id}`} className="font-medium text-slate-800 hover:text-violet-600 transition-colors">
           {course.title}
         </Link>
+        <div className="flex items-center gap-1 mt-1">
+          <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${modeBadge.className}`}>
+            {modeBadge.label}
+          </span>
+          <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">
+            {course.category}
+          </span>
+        </div>
       </td>
       <td className="px-4 py-3 text-slate-600">{course.instructor}</td>
       <td className="px-4 py-3">
