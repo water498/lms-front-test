@@ -166,6 +166,13 @@ export function getEnrolleesBySession(sessionId: string): CourseEnrollee[] {
   return Object.values(enrollees).flat().filter((e) => e.sessionId === sessionId);
 }
 
+export function getAllSessions(): (CourseSession & { courseTitle: string })[] {
+  return Object.entries(sessions).flatMap(([courseId, sessList]) => {
+    const course = courses.find((c) => c.id === courseId);
+    return sessList.map((s) => ({ ...s, courseTitle: course?.title ?? courseId }));
+  });
+}
+
 // ── 오프라인 회차 Mock 데이터 ──────────────────────────────────
 const offlineSessions: Record<string, OfflineSession[]> = {
   se4: [

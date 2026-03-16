@@ -15,9 +15,10 @@ const allTags = [...new Set(courses.flatMap((c) => c.tags))];
 
 export default function InfoTab({ course }: { course: Course }) {
   const { categories } = useTaxonomyStore();
+  const categoryNames = categories.filter((c) => c.parentId === null).map((c) => c.name);
   const [title, setTitle] = useState(course.title);
   const [instructor, setInstructor] = useState(course.instructor);
-  const [category, setCategory] = useState(course.category ?? categories[0]);
+  const [category, setCategory] = useState(course.category ?? categoryNames[0]);
   const [tags, setTags] = useState<string[]>(course.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -91,7 +92,7 @@ export default function InfoTab({ course }: { course: Course }) {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          {categories.map((c) => <option key={c}>{c}</option>)}
+          {categoryNames.map((c) => <option key={c}>{c}</option>)}
         </select>
       </div>
 

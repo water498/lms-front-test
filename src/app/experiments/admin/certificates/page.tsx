@@ -1,5 +1,5 @@
-import CertificatesFeature from "@/features/(admin)/certificates/feature";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <CertificatesFeature />;
+  redirect("/experiments/admin/certificates/templates");
 }

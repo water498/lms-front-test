@@ -7,46 +7,48 @@ import { courses } from "../../courses/mockData";
 
 export default function CategoriesTab() {
   const { categories, addCategory, updateCategory, removeCategory } = useTaxonomyStore();
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const topLevel = categories
+    .filter((c) => c.parentId === null)
+    .sort((a, b) => a.order - b.order);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [newValue, setNewValue] = useState("");
-  // 삭제 시도한 카테고리명 — 사용 중이면 패널 열림, 없으면 즉시 삭제
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
+  const deleteTarget = deleteTargetId ? topLevel.find((c) => c.id === deleteTargetId) : null;
   const blockedCourses =
     deleteTarget != null
-      ? courses.filter((c) => c.category === deleteTarget)
+      ? courses.filter((c) => c.category === deleteTarget.name)
       : [];
 
-  function handleDeleteClick(cat: string) {
-    const inUse = courses.some((c) => c.category === cat);
+  function handleDeleteClick(id: string, name: string) {
+    const inUse = courses.some((c) => c.category === name);
     if (inUse) {
-      setDeleteTarget(cat);
+      setDeleteTargetId(id);
     } else {
-      removeCategory(cat);
+      removeCategory(id);
     }
   }
 
-  function startEdit(index: number) {
-    setDeleteTarget(null);
-    setEditingIndex(index);
-    setEditValue(categories[index]);
+  function startEdit(id: string, name: string) {
+    setDeleteTargetId(null);
+    setEditingId(id);
+    setEditValue(name);
   }
 
   function confirmEdit() {
-    if (editingIndex === null) return;
+    if (!editingId) return;
     const trimmed = editValue.trim();
-    if (trimmed && trimmed !== categories[editingIndex]) {
-      updateCategory(categories[editingIndex], trimmed);
-    }
-    setEditingIndex(null);
+    if (trimmed) updateCategory(editingId, trimmed);
+    setEditingId(null);
   }
 
   function confirmAdd() {
     const trimmed = newValue.trim();
-    if (trimmed && !categories.includes(trimmed)) {
-      addCategory(trimmed);
+    if (trimmed && !topLevel.some((c) => c.name === trimmed)) {
+      addCategory(trimmed, null);
     }
     setIsAdding(false);
     setNewValue("");
@@ -66,11 +68,10 @@ export default function CategoriesTab() {
       </div>
 
       <div className="flex flex-col divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
-        {categories.map((cat, i) => (
-          <div key={cat}>
-            {/* 행 */}
+        {topLevel.map((cat) => (
+          <div key={cat.id}>
             <div className="flex items-center gap-2 px-4 py-2.5 bg-white">
-              {editingIndex === i ? (
+              {editingId === cat.id ? (
                 <>
                   <input
                     autoFocus
@@ -79,29 +80,29 @@ export default function CategoriesTab() {
                     onChange={(e) => setEditValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") confirmEdit();
-                      if (e.key === "Escape") setEditingIndex(null);
+                      if (e.key === "Escape") setEditingId(null);
                     }}
                   />
                   <button onClick={confirmEdit} className="text-emerald-600 hover:text-emerald-700 p-0.5">
                     <Check size={15} />
                   </button>
-                  <button onClick={() => setEditingIndex(null)} className="text-slate-400 hover:text-slate-600 p-0.5">
+                  <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 p-0.5">
                     <X size={15} />
                   </button>
                 </>
               ) : (
                 <>
-                  <span className="flex-1 text-sm text-slate-700">{cat}</span>
+                  <span className="flex-1 text-sm text-slate-700">{cat.name}</span>
                   <button
-                    onClick={() => startEdit(i)}
+                    onClick={() => startEdit(cat.id, cat.name)}
                     className="text-slate-400 hover:text-violet-600 p-0.5 transition-colors"
                   >
                     <Pencil size={14} />
                   </button>
                   <button
-                    onClick={() => handleDeleteClick(cat)}
+                    onClick={() => handleDeleteClick(cat.id, cat.name)}
                     className={`p-0.5 transition-colors ${
-                      deleteTarget === cat
+                      deleteTargetId === cat.id
                         ? "text-red-500"
                         : "text-slate-400 hover:text-red-500"
                     }`}
@@ -112,8 +113,7 @@ export default function CategoriesTab() {
               )}
             </div>
 
-            {/* 삭제 블록 패널 — 사용 중인 과정이 있을 때 */}
-            {deleteTarget === cat && blockedCourses.length > 0 && (
+            {deleteTargetId === cat.id && blockedCourses.length > 0 && (
               <div className="border-t border-red-100 bg-red-50 px-4 py-3 flex flex-col gap-2">
                 <div className="flex items-start gap-2">
                   <AlertCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
@@ -130,7 +130,7 @@ export default function CategoriesTab() {
                   ))}
                 </ul>
                 <button
-                  onClick={() => setDeleteTarget(null)}
+                  onClick={() => setDeleteTargetId(null)}
                   className="self-end text-xs text-slate-500 hover:text-slate-700"
                 >
                   닫기
@@ -162,7 +162,7 @@ export default function CategoriesTab() {
           </div>
         )}
 
-        {categories.length === 0 && !isAdding && (
+        {topLevel.length === 0 && !isAdding && (
           <div className="px-4 py-6 text-center text-sm text-slate-400">
             카테고리가 없습니다. 추가해보세요.
           </div>

@@ -1,5 +1,5 @@
-import AssessmentsFeature from "@/features/(admin)/assessments/feature";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <AssessmentsFeature />;
+  redirect("/experiments/admin/assessments/exams");
 }

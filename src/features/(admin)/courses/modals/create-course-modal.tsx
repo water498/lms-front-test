@@ -13,8 +13,9 @@ const allTags = [...new Set(courses.flatMap((c) => c.tags))];
 
 export default function CreateCourseModal({ onClose }: Props) {
   const { categories } = useTaxonomyStore();
+  const categoryNames = categories.filter((c) => c.parentId === null).map((c) => c.name);
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState(categories[0] ?? "");
+  const [category, setCategory] = useState(categoryNames[0] ?? "");
   const [instructor, setInstructor] = useState(instructors[0]);
   const [type, setType] = useState<"online" | "offline" | "blended">("online");
   const [tags, setTags] = useState<string[]>([]);
@@ -78,7 +79,7 @@ export default function CreateCourseModal({ onClose }: Props) {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              {categories.map((c) => <option key={c}>{c}</option>)}
+              {categoryNames.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   BookOpen,
@@ -16,50 +17,150 @@ import {
   CreditCard,
   HardDrive,
   MessageSquare,
+  ChevronDown,
 } from "lucide-react";
 
-type NavItem = { href: string; label: string; icon: React.ElementType };
+const BASE = "/experiments/admin";
+
+type NavChild = { href: string; label: string };
+type NavLink = { kind: "link"; href: string; label: string; icon: React.ElementType };
+type NavAccordion = {
+  kind: "accordion";
+  label: string;
+  icon: React.ElementType;
+  basePaths: string[];
+  children: NavChild[];
+};
+type NavItem = NavLink | NavAccordion;
 type NavGroup = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "",
     items: [
-      { href: "/experiments/admin",             label: "대시보드",       icon: LayoutDashboard },
+      { kind: "link", href: `${BASE}`, label: "대시보드", icon: LayoutDashboard },
     ],
   },
   {
     label: "학습 관리",
     items: [
-      { href: "/experiments/admin/courses",     label: "과정 관리",      icon: BookOpen },
-      { href: "/experiments/admin/enrollments", label: "수강 관리",      icon: GraduationCap },
-      { href: "/experiments/admin/assessments", label: "평가 관리",      icon: ClipboardList },
-      { href: "/experiments/admin/certificates",label: "수료증",         icon: Award },
-      { href: "/experiments/admin/media",          label: "미디어 라이브러리", icon: HardDrive },
-      { href: "/experiments/admin/announcements", label: "공지·메시지",       icon: Megaphone },
+      {
+        kind: "accordion",
+        label: "과정 관리",
+        icon: BookOpen,
+        basePaths: [`${BASE}/courses`, `${BASE}/sessions`],
+        children: [
+          { href: `${BASE}/courses`, label: "과정 목록" },
+          { href: `${BASE}/sessions`, label: "차수 목록" },
+          { href: `${BASE}/courses/categories`, label: "카테고리" },
+        ],
+      },
+      { kind: "link", href: `${BASE}/enrollments`, label: "수강 관리", icon: GraduationCap },
+      {
+        kind: "accordion",
+        label: "평가 관리",
+        icon: ClipboardList,
+        basePaths: [`${BASE}/assessments`],
+        children: [
+          { href: `${BASE}/assessments/exams`, label: "시험" },
+          { href: `${BASE}/assessments/assignments`, label: "과제" },
+          { href: `${BASE}/assessments/surveys`, label: "설문" },
+          { href: `${BASE}/assessments/question-bank`, label: "문항 뱅크" },
+        ],
+      },
+      {
+        kind: "accordion",
+        label: "수료증",
+        icon: Award,
+        basePaths: [`${BASE}/certificates`],
+        children: [
+          { href: `${BASE}/certificates/templates`, label: "템플릿" },
+          { href: `${BASE}/certificates/issued`,    label: "발급 내역" },
+        ],
+      },
+      { kind: "link", href: `${BASE}/media`, label: "미디어 라이브러리", icon: HardDrive },
+      { kind: "link", href: `${BASE}/announcements`, label: "공지·메시지", icon: Megaphone },
     ],
   },
   {
     label: "사용자",
     items: [
-      { href: "/experiments/admin/users",       label: "유저 관리",      icon: Users },
+      { kind: "link", href: `${BASE}/users`, label: "유저 관리", icon: Users },
     ],
   },
   {
     label: "운영",
     items: [
-      { href: "/experiments/admin/payments",    label: "결제 내역",      icon: CreditCard },
-      { href: "/experiments/admin/messaging",   label: "메시징",         icon: MessageSquare },
-      { href: "/experiments/admin/settings",    label: "설정",           icon: Settings },
+      { kind: "link", href: `${BASE}/payments`, label: "결제 내역", icon: CreditCard },
+      { kind: "link", href: `${BASE}/messaging`, label: "메시징", icon: MessageSquare },
+      { kind: "link", href: `${BASE}/settings`, label: "설정", icon: Settings },
     ],
   },
 ];
+
+/** Returns the href of the most-specific child that matches pathname. */
+function bestChildMatch(pathname: string, children: NavChild[]): string | null {
+  return (
+    children
+      .filter((c) => pathname.startsWith(c.href))
+      .sort((a, b) => b.href.length - a.href.length)[0]?.href ?? null
+  );
+}
+
+function AccordionItem({ label, icon: Icon, basePaths, children }: NavAccordion) {
+  const pathname = usePathname();
+  const isInSection = basePaths.some((p) => pathname.startsWith(p));
+  const [open, setOpen] = useState(isInSection);
+
+  useEffect(() => {
+    if (isInSection) setOpen(true);
+  }, [isInSection]);
+
+  const activeHref = bestChildMatch(pathname, children);
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+          isInSection
+            ? "bg-violet-50 text-violet-600"
+            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        }`}
+      >
+        <Icon size={16} />
+        <span className="flex-1 text-left">{label}</span>
+        <ChevronDown
+          size={14}
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div className="mt-0.5 ml-3 flex flex-col gap-0.5 border-l border-slate-100 pl-3">
+          {children.map(({ href, label: childLabel }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`py-1.5 text-sm transition-colors ${
+                activeHref === href
+                  ? "text-violet-600 font-medium"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {childLabel}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === "/experiments/admin") return pathname === href;
+    if (href === `${BASE}`) return pathname === href;
     return pathname.startsWith(href);
   };
 
@@ -83,20 +184,24 @@ export default function Sidebar() {
               </p>
             )}
             <div className="flex flex-col gap-0.5">
-              {group.items.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(href)
-                      ? "bg-violet-50 text-violet-600"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <Icon size={16} />
-                  {label}
-                </Link>
-              ))}
+              {group.items.map((item) =>
+                item.kind === "accordion" ? (
+                  <AccordionItem key={item.label} {...item} />
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? "bg-violet-50 text-violet-600"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <item.icon size={16} />
+                    {item.label}
+                  </Link>
+                )
+              )}
             </div>
           </div>
         ))}
