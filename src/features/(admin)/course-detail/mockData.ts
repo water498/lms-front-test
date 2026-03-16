@@ -30,15 +30,17 @@ export interface AttendanceRecord {
   checkedAt?: string;
 }
 
-export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "LIVE";
+export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT";
 
 export interface Activity {
   id: string;
   title: string;
   type: ActivityType;
-  duration?: number;      // 분 (VIDEO일 때)
-  questionCount?: number; // QUIZ/ASSIGNMENT일 때
-  mediaFileId?: string;   // 미디어 라이브러리 참조 (VIDEO/SCORM)
+  duration?: number;          // 분 (VIDEO일 때)
+  questionCount?: number;     // QUIZ/ASSIGNMENT
+  mediaAssetId?: string;      // 미디어 라이브러리 ma* ID (VIDEO/SCORM)
+  examTemplateId?: string;    // QUIZ
+  assignTemplateId?: string;  // ASSIGNMENT
 }
 
 export interface Subject {
@@ -82,15 +84,15 @@ const curricula: Record<string, Subject[]> = {
     {
       id: "s1", title: "React 기초 개념", order: 1,
       activities: [
-        { id: "a1", title: "React란 무엇인가",    type: "VIDEO",      duration: 12,  mediaFileId: "mf1" },
-        { id: "a2", title: "컴포넌트 개념",        type: "SCORM",                     mediaFileId: "mf6" },
+        { id: "a1", title: "React란 무엇인가",    type: "VIDEO",      duration: 12,  mediaAssetId: "ma1" },
+        { id: "a2", title: "컴포넌트 개념",        type: "SCORM",                     mediaAssetId: "ma6" },
         { id: "a3", title: "개념 확인 퀴즈",       type: "QUIZ",       questionCount: 5 },
       ],
     },
     {
       id: "s2", title: "State와 Props", order: 2,
       activities: [
-        { id: "a4", title: "useState 사용법",      type: "VIDEO",      duration: 18,  mediaFileId: "mf2" },
+        { id: "a4", title: "useState 사용법",      type: "VIDEO",      duration: 18,  mediaAssetId: "ma2" },
         { id: "a5", title: "Props 전달과 타입",    type: "VIDEO",      duration: 14 },
         { id: "a6", title: "실습 과제",             type: "ASSIGNMENT", questionCount: 1 },
       ],
@@ -98,7 +100,7 @@ const curricula: Record<string, Subject[]> = {
     {
       id: "s3", title: "이벤트와 폼 처리", order: 3,
       activities: [
-        { id: "a7", title: "이벤트 핸들링",        type: "VIDEO",      duration: 10,  mediaFileId: "mf2" },
+        { id: "a7", title: "이벤트 핸들링",        type: "VIDEO",      duration: 10,  mediaAssetId: "ma2" },
         { id: "a8", title: "폼 제출 실습 과제",    type: "ASSIGNMENT", questionCount: 1 },
       ],
     },

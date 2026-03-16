@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getCourse, getCurriculum, getSessions, getEnrollees } from "./mockData";
+import { getCourse, getCurriculum, getSessions, getEnrollees, type Subject, type Activity } from "./mockData";
 import InfoTab from "./tabs/info-tab";
 import CurriculumTab from "./tabs/curriculum-tab";
 import SessionsTab from "./tabs/sessions-tab";
@@ -16,13 +16,15 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const [activeTab, setActiveTab] = useState<TabId>("curriculum");
 
   const course = getCourse(courseId);
-  const curriculum = getCurriculum(courseId);
   const sessions = getSessions(courseId);
   const enrollees = getEnrollees(courseId);
+
+  const [subjects, setSubjects] = useState<Subject[]>(() => getCurriculum(courseId));
 
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
   const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
+  const hasOngoingSessions = sessions.some((s) => s.status === "ONGOING");
 
   const TABS: { id: TabId; label: string }[] = [
     { id: "info",       label: "과정 정보" },
@@ -31,6 +33,36 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
     { id: "enrollees",  label: "수강생" },
     ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
   ];
+
+  function handleAddSubject(title: string) {
+    const id = `s${Date.now()}`;
+    setSubjects((prev) => [
+      ...prev,
+      { id, title, order: prev.length + 1, activities: [] },
+    ]);
+  }
+
+  function handleDeleteSubject(subjectId: string) {
+    setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
+  }
+
+  function handleAddActivity(subjectId: string, activity: Activity) {
+    setSubjects((prev) =>
+      prev.map((s) =>
+        s.id === subjectId ? { ...s, activities: [...s.activities, activity] } : s
+      )
+    );
+  }
+
+  function handleDeleteActivity(subjectId: string, activityId: string) {
+    setSubjects((prev) =>
+      prev.map((s) =>
+        s.id === subjectId
+          ? { ...s, activities: s.activities.filter((a) => a.id !== activityId) }
+          : s
+      )
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -64,7 +96,17 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
       {/* Tab content */}
       <div>
         {activeTab === "info"       && <InfoTab course={course} />}
-        {activeTab === "curriculum" && <CurriculumTab subjects={curriculum} />}
+        {activeTab === "curriculum" && (
+          <CurriculumTab
+            subjects={subjects}
+            hasOngoingSessions={hasOngoingSessions}
+            enrolleeCount={enrollees.length}
+            onAddSubject={handleAddSubject}
+            onDeleteSubject={handleDeleteSubject}
+            onAddActivity={handleAddActivity}
+            onDeleteActivity={handleDeleteActivity}
+          />
+        )}
         {activeTab === "sessions"   && <SessionsTab sessions={sessions} />}
         {activeTab === "enrollees"  && <EnrolleesTab enrollees={enrollees} sessions={sessions} />}
         {activeTab === "offline"    && <OfflineTab sessions={sessions} />}
