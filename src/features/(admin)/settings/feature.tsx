@@ -3,14 +3,12 @@
 import { useState } from "react";
 import GeneralTab from "./sections/general-tab";
 import BrandingTab from "./sections/branding-tab";
-import MembersTab from "./sections/members-tab";
 import CategoriesTab from "./sections/categories-tab";
 import OrgStructureTab from "./sections/org-structure-tab";
 
 const TABS = [
   { id: "general",    label: "일반" },
   { id: "branding",   label: "브랜딩" },
-  { id: "members",    label: "관리자" },
   { id: "categories", label: "카테고리 관리" },
   { id: "org",        label: "조직 구조" },
 ] as const;
@@ -43,7 +41,6 @@ export default function SettingsFeature() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         {activeTab === "general"    && <GeneralTab />}
         {activeTab === "branding"   && <BrandingTab />}
-        {activeTab === "members"    && <MembersTab />}
         {activeTab === "categories" && <CategoriesTab />}
         {activeTab === "org"        && <OrgStructureTab />}
       </div>

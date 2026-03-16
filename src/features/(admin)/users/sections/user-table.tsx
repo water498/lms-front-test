@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Upload } from "lucide-react";
-import { orgUsers, userStats, type OrgUser, type UserRole, type UserStatus } from "../mockData";
+import { useUsersStore } from "../../shared/users-store";
+import { userStats, type OrgUser, type UserRole, type UserStatus } from "../mockData";
 
 const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -18,9 +19,9 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = 
   INVITED:  { label: "초대 대기", className: "bg-orange-100 text-orange-600" },
 };
 
-function handleExport() {
+function handleExport(users: OrgUser[]) {
   const header = "이름,이메일,역할,상태,수강과정,마지막로그인\n";
-  const rows = orgUsers
+  const rows = users
     .map((u) => `${u.name},${u.email},${ROLE_CONFIG[u.role].label},${STATUS_CONFIG[u.status].label},${u.enrolledCourses},${u.lastLogin}`)
     .join("\n");
   const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
@@ -32,19 +33,33 @@ function handleExport() {
   URL.revokeObjectURL(url);
 }
 
+type RoleTab = "ALL" | "LEARNER" | "INSTRUCTOR" | "ADMIN";
+
+const ROLE_TABS: { value: RoleTab; label: string }[] = [
+  { value: "ALL",        label: "전체" },
+  { value: "LEARNER",    label: "학습자" },
+  { value: "INSTRUCTOR", label: "강사" },
+  { value: "ADMIN",      label: "관리자" },
+];
+
 interface Props {
   onInviteClick: () => void;
   onCreateInstructorClick: () => void;
+  onCreateAdminClick: () => void;
   onImportClick: () => void;
 }
 
-export default function UserTable({ onInviteClick, onCreateInstructorClick, onImportClick }: Props) {
+export default function UserTable({ onInviteClick, onCreateInstructorClick, onCreateAdminClick, onImportClick }: Props) {
   const router = useRouter();
-  const [roleFilter, setRoleFilter] = useState<UserRole | "ALL">("ALL");
+  const { users } = useUsersStore();
+  const [roleTab, setRoleTab] = useState<RoleTab>("ALL");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "ACTIVE_ONLY">("ACTIVE_ONLY");
 
-  const filtered = orgUsers.filter((u) => {
-    const matchRole = roleFilter === "ALL" || u.role === roleFilter;
+  const filtered = users.filter((u) => {
+    const matchRole =
+      roleTab === "ALL" ? true :
+      roleTab === "ADMIN" ? (u.role === "ORG_ADMIN" || u.role === "SUPER_ADMIN") :
+      u.role === roleTab;
     const matchStatus = statusFilter === "ACTIVE_ONLY" ? u.status === "ACTIVE" : true;
     return matchRole && matchStatus;
   });
@@ -64,20 +79,25 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onIm
         ))}
       </div>
 
+      <div className="flex gap-1 border-b border-slate-200">
+        {ROLE_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setRoleTab(tab.value)}
+            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              roleTab === tab.value
+                ? "border-violet-600 text-violet-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 gap-3 flex-wrap">
           <div className="flex gap-2">
-            <select
-              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value as UserRole | "ALL")}
-            >
-              <option value="ALL">전체 역할</option>
-              <option value="LEARNER">수강생</option>
-              <option value="INSTRUCTOR">강사</option>
-              <option value="ORG_ADMIN">관리자</option>
-              <option value="SUPER_ADMIN">최고관리자</option>
-            </select>
             <select
               className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
               value={statusFilter}
@@ -89,7 +109,7 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onIm
           </div>
           <div className="flex gap-2">
             <button
-              onClick={handleExport}
+              onClick={() => handleExport(filtered)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
             >
               <Download size={14} /> 내보내기
@@ -105,6 +125,12 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onIm
               className="px-3 py-1.5 text-sm text-violet-700 border border-violet-200 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors"
             >
               + 강사 생성
+            </button>
+            <button
+              onClick={onCreateAdminClick}
+              className="px-3 py-1.5 text-sm text-violet-700 border border-violet-200 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors"
+            >
+              + 관리자 생성
             </button>
             <button
               onClick={onInviteClick}

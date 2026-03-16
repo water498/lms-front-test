@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import type { UserRole } from "../mockData";
 
 interface Props {
   onClose: () => void;
+  defaultRole?: UserRole;
 }
 
-export default function InviteUserModal({ onClose }: Props) {
+export default function InviteUserModal({ onClose, defaultRole = "LEARNER" }: Props) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("LEARNER");
+  const [role, setRole] = useState<UserRole>(defaultRole);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -37,7 +39,7 @@ export default function InviteUserModal({ onClose }: Props) {
             <select
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => setRole(e.target.value as UserRole)}
             >
               <option value="LEARNER">수강생</option>
               <option value="INSTRUCTOR">강사</option>
