@@ -9,6 +9,21 @@ export type AutomationTrigger =
   | "CERTIFICATE_ISSUED"
   | "ACCOUNT_INVITED";
 
+export interface AutomationTriggerDef {
+  trigger: AutomationTrigger;
+  label: string;
+  desc: string;
+}
+
+export const automationTriggerDefs: AutomationTriggerDef[] = [
+  { trigger: "ENROLLMENT_CREATED",  label: "수강 등록 완료",       desc: "학습자가 과정에 수강 등록할 때" },
+  { trigger: "COURSE_COMPLETED",    label: "과정 완료",            desc: "학습자가 과정을 100% 완료할 때" },
+  { trigger: "ASSIGNMENT_DUE_D3",   label: "과제 마감 D-3",        desc: "과제 마감일 3일 전 자동 발송" },
+  { trigger: "SESSION_REMINDER_1H", label: "라이브 세션 1시간 전", desc: "예약된 라이브 세션 1시간 전 발송" },
+  { trigger: "CERTIFICATE_ISSUED",  label: "수료증 발급",          desc: "수료증이 발급될 때" },
+  { trigger: "ACCOUNT_INVITED",     label: "계정 초대",            desc: "관리자가 유저를 초대할 때" },
+];
+
 // ── 발송 이력 ─────────────────────────────────────────────
 
 export interface MessageHistory {
@@ -30,6 +45,9 @@ export const messageHistory: MessageHistory[] = [
   { id: "m4", sentAt: "2025-03-11 16:00", recipient: "홍민재",                 recipientCount: 1, channel: "EMAIL", subject: "가입을 환영합니다",      preview: "ACME Corp LMS에 오신 것을 환영합니다...",          status: "SENT",      templateId: "t5" },
   { id: "m5", sentAt: "2025-03-10 09:00", recipient: "정하은",                 recipientCount: 1, channel: "SMS",                                     preview: "[ACME] 계정이 비활성화되었습니다.",                status: "FAILED" },
   { id: "m6", sentAt: "2025-03-16 09:00", recipient: "전체 학습자",            recipientCount: 8, channel: "KAKAO",                                   preview: "[ACME] 4월 교육 일정을 안내드립니다.",             status: "SCHEDULED", templateId: "t4" },
+  { id: "h7", sentAt: "2026-03-20 14:00", recipient: "전체 학습자",            recipientCount: 142, channel: "EMAIL", subject: "[ACME] 3월 학습 현황 안내", preview: "안녕하세요, {{name}}님. 3월 학습 현황을 안내드립니다.", status: "SCHEDULED", templateId: "t3" },
+  { id: "h8", sentAt: "2026-03-18 10:00", recipient: "React 기초 수강생",      recipientCount: 23,  channel: "SMS",                                      preview: "[ACME] 3월 과제 마감이 3일 남았습니다.",            status: "SCHEDULED", templateId: "t11" },
+  { id: "h9", sentAt: "2026-03-22 09:00", recipient: "TypeScript 심화 수강생", recipientCount: 11,  channel: "KAKAO",                                    preview: "[ACME] 라이브 세션 참가를 잊지 마세요.",            status: "SCHEDULED", templateId: "t8" },
 ];
 
 // ── 템플릿 ────────────────────────────────────────────────
@@ -164,6 +182,41 @@ export const messageTemplates: MessageTemplate[] = [
 export function getEncourageTemplates() {
   return messageTemplates.filter((t) => t.tags?.includes("독려"));
 }
+
+// ── 변수 레지스트리 ───────────────────────────────────────
+
+export interface VariableDef {
+  key: string;                          // "name"
+  label: string;                        // "수신자 이름"
+  source: string;                       // "user.firstName" (백엔드 데이터 소스 문서화)
+  channels: MessageChannel[] | "ALL";   // 사용 가능 채널
+}
+
+export const variableDefs: VariableDef[] = [
+  { key: "name",        label: "수신자 이름", source: "user.firstName",             channels: "ALL" },
+  { key: "courseName",  label: "과정명",      source: "enrollment.course.name",     channels: "ALL" },
+  { key: "sessionName", label: "세션명",      source: "session.name",               channels: "ALL" },
+  { key: "dueDate",     label: "마감일",      source: "assignment.dueDate",         channels: "ALL" },
+  { key: "orgName",     label: "조직명",      source: "tenant.name",                channels: "ALL" },
+  { key: "link",        label: "링크 URL",   source: "context.url",                channels: ["SMS", "EMAIL"] },
+  { key: "month",       label: "월",         source: "context.currentMonth",       channels: "ALL" },
+  { key: "courseList",  label: "과정 목록",  source: "context.courseList",         channels: ["EMAIL"] },
+  { key: "daysLeft",    label: "남은 일수",  source: "context.daysLeft",           channels: ["SMS", "KAKAO"] },
+];
+
+export function getVariableDefsForChannel(channel: MessageChannel): VariableDef[] {
+  return variableDefs.filter(
+    (v) => v.channels === "ALL" || (v.channels as MessageChannel[]).includes(channel)
+  );
+}
+
+// ── 채널 크레딧 ───────────────────────────────────────────
+
+export const channelCredits: Record<MessageChannel, { balance: number; costPerMessage: number }> = {
+  SMS:   { balance: 45200, costPerMessage: 15 },
+  KAKAO: { balance: 12800, costPerMessage: 8 },
+  EMAIL: { balance: 98500, costPerMessage: 3 },
+};
 
 // ── 자동화 규칙 ───────────────────────────────────────────
 

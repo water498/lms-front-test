@@ -1,43 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { X, ChevronRight } from "lucide-react";
-import { messageTemplates, type MessageChannel } from "../mockData";
+import { X, ChevronRight, AlertTriangle } from "lucide-react";
+import { messageTemplates, channelCredits, type MessageChannel } from "../mockData";
 
 interface Props {
+  channel: MessageChannel;
   onClose: () => void;
 }
 
 type ComposeMode = "direct" | "template";
-type Step = "mode" | "compose" | "send";
+type Step = "compose" | "send";
 
-const CHANNELS: { id: MessageChannel; label: string; desc: string }[] = [
-  { id: "SMS",   label: "SMS",    desc: "문자 메시지" },
-  { id: "EMAIL", label: "이메일", desc: "SMTP 이메일" },
-  { id: "KAKAO", label: "알림톡", desc: "카카오 알림톡" },
+const CHANNEL_LABEL: Record<MessageChannel, string> = {
+  SMS: "SMS", EMAIL: "이메일", KAKAO: "알림톡",
+};
+
+const RECIPIENT_OPTIONS: { value: string; label: string; count: number }[] = [
+  { value: "ALL",        label: "전체 학습자",          count: 8 },
+  { value: "react",      label: "React 기초 수강생",     count: 5 },
+  { value: "typescript", label: "TypeScript 심화 수강생", count: 3 },
+  { value: "nextjs",     label: "Next.js 마스터 수강생",  count: 4 },
 ];
 
-export default function SendMessageModal({ onClose }: Props) {
-  const [step, setStep] = useState<Step>("mode");
-  const [mode, setMode] = useState<ComposeMode>("template");
-  const [channel, setChannel] = useState<MessageChannel>("EMAIL");
+export default function SendMessageModal({ channel, onClose }: Props) {
+  const [step, setStep]           = useState<Step>("compose");
+  const [mode, setMode]           = useState<ComposeMode>("template");
   const [templateId, setTemplateId] = useState("");
   const [recipient, setRecipient] = useState("ALL");
-  const [subject, setSubject] = useState("");
-  const [content, setContent] = useState("");
+  const [subject, setSubject]     = useState("");
+  const [content, setContent]     = useState("");
   const [scheduled, setScheduled] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
 
   const availableTemplates = messageTemplates.filter((t) => t.channel === channel);
-  const selectedTemplate = messageTemplates.find((t) => t.id === templateId);
+  const selectedTemplate   = messageTemplates.find((t) => t.id === templateId);
+  const credit             = channelCredits[channel];
 
-  const handleModeNext = () => {
-    if (mode === "template") {
-      setStep("compose");
-    } else {
-      setStep("compose");
-    }
-  };
+  const recipientOption = RECIPIENT_OPTIONS.find((r) => r.value === recipient) ?? RECIPIENT_OPTIONS[0];
+  const recipientCount  = recipientOption.count;
+  const totalCost       = recipientCount * credit.costPerMessage;
+  const afterBalance    = credit.balance - totalCost;
+  const insufficient    = afterBalance < 0;
 
   const handleTemplateSelect = (id: string) => {
     setTemplateId(id);
@@ -52,79 +56,49 @@ export default function SendMessageModal({ onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base font-semibold text-slate-800">메시지 발송</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-slate-800">메시지 발송</h2>
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600">
+              {CHANNEL_LABEL[channel]}
+            </span>
+          </div>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
         </div>
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 text-xs text-slate-400 mb-5">
-          <span className={step === "mode"    ? "text-violet-600 font-medium" : ""}>1. 작성 방식</span>
+          <span className={step === "compose" ? "text-violet-600 font-medium" : ""}>1. 내용 구성</span>
           <ChevronRight size={12} />
-          <span className={step === "compose" ? "text-violet-600 font-medium" : ""}>2. 내용 구성</span>
-          <ChevronRight size={12} />
-          <span className={step === "send"    ? "text-violet-600 font-medium" : ""}>3. 발송</span>
+          <span className={step === "send" ? "text-violet-600 font-medium" : ""}>2. 발송</span>
         </div>
 
-        {/* Step 1: 작성 방식 */}
-        {step === "mode" && (
+        {/* Step 1: 내용 구성 */}
+        {step === "compose" && (
           <div className="flex flex-col gap-4">
-            <div className="flex gap-3">
+            {/* 작성 방식 */}
+            <div className="flex gap-2">
               {([
-                { id: "template" as ComposeMode, label: "템플릿 사용", desc: "미리 만들어둔 템플릿을 선택해 발송합니다." },
-                { id: "direct"   as ComposeMode, label: "직접 작성",   desc: "내용을 직접 입력해 발송합니다." },
+                { id: "template" as ComposeMode, label: "템플릿 사용", desc: "미리 만들어둔 템플릿을 선택합니다." },
+                { id: "direct"   as ComposeMode, label: "직접 작성",   desc: "내용을 직접 입력합니다." },
               ] as const).map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setMode(m.id)}
-                  className={`flex-1 border rounded-xl p-4 text-left transition-colors ${
+                  className={`flex-1 border rounded-xl p-3 text-left transition-colors ${
                     mode === m.id
                       ? "border-violet-400 bg-violet-50"
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <p className={`text-sm font-semibold mb-1 ${mode === m.id ? "text-violet-700" : "text-slate-700"}`}>
+                  <p className={`text-sm font-semibold mb-0.5 ${mode === m.id ? "text-violet-700" : "text-slate-700"}`}>
                     {m.label}
                   </p>
                   <p className="text-xs text-slate-400">{m.desc}</p>
                 </button>
               ))}
             </div>
-            <div className="flex justify-end mt-2">
-              <button
-                onClick={handleModeNext}
-                className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
-              >
-                다음
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* Step 2: 내용 구성 */}
-        {step === "compose" && (
-          <div className="flex flex-col gap-4">
-            {/* 채널 선택 */}
-            <div>
-              <label className="text-xs font-medium text-slate-600 mb-2 block">채널</label>
-              <div className="flex gap-2">
-                {CHANNELS.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => { setChannel(c.id); setTemplateId(""); setSubject(""); setContent(""); }}
-                    className={`flex-1 border rounded-lg px-3 py-2 text-sm text-left transition-colors ${
-                      channel === c.id
-                        ? "border-violet-400 bg-violet-50 text-violet-700"
-                        : "border-slate-200 hover:border-slate-300 text-slate-600"
-                    }`}
-                  >
-                    <p className="font-medium">{c.label}</p>
-                    <p className="text-xs opacity-60 mt-0.5">{c.desc}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 템플릿 선택 (template 모드) */}
+            {/* 템플릿 선택 */}
             {mode === "template" && (
               <div>
                 <label className="text-xs font-medium text-slate-600 mb-1 block">템플릿 선택</label>
@@ -189,13 +163,7 @@ export default function SendMessageModal({ onClose }: Props) {
               </>
             )}
 
-            <div className="flex justify-between mt-2">
-              <button
-                onClick={() => setStep("mode")}
-                className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                이전
-              </button>
+            <div className="flex justify-end mt-2">
               <button
                 onClick={() => setStep("send")}
                 disabled={mode === "template" ? !templateId : !content}
@@ -207,7 +175,7 @@ export default function SendMessageModal({ onClose }: Props) {
           </div>
         )}
 
-        {/* Step 3: 수신자 + 발송 */}
+        {/* Step 2: 수신자 + 발송 */}
         {step === "send" && (
           <div className="flex flex-col gap-4">
             <div>
@@ -217,19 +185,44 @@ export default function SendMessageModal({ onClose }: Props) {
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
               >
-                <option value="ALL">전체 학습자 (8명)</option>
-                <option value="react">React 기초 수강생 (5명)</option>
-                <option value="typescript">TypeScript 심화 수강생 (3명)</option>
-                <option value="nextjs">Next.js 마스터 수강생 (4명)</option>
-                <option value="individual">개별 유저 선택</option>
+                {RECIPIENT_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>{r.label} ({r.count}명)</option>
+                ))}
               </select>
+            </div>
+
+            {/* 크레딧 차감 예상 */}
+            <div className={`rounded-xl px-4 py-3 text-xs flex flex-col gap-2 ${insufficient ? "bg-red-50 border border-red-200" : "bg-slate-50 border border-slate-100"}`}>
+              <p className={`font-semibold mb-0.5 ${insufficient ? "text-red-700" : "text-slate-700"}`}>예상 크레딧 차감</p>
+              <div className="flex justify-between text-slate-600">
+                <span>수신자</span>
+                <span className="tabular-nums font-medium">{recipientCount.toLocaleString()}명 × {credit.costPerMessage}원</span>
+              </div>
+              <div className="flex justify-between text-slate-600 border-t border-slate-200 pt-2">
+                <span>발송 비용</span>
+                <span className="tabular-nums font-semibold">{totalCost.toLocaleString()}원</span>
+              </div>
+              <div className="flex justify-between text-slate-500">
+                <span>현재 잔액</span>
+                <span className="tabular-nums">{credit.balance.toLocaleString()}원</span>
+              </div>
+              <div className={`flex justify-between font-semibold border-t border-slate-200 pt-2 ${insufficient ? "text-red-600" : "text-slate-700"}`}>
+                <span>차감 후 잔액</span>
+                <span className="tabular-nums">{afterBalance.toLocaleString()}원</span>
+              </div>
+              {insufficient && (
+                <div className="flex items-center gap-1.5 text-red-600 bg-red-100 rounded-lg px-3 py-2 mt-1">
+                  <AlertTriangle size={13} />
+                  <span>크레딧이 부족합니다. 충전 후 발송하세요.</span>
+                </div>
+              )}
             </div>
 
             {/* 발송 요약 */}
             <div className="bg-slate-50 rounded-xl px-4 py-3 text-xs text-slate-600 flex flex-col gap-1">
               <div className="flex justify-between">
                 <span className="text-slate-400">채널</span>
-                <span className="font-medium">{channel}</span>
+                <span className="font-medium">{CHANNEL_LABEL[channel]}</span>
               </div>
               {selectedTemplate && (
                 <div className="flex justify-between">
@@ -269,7 +262,8 @@ export default function SendMessageModal({ onClose }: Props) {
               </button>
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+                disabled={insufficient}
+                className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {scheduled ? "예약 등록" : "즉시 발송"}
               </button>

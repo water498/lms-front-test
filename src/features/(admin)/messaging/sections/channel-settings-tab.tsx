@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { channelConfig } from "../mockData";
+import { channelConfig, type MessageChannel } from "../mockData";
 
 function ConnectionBadge({ connected }: { connected: boolean }) {
   return (
@@ -75,31 +75,41 @@ function Field({ label, value, type = "text" }: { label: string; value: string; 
   );
 }
 
-export default function ChannelSettingsTab() {
+interface Props {
+  channel: MessageChannel;
+}
+
+export default function ChannelSettingsTab({ channel }: Props) {
   const cfg = channelConfig;
 
   return (
     <div className="flex flex-col gap-4">
-      <ChannelCard title="SMS" connected={cfg.sms.connected}>
-        <Field label="발신번호"  value={cfg.sms.senderNumber} />
-        <Field label="API Key"   value={cfg.sms.apiKey} type="password" />
-      </ChannelCard>
+      {channel === "SMS" && (
+        <ChannelCard title="SMS" connected={cfg.sms.connected}>
+          <Field label="발신번호" value={cfg.sms.senderNumber} />
+          <Field label="API Key"  value={cfg.sms.apiKey} type="password" />
+        </ChannelCard>
+      )}
 
-      <ChannelCard title="이메일 (SMTP)" connected={cfg.email.connected}>
-        <Field label="발신 이메일" value={cfg.email.senderEmail} type="email" />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="SMTP 서버" value={cfg.email.smtpHost} />
-          <Field label="포트"      value={cfg.email.smtpPort} />
-        </div>
-      </ChannelCard>
+      {channel === "EMAIL" && (
+        <ChannelCard title="이메일 (SMTP)" connected={cfg.email.connected}>
+          <Field label="발신 이메일" value={cfg.email.senderEmail} type="email" />
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="SMTP 서버" value={cfg.email.smtpHost} />
+            <Field label="포트"      value={cfg.email.smtpPort} />
+          </div>
+        </ChannelCard>
+      )}
 
-      <ChannelCard title="알림톡 (카카오)" connected={cfg.kakao.connected}>
-        <Field label="채널 검색용 ID" value={cfg.kakao.channelId} />
-        <Field label="채널키"         value={cfg.kakao.channelKey} type="password" />
-        <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
-          알림톡은 사업자 등록 및 카카오 채널 개설 후 사용 가능합니다.
-        </p>
-      </ChannelCard>
+      {channel === "KAKAO" && (
+        <ChannelCard title="알림톡 (카카오)" connected={cfg.kakao.connected}>
+          <Field label="채널 검색용 ID" value={cfg.kakao.channelId} />
+          <Field label="채널키"         value={cfg.kakao.channelKey} type="password" />
+          <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+            알림톡은 사업자 등록 및 카카오 채널 개설 후 사용 가능합니다.
+          </p>
+        </ChannelCard>
+      )}
     </div>
   );
 }
