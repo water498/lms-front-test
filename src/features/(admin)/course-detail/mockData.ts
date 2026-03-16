@@ -74,6 +74,7 @@ export interface CourseEnrollee {
   id: string;
   learnerId: string;
   learner: string;
+  sessionId: string;
   session: string;
   progress: number;
   enrolledAt: string;
@@ -122,10 +123,10 @@ const sessions: Record<string, CourseSession[]> = {
 
 const enrollees: Record<string, CourseEnrollee[]> = {
   c1: [
-    { id: "e1", learnerId: "u5", learner: "김민준", session: "3기 (2025 3분기)", progress: 45,  enrolledAt: "2025-03-14" },
-    { id: "e2", learnerId: "u6", learner: "이서연", session: "3기 (2025 3분기)", progress: 30,  enrolledAt: "2025-03-13" },
-    { id: "e3", learnerId: "u7", learner: "박지호", session: "2기 (2025 2분기)", progress: 100, enrolledAt: "2025-02-20" },
-    { id: "e4", learnerId: "u8", learner: "최유진", session: "2기 (2025 2분기)", progress: 72,  enrolledAt: "2025-02-03" },
+    { id: "e1", learnerId: "u5", learner: "김민준", sessionId: "se3", session: "3기 (2025 3분기)", progress: 45,  enrolledAt: "2025-03-14" },
+    { id: "e2", learnerId: "u6", learner: "이서연", sessionId: "se3", session: "3기 (2025 3분기)", progress: 30,  enrolledAt: "2025-03-13" },
+    { id: "e3", learnerId: "u7", learner: "박지호", sessionId: "se2", session: "2기 (2025 2분기)", progress: 100, enrolledAt: "2025-02-20" },
+    { id: "e4", learnerId: "u8", learner: "최유진", sessionId: "se2", session: "2기 (2025 2분기)", progress: 72,  enrolledAt: "2025-02-03" },
   ],
 };
 
@@ -143,6 +144,10 @@ export function getSessions(courseId: string): CourseSession[] {
 
 export function getEnrollees(courseId: string): CourseEnrollee[] {
   return enrollees[courseId] ?? enrollees["c1"];
+}
+
+export function getEnrolleesBySession(sessionId: string): CourseEnrollee[] {
+  return Object.values(enrollees).flat().filter((e) => e.sessionId === sessionId);
 }
 
 // ── 오프라인 회차 Mock 데이터 ──────────────────────────────────

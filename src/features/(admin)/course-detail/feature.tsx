@@ -7,10 +7,8 @@ import { getCourse, getCurriculum, getSessions, getEnrollees, type Subject, type
 import InfoTab from "./tabs/info-tab";
 import CurriculumTab from "./tabs/curriculum-tab";
 import SessionsTab from "./tabs/sessions-tab";
-import EnrolleesTab from "./tabs/enrollees-tab";
-import OfflineTab from "./tabs/offline-tab";
 
-type TabId = "info" | "curriculum" | "sessions" | "enrollees" | "offline";
+type TabId = "info" | "curriculum" | "sessions";
 
 export default function CourseDetailFeature({ courseId }: { courseId: string }) {
   const [activeTab, setActiveTab] = useState<TabId>("curriculum");
@@ -23,15 +21,12 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
 
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
-  const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
   const hasOngoingSessions = sessions.some((s) => s.status === "ONGOING");
 
   const TABS: { id: TabId; label: string }[] = [
     { id: "info",       label: "과정 정보" },
     { id: "curriculum", label: "커리큘럼" },
     { id: "sessions",   label: "차수 관리" },
-    { id: "enrollees",  label: "수강생" },
-    ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
   ];
 
   function handleAddSubject(title: string) {
@@ -107,9 +102,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
             onDeleteActivity={handleDeleteActivity}
           />
         )}
-        {activeTab === "sessions"   && <SessionsTab sessions={sessions} />}
-        {activeTab === "enrollees"  && <EnrolleesTab enrollees={enrollees} sessions={sessions} />}
-        {activeTab === "offline"    && <OfflineTab sessions={sessions} />}
+        {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} />}
       </div>
     </div>
   );

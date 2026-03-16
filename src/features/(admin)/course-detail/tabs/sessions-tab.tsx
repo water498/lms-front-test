@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { type CourseSession, type SessionStatus, type SessionType } from "../mockData";
 import CreateSessionModal from "../modals/create-session-modal";
 
@@ -28,7 +29,13 @@ function SessionTypeBadge({ session }: { session: CourseSession }) {
   );
 }
 
-export default function SessionsTab({ sessions }: { sessions: CourseSession[] }) {
+interface SessionsTabProps {
+  sessions: CourseSession[];
+  courseId: string;
+}
+
+export default function SessionsTab({ sessions, courseId }: SessionsTabProps) {
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -68,7 +75,11 @@ export default function SessionsTab({ sessions }: { sessions: CourseSession[] })
                 {sessions.map((s) => {
                   const status = STATUS_CONFIG[s.status];
                   return (
-                    <tr key={s.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+                    <tr
+                      key={s.id}
+                      onClick={() => router.push(`/experiments/admin/courses/${courseId}/sessions/${s.id}`)}
+                      className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
                       <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>
                       <td className="px-4 py-3">
                         <SessionTypeBadge session={s} />
@@ -94,10 +105,16 @@ export default function SessionsTab({ sessions }: { sessions: CourseSession[] })
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
-                          <button className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors">
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors"
+                          >
                             편집
                           </button>
-                          <button className="text-xs px-2 py-1 text-slate-400 hover:bg-slate-100 rounded transition-colors">
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs px-2 py-1 text-slate-400 hover:bg-slate-100 rounded transition-colors"
+                          >
                             삭제
                           </button>
                         </div>
