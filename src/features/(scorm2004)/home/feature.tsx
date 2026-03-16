@@ -210,7 +210,7 @@ export default function Scorm2004Feature() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
+    <div className="h-screen overflow-hidden bg-zinc-950 text-zinc-100 flex flex-col">
       {/* Header */}
       <header className="flex items-center gap-4 px-6 py-4 border-b border-zinc-800">
         <Link href="/" className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">
@@ -258,7 +258,7 @@ export default function Scorm2004Feature() {
       </div>
 
       {/* Main layout */}
-      <div className="flex flex-1 min-h-0" style={{ height: "calc(100vh - 65px)" }}>
+      <div className="flex flex-1 min-h-0">
         {/* Left: iframe */}
         <div className="flex-1 border-r border-zinc-800 bg-white">
           <iframe
@@ -280,15 +280,15 @@ export default function Scorm2004Feature() {
               지우기
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto font-mono text-xs p-3 space-y-1">
+          <div className="flex-1 overflow-y-auto overflow-x-auto font-mono text-xs p-3 space-y-1">
             {logs.length === 0 ? (
               <p className="text-zinc-700 text-center pt-4">콘텐츠가 로드되면 로그가 표시됩니다.</p>
             ) : (
               logs.map((log) => (
-                <div key={log.id} className="flex gap-2 items-start leading-5">
+                <div key={log.id} className="flex gap-2 items-start leading-5 whitespace-nowrap">
                   <span className="text-zinc-700 shrink-0 w-16">{log.ts}</span>
                   <span className={`shrink-0 w-28 ${LOG_TYPE_COLORS[log.type]}`}>{log.fn}</span>
-                  <span className="text-zinc-500 truncate min-w-0" title={`args: ${log.args} → ${log.result}`}>
+                  <span className="text-zinc-500">
                     {log.args && <span className="text-zinc-600">{log.args} </span>}
                     <span className="text-zinc-400">→ {log.result}</span>
                   </span>

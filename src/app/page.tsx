@@ -9,6 +9,7 @@ const experiments: { href: string; title: string; description: string }[] = [
   { href: "/experiments/scorm-cdn-arch", title: "SCORM CDN 아키텍처", description: "CDN 서빙 구조, cross-origin 이슈, S3 CORS 전략 리서치 노트" },
   { href: "/experiments/scorm-api-ref",  title: "SCORM API 레퍼런스", description: "SCORM 1.2 / 2004 API 함수·CMI 필드·에러 코드 비교 정리" },
   { href: "/experiments/admin",          title: "관리자 대시보드",   description: "ORG_ADMIN 멀티페이지 관리자 대시보드 (과정·유저·수강·설정)" },
+  { href: "/experiments/scorm-session-arch", title: "SCORM 세션 아키텍처", description: "어댑터 레이어 · Redis 세션 버퍼 · 정규화 모델" },
 ];
 
 export default function Home() {
