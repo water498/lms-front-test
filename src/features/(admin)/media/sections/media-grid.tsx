@@ -1,39 +1,103 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Trash2, FileVideo, FileText, Package, File, LayoutGrid, List } from "lucide-react";
-import { mediaFiles, type MediaType } from "../mockData";
+import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X } from "lucide-react";
+import { mediaAssets, type MediaAsset, type AssetType, type UploadStatus } from "../mockData";
 
-const TYPE_ICON: Record<MediaType, React.ElementType> = {
-  VIDEO:    FileVideo,
-  DOCUMENT: FileText,
-  SCORM:    Package,
-  OTHER:    File,
+const TYPE_ICON: Record<AssetType, React.ElementType> = {
+  VIDEO: FileVideo,
+  PDF:   FileText,
+  SCORM: Package,
+  IMAGE: Image,
 };
 
-const TYPE_CONFIG: Record<MediaType, { label: string; className: string }> = {
-  VIDEO:    { label: "동영상",   className: "bg-blue-100 text-blue-700" },
-  DOCUMENT: { label: "문서",     className: "bg-amber-100 text-amber-700" },
-  SCORM:    { label: "SCORM",    className: "bg-violet-100 text-violet-700" },
-  OTHER:    { label: "기타",     className: "bg-slate-100 text-slate-600" },
+const TYPE_CONFIG: Record<AssetType, { label: string; className: string }> = {
+  VIDEO: { label: "동영상", className: "bg-blue-100 text-blue-700" },
+  PDF:   { label: "PDF",    className: "bg-amber-100 text-amber-700" },
+  SCORM: { label: "SCORM",  className: "bg-violet-100 text-violet-700" },
+  IMAGE: { label: "이미지", className: "bg-emerald-100 text-emerald-700" },
+};
+
+const STATUS_CONFIG: Record<UploadStatus, { label: string; className: string; pulse?: boolean }> = {
+  PENDING:    { label: "대기",    className: "bg-zinc-100 text-zinc-500" },
+  VALIDATING: { label: "검증 중", className: "bg-amber-100 text-amber-700" },
+  PROCESSING: { label: "처리 중", className: "bg-blue-100 text-blue-700", pulse: true },
+  ACTIVE:     { label: "활성",    className: "bg-green-100 text-green-700" },
+  ERROR:      { label: "오류",    className: "bg-red-100 text-red-600" },
+};
+
+const ROW_BG: Partial<Record<UploadStatus, string>> = {
+  PROCESSING: "bg-blue-50/40",
+  ERROR:      "bg-red-50/40",
 };
 
 type ViewMode = "grid" | "list";
+
+interface RenameModalProps {
+  asset: MediaAsset;
+  onSave: (id: string, displayName: string) => void;
+  onClose: () => void;
+}
+
+function RenameModal({ asset, onSave, onClose }: RenameModalProps) {
+  const [value, setValue] = useState(asset.displayName);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-slate-800">이름 변경</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+        </div>
+        <p className="text-xs text-slate-400 font-mono mb-3">{asset.originalName}</p>
+        <input
+          autoFocus
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && value.trim()) onSave(asset.id, value.trim()); }}
+        />
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            취소
+          </button>
+          <button
+            onClick={() => value.trim() && onSave(asset.id, value.trim())}
+            disabled={!value.trim()}
+            className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 disabled:opacity-40 transition-colors"
+          >
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface Props {
   onUploadClick: () => void;
 }
 
 export default function MediaGrid({ onUploadClick }: Props) {
-  const [typeFilter, setTypeFilter] = useState<MediaType | "ALL">("ALL");
+  const [assets, setAssets] = useState<MediaAsset[]>(mediaAssets);
+  const [typeFilter, setTypeFilter] = useState<AssetType | "ALL">("ALL");
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [renamingAsset, setRenamingAsset] = useState<MediaAsset | null>(null);
 
-  const filtered = mediaFiles.filter((f) => {
-    const matchType = typeFilter === "ALL" || f.type === typeFilter;
-    const matchSearch = f.name.toLowerCase().includes(search.toLowerCase());
+  const filtered = assets.filter((a) => {
+    const matchType = typeFilter === "ALL" || a.assetType === typeFilter;
+    const q = search.toLowerCase();
+    const matchSearch = a.displayName.toLowerCase().includes(q) || a.originalName.toLowerCase().includes(q);
     return matchType && matchSearch;
   });
+
+  function handleRename(id: string, displayName: string) {
+    setAssets((prev) => prev.map((a) => a.id === id ? { ...a, displayName } : a));
+    setRenamingAsset(null);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -42,12 +106,12 @@ export default function MediaGrid({ onUploadClick }: Props) {
         <input
           type="text"
           className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 w-52"
-          placeholder="파일명 검색..."
+          placeholder="이름 검색..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex gap-1">
-          {(["ALL", "VIDEO", "DOCUMENT", "SCORM", "OTHER"] as (MediaType | "ALL")[]).map((t) => (
+          {(["ALL", "VIDEO", "PDF", "SCORM", "IMAGE"] as (AssetType | "ALL")[]).map((t) => (
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
@@ -89,8 +153,9 @@ export default function MediaGrid({ onUploadClick }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-slate-400 border-b border-slate-100">
-                <th className="text-left px-5 py-3 font-medium">파일명</th>
+                <th className="text-left px-5 py-3 font-medium">이름</th>
                 <th className="text-left px-4 py-3 font-medium">유형</th>
+                <th className="text-left px-4 py-3 font-medium">상태</th>
                 <th className="text-left px-4 py-3 font-medium">크기</th>
                 <th className="text-left px-4 py-3 font-medium">업로드일</th>
                 <th className="text-left px-4 py-3 font-medium">연결 과정</th>
@@ -98,27 +163,43 @@ export default function MediaGrid({ onUploadClick }: Props) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((f) => {
-                const Icon = TYPE_ICON[f.type];
-                const t = TYPE_CONFIG[f.type];
+              {filtered.map((a) => {
+                const Icon = TYPE_ICON[a.assetType];
+                const typeCfg = TYPE_CONFIG[a.assetType];
+                const statusCfg = STATUS_CONFIG[a.status];
+                const rowBg = ROW_BG[a.status] ?? "";
                 return (
-                  <tr key={f.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+                  <tr
+                    key={a.id}
+                    className={`border-b border-slate-50 last:border-0 transition-colors ${rowBg || "hover:bg-slate-50/50"}`}
+                  >
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
                         <Icon size={15} className="text-slate-400 flex-shrink-0" />
-                        <span className="font-medium text-slate-800 truncate max-w-48">{f.name}</span>
+                        <div>
+                          <span className="font-medium text-slate-800 truncate max-w-56 block">{a.displayName}</span>
+                          <span className="text-xs text-slate-400 font-mono">{a.originalName}</span>
+                          {a.status === "ERROR" && a.errorMessage && (
+                            <span className="text-xs text-red-400 block">{a.errorMessage}</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${t.className}`}>
-                        {t.label}
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeCfg.className}`}>
+                        {typeCfg.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 tabular-nums">{f.size}</td>
-                    <td className="px-4 py-3 text-slate-400">{f.uploadedAt}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusCfg.className} ${statusCfg.pulse ? "animate-pulse" : ""}`}>
+                        {statusCfg.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 tabular-nums">{a.size}</td>
+                    <td className="px-4 py-3 text-slate-400">{a.uploadedAt}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
-                        {f.linkedCourses.map((c) => (
+                        {a.linkedCourses.map((c) => (
                           <span key={c} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                             {c}
                           </span>
@@ -128,12 +209,16 @@ export default function MediaGrid({ onUploadClick }: Props) {
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         <button
-                          title={`cdn: ${f.url}`}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+                          title="이름 변경"
+                          onClick={() => setRenamingAsset(a)}
+                          className="p-1.5 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors"
                         >
-                          <Copy size={13} />
+                          <Pencil size={13} />
                         </button>
-                        <button className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
+                        <button
+                          title="삭제"
+                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                        >
                           <Trash2 size={13} />
                         </button>
                       </div>
@@ -143,7 +228,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-10 text-slate-400 text-sm">
+                  <td colSpan={7} className="text-center py-10 text-slate-400 text-sm">
                     파일이 없습니다.
                   </td>
                 </tr>
@@ -153,26 +238,51 @@ export default function MediaGrid({ onUploadClick }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-3">
-          {filtered.map((f) => {
-            const Icon = TYPE_ICON[f.type];
-            const t = TYPE_CONFIG[f.type];
+          {filtered.map((a) => {
+            const Icon = TYPE_ICON[a.assetType];
+            const typeCfg = TYPE_CONFIG[a.assetType];
+            const statusCfg = STATUS_CONFIG[a.status];
             return (
-              <div key={f.id} className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-3 hover:border-violet-300 transition-colors">
+              <div
+                key={a.id}
+                className={`bg-white rounded-xl border border-slate-200 p-4 flex flex-col gap-3 hover:border-violet-300 transition-colors ${
+                  a.status === "PROCESSING" ? "border-blue-200 bg-blue-50/40" :
+                  a.status === "ERROR"      ? "border-red-200 bg-red-50/40" : ""
+                }`}
+              >
                 <div className="flex items-start justify-between">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${t.className}`}>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeCfg.className}`}>
                     <Icon size={18} />
                   </div>
-                  <div className="flex gap-1">
-                    <button className="p-1 text-slate-400 hover:text-slate-600"><Copy size={13} /></button>
-                    <button className="p-1 text-slate-400 hover:text-red-500"><Trash2 size={13} /></button>
+                  <div className="flex items-center gap-1">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusCfg.className} ${statusCfg.pulse ? "animate-pulse" : ""}`}>
+                      {statusCfg.label}
+                    </span>
+                    <button
+                      title="이름 변경"
+                      onClick={() => setRenamingAsset(a)}
+                      className="p-1 text-slate-400 hover:text-violet-600 rounded transition-colors"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      title="삭제"
+                      className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors"
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-800 truncate">{f.name}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{f.size} · {f.uploadedAt}</p>
+                  <p className="text-sm font-medium text-slate-800 truncate">{a.displayName}</p>
+                  <p className="text-xs text-slate-400 font-mono truncate">{a.originalName}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{a.size} · {a.uploadedAt}</p>
+                  {a.status === "ERROR" && a.errorMessage && (
+                    <p className="text-xs text-red-400 mt-0.5">{a.errorMessage}</p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {f.linkedCourses.map((c) => (
+                  {a.linkedCourses.map((c) => (
                     <span key={c} className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
                       {c}
                     </span>
@@ -187,6 +297,14 @@ export default function MediaGrid({ onUploadClick }: Props) {
             </div>
           )}
         </div>
+      )}
+
+      {renamingAsset && (
+        <RenameModal
+          asset={renamingAsset}
+          onSave={handleRename}
+          onClose={() => setRenamingAsset(null)}
+        />
       )}
     </div>
   );

@@ -1,24 +1,92 @@
-export type MediaType = "VIDEO" | "DOCUMENT" | "SCORM" | "OTHER";
+export type UploadStatus = "PENDING" | "VALIDATING" | "PROCESSING" | "ACTIVE" | "ERROR";
+export type AssetType = "VIDEO" | "PDF" | "IMAGE" | "SCORM";
 
-export interface MediaFile {
+export interface MediaAsset {
   id: string;
-  name: string;
-  type: MediaType;
+  displayName: string;     // 사람이 읽는 제목 (primary)
+  originalName: string;    // 업로드된 파일명 (secondary)
+  mimeType: string;
+  assetType: AssetType;
   size: string;
   uploadedAt: string;
-  url: string;
+  status: UploadStatus;
+  cdnBaseUrl: string | null;
+  launchHref: string | null;
+  scormVersion: "1.2" | "2004" | null;
+  errorMessage: string | null;
   linkedCourses: string[];
 }
 
-export const mediaFiles: MediaFile[] = [
-  { id: "mf1",  name: "react_intro.mp4",           type: "VIDEO",    size: "245.3 MB", uploadedAt: "2025-01-05", url: "cdn.acme.com/media/mf1",  linkedCourses: ["React 기초"] },
-  { id: "mf2",  name: "usestate_tutorial.mp4",      type: "VIDEO",    size: "182.7 MB", uploadedAt: "2025-01-06", url: "cdn.acme.com/media/mf2",  linkedCourses: ["React 기초"] },
-  { id: "mf3",  name: "typescript_generics.mp4",    type: "VIDEO",    size: "310.1 MB", uploadedAt: "2025-01-15", url: "cdn.acme.com/media/mf3",  linkedCourses: ["TypeScript 심화"] },
-  { id: "mf4",  name: "component_guide.pdf",        type: "DOCUMENT", size: "2.4 MB",   uploadedAt: "2025-01-07", url: "cdn.acme.com/media/mf4",  linkedCourses: ["React 기초"] },
-  { id: "mf5",  name: "typescript_handbook.pdf",    type: "DOCUMENT", size: "5.8 MB",   uploadedAt: "2025-01-16", url: "cdn.acme.com/media/mf5",  linkedCourses: ["TypeScript 심화"] },
-  { id: "mf6",  name: "aws_fundamentals.scorm",     type: "SCORM",    size: "48.2 MB",  uploadedAt: "2025-02-10", url: "cdn.acme.com/media/mf6",  linkedCourses: ["AWS 클라우드 입문"] },
-  { id: "mf7",  name: "docker_basics.scorm",        type: "SCORM",    size: "35.6 MB",  uploadedAt: "2025-03-02", url: "cdn.acme.com/media/mf7",  linkedCourses: ["Docker & Kubernetes"] },
-  { id: "mf8",  name: "nextjs_appdir.mp4",          type: "VIDEO",    size: "278.9 MB", uploadedAt: "2025-02-01", url: "cdn.acme.com/media/mf8",  linkedCourses: ["Next.js 마스터"] },
-  { id: "mf9",  name: "course_thumbnail_react.png", type: "OTHER",    size: "0.8 MB",   uploadedAt: "2025-01-04", url: "cdn.acme.com/media/mf9",  linkedCourses: ["React 기초"] },
-  { id: "mf10", name: "sql_slides.pdf",             type: "DOCUMENT", size: "3.1 MB",   uploadedAt: "2024-08-20", url: "cdn.acme.com/media/mf10", linkedCourses: ["SQL 마스터"] },
+export const mediaAssets: MediaAsset[] = [
+  {
+    id: "ma1", displayName: "React 기초 — 인트로 강의",       originalName: "react_intro.mp4",
+    mimeType: "video/mp4", assetType: "VIDEO",
+    size: "245.3 MB", uploadedAt: "2025-01-05", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma1", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["React 기초"],
+  },
+  {
+    id: "ma2", displayName: "useState 완전 정복 튜토리얼",    originalName: "usestate_tutorial.mp4",
+    mimeType: "video/mp4", assetType: "VIDEO",
+    size: "182.7 MB", uploadedAt: "2025-01-06", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma2", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["React 기초"],
+  },
+  {
+    id: "ma3", displayName: "TypeScript 제네릭 심화",         originalName: "typescript_generics.mp4",
+    mimeType: "video/mp4", assetType: "VIDEO",
+    size: "310.1 MB", uploadedAt: "2025-01-15", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma3", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["TypeScript 심화"],
+  },
+  {
+    id: "ma4", displayName: "컴포넌트 설계 가이드",           originalName: "component_guide.pdf",
+    mimeType: "application/pdf", assetType: "PDF",
+    size: "2.4 MB", uploadedAt: "2025-01-07", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma4", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["React 기초"],
+  },
+  {
+    id: "ma5", displayName: "TypeScript 공식 핸드북",         originalName: "typescript_handbook.pdf",
+    mimeType: "application/pdf", assetType: "PDF",
+    size: "5.8 MB", uploadedAt: "2025-01-16", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma5", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["TypeScript 심화"],
+  },
+  {
+    id: "ma6", displayName: "AWS 클라우드 기초 (SCORM)",      originalName: "aws_fundamentals.zip",
+    mimeType: "application/zip", assetType: "SCORM",
+    size: "48.2 MB", uploadedAt: "2025-02-10", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma6", launchHref: "cdn.acme.com/media/ma6/index.html", scormVersion: "1.2", errorMessage: null,
+    linkedCourses: ["AWS 클라우드 입문"],
+  },
+  {
+    id: "ma7", displayName: "React 기초 코스 썸네일",         originalName: "course_thumbnail_react.png",
+    mimeType: "image/png", assetType: "IMAGE",
+    size: "0.8 MB", uploadedAt: "2025-01-04", status: "ACTIVE",
+    cdnBaseUrl: "cdn.acme.com/media/ma7", launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: ["React 기초"],
+  },
+  {
+    id: "ma8", displayName: "Next.js 앱 라우터 강의",         originalName: "nextjs_appdir.mp4",
+    mimeType: "video/mp4", assetType: "VIDEO",
+    size: "278.9 MB", uploadedAt: "2025-03-16", status: "PROCESSING",
+    cdnBaseUrl: null, launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: [],
+  },
+  {
+    id: "ma9", displayName: "Docker 기초 실습 (SCORM)",       originalName: "docker_basics.zip",
+    mimeType: "application/zip", assetType: "SCORM",
+    size: "35.6 MB", uploadedAt: "2025-03-16", status: "VALIDATING",
+    cdnBaseUrl: null, launchHref: null, scormVersion: null, errorMessage: null,
+    linkedCourses: [],
+  },
+  {
+    id: "ma10", displayName: "SQL 핵심 정리 슬라이드",        originalName: "sql_slides.pdf",
+    mimeType: "application/pdf", assetType: "PDF",
+    size: "3.1 MB", uploadedAt: "2025-03-15", status: "ERROR",
+    cdnBaseUrl: null, launchHref: null, scormVersion: null,
+    errorMessage: "파일 검증 실패: PDF 구조가 손상되었습니다.",
+    linkedCourses: ["SQL 마스터"],
+  },
 ];

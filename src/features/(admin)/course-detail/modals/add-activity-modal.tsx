@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { X, ChevronLeft, Upload, ExternalLink } from "lucide-react";
 import { type ActivityType } from "../mockData";
-import { mediaFiles } from "../../media/mockData";
+import { mediaAssets } from "../../media/mockData";
 import { examTemplates, assignmentTemplates } from "../../assessments/mockData";
 
 const ACTIVITY_TYPES: { value: ActivityType; label: string; icon: string; desc: string }[] = [
@@ -53,7 +53,7 @@ export default function AddActivityModal({ subjectTitle, onClose }: Props) {
   const needsAssign = ASSIGN_TYPES.includes(selectedType);
 
   const filteredMedia = needsMedia
-    ? mediaFiles.filter((f) => f.type === MEDIA_TYPE_MAP[selectedType as "VIDEO" | "SCORM"])
+    ? mediaAssets.filter((a) => a.assetType === MEDIA_TYPE_MAP[selectedType as "VIDEO" | "SCORM"] && a.status === "ACTIVE")
     : [];
 
   return (
@@ -163,7 +163,7 @@ export default function AddActivityModal({ subjectTitle, onClose }: Props) {
                           <input type="radio" name="mediaFile" value={f.id} checked={selectedMediaId === f.id} onChange={() => setSelectedMediaId(f.id)} className="sr-only" />
                           <div className={`w-2 h-2 rounded-full flex-shrink-0 border-2 ${selectedMediaId === f.id ? "border-violet-600 bg-violet-600" : "border-slate-300"}`} />
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm truncate ${selectedMediaId === f.id ? "text-violet-700 font-medium" : "text-slate-700"}`}>{f.name}</p>
+                            <p className={`text-sm truncate ${selectedMediaId === f.id ? "text-violet-700 font-medium" : "text-slate-700"}`}>{f.displayName}</p>
                             <p className="text-xs text-slate-400">{f.size}</p>
                           </div>
                         </label>
