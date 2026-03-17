@@ -55,7 +55,17 @@ const NAV_GROUPS: NavGroup[] = [
           { href: `${BASE}/courses/categories`, label: "카테고리" },
         ],
       },
-      { kind: "link", href: `${BASE}/enrollments`, label: "수강 관리", icon: GraduationCap },
+      {
+        kind: "accordion",
+        label: "수강 관리",
+        icon: GraduationCap,
+        basePaths: [`${BASE}/enrollments`],
+        children: [
+          { href: `${BASE}/enrollments`, label: "수강 현황" },
+          { href: `${BASE}/enrollments/assign`, label: "수강 배정" },
+          { href: `${BASE}/enrollments/progress`, label: "학습 진도" },
+        ],
+      },
       {
         kind: "accordion",
         label: "평가 관리",
