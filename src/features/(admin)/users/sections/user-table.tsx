@@ -14,9 +14,8 @@ const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
 };
 
 const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = {
-  ACTIVE:   { label: "활성",      className: "bg-emerald-100 text-emerald-700" },
-  INACTIVE: { label: "비활성",    className: "bg-slate-100 text-slate-600" },
-  INVITED:  { label: "초대 대기", className: "bg-orange-100 text-orange-600" },
+  ACTIVE:   { label: "활성",   className: "bg-emerald-100 text-emerald-700" },
+  INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
 };
 
 function handleExport(users: OrgUser[]) {
@@ -43,22 +42,21 @@ const ROLE_TABS: { value: RoleTab; label: string }[] = [
 ];
 
 interface Props {
-  onInviteClick: () => void;
-  onCreateInstructorClick: () => void;
-  onCreateAdminClick: () => void;
+  onCreateClick: () => void;
   onImportClick: () => void;
 }
 
-export default function UserTable({ onInviteClick, onCreateInstructorClick, onCreateAdminClick, onImportClick }: Props) {
+export default function UserTable({ onCreateClick, onImportClick }: Props) {
   const router = useRouter();
   const { users } = useUsersStore();
   const [roleTab, setRoleTab] = useState<RoleTab>("ALL");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "ACTIVE_ONLY">("ACTIVE_ONLY");
 
   const filtered = users.filter((u) => {
+    if (u.role === "SUPER_ADMIN") return false;
     const matchRole =
       roleTab === "ALL" ? true :
-      roleTab === "ADMIN" ? (u.role === "ORG_ADMIN" || u.role === "SUPER_ADMIN") :
+      roleTab === "ADMIN" ? u.role === "ORG_ADMIN" :
       u.role === roleTab;
     const matchStatus = statusFilter === "ACTIVE_ONLY" ? u.status === "ACTIVE" : true;
     return matchRole && matchStatus;
@@ -70,7 +68,7 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onCr
         {[
           { label: "전체 유저", value: userStats.total },
           { label: "활성",      value: userStats.active },
-          { label: "초대 대기", value: userStats.invited },
+          { label: "비활성",    value: userStats.inactive },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl border border-slate-200 px-5 py-3 flex items-center gap-3">
             <span className="text-2xl font-bold text-slate-800">{s.value}</span>
@@ -121,22 +119,10 @@ export default function UserTable({ onInviteClick, onCreateInstructorClick, onCr
               <Upload size={14} /> 가져오기
             </button>
             <button
-              onClick={onCreateInstructorClick}
-              className="px-3 py-1.5 text-sm text-violet-700 border border-violet-200 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors"
-            >
-              + 강사 생성
-            </button>
-            <button
-              onClick={onCreateAdminClick}
-              className="px-3 py-1.5 text-sm text-violet-700 border border-violet-200 bg-violet-50 rounded-lg hover:bg-violet-100 transition-colors"
-            >
-              + 관리자 생성
-            </button>
-            <button
-              onClick={onInviteClick}
+              onClick={onCreateClick}
               className="px-3 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
             >
-              + 유저 초대
+              + 유저 등록
             </button>
           </div>
         </div>

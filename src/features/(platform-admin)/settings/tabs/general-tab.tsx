@@ -3,32 +3,15 @@
 import { useState } from "react";
 import { INITIAL_SETTINGS } from "../mockData";
 
-const LANGUAGE_OPTIONS = [
-  { value: "ko", label: "한국어" },
-  { value: "en", label: "English" },
-  { value: "ja", label: "日本語" },
-];
-
-const TIMEZONE_OPTIONS = [
-  "Asia/Seoul",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "UTC",
-  "America/New_York",
-  "Europe/London",
-];
-
 export default function GeneralTab() {
   const init = INITIAL_SETTINGS.general;
   const [serviceName, setServiceName] = useState(init.serviceName);
   const [opsEmail, setOpsEmail] = useState(init.opsEmail);
   const [supportEmail, setSupportEmail] = useState(init.supportEmail);
-  const [language, setLanguage] = useState(init.language);
-  const [timezone, setTimezone] = useState(init.timezone);
 
   const handleSave = () => {
     alert(
-      `일반 설정 저장\n서비스명: ${serviceName}\n운영 이메일: ${opsEmail}\n지원 이메일: ${supportEmail}\n언어: ${language}\n타임존: ${timezone}`,
+      `일반 설정 저장\n서비스명: ${serviceName}\n운영 이메일: ${opsEmail}\n지원 이메일: ${supportEmail}`,
     );
   };
 
@@ -74,35 +57,6 @@ export default function GeneralTab() {
           />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-slate-600">기본 언어</label>
-          <select
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-          >
-            {LANGUAGE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-slate-600">타임존</label>
-          <select
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={timezone}
-            onChange={(e) => setTimezone(e.target.value)}
-          >
-            {TIMEZONE_OPTIONS.map((tz) => (
-              <option key={tz} value={tz}>
-                {tz}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       <div className="flex justify-end pt-2">

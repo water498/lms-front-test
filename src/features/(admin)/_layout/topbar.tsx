@@ -25,6 +25,11 @@ const PAGE_TITLE_MAP: { prefix: string; label: string; description?: string }[] 
     description: "차수(Session)는 동일 과정을 기간·정원을 달리해 반복 운영하는 단위입니다. 기업 교육의 '기수'에 해당합니다.",
   },
   {
+    prefix: "/experiments/admin/users/access-logs",
+    label: "접속 이력",
+    description: "플랫폼 로그인·로그아웃·세션만료·자동로그인 이벤트를 시간순으로 조회합니다.",
+  },
+  {
     prefix: "/experiments/admin/users/",
     label: "유저 상세",
     description: "선택한 학습자의 프로필·수강 이력·인증 방식을 확인합니다.",

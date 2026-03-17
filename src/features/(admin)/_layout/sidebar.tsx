@@ -85,7 +85,17 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "사용자",
     items: [
-      { kind: "link", href: `${BASE}/users`, label: "유저 관리", icon: Users },
+      {
+        kind: "accordion",
+        label: "유저 관리",
+        icon: Users,
+        basePaths: [`${BASE}/users`],
+        children: [
+          { href: `${BASE}/users`, label: "유저 목록" },
+          { href: `${BASE}/users/groups`, label: "그룹 관리" },
+          { href: `${BASE}/users/access-logs`, label: "접속 이력" },
+        ],
+      },
     ],
   },
   {

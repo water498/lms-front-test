@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Search } from "lucide-react";
 import { orgUsers } from "../../users/mockData";
+import { useOrgStructureStore, findDeptNode } from "../../shared/org-structure-store";
 
 interface Props {
   sessionId: string;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose }: Props) {
+  const { departments, jobGrades } = useOrgStructureStore();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -105,8 +107,12 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
                         )}
                       </td>
                       <td className="py-2.5 text-slate-500">{u.email}</td>
-                      <td className="py-2.5 text-slate-500">{u.department ?? "—"}</td>
-                      <td className="py-2.5 text-slate-500">{u.jobGrade ?? "—"}</td>
+                      <td className="py-2.5 text-slate-500">
+                        {u.departmentId ? (findDeptNode(departments, u.departmentId)?.name ?? "—") : "—"}
+                      </td>
+                      <td className="py-2.5 text-slate-500">
+                        {u.jobGradeId ? (jobGrades.find((g) => g.id === u.jobGradeId)?.name ?? "—") : "—"}
+                      </td>
                     </tr>
                   );
                 })}

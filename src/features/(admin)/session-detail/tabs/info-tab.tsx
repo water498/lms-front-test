@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Pencil } from "lucide-react";
 import { type CourseSession, type SessionStatus, type SessionType } from "../../course-detail/mockData";
-import { useOrgStructureStore } from "../../shared/org-structure-store";
+import { useOrgStructureStore, type DeptNode } from "../../shared/org-structure-store";
+
+function flatDeptNames(nodes: DeptNode[]): string[] {
+  return nodes.flatMap((n) => [n.name, ...flatDeptNames(n.children)]);
+}
 
 const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }> = {
   DRAFT:   { label: "준비중", className: "bg-slate-100 text-slate-500" },
@@ -66,6 +70,7 @@ interface DraftState {
   completionThreshold: string;
   targetDepartments: string[];
   targetJobGrades: string[];
+  targetSites: string[];
 }
 
 function toDraft(s: CourseSession): DraftState {
@@ -82,11 +87,14 @@ function toDraft(s: CourseSession): DraftState {
     completionThreshold: String(s.completionThreshold),
     targetDepartments: s.targetAudience?.departments ?? [],
     targetJobGrades: s.targetAudience?.jobGrades ?? [],
+    targetSites: s.targetAudience?.sites ?? [],
   };
 }
 
 export default function SessionInfoTab({ session }: { session: CourseSession }) {
-  const { departments, jobGrades } = useOrgStructureStore();
+  const { departments: deptTree, jobGrades, sites } = useOrgStructureStore();
+  const departments = flatDeptNames(deptTree);
+  const gradeNames = jobGrades.map((g) => g.name);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<DraftState>(() => toDraft(session));
 
@@ -129,6 +137,7 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       targetAudience: {
         departments: draft.targetDepartments,
         jobGrades: draft.targetJobGrades,
+        sites: draft.targetSites,
       },
     });
     setIsEditing(false);
@@ -152,12 +161,28 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
     }));
   }
 
+  function toggleSite(siteName: string) {
+    setDraft((prev) => ({
+      ...prev,
+      targetSites: prev.targetSites.includes(siteName)
+        ? prev.targetSites.filter((s) => s !== siteName)
+        : [...prev.targetSites, siteName],
+    }));
+  }
+
   function set<K extends keyof DraftState>(key: K, value: DraftState[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
   const inputCls = "w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent";
   const selectCls = inputCls + " bg-white";
+
+  const pillToggleCls = (active: boolean) =>
+    `text-xs px-2.5 py-1 rounded-full border transition-colors ${
+      active
+        ? "bg-violet-600 border-violet-600 text-white"
+        : "border-slate-200 text-slate-600 hover:border-violet-300"
+    }`;
 
   return (
     <div className="max-w-lg bg-white rounded-xl border border-slate-200 p-6 flex flex-col gap-5">
@@ -301,6 +326,22 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             </span>
 
             <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-slate-400">사업장</span>
+              <div className="flex flex-wrap gap-1.5">
+                {sites.map((site) => (
+                  <button
+                    key={site.id}
+                    type="button"
+                    onClick={() => toggleSite(site.name)}
+                    className={pillToggleCls(draft.targetSites.includes(site.name))}
+                  >
+                    {site.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
               <span className="text-xs text-slate-400">부서</span>
               <div className="flex flex-wrap gap-1.5">
                 {departments.map((dept) => (
@@ -308,11 +349,7 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
                     key={dept}
                     type="button"
                     onClick={() => toggleDept(dept)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                      draft.targetDepartments.includes(dept)
-                        ? "bg-violet-600 border-violet-600 text-white"
-                        : "border-slate-200 text-slate-600 hover:border-violet-300"
-                    }`}
+                    className={pillToggleCls(draft.targetDepartments.includes(dept))}
                   >
                     {dept}
                   </button>
@@ -323,16 +360,12 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             <div className="flex flex-col gap-1.5">
               <span className="text-xs text-slate-400">직급</span>
               <div className="flex flex-wrap gap-1.5">
-                {jobGrades.map((grade) => (
+                {gradeNames.map((grade) => (
                   <button
                     key={grade}
                     type="button"
                     onClick={() => toggleGrade(grade)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                      draft.targetJobGrades.includes(grade)
-                        ? "bg-violet-600 border-violet-600 text-white"
-                        : "border-slate-200 text-slate-600 hover:border-violet-300"
-                    }`}
+                    className={pillToggleCls(draft.targetJobGrades.includes(grade))}
                   >
                     {grade}
                   </button>
@@ -361,10 +394,13 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             </span>
           </Field>
           <Field label="수료 기준">{session.completionThreshold}%</Field>
-          {(session.targetAudience?.departments?.length || session.targetAudience?.jobGrades?.length) ? (
+          {(session.targetAudience?.sites?.length || session.targetAudience?.departments?.length || session.targetAudience?.jobGrades?.length) ? (
             <div className="col-span-2 flex flex-col gap-1">
               <span className="text-xs font-medium text-slate-500">수강 대상</span>
               <div className="flex flex-wrap gap-1.5 mt-0.5">
+                {session.targetAudience?.sites?.map((s) => (
+                  <span key={s} className="text-xs px-2 py-0.5 bg-teal-100 text-teal-700 rounded-full">{s}</span>
+                ))}
                 {session.targetAudience?.departments?.map((d) => (
                   <span key={d} className="text-xs px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full">{d}</span>
                 ))}

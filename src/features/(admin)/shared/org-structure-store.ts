@@ -1,27 +1,149 @@
 import { create } from 'zustand';
 
-interface OrgStructureStore {
-  departments: string[];
-  jobGrades: string[];
-  addDepartment: (name: string) => void;
-  updateDepartment: (oldName: string, newName: string) => void;
-  removeDepartment: (name: string) => void;
-  addJobGrade: (name: string) => void;
-  updateJobGrade: (oldName: string, newName: string) => void;
-  removeJobGrade: (name: string) => void;
+export interface Site {
+  id: string;
+  name: string;
 }
 
+export interface JobGrade {
+  id: string;
+  name: string;
+}
+
+export interface DeptNode {
+  id: string;
+  name: string;
+  children: DeptNode[];
+}
+
+// ── tree helpers ──────────────────────────────────────────────────────────────
+
+function addChild(tree: DeptNode[], parentId: string, node: DeptNode): DeptNode[] {
+  return tree.map((d) =>
+    d.id === parentId
+      ? { ...d, children: [...d.children, node] }
+      : { ...d, children: addChild(d.children, parentId, node) }
+  );
+}
+
+function updateNode(tree: DeptNode[], id: string, name: string): DeptNode[] {
+  return tree.map((d) =>
+    d.id === id
+      ? { ...d, name }
+      : { ...d, children: updateNode(d.children, id, name) }
+  );
+}
+
+function removeNode(tree: DeptNode[], id: string): DeptNode[] {
+  return tree
+    .filter((d) => d.id !== id)
+    .map((d) => ({ ...d, children: removeNode(d.children, id) }));
+}
+
+/** Returns all dept IDs in a subtree (inclusive). Used for member-count on delete. */
+export function flatDeptIds(nodes: DeptNode[]): string[] {
+  return nodes.flatMap((n) => [n.id, ...flatDeptIds(n.children)]);
+}
+
+/** Find a single node by id and return it (or undefined). */
+export function findDeptNode(nodes: DeptNode[], id: string): DeptNode | undefined {
+  for (const n of nodes) {
+    if (n.id === id) return n;
+    const found = findDeptNode(n.children, id);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+let _nextDeptId = 10;
+function genDeptId() { return `dept-${_nextDeptId++}`; }
+
+let _nextSiteId = 3;
+function genSiteId() { return `site-${_nextSiteId++}`; }
+
+let _nextGradeId = 5;
+function genGradeId() { return `grade-${_nextGradeId++}`; }
+
+// ── store ─────────────────────────────────────────────────────────────────────
+
+interface OrgStructureStore {
+  departments: DeptNode[];
+  addRootDept: (name: string) => void;
+  addChildDept: (parentId: string, name: string) => void;
+  updateDept: (id: string, name: string) => void;
+  removeDept: (id: string) => void;
+
+  jobGrades: JobGrade[];
+  addJobGrade: (name: string) => void;
+  updateJobGrade: (id: string, name: string) => void;
+  removeJobGrade: (id: string) => void;
+
+  sites: Site[];
+  addSite: (name: string) => void;
+  updateSite: (id: string, name: string) => void;
+  removeSite: (id: string) => void;
+}
+
+const initialDepts: DeptNode[] = [
+  {
+    id: 'dept-1',
+    name: '개발본부',
+    children: [
+      { id: 'dept-2', name: '백엔드팀', children: [] },
+      { id: 'dept-3', name: '프론트엔드팀', children: [] },
+    ],
+  },
+  {
+    id: 'dept-4',
+    name: '마케팅본부',
+    children: [
+      { id: 'dept-5', name: '콘텐츠팀', children: [] },
+    ],
+  },
+  { id: 'dept-6', name: '기획팀', children: [] },
+  { id: 'dept-7', name: '디자인팀', children: [] },
+];
+
+const initialJobGrades: JobGrade[] = [
+  { id: 'grade-1', name: '사원' },
+  { id: 'grade-2', name: '대리' },
+  { id: 'grade-3', name: '과장' },
+  { id: 'grade-4', name: '부장' },
+];
+
+const initialSites: Site[] = [
+  { id: 'site-1', name: '서울 본사' },
+  { id: 'site-2', name: '부산 지점' },
+];
+
 export const useOrgStructureStore = create<OrgStructureStore>((set) => ({
-  departments: ["개발팀", "디자인팀", "기획팀"],
-  jobGrades: ["사원", "대리", "과장", "부장"],
-  addDepartment: (name) => set((s) => ({ departments: [...s.departments, name] })),
-  updateDepartment: (old, next) =>
-    set((s) => ({ departments: s.departments.map((d) => (d === old ? next : d)) })),
-  removeDepartment: (name) =>
-    set((s) => ({ departments: s.departments.filter((d) => d !== name) })),
-  addJobGrade: (name) => set((s) => ({ jobGrades: [...s.jobGrades, name] })),
-  updateJobGrade: (old, next) =>
-    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g === old ? next : g)) })),
-  removeJobGrade: (name) =>
-    set((s) => ({ jobGrades: s.jobGrades.filter((g) => g !== name) })),
+  departments: initialDepts,
+  addRootDept: (name) =>
+    set((s) => ({
+      departments: [...s.departments, { id: genDeptId(), name, children: [] }],
+    })),
+  addChildDept: (parentId, name) =>
+    set((s) => ({
+      departments: addChild(s.departments, parentId, { id: genDeptId(), name, children: [] }),
+    })),
+  updateDept: (id, name) =>
+    set((s) => ({ departments: updateNode(s.departments, id, name) })),
+  removeDept: (id) =>
+    set((s) => ({ departments: removeNode(s.departments, id) })),
+
+  jobGrades: initialJobGrades,
+  addJobGrade: (name) =>
+    set((s) => ({ jobGrades: [...s.jobGrades, { id: genGradeId(), name }] })),
+  updateJobGrade: (id, name) =>
+    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g.id === id ? { ...g, name } : g)) })),
+  removeJobGrade: (id) =>
+    set((s) => ({ jobGrades: s.jobGrades.filter((g) => g.id !== id) })),
+
+  sites: initialSites,
+  addSite: (name) =>
+    set((s) => ({ sites: [...s.sites, { id: genSiteId(), name }] })),
+  updateSite: (id, name) =>
+    set((s) => ({ sites: s.sites.map((site) => (site.id === id ? { ...site, name } : site)) })),
+  removeSite: (id) =>
+    set((s) => ({ sites: s.sites.filter((site) => site.id !== id) })),
 }));

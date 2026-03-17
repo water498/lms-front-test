@@ -13,8 +13,6 @@ export interface PlatformSettings {
     serviceName: string;
     opsEmail: string;
     supportEmail: string;
-    language: string;
-    timezone: string;
     rootDomain: string;
   };
   plans: {
@@ -42,8 +40,6 @@ export const INITIAL_SETTINGS: PlatformSettings = {
     serviceName: "OpenKnock Learn",
     opsEmail: "ops@open-knock.com",
     supportEmail: "support@open-knock.com",
-    language: "ko",
-    timezone: "Asia/Seoul",
     rootDomain: PLATFORM_DOMAIN,
   },
   plans: {

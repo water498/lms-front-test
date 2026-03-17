@@ -72,6 +72,7 @@ export interface CourseSession {
   targetAudience?: {
     departments?: string[];
     jobGrades?: string[];
+    sites?: string[];
   };
 }
 

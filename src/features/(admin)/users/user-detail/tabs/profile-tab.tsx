@@ -1,6 +1,7 @@
 "use client";
 
 import type { OrgUser } from "../../mockData";
+import { useOrgStructureStore, findDeptNode } from "../../../shared/org-structure-store";
 
 const ROLE_CONFIG = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -10,14 +11,25 @@ const ROLE_CONFIG = {
 } as const;
 
 const STATUS_CONFIG = {
-  ACTIVE:   { label: "활성",      className: "bg-emerald-100 text-emerald-700" },
-  INACTIVE: { label: "비활성",    className: "bg-slate-100 text-slate-600" },
-  INVITED:  { label: "초대 대기", className: "bg-orange-100 text-orange-600" },
+  ACTIVE:   { label: "활성",   className: "bg-emerald-100 text-emerald-700" },
+  INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
 } as const;
 
 export default function ProfileTab({ user }: { user: OrgUser }) {
+  const { departments, jobGrades, sites } = useOrgStructureStore();
+
   const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
+
+  const deptName = user.departmentId
+    ? (findDeptNode(departments, user.departmentId)?.name ?? "—")
+    : "—";
+  const gradeName = user.jobGradeId
+    ? (jobGrades.find((g) => g.id === user.jobGradeId)?.name ?? "—")
+    : "—";
+  const siteName = user.siteId
+    ? (sites.find((s) => s.id === user.siteId)?.name ?? "—")
+    : "—";
 
   return (
     <div className="grid grid-cols-2 gap-5">
@@ -32,7 +44,9 @@ export default function ProfileTab({ user }: { user: OrgUser }) {
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>{status.label}</span>
           </div>
           <p className="text-sm text-slate-500">{user.email}</p>
-          {user.department && <p className="text-xs text-slate-400 mt-0.5">{user.department}</p>}
+          {user.departmentId && (
+            <p className="text-xs text-slate-400 mt-0.5">{deptName}</p>
+          )}
         </div>
         {user.role !== "SUPER_ADMIN" && (
           <button className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors">
@@ -62,10 +76,12 @@ export default function ProfileTab({ user }: { user: OrgUser }) {
         <h3 className="text-sm font-semibold text-slate-700">학습 현황</h3>
         <dl className="flex flex-col gap-3">
           {[
-            { label: "수강 과정",  value: `${user.enrolledCourses}개` },
-            { label: "완료 과정",  value: "1개" },
-            { label: "수료증",     value: "1장" },
-            { label: "부서",       value: user.department ?? "—" },
+            { label: "수강 과정", value: `${user.enrolledCourses}개` },
+            { label: "완료 과정", value: "1개" },
+            { label: "수료증",    value: "1장" },
+            { label: "사업장",    value: siteName },
+            { label: "부서",      value: deptName },
+            { label: "직급",      value: gradeName },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between text-sm">
               <dt className="text-slate-400">{label}</dt>
