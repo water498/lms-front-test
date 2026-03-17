@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { X } from "lucide-react";
-import { type Course, type CourseStatus, courses, instructors } from "../../courses/mockData";
+import { X, Plus, Trash2 } from "lucide-react";
+import {
+  type Course,
+  type CourseStatus,
+  type CancellationPolicy,
+  type CancellationRule,
+  courses,
+  instructors,
+  DEFAULT_CANCELLATION_POLICY,
+} from "../../courses/mockData";
 import { useTaxonomyStore } from "../../shared/taxonomy-store";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {
@@ -24,6 +32,10 @@ export default function InfoTab({ course }: { course: Course }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const badge = STATUS_CONFIG[course.status];
+
+  const [description, setDescription] = useState(course.description ?? "");
+  const [price, setPrice] = useState<string>(course.price !== undefined ? String(course.price) : "");
+  const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy);
 
   const suggestions = tagInput.trim()
     ? allTags.filter(
@@ -53,8 +65,26 @@ export default function InfoTab({ course }: { course: Course }) {
     }
   }
 
+  function updateRule(index: number, field: keyof CancellationRule, value: number) {
+    const newRules = policy.rules.map((r, i) => i === index ? { ...r, [field]: value } : r);
+    setPolicy({ ...policy, rules: newRules });
+  }
+
+  function addRule() {
+    setPolicy({ ...policy, rules: [...policy.rules, { daysBeforeStart: 0, refundPct: 0 }] });
+  }
+
+  function removeRule(index: number) {
+    setPolicy({ ...policy, rules: policy.rules.filter((_, i) => i !== index) });
+  }
+
+  function handleSave() {
+    // 저장 시 daysBeforeStart 내림차순 정렬
+    setPolicy((p) => ({ ...p, rules: [...p.rules].sort((a, b) => b.daysBeforeStart - a.daysBeforeStart) }));
+  }
+
   return (
-    <div className="max-w-lg flex flex-col gap-5">
+    <div className="max-w-2xl flex flex-col gap-5">
       <div className="flex items-center gap-3">
         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${badge.className}`}>
           {badge.label}
@@ -72,7 +102,7 @@ export default function InfoTab({ course }: { course: Course }) {
       </div>
 
       {/* Thumbnail placeholder */}
-      <div className="w-full h-36 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm border-2 border-dashed border-slate-200">
+      <div className="w-full h-36 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm border-2 border-dashed border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
         썸네일 이미지 업로드
       </div>
 
@@ -167,8 +197,129 @@ export default function InfoTab({ course }: { course: Course }) {
         </div>
       </div>
 
+      {/* 과정 소개 */}
+      <div>
+        <label className="text-xs font-medium text-slate-600 mb-1 block">과정 소개</label>
+        <textarea
+          rows={4}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+          placeholder="학습 목표, 대상 수강생, 주요 내용을 입력하세요"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+
+      {/* 판매가 */}
+      <div>
+        <label className="text-xs font-medium text-slate-600 mb-1 block">판매가</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={0}
+            className="w-40 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            placeholder="0"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+          <span className="text-sm text-slate-500">원</span>
+          <span className="text-xs text-slate-400 ml-1">(빈 값 = 무료 과정)</span>
+        </div>
+      </div>
+
+      {/* 취소·환불 규정 */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-medium text-slate-600">취소·환불 규정</label>
+          <button
+            type="button"
+            onClick={() => setPolicy(DEFAULT_CANCELLATION_POLICY)}
+            className="text-xs text-violet-600 hover:text-violet-800 transition-colors"
+          >
+            기본값으로 초기화
+          </button>
+        </div>
+
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-xs text-slate-500">
+              <tr>
+                <th className="px-4 py-2.5 text-left font-medium">N일 이상 전 취소</th>
+                <th className="px-4 py-2.5 text-left font-medium">환불율</th>
+                <th className="px-4 py-2.5 w-12"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {policy.rules.map((rule, i) => (
+                <tr key={i}>
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="number"
+                        min={0}
+                        className="w-16 border border-slate-200 rounded-md px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
+                        value={rule.daysBeforeStart}
+                        onChange={(e) => updateRule(i, "daysBeforeStart", Number(e.target.value))}
+                      />
+                      <span className="text-slate-500 text-xs">일</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        className="w-16 border border-slate-200 rounded-md px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
+                        value={rule.refundPct}
+                        onChange={(e) => updateRule(i, "refundPct", Number(e.target.value))}
+                      />
+                      <span className="text-slate-500 text-xs">%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <button
+                      type="button"
+                      onClick={() => removeRule(i)}
+                      className="text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="px-4 py-2.5 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={addRule}
+              className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-800 transition-colors"
+            >
+              <Plus size={13} />
+              규정 추가
+            </button>
+          </div>
+
+          <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={policy.noRefundAfterStart}
+                onChange={(e) => setPolicy({ ...policy, noRefundAfterStart: e.target.checked })}
+                className="accent-violet-600"
+              />
+              <span className="text-xs text-slate-600">수강 시작 후 환불 없음</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div className="pt-1">
-        <button className="px-5 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors">
+        <button
+          onClick={handleSave}
+          className="px-5 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+        >
           저장
         </button>
       </div>

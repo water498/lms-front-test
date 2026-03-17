@@ -11,6 +11,7 @@ import {
   X,
   ArrowUp,
   ArrowDown,
+  AlertCircle,
 } from "lucide-react";
 import { useTaxonomyStore, type Category } from "../../shared/taxonomy-store";
 import { courses } from "../mockData";
@@ -46,6 +47,7 @@ function CategoryNode({ cat, depth, siblings }: NodeProps) {
   const [editValue, setEditValue] = useState(cat.name);
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
   const children = categories
     .filter((c) => c.parentId === cat.id)
@@ -157,7 +159,13 @@ function CategoryNode({ cat, depth, siblings }: NodeProps) {
               <Pencil size={13} />
             </button>
             <button
-              onClick={() => removeCategory(cat.id)}
+              onClick={() => {
+                if (usage > 0) {
+                  setShowDeleteWarning(true);
+                } else {
+                  removeCategory(cat.id);
+                }
+              }}
               className="p-0.5 text-slate-400 hover:text-red-500 transition-colors"
             >
               <Trash2 size={13} />
@@ -165,6 +173,33 @@ function CategoryNode({ cat, depth, siblings }: NodeProps) {
           </div>
         )}
       </div>
+
+      {/* Delete warning */}
+      {showDeleteWarning && (
+        <div
+          className="border-t border-red-100 bg-red-50 px-4 py-3 flex flex-col gap-2 rounded-b-lg"
+          style={{ marginLeft: `${depthIndent}px` }}
+        >
+          <div className="flex items-start gap-2">
+            <AlertCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
+            <p className="text-xs text-red-700 font-medium">
+              {usage}개 과정이 이 카테고리를 사용 중입니다.
+              모든 과정의 카테고리를 변경한 후 삭제할 수 있습니다.
+            </p>
+          </div>
+          <ul className="flex flex-col gap-1 pl-5">
+            {courses.filter((c) => c.category === cat.name).map((c) => (
+              <li key={c.id} className="text-xs text-red-600">· {c.title}</li>
+            ))}
+          </ul>
+          <button
+            onClick={() => setShowDeleteWarning(false)}
+            className="self-end text-xs text-slate-500 hover:text-slate-700"
+          >
+            닫기
+          </button>
+        </div>
+      )}
 
       {/* Children */}
       {expanded && (
@@ -288,7 +323,8 @@ export default function CategoriesFeature() {
 
       <p className="text-xs text-slate-400">
         · 항목에 마우스를 올리면 편집 버튼이 나타납니다.<br />
-        · 대분류 삭제 시 하위 중/소분류도 함께 삭제됩니다.
+        · 대분류 삭제 시 하위 중/소분류도 함께 삭제됩니다.<br />
+        · 과정이 연결된 카테고리는 모든 과정의 카테고리를 변경한 후 삭제 가능합니다.
       </p>
     </div>
   );

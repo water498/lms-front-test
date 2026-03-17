@@ -1,54 +1,28 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
-import { instructors, courses } from "../mockData";
+import { useRouter } from "next/navigation";
+import { instructors } from "../mockData";
 import { useTaxonomyStore } from "../../shared/taxonomy-store";
 
 interface Props {
   onClose: () => void;
 }
 
-const allTags = [...new Set(courses.flatMap((c) => c.tags))];
-
 export default function CreateCourseModal({ onClose }: Props) {
+  const router = useRouter();
   const { categories } = useTaxonomyStore();
   const categoryNames = categories.filter((c) => c.parentId === null).map((c) => c.name);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(categoryNames[0] ?? "");
   const [instructor, setInstructor] = useState(instructors[0]);
   const [type, setType] = useState<"online" | "offline" | "blended">("online");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const suggestions = tagInput.trim()
-    ? allTags.filter(
-        (t) => t.toLowerCase().includes(tagInput.toLowerCase()) && !tags.includes(t)
-      )
-    : [];
-
-  useEffect(() => {
-    setShowSuggestions(suggestions.length > 0);
-  }, [tagInput, suggestions.length]);
-
-  function addTag(value: string) {
-    const trimmed = value.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed]);
-    }
-    setTagInput("");
-    setShowSuggestions(false);
-  }
-
-  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addTag(tagInput);
-    } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
-      setTags(tags.slice(0, -1));
-    }
+  function handleCreate() {
+    // 실험: DRAFT인 c5로 redirect (실제에선 생성된 ID 사용)
+    onClose();
+    router.push("/experiments/admin/courses/c5");
   }
 
   return (
@@ -95,54 +69,6 @@ export default function CreateCourseModal({ onClose }: Props) {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1.5 block">태그</label>
-            <div
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 flex flex-wrap gap-1.5 cursor-text focus-within:ring-2 focus-within:ring-violet-400"
-              onClick={() => inputRef.current?.focus()}
-            >
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-medium"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setTags(tags.filter((t) => t !== tag)); }}
-                    className="text-violet-400 hover:text-violet-700"
-                  >
-                    <X size={11} />
-                  </button>
-                </span>
-              ))}
-              <div className="relative flex-1 min-w-[120px]">
-                <input
-                  ref={inputRef}
-                  className="w-full text-sm outline-none bg-transparent placeholder:text-slate-400"
-                  placeholder={tags.length === 0 ? "태그 입력 후 Enter 또는 , " : ""}
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                />
-                {showSuggestions && (
-                  <ul className="absolute top-full left-0 mt-1 z-20 bg-white border border-slate-200 rounded-lg shadow-md w-48 overflow-hidden">
-                    {suggestions.map((s) => (
-                      <li
-                        key={s}
-                        onMouseDown={() => addTag(s)}
-                        className="px-3 py-1.5 text-sm text-slate-700 hover:bg-violet-50 cursor-pointer"
-                      >
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div>
             <label className="text-xs font-medium text-slate-600 mb-2 block">수업 유형</label>
             <div className="flex gap-4">
               {(["online", "offline", "blended"] as const).map((t) => (
@@ -164,7 +90,11 @@ export default function CreateCourseModal({ onClose }: Props) {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 mt-6">
+        <p className="mt-5 text-xs text-slate-400 leading-relaxed">
+          생성하면 DRAFT로 저장되며, 상세 페이지에서 썸네일·소개·취소규정 등을 설정할 수 있습니다.
+        </p>
+
+        <div className="flex justify-end gap-2 mt-4">
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
@@ -172,7 +102,7 @@ export default function CreateCourseModal({ onClose }: Props) {
             취소
           </button>
           <button
-            onClick={onClose}
+            onClick={handleCreate}
             className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
           >
             생성

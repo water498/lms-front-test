@@ -138,7 +138,7 @@ function CourseRow({ course }: { course: Course }) {
           )}
           {course.status === "PUBLISHED" && (
             <button className="text-xs px-2 py-1 text-slate-500 hover:bg-slate-100 rounded transition-colors">
-              보관
+              게시 취소
             </button>
           )}
           <button className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors">

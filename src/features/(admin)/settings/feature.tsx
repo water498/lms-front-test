@@ -3,14 +3,12 @@
 import { useState } from "react";
 import GeneralTab from "./sections/general-tab";
 import BrandingTab from "./sections/branding-tab";
-import CategoriesTab from "./sections/categories-tab";
 import OrgStructureTab from "./sections/org-structure-tab";
 
 const TABS = [
-  { id: "general",    label: "일반" },
-  { id: "branding",   label: "브랜딩" },
-  { id: "categories", label: "카테고리 관리" },
-  { id: "org",        label: "조직 구조" },
+  { id: "general",  label: "일반" },
+  { id: "branding", label: "브랜딩" },
+  { id: "org",      label: "조직 구조" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -39,10 +37,9 @@ export default function SettingsFeature() {
 
       {/* Tab content */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        {activeTab === "general"    && <GeneralTab />}
-        {activeTab === "branding"   && <BrandingTab />}
-        {activeTab === "categories" && <CategoriesTab />}
-        {activeTab === "org"        && <OrgStructureTab />}
+        {activeTab === "general"  && <GeneralTab />}
+        {activeTab === "branding" && <BrandingTab />}
+        {activeTab === "org"      && <OrgStructureTab />}
       </div>
     </div>
   );

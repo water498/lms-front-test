@@ -11,7 +11,7 @@ import SessionsTab from "./tabs/sessions-tab";
 type TabId = "info" | "curriculum" | "sessions";
 
 export default function CourseDetailFeature({ courseId }: { courseId: string }) {
-  const [activeTab, setActiveTab] = useState<TabId>("curriculum");
+  const [activeTab, setActiveTab] = useState<TabId>("info");
 
   const course = getCourse(courseId);
   const sessions = getSessions(courseId);
