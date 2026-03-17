@@ -18,6 +18,7 @@ import {
   HardDrive,
   MessageSquare,
   ChevronDown,
+  BarChart2,
 } from "lucide-react";
 
 const BASE = "/experiments/admin";
@@ -111,6 +112,17 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "운영",
     items: [
+      {
+        kind: "accordion",
+        label: "통계",
+        icon: BarChart2,
+        basePaths: [`${BASE}/statistics`],
+        children: [
+          { href: `${BASE}/statistics/completion`, label: "수료율 현황" },
+          { href: `${BASE}/statistics/org`,        label: "조직별 학습 현황" },
+          { href: `${BASE}/statistics/assessments`, label: "평가 점수 통계" },
+        ],
+      },
       { kind: "link", href: `${BASE}/payments`, label: "결제 내역", icon: CreditCard },
       { kind: "link", href: `${BASE}/messaging`, label: "메시징", icon: MessageSquare },
       { kind: "link", href: `${BASE}/settings`, label: "설정", icon: Settings },
