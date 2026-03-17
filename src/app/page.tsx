@@ -3,7 +3,7 @@ import Link from "next/link";
 const experiments: { href: string; title: string; description: string }[] = [
   {
     href: "/experiments/platform-admin",
-    title: "openknock 관리자(B2C + B2B)",
+    title: "OpenKnock 관리자(B2C + B2B)",
     description: "Platform Admin — B2B 기업 온보딩·테넌트 관리 내부 운영툴",
   },
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -9,8 +9,20 @@ import {
   UserCog,
   PauseCircle,
   TrendingUp,
+  Pencil,
+  CheckCircle2,
+  XCircle,
+  Check,
+  X,
 } from "lucide-react";
-import { TENANTS, type TenantPlan, type TenantStatus } from "../mockData";
+import {
+  TENANTS,
+  PLATFORM_DOMAIN,
+  validateSubdomain,
+  type TenantPlan,
+  type TenantStatus,
+  type SubdomainStatus,
+} from "../mockData";
 
 function ProgressBar({
   value,
@@ -76,6 +88,14 @@ function StatusBadge({
   );
 }
 
+const SUBDOMAIN_STATUS_MSG: Record<SubdomainStatus, string> = {
+  empty:    "",
+  format:   "소문자·영숫자·하이픈만 허용 (최소 2자)",
+  reserved: "예약어로 사용 불가",
+  taken:    "이미 사용 중인 서브도메인",
+  valid:    "사용 가능",
+};
+
 interface Props {
   tenantId: string;
 }
@@ -89,6 +109,19 @@ export default function TenantDetailFeature({ tenantId }: Props) {
   );
   const [localStatus, setLocalStatus] = useState<TenantStatus>(
     tenant?.status ?? "ACTIVE",
+  );
+
+  // Subdomain inline edit state
+  const [localSubdomain, setLocalSubdomain] = useState(
+    tenant?.subdomain ?? "",
+  );
+  const [editingSubdomain, setEditingSubdomain] = useState(false);
+  const [subdomainInput, setSubdomainInput] = useState(tenant?.subdomain ?? "");
+
+  const existingSubdomains = useMemo(() => TENANTS.map((t) => t.subdomain), []);
+  const subdomainStatus = useMemo(
+    () => validateSubdomain(subdomainInput, existingSubdomains, tenant?.subdomain),
+    [subdomainInput, existingSubdomains, tenant?.subdomain],
   );
 
   if (!tenant) {
@@ -122,6 +155,22 @@ export default function TenantDetailFeature({ tenantId }: Props) {
     }
   };
 
+  const startEditSubdomain = () => {
+    setSubdomainInput(localSubdomain);
+    setEditingSubdomain(true);
+  };
+
+  const saveSubdomain = () => {
+    if (subdomainStatus !== "valid") return;
+    setLocalSubdomain(subdomainInput);
+    setEditingSubdomain(false);
+  };
+
+  const cancelSubdomain = () => {
+    setSubdomainInput(localSubdomain);
+    setEditingSubdomain(false);
+  };
+
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Back */}
@@ -138,7 +187,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         <div>
           <h2 className="text-xl font-bold text-slate-800">{tenant.name}</h2>
           <p className="text-sm text-slate-400 font-mono mt-0.5">
-            {tenant.subdomain}.open-knock.com
+            {localSubdomain}.{PLATFORM_DOMAIN}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,6 +223,83 @@ export default function TenantDetailFeature({ tenantId }: Props) {
                 status={localStatus}
                 trialEndsAt={tenant.trialEndsAt}
               />
+            </dd>
+          </div>
+          <div className="col-span-2">
+            <dt className="text-xs text-slate-400 mb-0.5">서브도메인</dt>
+            <dd>
+              {editingSubdomain ? (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`flex items-center border rounded-lg overflow-hidden ${
+                        subdomainStatus === "valid"
+                          ? "border-green-400"
+                          : subdomainStatus !== "empty"
+                            ? "border-red-400"
+                            : "border-slate-200"
+                      }`}
+                    >
+                      <input
+                        autoFocus
+                        className="px-3 py-1.5 text-sm font-mono focus:outline-none w-40"
+                        value={subdomainInput}
+                        onChange={(e) =>
+                          setSubdomainInput(
+                            e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                          )
+                        }
+                      />
+                      {subdomainInput && (
+                        <span className="px-1.5">
+                          {subdomainStatus === "valid" ? (
+                            <CheckCircle2 size={13} className="text-green-500" />
+                          ) : (
+                            <XCircle size={13} className="text-red-500" />
+                          )}
+                        </span>
+                      )}
+                      <span className="bg-slate-50 border-l border-slate-200 px-2 py-1.5 text-xs text-slate-400">
+                        .{PLATFORM_DOMAIN}
+                      </span>
+                    </div>
+                    <button
+                      onClick={saveSubdomain}
+                      disabled={subdomainStatus !== "valid"}
+                      className="p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Check size={13} />
+                    </button>
+                    <button
+                      onClick={cancelSubdomain}
+                      className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                  {subdomainInput && subdomainStatus !== "empty" && (
+                    <p
+                      className={`text-xs ${
+                        subdomainStatus === "valid" ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {SUBDOMAIN_STATUS_MSG[subdomainStatus]}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm text-slate-700">
+                    {localSubdomain}.{PLATFORM_DOMAIN}
+                  </span>
+                  <button
+                    onClick={startEditSubdomain}
+                    className="text-slate-400 hover:text-slate-700 transition-colors"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                </div>
+              )}
             </dd>
           </div>
         </dl>
@@ -218,13 +344,42 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         </div>
       </div>
 
+      {/* Infra Info */}
+      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+        <h3 className="text-sm font-semibold text-slate-700 mb-4">인프라 정보</h3>
+        <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+          <div>
+            <dt className="text-xs text-slate-400 mb-0.5">AWS 리전</dt>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.awsRegion}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-400 mb-0.5">EC2 인스턴스</dt>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.ec2InstanceType}</dd>
+          </div>
+          <div className="col-span-2">
+            <dt className="text-xs text-slate-400 mb-0.5">DB 호스트</dt>
+            <dd className="font-mono text-xs text-slate-700 break-all">{tenant.infra.dbHost}</dd>
+          </div>
+          <div className="col-span-2">
+            <dt className="text-xs text-slate-400 mb-0.5">S3 버킷</dt>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.s3Bucket}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-400 mb-0.5">프로비저닝 일시</dt>
+            <dd className="font-mono text-xs text-slate-700">
+              {new Date(tenant.infra.provisionedAt).toLocaleString("ko-KR")}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
       {/* Actions */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <h3 className="text-sm font-semibold text-slate-700 mb-4">관리 액션</h3>
         <div className="flex flex-wrap gap-3">
           {/* Impersonate */}
           <Link
-            href="/experiments/admin"
+            href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
           >
             <UserCog size={15} />

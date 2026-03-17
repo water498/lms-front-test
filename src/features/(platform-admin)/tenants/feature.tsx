@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { TENANTS, type Tenant } from "./mockData";
+import { TENANTS, PLATFORM_DOMAIN, type Tenant } from "./mockData";
 import CreateTenantModal from "./modals/create-tenant-modal";
 
 function PlanBadge({ plan }: { plan: string }) {
@@ -119,7 +119,7 @@ export default function TenantsFeature() {
                   {t.name}
                 </td>
                 <td className="px-4 py-3 text-slate-500 font-mono text-xs">
-                  {t.subdomain}.openk-nock.com
+                  {t.subdomain}.{PLATFORM_DOMAIN}
                 </td>
                 <td className="px-4 py-3">
                   <PlanBadge plan={t.plan} />

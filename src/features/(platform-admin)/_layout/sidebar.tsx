@@ -51,7 +51,9 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     label: "플랫폼 설정",
-    items: [{ kind: "placeholder", label: "플랫폼 설정", icon: Settings }],
+    items: [
+      { kind: "link", href: `${BASE}/settings`, label: "플랫폼 설정", icon: Settings },
+    ],
   },
 ];
 
@@ -70,7 +72,7 @@ export default function PlatformAdminSidebar() {
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
           <ShieldCheck size={16} className="text-white" />
         </div>
-        <span className="font-semibold text-slate-800 text-sm">openknock</span>
+        <span className="font-semibold text-slate-800 text-sm">OpenKnock</span>
       </div>
 
       {/* Navigation */}
@@ -123,7 +125,7 @@ export default function PlatformAdminSidebar() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-slate-800 truncate">운영팀</p>
-          <p className="text-xs text-slate-400 truncate">ops@openk-nock.com</p>
+          <p className="text-xs text-slate-400 truncate">ops@open-knock.com</p>
         </div>
         <button className="text-slate-400 hover:text-slate-600 transition-colors">
           <LogOut size={15} />

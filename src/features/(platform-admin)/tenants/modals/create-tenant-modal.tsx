@@ -1,12 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { X } from "lucide-react";
-import type { TenantPlan } from "../mockData";
+import { useState, useMemo } from "react";
+import { X, CheckCircle2, XCircle } from "lucide-react";
+import {
+  TENANTS,
+  PLATFORM_DOMAIN,
+  validateSubdomain,
+  type TenantPlan,
+  type SubdomainStatus,
+} from "../mockData";
 
 interface Props {
   onClose: () => void;
 }
+
+const STATUS_MESSAGE: Record<SubdomainStatus, string> = {
+  empty:    "",
+  format:   "소문자·영숫자·하이픈만 허용 (최소 2자)",
+  reserved: "예약어로 사용 불가",
+  taken:    "이미 사용 중인 서브도메인",
+  valid:    "사용 가능",
+};
 
 export default function CreateTenantModal({ onClose }: Props) {
   const [name, setName] = useState("");
@@ -14,11 +28,17 @@ export default function CreateTenantModal({ onClose }: Props) {
   const [adminEmail, setAdminEmail] = useState("");
   const [plan, setPlan] = useState<TenantPlan>("GROWTH");
 
+  const existingSubdomains = useMemo(() => TENANTS.map((t) => t.subdomain), []);
+  const subdomainStatus = useMemo(
+    () => validateSubdomain(subdomain, existingSubdomains),
+    [subdomain, existingSubdomains],
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // UI only — no real persistence in this experiment
+    if (subdomainStatus !== "valid") return;
     alert(
-      `테넌트 생성 요청:\n${name} (${subdomain}) — ${plan}\n담당자: ${adminEmail}`,
+      `테넌트 생성 요청:\n${name} (${subdomain}.${PLATFORM_DOMAIN}) — ${plan}\n담당자: ${adminEmail}`,
     );
     onClose();
   };
@@ -54,7 +74,15 @@ export default function CreateTenantModal({ onClose }: Props) {
             <label className="text-xs font-medium text-slate-600">
               서브도메인
             </label>
-            <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-400">
+            <div
+              className={`flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-400 ${
+                subdomainStatus === "valid"
+                  ? "border-green-400"
+                  : subdomainStatus !== "empty"
+                    ? "border-red-400"
+                    : "border-slate-200"
+              }`}
+            >
               <input
                 className="flex-1 px-3 py-2 text-sm focus:outline-none"
                 placeholder="samsung"
@@ -66,10 +94,28 @@ export default function CreateTenantModal({ onClose }: Props) {
                 }
                 required
               />
+              {subdomain && (
+                <span className="px-2">
+                  {subdomainStatus === "valid" ? (
+                    <CheckCircle2 size={15} className="text-green-500" />
+                  ) : (
+                    <XCircle size={15} className="text-red-500" />
+                  )}
+                </span>
+              )}
               <span className="bg-slate-50 border-l border-slate-200 px-3 py-2 text-xs text-slate-400">
-                .open-knock.com
+                .{PLATFORM_DOMAIN}
               </span>
             </div>
+            {subdomain && subdomainStatus !== "empty" && (
+              <p
+                className={`text-xs mt-0.5 ${
+                  subdomainStatus === "valid" ? "text-green-600" : "text-red-500"
+                }`}
+              >
+                {STATUS_MESSAGE[subdomainStatus]}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -109,7 +155,8 @@ export default function CreateTenantModal({ onClose }: Props) {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
+              disabled={subdomainStatus !== "valid"}
+              className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed"
             >
               온보딩 시작
             </button>

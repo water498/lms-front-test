@@ -1,6 +1,36 @@
 export type TenantPlan   = "STARTER" | "GROWTH" | "ENTERPRISE";
 export type TenantStatus = "TRIAL" | "ACTIVE" | "SUSPENDED";
 
+export const PLATFORM_DOMAIN = "open-knock.com";
+
+export const SUBDOMAIN_RESERVED = [
+  "admin", "api", "www", "app", "mail", "ftp", "platform",
+  "root", "system", "open-knock", "support", "status", "docs", "billing",
+];
+
+export type SubdomainStatus = "valid" | "taken" | "reserved" | "format" | "empty";
+
+export function validateSubdomain(
+  value: string,
+  existingSubdomains: string[],
+  currentSubdomain?: string,
+): SubdomainStatus {
+  if (!value) return "empty";
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(value)) return "format";
+  if (SUBDOMAIN_RESERVED.includes(value)) return "reserved";
+  const others = existingSubdomains.filter((s) => s !== currentSubdomain);
+  if (others.includes(value)) return "taken";
+  return "valid";
+}
+
+export interface TenantInfra {
+  awsRegion: string;
+  dbHost: string;
+  s3Bucket: string;
+  ec2InstanceType: string;
+  provisionedAt: string;
+}
+
 export interface Tenant {
   id: string;
   name: string;
@@ -15,6 +45,7 @@ export interface Tenant {
   contractEnd: string;
   storageUsedGB: number;
   storageMaxGB: number;
+  infra: TenantInfra;
 }
 
 export const TENANTS: Tenant[] = [
@@ -31,6 +62,13 @@ export const TENANTS: Tenant[] = [
     contractEnd: "2026-12-31",
     storageUsedGB: 412,
     storageMaxGB: 1000,
+    infra: {
+      awsRegion: "ap-northeast-2",
+      dbHost: "t-001.cluster.rds.open-knock.internal",
+      s3Bucket: "ok-tenant-samsung-prod",
+      ec2InstanceType: "c6i.4xlarge",
+      provisionedAt: "2024-01-01T09:00:00Z",
+    },
   },
   {
     id: "t-002",
@@ -45,6 +83,13 @@ export const TENANTS: Tenant[] = [
     contractEnd: "2026-02-28",
     storageUsedGB: 67,
     storageMaxGB: 100,
+    infra: {
+      awsRegion: "ap-northeast-2",
+      dbHost: "t-002.cluster.rds.open-knock.internal",
+      s3Bucket: "ok-tenant-lge-prod",
+      ec2InstanceType: "t3.large",
+      provisionedAt: "2024-03-01T11:30:00Z",
+    },
   },
   {
     id: "t-003",
@@ -59,6 +104,13 @@ export const TENANTS: Tenant[] = [
     contractEnd: "2026-06-30",
     storageUsedGB: 731,
     storageMaxGB: 1000,
+    infra: {
+      awsRegion: "ap-northeast-2",
+      dbHost: "t-003.cluster.rds.open-knock.internal",
+      s3Bucket: "ok-tenant-hyundai-prod",
+      ec2InstanceType: "c6i.8xlarge",
+      provisionedAt: "2023-07-01T08:00:00Z",
+    },
   },
   {
     id: "t-004",
@@ -74,6 +126,13 @@ export const TENANTS: Tenant[] = [
     contractEnd: "2027-03-16",
     storageUsedGB: 3,
     storageMaxGB: 100,
+    infra: {
+      awsRegion: "ap-northeast-2",
+      dbHost: "t-004.cluster.rds.open-knock.internal",
+      s3Bucket: "ok-tenant-kakao-trial",
+      ec2InstanceType: "t3.medium",
+      provisionedAt: "2026-03-17T14:00:00Z",
+    },
   },
   {
     id: "t-005",
@@ -88,5 +147,12 @@ export const TENANTS: Tenant[] = [
     contractEnd: "2025-05-31",
     storageUsedGB: 9,
     storageMaxGB: 10,
+    infra: {
+      awsRegion: "ap-northeast-2",
+      dbHost: "t-005.cluster.rds.open-knock.internal",
+      s3Bucket: "ok-tenant-naver-prod",
+      ec2InstanceType: "t3.small",
+      provisionedAt: "2024-06-01T10:00:00Z",
+    },
   },
 ];

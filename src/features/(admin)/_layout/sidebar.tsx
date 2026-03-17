@@ -156,7 +156,7 @@ function AccordionItem({ label, icon: Icon, basePaths, children }: NavAccordion)
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ isImpersonating = false }: { isImpersonating?: boolean }) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -165,7 +165,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-60 bg-white border-r border-slate-200 flex flex-col z-30 overflow-y-auto">
+    <aside className={`fixed left-0 h-screen w-60 bg-white border-r border-slate-200 flex flex-col z-30 overflow-y-auto ${isImpersonating ? "top-9" : "top-0"}`}>
       {/* Org logo + name */}
       <div className="flex items-center gap-3 px-5 h-14 border-b border-slate-200 flex-shrink-0">
         <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
