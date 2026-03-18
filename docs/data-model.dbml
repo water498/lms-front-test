@@ -1,0 +1,272 @@
+// ============================================================
+// LMS Data Model — dbdiagram.io
+// 각 테이블은 PK + FK만 포함. 관계는 Ref 블록 참조.
+// ============================================================
+
+// ── 멀티테넌시 ──────────────────────────────────────────────
+
+Table Tenant {
+  id uuid [pk]
+}
+
+Table TenantInfra {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table PlanConfig {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+// ── 조직 구조 ───────────────────────────────────────────────
+
+Table Site {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table Department {
+  id uuid [pk]
+  tenant_id uuid
+  parent_id uuid
+}
+
+Table JobGrade {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table OrgSettings {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+// ── 사용자 ──────────────────────────────────────────────────
+
+Table User {
+  id uuid [pk]
+  tenant_id uuid
+  site_id uuid
+  department_id uuid
+  job_grade_id uuid
+}
+
+Table UserGroup {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table UserGroupMember {
+  id uuid [pk]
+  user_id uuid
+  group_id uuid
+}
+
+Table AccessLog {
+  id uuid [pk]
+  user_id uuid
+}
+
+// ── 학습 콘텐츠 ─────────────────────────────────────────────
+
+Table Course {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table CourseSession {
+  id uuid [pk]
+  course_id uuid
+}
+
+Table Subject {
+  id uuid [pk]
+  course_id uuid
+}
+
+Table Activity {
+  id uuid [pk]
+  subject_id uuid
+  media_asset_id uuid
+  exam_template_id uuid
+  assign_template_id uuid
+}
+
+Table OfflineSession {
+  id uuid [pk]
+  course_session_id uuid
+}
+
+Table AttendanceRecord {
+  id uuid [pk]
+  offline_session_id uuid
+  learner_id uuid
+}
+
+// ── 수강 ────────────────────────────────────────────────────
+
+Table Enrollment {
+  id uuid [pk]
+  course_session_id uuid
+  user_id uuid
+}
+
+// ── 평가 ────────────────────────────────────────────────────
+
+Table BankQuestion {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table ExamTemplate {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table CompositionRule {
+  id uuid [pk]
+  template_id uuid
+}
+
+Table AssignmentTemplate {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table SurveyTemplate {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+// ── 수료증 & 미디어 ─────────────────────────────────────────
+
+Table CertTemplate {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table IssuedCert {
+  id uuid [pk]
+  course_id uuid
+  session_id uuid
+  user_id uuid
+  template_id uuid
+}
+
+Table MediaAsset {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+// ── 운영 ────────────────────────────────────────────────────
+
+Table Payment {
+  id uuid [pk]
+  course_session_id uuid
+  user_id uuid
+}
+
+Table MessageTemplate {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table MessageHistory {
+  id uuid [pk]
+  template_id uuid
+}
+
+Table AutomationRule {
+  id uuid [pk]
+  template_id uuid
+}
+
+Table ChannelConfig {
+  id uuid [pk]
+  tenant_id uuid
+}
+
+Table Announcement {
+  id uuid [pk]
+  target_course_id uuid
+}
+
+// ── B2C 전용 ────────────────────────────────────────────────
+
+Table Cart {
+  id uuid [pk]
+  user_id uuid
+  course_session_id uuid
+}
+
+Table Wishlist {
+  id uuid [pk]
+  user_id uuid
+  course_id uuid
+}
+
+// ============================================================
+// Ref — 관계 선언
+// ============================================================
+
+// 멀티테넌시
+Ref: Tenant.id < TenantInfra.tenant_id
+Ref: Tenant.id < User.tenant_id
+Ref: Tenant.id < Site.tenant_id
+Ref: Tenant.id < Department.tenant_id
+Ref: Tenant.id < JobGrade.tenant_id
+Ref: Tenant.id < UserGroup.tenant_id
+Ref: Tenant.id < Course.tenant_id
+Ref: Tenant.id < OrgSettings.tenant_id
+Ref: Tenant.id - ChannelConfig.tenant_id
+
+// 조직 구조
+Ref: Department.id < Department.parent_id
+
+// 사용자
+Ref: User.id < UserGroupMember.user_id
+Ref: UserGroup.id < UserGroupMember.group_id
+Ref: User.id < AccessLog.user_id
+Ref: User.site_id > Site.id
+Ref: User.department_id > Department.id
+Ref: User.job_grade_id > JobGrade.id
+
+// 학습 콘텐츠
+Ref: Course.id < CourseSession.course_id
+Ref: Course.id < Subject.course_id
+Ref: Course.id < Announcement.target_course_id
+Ref: Course.id < IssuedCert.course_id
+Ref: Course.id < Wishlist.course_id
+Ref: CourseSession.id < Enrollment.course_session_id
+Ref: CourseSession.id < OfflineSession.course_session_id
+Ref: CourseSession.id < Payment.course_session_id
+Ref: CourseSession.id < Cart.course_session_id
+Ref: Subject.id < Activity.subject_id
+Ref: Activity.media_asset_id > MediaAsset.id
+Ref: Activity.exam_template_id > ExamTemplate.id
+Ref: Activity.assign_template_id > AssignmentTemplate.id
+Ref: OfflineSession.id < AttendanceRecord.offline_session_id
+Ref: User.id < AttendanceRecord.learner_id
+
+// 수강
+Ref: User.id < Enrollment.user_id
+
+// 결제 & B2C
+Ref: User.id < Payment.user_id
+Ref: User.id < IssuedCert.user_id
+Ref: User.id < Cart.user_id
+Ref: User.id < Wishlist.user_id
+
+// 평가
+Ref: ExamTemplate.id < CompositionRule.template_id
+// Note: SurveyTemplate도 CompositionRule.template_id 참조 (polymorphic)
+Ref: SurveyTemplate.id < CompositionRule.template_id
+
+// 수료증
+Ref: CertTemplate.id < IssuedCert.template_id
+Ref: CourseSession.id < IssuedCert.session_id
+
+// 메시지 & 자동화
+Ref: MessageTemplate.id < MessageHistory.template_id
+Ref: MessageTemplate.id < AutomationRule.template_id
