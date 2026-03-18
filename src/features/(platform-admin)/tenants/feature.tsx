@@ -6,20 +6,6 @@ import { Plus } from "lucide-react";
 import { TENANTS, PLATFORM_DOMAIN, type Tenant } from "./mockData";
 import CreateTenantModal from "./modals/create-tenant-modal";
 
-function PlanBadge({ plan }: { plan: string }) {
-  const cls =
-    plan === "ENTERPRISE"
-      ? "bg-violet-100 text-violet-700"
-      : plan === "GROWTH"
-        ? "bg-blue-100 text-blue-700"
-        : "bg-slate-100 text-slate-600";
-  return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>
-      {plan}
-    </span>
-  );
-}
-
 function StatusBadge({
   status,
   trialEndsAt,
@@ -60,6 +46,21 @@ function UserUsage({ tenant }: { tenant: Tenant }) {
   );
 }
 
+function StorageBar({ tenant }: { tenant: Tenant }) {
+  const pct = Math.min(100, (tenant.storageUsedGB / tenant.storageMaxGB) * 100);
+  const color = pct > 90 ? "bg-red-400" : pct > 75 ? "bg-amber-400" : "bg-violet-400";
+  return (
+    <div className="flex items-center gap-2 min-w-[120px]">
+      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+      <span className="text-xs text-slate-500 whitespace-nowrap">
+        {tenant.storageUsedGB}/{tenant.storageMaxGB}GB
+      </span>
+    </div>
+  );
+}
+
 export default function TenantsFeature() {
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
@@ -70,7 +71,7 @@ export default function TenantsFeature() {
         <div>
           <h2 className="text-lg font-semibold text-slate-800">기업 목록</h2>
           <p className="text-sm text-slate-500 mt-0.5">
-            총 {TENANTS.length}개 테넌트
+            총 {TENANTS.length}개 기업
           </p>
         </div>
         <button
@@ -93,13 +94,13 @@ export default function TenantsFeature() {
                 서브도메인
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                플랜
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 상태
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 사용자
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                스토리지
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 계약 기간
@@ -122,13 +123,13 @@ export default function TenantsFeature() {
                   {t.subdomain}.{PLATFORM_DOMAIN}
                 </td>
                 <td className="px-4 py-3">
-                  <PlanBadge plan={t.plan} />
-                </td>
-                <td className="px-4 py-3">
                   <StatusBadge status={t.status} trialEndsAt={t.trialEndsAt} />
                 </td>
                 <td className="px-4 py-3">
                   <UserUsage tenant={t} />
+                </td>
+                <td className="px-4 py-3">
+                  <StorageBar tenant={t} />
                 </td>
                 <td className="px-4 py-3 text-slate-500 text-xs">
                   {t.contractStart} ~ {t.contractEnd}

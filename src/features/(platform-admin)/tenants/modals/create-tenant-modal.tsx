@@ -6,7 +6,6 @@ import {
   TENANTS,
   PLATFORM_DOMAIN,
   validateSubdomain,
-  type TenantPlan,
   type SubdomainStatus,
 } from "../mockData";
 
@@ -26,7 +25,9 @@ export default function CreateTenantModal({ onClose }: Props) {
   const [name, setName] = useState("");
   const [subdomain, setSubdomain] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
-  const [plan, setPlan] = useState<TenantPlan>("GROWTH");
+  const [maxUsers, setMaxUsers] = useState(0);
+  const [storageGB, setStorageGB] = useState(100);
+  const [contractEnd, setContractEnd] = useState("");
 
   const existingSubdomains = useMemo(() => TENANTS.map((t) => t.subdomain), []);
   const subdomainStatus = useMemo(
@@ -38,7 +39,7 @@ export default function CreateTenantModal({ onClose }: Props) {
     e.preventDefault();
     if (subdomainStatus !== "valid") return;
     alert(
-      `테넌트 생성 요청:\n${name} (${subdomain}.${PLATFORM_DOMAIN}) — ${plan}\n담당자: ${adminEmail}`,
+      `기업 생성 요청:\n${name} (${subdomain}.${PLATFORM_DOMAIN})\n담당자: ${adminEmail}\n최대 학습자: ${maxUsers === 0 ? "무제한" : maxUsers + "명"}\n스토리지: ${storageGB}GB\n계약 종료: ${contractEnd}`,
     );
     onClose();
   };
@@ -120,7 +121,7 @@ export default function CreateTenantModal({ onClose }: Props) {
 
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-slate-600">
-              테넌트 Admin 이메일
+              기업 Admin 이메일
             </label>
             <input
               type="email"
@@ -130,19 +131,50 @@ export default function CreateTenantModal({ onClose }: Props) {
               onChange={(e) => setAdminEmail(e.target.value)}
               required
             />
+            <p className="text-xs text-slate-400 mt-0.5">
+              생성 완료 시 위 이메일로 초대 링크가 자동 발송됩니다.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-600">
+                최대 학습자 수
+                <span className="text-slate-400 font-normal ml-1">(0 = 무제한)</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={maxUsers}
+                onChange={(e) => setMaxUsers(Number(e.target.value))}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-600">
+                스토리지 한도 (GB)
+              </label>
+              <input
+                type="number"
+                min={1}
+                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={storageGB}
+                onChange={(e) => setStorageGB(Number(e.target.value))}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-600">플랜</label>
-            <select
+            <label className="text-xs font-medium text-slate-600">
+              계약 종료일
+            </label>
+            <input
+              type="date"
               className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={plan}
-              onChange={(e) => setPlan(e.target.value as TenantPlan)}
-            >
-              <option value="STARTER">STARTER (최대 50명 / 10GB)</option>
-              <option value="GROWTH">GROWTH (최대 300명 / 100GB)</option>
-              <option value="ENTERPRISE">ENTERPRISE (무제한 / 1TB)</option>
-            </select>
+              value={contractEnd}
+              onChange={(e) => setContractEnd(e.target.value)}
+              required
+            />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

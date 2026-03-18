@@ -8,7 +8,6 @@ import {
   ExternalLink,
   UserCog,
   PauseCircle,
-  TrendingUp,
   Pencil,
   CheckCircle2,
   XCircle,
@@ -19,10 +18,11 @@ import {
   TENANTS,
   PLATFORM_DOMAIN,
   validateSubdomain,
-  type TenantPlan,
   type TenantStatus,
   type SubdomainStatus,
 } from "../mockData";
+import type { InfraServiceStatus } from "@/lib/models";
+import SsoSection from "./sections/sso-section";
 
 function ProgressBar({
   value,
@@ -41,20 +41,6 @@ function ProgressBar({
         style={{ width: `${pct}%` }}
       />
     </div>
-  );
-}
-
-function PlanBadge({ plan }: { plan: TenantPlan }) {
-  const cls =
-    plan === "ENTERPRISE"
-      ? "bg-violet-100 text-violet-700"
-      : plan === "GROWTH"
-        ? "bg-blue-100 text-blue-700"
-        : "bg-slate-100 text-slate-600";
-  return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>
-      {plan}
-    </span>
   );
 }
 
@@ -88,12 +74,32 @@ function StatusBadge({
   );
 }
 
+function InfraServiceBadge({
+  label,
+  status,
+}: {
+  label: string;
+  status: InfraServiceStatus;
+}) {
+  const cls =
+    status === "HEALTHY"
+      ? "bg-green-100 text-green-700"
+      : status === "WARNING"
+        ? "bg-amber-100 text-amber-700"
+        : "bg-red-100 text-red-700";
+  return (
+    <span className={`px-1.5 py-0.5 rounded text-xs font-mono font-medium ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 const SUBDOMAIN_STATUS_MSG: Record<SubdomainStatus, string> = {
-  empty:    "",
-  format:   "소문자·영숫자·하이픈만 허용 (최소 2자)",
+  empty: "",
+  format: "소문자·영숫자·하이픈만 허용 (최소 2자)",
   reserved: "예약어로 사용 불가",
-  taken:    "이미 사용 중인 서브도메인",
-  valid:    "사용 가능",
+  taken: "이미 사용 중인 서브도메인",
+  valid: "사용 가능",
 };
 
 interface Props {
@@ -104,30 +110,26 @@ export default function TenantDetailFeature({ tenantId }: Props) {
   const router = useRouter();
   const tenant = TENANTS.find((t) => t.id === tenantId);
 
-  const [localPlan, setLocalPlan] = useState<TenantPlan>(
-    tenant?.plan ?? "STARTER",
-  );
   const [localStatus, setLocalStatus] = useState<TenantStatus>(
     tenant?.status ?? "ACTIVE",
   );
 
   // Subdomain inline edit state
-  const [localSubdomain, setLocalSubdomain] = useState(
-    tenant?.subdomain ?? "",
-  );
+  const [localSubdomain, setLocalSubdomain] = useState(tenant?.subdomain ?? "");
   const [editingSubdomain, setEditingSubdomain] = useState(false);
   const [subdomainInput, setSubdomainInput] = useState(tenant?.subdomain ?? "");
 
   const existingSubdomains = useMemo(() => TENANTS.map((t) => t.subdomain), []);
   const subdomainStatus = useMemo(
-    () => validateSubdomain(subdomainInput, existingSubdomains, tenant?.subdomain),
+    () =>
+      validateSubdomain(subdomainInput, existingSubdomains, tenant?.subdomain),
     [subdomainInput, existingSubdomains, tenant?.subdomain],
   );
 
   if (!tenant) {
     return (
       <div className="text-center py-20 text-slate-400">
-        테넌트를 찾을 수 없습니다. (id: {tenantId})
+        기업을 찾을 수 없습니다. (id: {tenantId})
       </div>
     );
   }
@@ -138,18 +140,11 @@ export default function TenantDetailFeature({ tenantId }: Props) {
     tenant.maxUsers === 0 ? 50 : (tenant.currentUsers / tenant.maxUsers) * 100;
   const storagePct = (tenant.storageUsedGB / tenant.storageMaxGB) * 100;
 
-  const handlePlanChange = (plan: TenantPlan) => {
-    setLocalPlan(plan);
-    alert(
-      `플랜 변경 요청: ${tenant.name} → ${plan}\n(실험 환경 — store 반영 없음)`,
-    );
-  };
-
   const handleToggleSuspend = () => {
     if (localStatus === "SUSPENDED") {
       setLocalStatus("ACTIVE");
     } else {
-      if (confirm(`${tenant.name} 테넌트를 정지하시겠습니까?`)) {
+      if (confirm(`${tenant.name} 기업을 정지하시겠습니까?`)) {
         setLocalStatus("SUSPENDED");
       }
     }
@@ -191,7 +186,14 @@ export default function TenantDetailFeature({ tenantId }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <PlanBadge plan={localPlan} />
+          <Link
+            href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
+            className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors"
+          >
+            <UserCog size={13} />
+            관리자 접속
+            <ExternalLink size={11} className="opacity-70" />
+          </Link>
           <StatusBadge status={localStatus} trialEndsAt={tenant.trialEndsAt} />
         </div>
       </div>
@@ -202,18 +204,35 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">담당자 이메일</dt>
-            <dd className="text-slate-700">{tenant.adminEmail}</dd>
+            <dd className="flex items-center gap-2 flex-wrap">
+              <span className="text-slate-700">{tenant.adminEmail}</span>
+              {tenant.adminInviteStatus === "PENDING" ? (
+                <>
+                  <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">
+                    초대 발송됨
+                  </span>
+                  <button
+                    onClick={() =>
+                      alert(
+                        `${tenant.adminEmail}에 초대 이메일을 재발송합니다. (실험 환경)`,
+                      )
+                    }
+                    className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    재발송
+                  </button>
+                </>
+              ) : (
+                <span className="px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-700">
+                  활성
+                </span>
+              )}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">계약 기간</dt>
             <dd className="text-slate-700">
               {tenant.contractStart} ~ {tenant.contractEnd}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs text-slate-400 mb-0.5">플랜</dt>
-            <dd>
-              <PlanBadge plan={localPlan} />
             </dd>
           </div>
           <div>
@@ -246,14 +265,19 @@ export default function TenantDetailFeature({ tenantId }: Props) {
                         value={subdomainInput}
                         onChange={(e) =>
                           setSubdomainInput(
-                            e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
+                            e.target.value
+                              .toLowerCase()
+                              .replace(/[^a-z0-9-]/g, ""),
                           )
                         }
                       />
                       {subdomainInput && (
                         <span className="px-1.5">
                           {subdomainStatus === "valid" ? (
-                            <CheckCircle2 size={13} className="text-green-500" />
+                            <CheckCircle2
+                              size={13}
+                              className="text-green-500"
+                            />
                           ) : (
                             <XCircle size={13} className="text-red-500" />
                           )}
@@ -280,7 +304,9 @@ export default function TenantDetailFeature({ tenantId }: Props) {
                   {subdomainInput && subdomainStatus !== "empty" && (
                     <p
                       className={`text-xs ${
-                        subdomainStatus === "valid" ? "text-green-600" : "text-red-500"
+                        subdomainStatus === "valid"
+                          ? "text-green-600"
+                          : "text-red-500"
                       }`}
                     >
                       {SUBDOMAIN_STATUS_MSG[subdomainStatus]}
@@ -344,25 +370,48 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         </div>
       </div>
 
+      {/* SSO */}
+      <SsoSection tenant={tenant} />
+
       {/* Infra Info */}
       <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">인프라 정보</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-slate-700">인프라 정보</h3>
+          {tenant.infraStatus && (
+            <div className="flex items-center gap-2">
+              <InfraServiceBadge label="EC2" status={tenant.infraStatus.ec2} />
+              <InfraServiceBadge label="RDS" status={tenant.infraStatus.rds} />
+              <InfraServiceBadge label="S3"  status={tenant.infraStatus.s3} />
+              <span className="text-xs text-slate-400 ml-1">
+                {new Date(tenant.infraStatus.checkedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })} 기준
+              </span>
+            </div>
+          )}
+        </div>
         <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">AWS 리전</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.awsRegion}</dd>
+            <dd className="font-mono text-xs text-slate-700">
+              {tenant.infra.awsRegion}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">EC2 인스턴스</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.ec2InstanceType}</dd>
+            <dd className="font-mono text-xs text-slate-700">
+              {tenant.infra.ec2InstanceType}
+            </dd>
           </div>
           <div className="col-span-2">
             <dt className="text-xs text-slate-400 mb-0.5">DB 호스트</dt>
-            <dd className="font-mono text-xs text-slate-700 break-all">{tenant.infra.dbHost}</dd>
+            <dd className="font-mono text-xs text-slate-700 break-all">
+              {tenant.infra.dbHost}
+            </dd>
           </div>
           <div className="col-span-2">
             <dt className="text-xs text-slate-400 mb-0.5">S3 버킷</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.s3Bucket}</dd>
+            <dd className="font-mono text-xs text-slate-700">
+              {tenant.infra.s3Bucket}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">프로비저닝 일시</dt>
@@ -377,36 +426,6 @@ export default function TenantDetailFeature({ tenantId }: Props) {
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <h3 className="text-sm font-semibold text-slate-700 mb-4">관리 액션</h3>
         <div className="flex flex-wrap gap-3">
-          {/* Impersonate */}
-          <Link
-            href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <UserCog size={15} />
-            Impersonate (Tenant Admin)
-            <ExternalLink size={13} className="opacity-70" />
-          </Link>
-
-          {/* Plan change */}
-          <div className="flex items-center gap-2 border border-slate-200 rounded-lg px-3 py-2">
-            <TrendingUp size={15} className="text-slate-400" />
-            <span className="text-sm text-slate-600 mr-1">플랜 변경:</span>
-            {(["STARTER", "GROWTH", "ENTERPRISE"] as TenantPlan[]).map((p) => (
-              <button
-                key={p}
-                disabled={p === localPlan}
-                onClick={() => handlePlanChange(p)}
-                className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
-                  p === localPlan
-                    ? "bg-slate-100 text-slate-400 cursor-default"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
           {/* Suspend */}
           <button
             onClick={handleToggleSuspend}
@@ -417,7 +436,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
             }`}
           >
             <PauseCircle size={15} />
-            {localStatus === "SUSPENDED" ? "정지 해제" : "테넌트 정지"}
+            {localStatus === "SUSPENDED" ? "정지 해제" : "기업 정지"}
           </button>
         </div>
       </div>

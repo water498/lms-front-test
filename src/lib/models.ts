@@ -8,8 +8,56 @@
 
 // ── 멀티테넌시 ─────────────────────────────────────────────
 
-export type TenantPlan   = "STARTER" | "GROWTH" | "ENTERPRISE";
 export type TenantStatus = "TRIAL" | "ACTIVE" | "SUSPENDED";
+export type AdminInviteStatus = "PENDING" | "ACCEPTED";
+export type SsoProvider = "SAML" | "OIDC";
+
+export interface TenantSsoConfig {
+  enabled: boolean;
+  provider: SsoProvider;
+  // SAML
+  idpEntityId?: string;
+  idpSsoUrl?: string;
+  idpCertificate?: string;
+  // OIDC
+  issuerUrl?: string;
+  clientId?: string;
+  clientSecret?: string;
+}
+
+export type InfraServiceStatus = "HEALTHY" | "WARNING" | "DOWN";
+
+export interface TenantInfraStatus {
+  ec2: InfraServiceStatus;
+  rds: InfraServiceStatus;
+  s3: InfraServiceStatus;
+  checkedAt: string; // ISO 8601
+}
+
+export type PlatformAuditAction =
+  | "TENANT_CREATED"
+  | "TENANT_SUSPENDED"
+  | "TENANT_RESUMED"
+  | "SUBDOMAIN_CHANGED"
+  | "PLAN_CHANGED"
+  | "USER_LIMIT_CHANGED"
+  | "SSO_CONFIGURED"
+  | "SSO_ENABLED"
+  | "SSO_DISABLED"
+  | "ADMIN_INVITED"
+  | "ADMIN_INVITE_RESENT"
+  | "PLATFORM_SETTINGS_UPDATED";
+
+export interface PlatformAuditLog {
+  id: string;
+  timestamp: string;
+  actor: string;
+  action: PlatformAuditAction;
+  targetType: "TENANT" | "PLATFORM";
+  targetName: string;
+  detail: string;
+  ip: string;
+}
 
 export interface TenantInfra {
   awsRegion: string;
@@ -23,25 +71,19 @@ export interface Tenant {
   id: string;
   name: string;
   subdomain: string;
-  plan: TenantPlan;
   status: TenantStatus;
   trialEndsAt?: string;
   maxUsers: number;       // 0 = unlimited
   currentUsers: number;
   adminEmail: string;
+  adminInviteStatus?: AdminInviteStatus;
   contractStart: string;
   contractEnd: string;
   storageUsedGB: number;
   storageMaxGB: number;
   infra: TenantInfra;
-}
-
-export interface PlanConfig {
-  id: "STARTER" | "GROWTH" | "ENTERPRISE";
-  label: string;
-  maxUsers: number;   // 0 = unlimited
-  storageGB: number;  // 0 = unlimited
-  monthlyKRW: number; // 0 = custom
+  infraStatus?: TenantInfraStatus;
+  sso?: TenantSsoConfig;
 }
 
 // ── 사용자 ────────────────────────────────────────────────
