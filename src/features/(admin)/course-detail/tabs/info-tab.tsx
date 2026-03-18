@@ -31,11 +31,11 @@ export default function InfoTab({ course }: { course: Course }) {
   const [tagInput, setTagInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const badge = STATUS_CONFIG[course.status];
+  const badge = STATUS_CONFIG[course.status as CourseStatus];
 
   const [description, setDescription] = useState(course.description ?? "");
   const [price, setPrice] = useState<string>(course.price !== undefined ? String(course.price) : "");
-  const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy);
+  const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
 
   const suggestions = tagInput.trim()
     ? allTags.filter(

@@ -1,13 +1,5 @@
-export interface AccessLog {
-  id: string;
-  userId: string;
-  userName: string;
-  type: "LOGIN" | "LOGOUT" | "SESSION_EXPIRED" | "AUTO_LOGIN";
-  scope: "USER" | "ADMIN";
-  date: string; // "YYYY-MM-DD HH:MM"
-  ip: string;
-  userAgent: string; // e.g. "Chrome 122 / Windows 10"
-}
+export type { AccessLog } from "@/lib/models";
+import type { AccessLog } from "@/lib/models";
 
 export const ACCESS_LOGS: AccessLog[] = [
   { id: "al01", userId: "u2", userName: "홍길동", type: "LOGIN",          scope: "ADMIN", date: "2026-03-17 09:02", ip: "203.0.113.10", userAgent: "Chrome 122 / Windows 10" },

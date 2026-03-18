@@ -1,20 +1,8 @@
 import { orgUsers } from "../mockData";
+import type { UserEnrollment, ActivityLog } from "@/lib/models";
 
 export { orgUsers };
-
-export interface UserEnrollment {
-  courseTitle: string;
-  session: string;
-  progress: number;
-  status: "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  hasCertificate: boolean;
-}
-
-export interface ActivityLog {
-  date: string;
-  action: string;
-  detail: string;
-}
+export type { UserEnrollment, ActivityLog } from "@/lib/models";
 
 export const userEnrollments: Record<string, UserEnrollment[]> = {
   u5: [

@@ -103,8 +103,8 @@ export default function CourseTable({ onCreateClick }: Props) {
 }
 
 function CourseRow({ course }: { course: Course }) {
-  const badge = STATUS_CONFIG[course.status];
-  const modeBadge = MODE_CONFIG[course.mode];
+  const badge = STATUS_CONFIG[course.status as CourseStatus];
+  const modeBadge = MODE_CONFIG[course.mode as CourseMode];
   return (
     <tr className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
       <td className="px-5 py-3">
@@ -127,7 +127,7 @@ function CourseRow({ course }: { course: Course }) {
         </span>
       </td>
       <td className="px-4 py-3 text-slate-600">{course.sessions}</td>
-      <td className="px-4 py-3 text-slate-600">{course.enrollees.toLocaleString()}</td>
+      <td className="px-4 py-3 text-slate-600">{course.enrollees?.toLocaleString()}</td>
       <td className="px-4 py-3 text-slate-400">{course.createdAt}</td>
       <td className="px-4 py-3">
         <div className="flex gap-1">

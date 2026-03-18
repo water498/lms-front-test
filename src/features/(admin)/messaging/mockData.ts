@@ -1,19 +1,25 @@
-export type MessageChannel = "SMS" | "EMAIL" | "KAKAO";
-export type MessageStatus = "SENT" | "FAILED" | "SCHEDULED";
-export type KakaoApprovalStatus = "APPROVED" | "PENDING" | "REJECTED";
-export type AutomationTrigger =
-  | "ENROLLMENT_CREATED"
-  | "COURSE_COMPLETED"
-  | "ASSIGNMENT_DUE_D3"
-  | "SESSION_REMINDER_1H"
-  | "CERTIFICATE_ISSUED"
-  | "ACCOUNT_INVITED";
-
-export interface AutomationTriggerDef {
-  trigger: AutomationTrigger;
-  label: string;
-  desc: string;
-}
+export type {
+  MessageChannel,
+  MessageStatus,
+  KakaoApprovalStatus,
+  AutomationTrigger,
+  AutomationTriggerDef,
+  MessageHistory,
+  MessageTemplate,
+  VariableDef,
+  ChannelConfig,
+  AutomationRule,
+} from "@/lib/models";
+import type {
+  MessageChannel,
+  AutomationTrigger,
+  AutomationTriggerDef,
+  MessageHistory,
+  MessageTemplate,
+  VariableDef,
+  ChannelConfig,
+  AutomationRule,
+} from "@/lib/models";
 
 export const automationTriggerDefs: AutomationTriggerDef[] = [
   { trigger: "ENROLLMENT_CREATED",  label: "수강 등록 완료",       desc: "학습자가 과정에 수강 등록할 때" },
@@ -25,18 +31,6 @@ export const automationTriggerDefs: AutomationTriggerDef[] = [
 ];
 
 // ── 발송 이력 ─────────────────────────────────────────────
-
-export interface MessageHistory {
-  id: string;
-  sentAt: string;
-  recipient: string;
-  recipientCount: number;
-  channel: MessageChannel;
-  subject?: string;
-  preview: string;
-  status: MessageStatus;
-  templateId?: string;
-}
 
 export const messageHistory: MessageHistory[] = [
   { id: "m1", sentAt: "2025-03-14 09:00", recipient: "전체 학습자",            recipientCount: 8, channel: "EMAIL", subject: "3월 신규 과정 안내",   preview: "안녕하세요. 이번 달 신규 과정이 오픈되었습니다...", status: "SENT",      templateId: "t3" },
@@ -51,21 +45,6 @@ export const messageHistory: MessageHistory[] = [
 ];
 
 // ── 템플릿 ────────────────────────────────────────────────
-
-export interface MessageTemplate {
-  id: string;
-  name: string;
-  channel: MessageChannel;
-  subject?: string;           // EMAIL
-  content: string;
-  variables: string[];        // ["name", "courseName"]
-  charCount?: number;         // SMS 자동 계산
-  kakaoCode?: string;
-  kakaoApproval?: KakaoApprovalStatus;
-  kakaoButtons?: { text: string; url: string }[];
-  tags?: string[];
-  createdAt: string;
-}
 
 export const messageTemplates: MessageTemplate[] = [
   {
@@ -185,13 +164,6 @@ export function getEncourageTemplates() {
 
 // ── 변수 레지스트리 ───────────────────────────────────────
 
-export interface VariableDef {
-  key: string;                          // "name"
-  label: string;                        // "수신자 이름"
-  source: string;                       // "user.firstName" (백엔드 데이터 소스 문서화)
-  channels: MessageChannel[] | "ALL";   // 사용 가능 채널
-}
-
 export const variableDefs: VariableDef[] = [
   { key: "name",        label: "수신자 이름", source: "user.firstName",             channels: "ALL" },
   { key: "courseName",  label: "과정명",      source: "enrollment.course.name",     channels: "ALL" },
@@ -219,16 +191,6 @@ export const channelCredits: Record<MessageChannel, { balance: number; costPerMe
 };
 
 // ── 자동화 규칙 ───────────────────────────────────────────
-
-export interface AutomationRule {
-  id: string;
-  trigger: AutomationTrigger;
-  triggerLabel: string;
-  triggerDesc: string;
-  channel: MessageChannel;
-  templateId: string;
-  active: boolean;
-}
 
 export const automationRules: AutomationRule[] = [
   {
@@ -288,12 +250,6 @@ export const automationRules: AutomationRule[] = [
 ];
 
 // ── 채널 설정 ─────────────────────────────────────────────
-
-export interface ChannelConfig {
-  sms:   { senderNumber: string; apiKey: string; connected: boolean };
-  email: { senderEmail: string; smtpHost: string; smtpPort: string; connected: boolean };
-  kakao: { channelId: string; channelKey: string; connected: boolean };
-}
 
 export const channelConfig: ChannelConfig = {
   sms:   { senderNumber: "02-1234-5678", apiKey: "sk_live_••••••••••••", connected: true },

@@ -27,7 +27,7 @@ export function CourseCard({
 }) {
   const enrolled = course as EnrolledCourse;
   const progress = showProgress && "progress" in enrolled ? enrolled.progress : null;
-  const typeBadge = TYPE_BADGE[course.type];
+  const typeBadge = TYPE_BADGE[course.type!];
   const isWishlisted = actions?.wishlist.has(course.id) ?? false;
   const isInCart = actions?.cart.has(course.id) ?? false;
 
@@ -95,8 +95,8 @@ export function CourseCard({
         <div className="flex items-center gap-1 text-xs">
           <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
           <span className="text-amber-400 font-medium">{course.rating}</span>
-          <span className="text-zinc-600">({course.reviewCount >= 1000
-            ? `${(course.reviewCount / 1000).toFixed(1)}k`
+          <span className="text-zinc-600">({(course.reviewCount ?? 0) >= 1000
+            ? `${((course.reviewCount ?? 0) / 1000).toFixed(1)}k`
             : course.reviewCount})</span>
         </div>
 
@@ -104,7 +104,7 @@ export function CourseCard({
           <p className="text-xs text-zinc-500">{progress}% 수강 완료</p>
         ) : (
           <p className="text-xs font-semibold text-zinc-300">
-            {course.price === 0 ? "무료" : `₩${course.price.toLocaleString()}`}
+            {(course.price ?? 0) === 0 ? "무료" : `₩${(course.price ?? 0).toLocaleString()}`}
           </p>
         )}
 
@@ -137,7 +137,7 @@ export function CourseCard({
         )}
 
         {/* Cart button for paid courses */}
-        {actions && course.price > 0 && progress === null && (
+        {actions && (course.price ?? 0) > 0 && progress === null && (
           <button
             onClick={(e) => {
               e.stopPropagation();

@@ -11,7 +11,8 @@ export const courseStatusCounts = {
   ARCHIVED: 3,
 };
 
-export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | "CANCELLED";
+export type { EnrollmentStatus } from "@/lib/models";
+import type { EnrollmentStatus } from "@/lib/models";
 
 export interface RecentEnrollment {
   id: string;

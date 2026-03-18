@@ -88,12 +88,12 @@ export function WishlistTab({ cart, onAddToCart }: { cart: Set<string>; onAddToC
               )}
 
               <p className="text-xs font-bold text-zinc-300">
-                {course.price === 0 ? "무료" : `₩${course.price.toLocaleString()}`}
+                {(course.price ?? 0) === 0 ? "무료" : `₩${(course.price ?? 0).toLocaleString()}`}
               </p>
 
               {/* Buttons */}
               <div className="flex gap-1.5 mt-1">
-                {course.price > 0 && (
+                {(course.price ?? 0) > 0 && (
                   <button
                     onClick={() => { if (!isInCart) onAddToCart(course.id); }}
                     className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${

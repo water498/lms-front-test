@@ -1,15 +1,5 @@
-export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
-
-export interface Enrollment {
-  id: string;
-  learner: string;
-  course: string;
-  session: string;
-  status: EnrollmentStatus;
-  progress: number;
-  enrolledAt: string;
-  lastStudiedAt?: string;
-}
+export type { EnrollmentStatus, Enrollment } from "@/lib/models";
+import type { Enrollment } from "@/lib/models";
 
 export const enrollments: Enrollment[] = [
   { id: "en1",  learner: "김민준", course: "React 기초",           session: "2025-03기", status: "ACTIVE",    progress: 45,  enrolledAt: "2025-03-14", lastStudiedAt: "2025-03-16" },

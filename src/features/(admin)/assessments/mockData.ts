@@ -1,75 +1,18 @@
-// ── 문항 뱅크 ──────────────────────────────
-export type BankQuestionKind   = "EXAM" | "SURVEY";
-export type QuestionType       = "SINGLE" | "MULTIPLE" | "TRUE_FALSE" | "SHORT";
-export type SurveyQuestionType = "LIKERT" | "SINGLE" | "MULTIPLE" | "TEXT";
-
-export interface BankQuestion {
-  id: string;
-  kind: BankQuestionKind;
-  type: QuestionType | SurveyQuestionType;
-  text: string;
-  options?: { id: string; text: string; correct?: boolean }[];
-  answer?: string;   // SHORT 모범답안
-  scale?: number;    // LIKERT 척도
-  tags: string[];
-  createdAt: string;
-}
-
-// ── 구성 규칙 ───────────────────────────────
-export interface CompositionRule {
-  id: string;
-  label: string;
-  tagFilter: string[];
-  count: number;
-  shuffle: boolean;
-}
-
-// ── 시험 템플릿 ──────────────────────────────
-export type ExamSubType = "SHORT" | "FINAL";
-
-export interface ExamTemplate {
-  id: string;
-  title: string;
-  subType: ExamSubType;
-  passingScore: number;
-  timeLimit: number | null;
-  rules: CompositionRule[];
-  usageCount: number;
-  createdAt: string;
-}
-
-// ── 과제 템플릿 (변경 없음) ──────────────────
-export type SubmissionType = "FILE" | "TEXT" | "BOTH";
-
-export interface RubricItem {
-  id: string;
-  criteria: string;
-  points: number;
-}
-
-export interface AssignmentTemplate {
-  id: string;
-  title: string;
-  instructions: string;
-  submissionType: SubmissionType;
-  rubric: RubricItem[];
-  usageCount: number;
-  createdAt: string;
-}
-
-// ── 설문 템플릿 ──────────────────────────────
-export type SurveyTriggerType = "MANUAL" | "COURSE_COMPLETE";
-
-export interface SurveyTemplate {
-  id: string;
-  title: string;
-  anonymous: boolean;
-  triggerType: SurveyTriggerType;
-  rules: CompositionRule[];
-  responseCount: number;
-  status: "ACTIVE" | "CLOSED";
-  createdAt: string;
-}
+export type {
+  BankQuestionKind,
+  QuestionType,
+  SurveyQuestionType,
+  BankQuestion,
+  CompositionRule,
+  ExamSubType,
+  ExamTemplate,
+  SubmissionType,
+  RubricItem,
+  AssignmentTemplate,
+  SurveyTriggerType,
+  SurveyTemplate,
+} from "@/lib/models";
+import type { BankQuestion, ExamTemplate, AssignmentTemplate, SurveyTemplate } from "@/lib/models";
 
 // ── Mock: 문항 뱅크 ──────────────────────────
 export const bankQuestions: BankQuestion[] = [

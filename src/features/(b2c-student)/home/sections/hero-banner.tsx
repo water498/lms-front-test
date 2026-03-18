@@ -37,7 +37,7 @@ export function HeroBanner() {
         <div className="flex items-center gap-1 text-sm">
           <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
           <span className="text-amber-400 font-semibold">{course.rating}</span>
-          <span className="text-zinc-500">({course.reviewCount.toLocaleString()}개 리뷰)</span>
+          <span className="text-zinc-500">({(course.reviewCount ?? 0).toLocaleString()}개 리뷰)</span>
         </div>
 
         <div className="flex flex-col gap-1.5 mt-1">

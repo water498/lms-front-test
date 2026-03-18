@@ -1,20 +1,5 @@
-export type UserRole = "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN" | "SUPER_ADMIN";
-export type UserStatus = "ACTIVE" | "INACTIVE";
-
-export interface OrgUser {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  status: UserStatus;
-  enrolledCourses: number;
-  lastLogin: string;
-  joinedAt: string;
-  employeeId?: string;    // 사번
-  siteId?: string;        // Site.id
-  departmentId?: string;  // DeptNode.id
-  jobGradeId?: string;    // JobGrade.id
-}
+export type { UserRole, UserStatus, OrgUser } from "@/lib/models";
+import type { OrgUser } from "@/lib/models";
 
 export const orgUsers: OrgUser[] = [
   { id: "u2",  name: "홍길동",      email: "admin@acme.com",    role: "ORG_ADMIN",   status: "ACTIVE",   enrolledCourses: 0, lastLogin: "2025-03-15", joinedAt: "2024-06-01" },

@@ -18,7 +18,7 @@ export function CourseCard({
 }) {
   const enrolled = course as EnrolledCourse;
   const progress = showProgress && "progress" in enrolled ? enrolled.progress : null;
-  const typeBadge = TYPE_BADGE[course.type];
+  const typeBadge = TYPE_BADGE[course.type!];
 
   return (
     <div className="w-56 md:w-60 shrink-0 group cursor-pointer">
@@ -72,8 +72,8 @@ export function CourseCard({
         <div className="flex items-center gap-1 text-xs">
           <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
           <span className="text-amber-400 font-medium">{course.rating}</span>
-          <span className="text-zinc-600">({course.reviewCount >= 1000
-            ? `${(course.reviewCount / 1000).toFixed(1)}k`
+          <span className="text-zinc-600">({(course.reviewCount ?? 0) >= 1000
+            ? `${((course.reviewCount ?? 0) / 1000).toFixed(1)}k`
             : course.reviewCount})</span>
         </div>
 

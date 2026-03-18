@@ -91,7 +91,7 @@ export default function AnnouncementTable() {
           </thead>
           <tbody>
             {announcements.map((a) => {
-              const badge = TYPE_CONFIG[a.type];
+              const badge = TYPE_CONFIG[a.type as AnnouncementType];
               return (
                 <tr key={a.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="px-5 py-3 font-medium text-slate-800">{a.title}</td>
@@ -104,7 +104,7 @@ export default function AnnouncementTable() {
                     {a.target === "ALL" ? "전체" : a.targetCourse}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{a.sentAt}</td>
-                  <td className="px-4 py-3 text-slate-600">{a.views.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-slate-600">{a.views?.toLocaleString()}</td>
                 </tr>
               );
             })}

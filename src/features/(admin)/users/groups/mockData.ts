@@ -1,10 +1,5 @@
-export interface UserGroup {
-  id: string;
-  name: string;
-  description: string;
-  memberIds: string[];
-  createdAt: string;
-}
+export type { UserGroup } from "@/lib/models";
+import type { UserGroup } from "@/lib/models";
 
 export const userGroups: UserGroup[] = [
   {

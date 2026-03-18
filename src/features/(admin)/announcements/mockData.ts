@@ -1,15 +1,5 @@
-export type AnnouncementTarget = "ALL" | "COURSE";
-export type AnnouncementType = "ANNOUNCEMENT" | "SYSTEM_NOTICE";
-
-export interface Announcement {
-  id: string;
-  title: string;
-  type: AnnouncementType;
-  target: AnnouncementTarget;
-  targetCourse?: string;
-  sentAt: string;
-  views: number;
-}
+export type { AnnouncementTarget, AnnouncementType, Announcement } from "@/lib/models";
+import type { Announcement } from "@/lib/models";
 
 export const announcements: Announcement[] = [
   { id: "an1", title: "2025년 3월 신규 과정 안내",            type: "ANNOUNCEMENT",  target: "ALL",    sentAt: "2025-03-01", views: 892 },

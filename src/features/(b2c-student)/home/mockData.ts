@@ -1,52 +1,21 @@
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type CourseType = "online" | "offline" | "blended";
-
-export type Course = {
-  id: string;
-  title: string;
-  instructor: string;
-  category: string;
-  categoryLabel: string;
-  thumbnail: string;        // CSS gradient string
-  accentColor: string;
-  rating: number;
-  reviewCount: number;
-  duration: string;
-  level: "입문" | "초급" | "중급" | "고급";
-  tags: string[];
-  price: number;
-  isNew: boolean;
-  isBestseller: boolean;
-  type: CourseType;
-  location?: string;        // 오프라인 전용
-  nextSessionDate?: string; // 오프라인 전용 (예: "2026-04-05")
-  capacity?: number;        // 오프라인 전용
-  enrolledCount?: number;   // 오프라인 전용
-};
-
-export type EnrolledCourse = Course & {
-  progress: number;
-  lastAccessedAt: string;
-  nextLessonTitle: string;
-};
-
-export type Category = { id: string; label: string };
-
-export type Announcement = {
-  id: string;
-  type: "공지" | "이벤트" | "업데이트";
-  title: string;
-  date: string;
-  isNew: boolean;
-};
-
-export type UserStats = {
-  completedCourses: number;
-  inProgressCourses: number;
-  totalLearningMinutes: number;
-  certificates: number;
-};
+import type {
+  Course,
+  CourseType,
+  EnrolledCourse,
+  Category,
+  Announcement,
+  UserStats,
+} from "@/lib/models";
+export type {
+  Course,
+  CourseType,
+  EnrolledCourse,
+  Category,
+  Announcement,
+  UserStats,
+} from "@/lib/models";
 
 // ── Hero ───────────────────────────────────────────────────────────────────
 

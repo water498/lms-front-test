@@ -1,5 +1,5 @@
-export type TenantPlan   = "STARTER" | "GROWTH" | "ENTERPRISE";
-export type TenantStatus = "TRIAL" | "ACTIVE" | "SUSPENDED";
+export type { TenantPlan, TenantStatus, TenantInfra, Tenant } from "@/lib/models";
+import type { Tenant } from "@/lib/models";
 
 export const PLATFORM_DOMAIN = "open-knock.com";
 
@@ -21,31 +21,6 @@ export function validateSubdomain(
   const others = existingSubdomains.filter((s) => s !== currentSubdomain);
   if (others.includes(value)) return "taken";
   return "valid";
-}
-
-export interface TenantInfra {
-  awsRegion: string;
-  dbHost: string;
-  s3Bucket: string;
-  ec2InstanceType: string;
-  provisionedAt: string;
-}
-
-export interface Tenant {
-  id: string;
-  name: string;
-  subdomain: string;
-  plan: TenantPlan;
-  status: TenantStatus;
-  trialEndsAt?: string;
-  maxUsers: number;       // 0 = unlimited
-  currentUsers: number;
-  adminEmail: string;
-  contractStart: string;
-  contractEnd: string;
-  storageUsedGB: number;
-  storageMaxGB: number;
-  infra: TenantInfra;
 }
 
 export const TENANTS: Tenant[] = [

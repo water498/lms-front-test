@@ -1,21 +1,5 @@
-export type UploadStatus = "PENDING" | "VALIDATING" | "PROCESSING" | "ACTIVE" | "ERROR";
-export type AssetType = "VIDEO" | "PDF" | "IMAGE" | "SCORM";
-
-export interface MediaAsset {
-  id: string;
-  displayName: string;     // 사람이 읽는 제목 (primary)
-  originalName: string;    // 업로드된 파일명 (secondary)
-  mimeType: string;
-  assetType: AssetType;
-  size: string;
-  uploadedAt: string;
-  status: UploadStatus;
-  cdnBaseUrl: string | null;
-  launchHref: string | null;
-  scormVersion: "1.2" | "2004" | null;
-  errorMessage: string | null;
-  linkedCourses: string[];
-}
+export type { UploadStatus, AssetType, MediaAsset } from "@/lib/models";
+import type { MediaAsset } from "@/lib/models";
 
 export const mediaAssets: MediaAsset[] = [
   {

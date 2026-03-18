@@ -1,14 +1,5 @@
-export type PaymentStatus = "PAID" | "REFUNDED" | "CANCELLED";
-
-export interface Payment {
-  id: string;
-  orderNumber: string;
-  learner: string;
-  course: string;
-  amount: number; // KRW
-  status: PaymentStatus;
-  paidAt: string;
-}
+export type { PaymentStatus, Payment } from "@/lib/models";
+import type { Payment } from "@/lib/models";
 
 export const payments: Payment[] = [
   { id: "p1", orderNumber: "ORD-20250314-001", learner: "김민준", course: "React 기초",        amount: 99000,  status: "PAID",      paidAt: "2025-03-14" },

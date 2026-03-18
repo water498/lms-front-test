@@ -1,19 +1,5 @@
-export type CertStatus = "VALID" | "REVOKED" | "EXPIRED";
-
-export interface CertTemplate {
-  id: string;
-  name: string;
-  active: boolean;
-  validityYears: number | null; // null = 무기한
-  backgroundImageUrl: string | null;
-  htmlTemplate: string; // HTML with {{variable}} placeholders
-}
-
-export interface CertVariableDef {
-  key: string;
-  label: string;
-  source: string;
-}
+export type { CertStatus, CertTemplate, CertVariableDef, IssuedCert } from "@/lib/models";
+import type { CertTemplate, CertVariableDef, IssuedCert } from "@/lib/models";
 
 export const certVariableDefs: CertVariableDef[] = [
   { key: "recipientName",  label: "수령인 이름",     source: "certificate.recipient" },
@@ -24,22 +10,6 @@ export const certVariableDefs: CertVariableDef[] = [
   { key: "expiryDate",     label: "유효기간 만료일",  source: "certificate.expiryDate" },
   { key: "completionDate", label: "수료일",          source: "enrollment.completedAt" },
 ];
-
-export interface IssuedCert {
-  id: string;
-  certNumber: string;
-  publicToken: string;
-  recipient: string;
-  course: string;
-  templateId: string;
-  status: CertStatus;
-  issuedAt: string;
-  expiredAt: string | null;
-  reissuedAt: string | null;
-  revokedAt: string | null;
-  revokedReason: string | null;
-  revokedBy: string | null;
-}
 
 const T1_HTML = `<div style="box-sizing:border-box;width:100%;height:100%;padding:90px 110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#1a1a1a;background:linear-gradient(150deg,#faf7ff 0%,#ffffff 60%,#f3f0ff 100%);">
   <p style="font-size:12px;letter-spacing:.25em;color:#7c3aed;font-weight:600;text-transform:uppercase;">{{orgName}}</p>

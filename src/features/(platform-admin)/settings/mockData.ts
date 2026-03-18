@@ -1,12 +1,6 @@
 import { PLATFORM_DOMAIN } from "../tenants/mockData";
-
-export interface PlanConfig {
-  id: "STARTER" | "GROWTH" | "ENTERPRISE";
-  label: string;
-  maxUsers: number;   // 0 = unlimited
-  storageGB: number;  // 0 = unlimited
-  monthlyKRW: number; // 0 = custom
-}
+import type { PlanConfig } from "@/lib/models";
+export type { PlanConfig } from "@/lib/models";
 
 export interface PlatformSettings {
   general: {

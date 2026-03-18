@@ -1,90 +1,33 @@
-import { type Course, courses } from "../courses/mockData";
-
-// ── 오프라인 회차 ──────────────────────────────────────────────
-export type OfflineSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
-
-export interface OfflineSession {
-  id: string;
-  courseSessionId: string;
-  dayNum: number;
-  date: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  instructors: string[];
-  maxCapacity: number;
-  status: OfflineSessionStatus;
-}
-
-// ── 출결 기록 ──────────────────────────────────────────────────
-export type AttendanceStatus = "PRESENT" | "LATE" | "ABSENT" | "EXCUSED";
-export type AttendanceMethod = "QR" | "MANUAL";
-
-export interface AttendanceRecord {
-  id: string;
-  offlineSessionId: string;
-  learnerId: string;
-  learnerName: string;
-  status: AttendanceStatus;
-  method: AttendanceMethod;
-  checkedAt?: string;
-}
-
-export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT";
-
-export interface Activity {
-  id: string;
-  title: string;
-  type: ActivityType;
-  duration?: number;          // 분 (VIDEO일 때)
-  questionCount?: number;     // QUIZ/ASSIGNMENT
-  mediaAssetId?: string;      // 미디어 라이브러리 ma* ID (VIDEO/SCORM)
-  examTemplateId?: string;    // QUIZ
-  assignTemplateId?: string;  // ASSIGNMENT
-}
-
-export interface Subject {
-  id: string;
-  title: string;
-  order: number;
-  activities: Activity[];
-}
-
-export type SessionType = "SELF_PACED" | "COHORT"; // 상시 | 정규
-export type SessionStatus = "DRAFT" | "OPEN" | "ONGOING" | "CLOSED";
-
-export interface CourseSession {
-  id: string;
-  courseId: string;
-  name: string;           // 예: "1기 (2025 상반기)"
-  type: SessionType;
-  cohortNumber?: number;  // 정규일 때 기수
-  startDate?: string;     // 정규일 때
-  endDate?: string;       // 정규일 때
-  capacity: number;       // 0 = 무제한
-  enrolled: number;
-  status: SessionStatus;
-  visible: boolean;
-  forSale: boolean;
-  instructors: string[];  // 강사 이름 목록
-  location?: string;      // 오프라인 장소
-  completionThreshold: number; // 수료 인정 최소 진도율 (%)
-  targetAudience?: {
-    departments?: string[];
-    jobGrades?: string[];
-    sites?: string[];
-  };
-}
-
-export interface CourseEnrollee {
-  id: string;
-  learnerId: string;
-  learner: string;
-  sessionId: string;
-  session: string;
-  progress: number;
-  enrolledAt: string;
-}
+import { courses } from "../courses/mockData";
+import type {
+  Course,
+  OfflineSessionStatus,
+  AttendanceStatus,
+  AttendanceMethod,
+  ActivityType,
+  SessionType,
+  SessionStatus,
+  OfflineSession,
+  AttendanceRecord,
+  Activity,
+  Subject,
+  CourseSession,
+  CourseEnrollee,
+} from "@/lib/models";
+export type {
+  OfflineSessionStatus,
+  AttendanceStatus,
+  AttendanceMethod,
+  ActivityType,
+  SessionType,
+  SessionStatus,
+  OfflineSession,
+  AttendanceRecord,
+  Activity,
+  Subject,
+  CourseSession,
+  CourseEnrollee,
+} from "@/lib/models";
 
 const curricula: Record<string, Subject[]> = {
   c1: [

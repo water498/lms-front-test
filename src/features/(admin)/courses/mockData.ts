@@ -1,22 +1,12 @@
-export type CourseStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
-export type CourseMode = "ONLINE" | "OFFLINE" | "BLENDED";
-
-export interface CertConfig {
-  templateId: string;
-  completionRate: number; // 0~100
-  requireExam: boolean;
-  autoIssue: boolean;
-}
-
-export interface CancellationRule {
-  daysBeforeStart: number; // N일 이상 전 취소
-  refundPct: number;       // 0~100
-}
-
-export interface CancellationPolicy {
-  rules: CancellationRule[];  // daysBeforeStart 내림차순 정렬
-  noRefundAfterStart: boolean;
-}
+import type { CancellationPolicy, Course } from "@/lib/models";
+export type {
+  CourseStatus,
+  CourseMode,
+  CertConfig,
+  CancellationRule,
+  CancellationPolicy,
+  Course,
+} from "@/lib/models";
 
 export const DEFAULT_CANCELLATION_POLICY: CancellationPolicy = {
   rules: [
@@ -26,23 +16,6 @@ export const DEFAULT_CANCELLATION_POLICY: CancellationPolicy = {
   ],
   noRefundAfterStart: true,
 };
-
-export interface Course {
-  id: string;
-  title: string;
-  instructor: string;
-  status: CourseStatus;
-  mode: CourseMode;
-  sessions: number;
-  enrollees: number;
-  createdAt: string;
-  category: string;
-  tags: string[];
-  certConfig: CertConfig | null;
-  description?: string;
-  price?: number;               // B2C 판매가. undefined = 무료. B2B hide 예정.
-  cancellationPolicy: CancellationPolicy;
-}
 
 export const courses: Course[] = [
   { id: "c1", title: "React 기초",            instructor: "이준혁", status: "PUBLISHED", mode: "ONLINE",  sessions: 4, enrollees: 312, createdAt: "2024-12-01", category: "프론트엔드", tags: ["React", "JavaScript", "초급"],        certConfig: { templateId: "t1", completionRate: 80,  requireExam: false, autoIssue: true  }, description: "React의 핵심 개념부터 컴포넌트 설계까지 배우는 입문 과정입니다. JSX, 상태 관리, 이벤트 처리를 실습 중심으로 학습합니다.", price: 89000,  cancellationPolicy: DEFAULT_CANCELLATION_POLICY },

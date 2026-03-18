@@ -95,6 +95,27 @@ pnpm lint     # ESLint
 - 테넌트 ID, 역할(role), 인증 방식(authProvider)은 User 모델의 핵심 필드
 - 브랜딩(로고, 컬러), 메뉴 구성이 테넌트별로 달라질 수 있음을 UI 설계에 반영
 
+---
+
+## 공유 타입
+
+모든 도메인 타입/인터페이스는 `src/lib/models.ts`에 정의한다.
+
+- 새 도메인 엔티티 추가 시 → `models.ts`에 먼저 정의 후 `mockData.ts`에서 import
+- UI 전용 타입 (컴포넌트 props, 로컬 상태 shape 등) → 해당 파일에 로컬 정의 허용
+- `mockData.ts` / `store.ts`는 타입을 재정의하지 않고 `models.ts`에서 import
+
+### 전환 로드맵
+
+| 단계 | `models.ts` 역할 | Course 등 타입 방식 |
+|------|-----------------|-------------------|
+| 현재 (실험) | 공통 타입 SoT | flat optional 통합 |
+| API 연동 시 | DB 스키마 1:1 반영 | 필드 필수화 + feature별 `Pick`/DTO |
+
+실제 API 연동 시점에 `models.ts`를 `data-model.dbml` 기준으로 재정비한다.
+
+---
+
 ### ⚠️ SSO 사용자 프로필 주의사항
 B2B SSO 사용자는 이름·이메일이 IdP(회사 디렉토리)에서 관리됨.
 LMS에서 자유 편집 허용 시 다음 SSO 로그인 때 IdP 값으로 덮어씌워짐.

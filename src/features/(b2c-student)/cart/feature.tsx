@@ -74,7 +74,7 @@ export default function CartFeature() {
     .map((id) => courseById[id])
     .filter(Boolean);
 
-  const subtotal = cartItems.reduce((sum, c) => sum + c.price, 0);
+  const subtotal = cartItems.reduce((sum, c) => sum + (c.price ?? 0), 0);
   const discount = couponApplied ? Math.floor(subtotal * 0.1) : 0;
   const total = subtotal - discount;
 
@@ -166,7 +166,7 @@ export default function CartFeature() {
                         {course.type === "online" ? "온라인" : course.type === "offline" ? "오프라인" : "혼합"}
                       </span>
                       <span className="text-sm font-bold text-white">
-                        ₩{course.price.toLocaleString()}
+                        ₩{(course.price ?? 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
