@@ -1,12 +1,12 @@
 "use client";
 
 import { learningEvents } from "../mockData";
-import type { LearningEvent, EventVerb } from "@/lib/models";
+import type { ActivityLog, ActivityVerb } from "@/lib/models";
 
-const VERB_LABEL: Record<EventVerb, string> = {
+const VERB_LABEL: Record<ActivityVerb, string> = {
   ENROLLED:             "수강 신청",
-  LESSON_STARTED:       "레슨 시작",
-  LESSON_COMPLETED:     "레슨 완료",
+  ACTIVITY_STARTED:     "레슨 시작",
+  ACTIVITY_COMPLETED:   "레슨 완료",
   VIDEO_WATCHED:        "강의 시청",
   EXAM_SUBMITTED:       "시험 제출",
   ASSIGNMENT_SUBMITTED: "과제 제출",
@@ -15,10 +15,10 @@ const VERB_LABEL: Record<EventVerb, string> = {
   CERTIFICATE_ISSUED:   "수료증 발급",
 };
 
-const VERB_COLOR: Record<EventVerb, string> = {
+const VERB_COLOR: Record<ActivityVerb, string> = {
   ENROLLED:             "bg-blue-100 text-blue-600",
-  LESSON_STARTED:       "bg-slate-100 text-slate-500",
-  LESSON_COMPLETED:     "bg-violet-100 text-violet-600",
+  ACTIVITY_STARTED:     "bg-slate-100 text-slate-500",
+  ACTIVITY_COMPLETED:   "bg-violet-100 text-violet-600",
   VIDEO_WATCHED:        "bg-violet-100 text-violet-600",
   EXAM_SUBMITTED:       "bg-amber-100 text-amber-600",
   ASSIGNMENT_SUBMITTED: "bg-orange-100 text-orange-600",
@@ -27,7 +27,7 @@ const VERB_COLOR: Record<EventVerb, string> = {
   CERTIFICATE_ISSUED:   "bg-emerald-100 text-emerald-700",
 };
 
-function getDetail(log: LearningEvent): string {
+function getDetail(log: ActivityLog): string {
   const parts: string[] = [];
   if (log.objectTitle) parts.push(log.objectTitle);
   if (log.result?.score !== undefined) parts.push(`${log.result.score}점`);

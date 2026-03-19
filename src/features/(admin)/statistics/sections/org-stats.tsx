@@ -3,13 +3,13 @@
 import { useMemo } from "react";
 import { Download } from "lucide-react";
 import { enrollments } from "../../enrollments/mockData";
-import { orgUsers } from "../../users/mockData";
+import { users } from "../../users/mockData";
 import { useOrgStructureStore, findDeptNode } from "../../shared/org-structure-store";
 
 export default function OrgStats() {
   const { departments, sites } = useOrgStructureStore();
 
-  const learners = useMemo(() => orgUsers.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const deptStats = useMemo(() => {
     // Collect all department IDs that have learners

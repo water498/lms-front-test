@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { ChevronRight, Users, Search } from "lucide-react";
 import { courses } from "../../courses/mockData";
 import { getSessions, getEnrolleesBySession } from "../../course-detail/mockData";
-import { orgUsers } from "../../users/mockData";
+import { users } from "../../users/mockData";
 import { userGroups } from "../../users/groups/mockData";
 import {
   useOrgStructureStore,
@@ -84,7 +84,7 @@ export default function AssignPanel() {
     () => (selectedCourseId ? getSessions(selectedCourseId) : []),
     [selectedCourseId]
   );
-  const learners = useMemo(() => orgUsers.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const groupUserIds = useMemo(() => {
     const ids = new Set<string>();

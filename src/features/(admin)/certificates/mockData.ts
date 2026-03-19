@@ -1,5 +1,5 @@
-export type { CertStatus, CertTemplate, CertVariableDef, IssuedCert } from "@/lib/models";
-import type { CertTemplate, CertVariableDef, IssuedCert } from "@/lib/models";
+export type { CertStatus, CertificateTemplate, CertVariableDef, IssuedCertificate } from "@/lib/models";
+import type { CertificateTemplate, CertVariableDef, IssuedCertificate } from "@/lib/models";
 
 export const certVariableDefs: CertVariableDef[] = [
   { key: "recipientName",  label: "수령인 이름",     source: "certificate.recipient" },
@@ -74,13 +74,13 @@ const T3_HTML = `<div style="box-sizing:border-box;width:100%;height:100%;paddin
   <p style="font-size:10px;color:#cbd5e1;margin-top:4px;">No. {{certNumber}}</p>
 </div>`;
 
-export const certTemplates: CertTemplate[] = [
+export const certTemplates: CertificateTemplate[] = [
   { id: "t1", name: "기술 교육 수료증",  active: true,  validityYears: 2,    backgroundImageUrl: null, htmlTemplate: T1_HTML },
   { id: "t2", name: "전문 자격 수료증",  active: true,  validityYears: null, backgroundImageUrl: null, htmlTemplate: T2_HTML },
   { id: "t3", name: "기본 수강 확인증",  active: false, validityYears: 1,    backgroundImageUrl: null, htmlTemplate: T3_HTML },
 ];
 
-export const initialIssuedCerts: IssuedCert[] = [
+export const initialIssuedCertificates: IssuedCertificate[] = [
   {
     id: "ic1", certNumber: "CERT-2025-0042", publicToken: "a1b2c3d4-0042",
     recipient: "박지호",  course: "Next.js 마스터",    templateId: "t1",

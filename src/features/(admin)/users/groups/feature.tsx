@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Users, Plus, X, CalendarDays } from "lucide-react";
 import { userGroups as initialGroups } from "./mockData";
 import type { UserGroup } from "./mockData";
-import { orgUsers } from "../mockData";
+import { users } from "../mockData";
 import CreateGroupModal from "./modals/create-group-modal";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -31,7 +31,7 @@ export default function GroupsFeature() {
   const selectedGroup = groups.find((g) => g.id === selectedGroupId) ?? null;
 
   const selectedMembers = selectedGroup
-    ? orgUsers.filter((u) => selectedGroup.memberIds.includes(u.id))
+    ? users.filter((u) => selectedGroup.memberIds.includes(u.id))
     : [];
 
   function handleCreate(group: UserGroup) {
@@ -52,7 +52,7 @@ export default function GroupsFeature() {
 
   // candidates: not already in the group
   const addCandidates = selectedGroup
-    ? orgUsers.filter(
+    ? users.filter(
         (u) =>
           !selectedGroup.memberIds.includes(u.id) &&
           (u.name.includes(addSearch) || u.email.includes(addSearch))

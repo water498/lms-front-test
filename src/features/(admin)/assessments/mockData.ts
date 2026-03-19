@@ -1,8 +1,8 @@
 export type {
-  BankQuestionKind,
+  QuestionBankKind,
   QuestionType,
   SurveyQuestionType,
-  BankQuestion,
+  QuestionBank,
   CompositionRule,
   ExamSubType,
   ExamTemplate,
@@ -12,10 +12,10 @@ export type {
   SurveyTriggerType,
   SurveyTemplate,
 } from "@/lib/models";
-import type { BankQuestion, ExamTemplate, AssignmentTemplate, SurveyTemplate } from "@/lib/models";
+import type { QuestionBank, ExamTemplate, AssignmentTemplate, SurveyTemplate } from "@/lib/models";
 
 // ── Mock: 문항 뱅크 ──────────────────────────
-export const bankQuestions: BankQuestion[] = [
+export const bankQuestions: QuestionBank[] = [
   // EXAM — 직장내괴롭힘
   {
     id: "bq1", kind: "EXAM", type: "SINGLE",

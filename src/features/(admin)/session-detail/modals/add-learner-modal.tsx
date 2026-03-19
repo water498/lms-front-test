@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { X, Search, Users } from "lucide-react";
-import { orgUsers } from "../../users/mockData";
+import { users } from "../../users/mockData";
 import { userGroups } from "../../users/groups/mockData";
 import { useOrgStructureStore, findDeptNode, type DeptNode } from "../../shared/org-structure-store";
 
@@ -69,7 +69,7 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
   const [selectedDepts, setSelectedDepts] = useState<Set<string>>(new Set());
   const [selectedGrades, setSelectedGrades] = useState<Set<string>>(new Set());
 
-  const learners = useMemo(() => orgUsers.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const filtered = learners.filter(
     (u) => u.name.includes(search) || u.email.includes(search)

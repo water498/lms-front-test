@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getCourse, getCurriculum, getSessions, getEnrollees, type Subject, type Activity } from "./mockData";
+import { getCourse, getCurriculum, getSessions, getEnrollees, type CourseSubject, type CourseActivity } from "./mockData";
 import InfoTab from "./tabs/info-tab";
 import CurriculumTab from "./tabs/curriculum-tab";
 import SessionsTab from "./tabs/sessions-tab";
@@ -17,7 +17,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const sessions = getSessions(courseId);
   const enrollees = getEnrollees(courseId);
 
-  const [subjects, setSubjects] = useState<Subject[]>(() => getCurriculum(courseId));
+  const [subjects, setSubjects] = useState<CourseSubject[]>(() => getCurriculum(courseId));
 
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
@@ -41,7 +41,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
     setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
   }
 
-  function handleAddActivity(subjectId: string, activity: Activity) {
+  function handleAddActivity(subjectId: string, activity: CourseActivity) {
     setSubjects((prev) =>
       prev.map((s) =>
         s.id === subjectId ? { ...s, activities: [...s.activities, activity] } : s

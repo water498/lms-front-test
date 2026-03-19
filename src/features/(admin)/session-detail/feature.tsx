@@ -11,8 +11,9 @@ import SessionOfflineTab from "./tabs/offline-tab";
 import DashboardTab from "./tabs/dashboard-tab";
 import SessionAssessmentTab from "./tabs/assessment-tab";
 import LearningHistoryTab from "./tabs/learning-history-tab";
+import WaitlistTab from "./tabs/waitlist-tab";
 
-type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "history" | "offline";
+type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "history" | "offline" | "waitlist";
 
 interface Props {
   courseId: string;
@@ -30,6 +31,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
   const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
+  const isCohort = session.type === "COHORT";
 
   const TABS: { id: TabId; label: string }[] = [
     { id: "dashboard",  label: "대시보드" },
@@ -38,6 +40,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
     { id: "assessment", label: "평가 설정" },
     { id: "history",    label: "학습 이력" },
     ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
+    ...(isCohort  ? [{ id: "waitlist" as TabId, label: "대기자" }]       : []),
   ];
 
   return (
@@ -87,6 +90,7 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
         {activeTab === "assessment" && <SessionAssessmentTab session={session} />}
         {activeTab === "history"    && <LearningHistoryTab sessionId={session.id} />}
         {activeTab === "offline"    && <SessionOfflineTab sessionId={session.id} />}
+        {activeTab === "waitlist"   && <WaitlistTab sessionId={session.id} />}
       </div>
     </div>
   );

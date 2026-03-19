@@ -8,11 +8,12 @@ import type {
   SessionType,
   SessionStatus,
   OfflineSession,
-  AttendanceRecord,
-  Activity,
-  Subject,
+  OfflineAttendance,
+  CourseActivity,
+  CourseSubject,
   CourseSession,
   CourseEnrollee,
+  CoursePrerequisite,
 } from "@/lib/models";
 export type {
   OfflineSessionStatus,
@@ -22,14 +23,15 @@ export type {
   SessionType,
   SessionStatus,
   OfflineSession,
-  AttendanceRecord,
-  Activity,
-  Subject,
+  OfflineAttendance,
+  CourseActivity,
+  CourseSubject,
   CourseSession,
   CourseEnrollee,
+  CoursePrerequisite,
 } from "@/lib/models";
 
-const curricula: Record<string, Subject[]> = {
+const curricula: Record<string, CourseSubject[]> = {
   c1: [
     {
       id: "s1", title: "React 기초 개념", order: 1,
@@ -94,7 +96,7 @@ export function getCourse(courseId: string): Course | undefined {
   return courses.find((c) => c.id === courseId) ?? courses[0];
 }
 
-export function getCurriculum(courseId: string): Subject[] {
+export function getCurriculum(courseId: string): CourseSubject[] {
   return curricula[courseId] ?? curricula["c1"];
 }
 
@@ -126,7 +128,7 @@ const offlineSessions: Record<string, OfflineSession[]> = {
   ],
 };
 
-const attendanceRecords: Record<string, AttendanceRecord[]> = {
+const attendanceRecords: Record<string, OfflineAttendance[]> = {
   os1: [
     { id: "at1",  offlineSessionId: "os1", learnerId: "u1", learnerName: "김민준", status: "PRESENT", method: "QR",     checkedAt: "2025-02-10T10:03:00Z" },
     { id: "at2",  offlineSessionId: "os1", learnerId: "u2", learnerName: "이서연", status: "LATE",    method: "QR",     checkedAt: "2025-02-10T10:22:00Z" },
@@ -154,6 +156,21 @@ export function getOfflineSessions(courseSessionId: string): OfflineSession[] {
   return offlineSessions[courseSessionId] ?? [];
 }
 
-export function getAttendanceRecords(offlineSessionId: string): AttendanceRecord[] {
+export function getOfflineAttendances(offlineSessionId: string): OfflineAttendance[] {
   return attendanceRecords[offlineSessionId] ?? [];
+}
+
+// ── 선수과정 Mock 데이터 ──────────────────────────────────
+const prerequisites: Record<string, CoursePrerequisite[]> = {
+  c1: [
+    { courseId: "c1", prerequisiteCourseId: "c2", requiredCompletion: false },
+  ],
+  c3: [
+    { courseId: "c3", prerequisiteCourseId: "c1", requiredCompletion: true  },
+    { courseId: "c3", prerequisiteCourseId: "c2", requiredCompletion: true  },
+  ],
+};
+
+export function getPrerequisites(courseId: string): CoursePrerequisite[] {
+  return prerequisites[courseId] ?? [];
 }

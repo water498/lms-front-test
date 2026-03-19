@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { ExternalLink, ImagePlus, Trash2, X } from "lucide-react";
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { html } from "@codemirror/lang-html";
-import { CertTemplate, certVariableDefs } from "../mockData";
+import { CertificateTemplate, certVariableDefs } from "../mockData";
 import { useCertStore } from "../store";
 import { CERT_W, CERT_H, buildSrcDoc } from "../utils/cert-preview";
 
 interface Props {
-  template: CertTemplate;
+  template: CertificateTemplate;
   onClose: () => void;
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { OrgUser } from "../../mockData";
+import type { User } from "../../mockData";
 import { useOrgStructureStore, findDeptNode } from "../../../shared/org-structure-store";
 
 const ROLE_CONFIG = {
@@ -15,7 +15,7 @@ const STATUS_CONFIG = {
   INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
 } as const;
 
-export default function ProfileTab({ user }: { user: OrgUser }) {
+export default function ProfileTab({ user }: { user: User }) {
   const { departments, jobGrades, sites } = useOrgStructureStore();
 
   const role = ROLE_CONFIG[user.role];

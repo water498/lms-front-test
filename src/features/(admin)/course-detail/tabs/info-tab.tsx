@@ -11,6 +11,7 @@ import {
   instructors,
   DEFAULT_CANCELLATION_POLICY,
 } from "../../courses/mockData";
+import { type CoursePrerequisite, getPrerequisites } from "../mockData";
 import { useTaxonomyStore } from "../../shared/taxonomy-store";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {
@@ -39,6 +40,27 @@ export default function InfoTab({ course }: { course: Course }) {
     course.defaultMinEnrollment != null ? String(course.defaultMinEnrollment) : ""
   );
   const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
+  const [prereqs, setPrereqs] = useState<CoursePrerequisite[]>(() => getPrerequisites(course.id));
+
+  const otherCourses = courses.filter((c) => c.id !== course.id);
+
+  function addPrereq() {
+    const firstAvailable = otherCourses.find((c) => !prereqs.some((p) => p.prerequisiteCourseId === c.id));
+    if (!firstAvailable) return;
+    setPrereqs([...prereqs, { courseId: course.id, prerequisiteCourseId: firstAvailable.id, requiredCompletion: false }]);
+  }
+
+  function updatePrereqCourse(index: number, prerequisiteCourseId: string) {
+    setPrereqs(prereqs.map((p, i) => i === index ? { ...p, prerequisiteCourseId } : p));
+  }
+
+  function updatePrereqRequired(index: number, requiredCompletion: boolean) {
+    setPrereqs(prereqs.map((p, i) => i === index ? { ...p, requiredCompletion } : p));
+  }
+
+  function removePrereq(index: number) {
+    setPrereqs(prereqs.filter((_, i) => i !== index));
+  }
 
   const suggestions = tagInput.trim()
     ? allTags.filter(
@@ -244,6 +266,64 @@ export default function InfoTab({ course }: { course: Course }) {
           <span className="text-sm text-slate-500">명</span>
           <span className="text-xs text-slate-400 ml-1">(빈 값 = 미설정)</span>
         </div>
+      </div>
+
+      {/* 선수과정 */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-medium text-slate-600">선수과정</label>
+          <button
+            type="button"
+            onClick={addPrereq}
+            disabled={prereqs.length >= otherCourses.length}
+            className="text-xs text-violet-600 hover:text-violet-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+          >
+            <Plus size={12} />
+            선수과정 추가
+          </button>
+        </div>
+
+        {prereqs.length === 0 ? (
+          <p className="text-sm text-slate-400">선수 과정 없음</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {prereqs.map((p, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                <select
+                  className="flex-1 border border-slate-200 rounded-md px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+                  value={p.prerequisiteCourseId}
+                  onChange={(e) => updatePrereqCourse(i, e.target.value)}
+                >
+                  {otherCourses.map((c) => (
+                    <option
+                      key={c.id}
+                      value={c.id}
+                      disabled={prereqs.some((pr, pi) => pi !== i && pr.prerequisiteCourseId === c.id)}
+                    >
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-1.5 text-xs text-slate-600 whitespace-nowrap cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={p.requiredCompletion}
+                    onChange={(e) => updatePrereqRequired(i, e.target.checked)}
+                    className="accent-violet-600"
+                  />
+                  수료 필수
+                </label>
+                <button
+                  type="button"
+                  onClick={() => removePrereq(i)}
+                  className="text-slate-400 hover:text-red-500 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 취소·환불 규정 */}

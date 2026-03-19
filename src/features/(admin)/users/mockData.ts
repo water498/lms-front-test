@@ -1,7 +1,7 @@
-export type { UserRole, UserStatus, OrgUser } from "@/lib/models";
-import type { OrgUser } from "@/lib/models";
+export type { UserRole, UserStatus, User } from "@/lib/models";
+import type { User } from "@/lib/models";
 
-export const orgUsers: OrgUser[] = [
+export const users: User[] = [
   { id: "u2",  name: "홍길동",      email: "admin@acme.com",    role: "ORG_ADMIN",   status: "ACTIVE",   enrolledCourses: 0, lastLogin: "2025-03-15", joinedAt: "2024-06-01" },
   { id: "u3",  name: "이준혁",      email: "lee@acme.com",      role: "INSTRUCTOR",  status: "ACTIVE",   enrolledCourses: 0, lastLogin: "2025-03-14", joinedAt: "2024-08-10", employeeId: "EMP-0003" },
   { id: "u4",  name: "박소연",      email: "park@acme.com",     role: "INSTRUCTOR",  status: "ACTIVE",   enrolledCourses: 0, lastLogin: "2025-03-13", joinedAt: "2024-09-01", employeeId: "EMP-0004" },

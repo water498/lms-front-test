@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Upload } from "lucide-react";
 import { useUsersStore } from "../../shared/users-store";
-import { userStats, type OrgUser, type UserRole, type UserStatus } from "../mockData";
+import { userStats, type User, type UserRole, type UserStatus } from "../mockData";
 
 const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -18,7 +18,7 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = 
   INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
 };
 
-function handleExport(users: OrgUser[]) {
+function handleExport(users: User[]) {
   const header = "이름,이메일,역할,상태,수강과정,마지막로그인\n";
   const rows = users
     .map((u) => `${u.name},${u.email},${ROLE_CONFIG[u.role].label},${STATUS_CONFIG[u.status].label},${u.enrolledCourses},${u.lastLogin}`)
@@ -160,7 +160,7 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
   );
 }
 
-function UserRow({ user, onClick }: { user: OrgUser; onClick: () => void }) {
+function UserRow({ user, onClick }: { user: User; onClick: () => void }) {
   const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
   return (

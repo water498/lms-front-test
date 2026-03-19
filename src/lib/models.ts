@@ -86,12 +86,44 @@ export interface Tenant {
   sso?: TenantSsoConfig;
 }
 
+// ── 조직 구조 ─────────────────────────────────────────────
+
+export interface OrgSite {
+  id: string;
+  tenantId: string;
+  name: string;
+}
+
+export interface OrgTeam {
+  id: string;
+  tenantId: string;
+  name: string;
+  parentId?: string; // NULL = 최상위
+  order: number;
+}
+
+export interface OrgPosition {
+  id: string;
+  tenantId: string;
+  name: string;
+  order: number; // 낮은 값 = 하위 직급
+}
+
+export interface OrgSetting {
+  tenantId: string;
+  name: string;
+  contactEmail: string;
+  brandColor: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+}
+
 // ── 사용자 ────────────────────────────────────────────────
 
 export type UserRole = "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN" | "SUPER_ADMIN";
 export type UserStatus = "ACTIVE" | "INACTIVE";
 
-export interface OrgUser {
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -101,9 +133,9 @@ export interface OrgUser {
   lastLogin: string;
   joinedAt: string;
   employeeId?: string; // 사번
-  siteId?: string; // Site.id
-  departmentId?: string; // DeptNode.id
-  jobGradeId?: string; // JobGrade.id
+  siteId?: string; // OrgSite.id
+  departmentId?: string; // OrgTeam.id
+  jobGradeId?: string; // OrgPosition.id
 }
 
 export interface UserGroup {
@@ -114,7 +146,7 @@ export interface UserGroup {
   createdAt: string;
 }
 
-export interface AccessLog {
+export interface UserAccessLog {
   id: string;
   userId: string;
   userName: string;
@@ -123,6 +155,28 @@ export interface AccessLog {
   date: string; // "YYYY-MM-DD HH:MM"
   ip: string;
   userAgent: string;
+}
+
+export interface UserInvitation {
+  id: string;
+  tenantId: string;
+  email: string;
+  role: UserRole;
+  invitedBy: string; // actor name
+  invitedAt: string;
+  status: "PENDING" | "ACCEPTED" | "EXPIRED";
+  expiresAt: string;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: "ENROLLMENT" | "CERT_ISSUED" | "EXAM_RESULT" | "ANNOUNCEMENT" | "SYSTEM";
+  title: string;
+  body: string;
+  read: boolean;
+  createdAt: string;
+  linkUrl?: string;
 }
 
 // 테넌트 admin 감사 로그 (Layer 2 — 관리자 작업 이력)
@@ -154,10 +208,10 @@ export interface UserEnrollment {
 }
 
 // 학습 이벤트 로그 (Layer 3 — append-only, xAPI verb 기반)
-export type EventVerb =
+export type ActivityVerb =
   | "ENROLLED"
-  | "LESSON_STARTED"
-  | "LESSON_COMPLETED"
+  | "ACTIVITY_STARTED"
+  | "ACTIVITY_COMPLETED"
   | "VIDEO_WATCHED"
   | "EXAM_SUBMITTED"
   | "ASSIGNMENT_SUBMITTED"
@@ -165,11 +219,11 @@ export type EventVerb =
   | "COURSE_COMPLETED"
   | "CERTIFICATE_ISSUED";
 
-export interface LearningEvent {
+export interface ActivityLog {
   id: string;
   learnerId: string;
-  verb: EventVerb;
-  objectType: "LESSON" | "EXAM" | "ASSIGNMENT" | "COURSE" | "SESSION";
+  verb: ActivityVerb;
+  objectType: "ACTIVITY" | "EXAM" | "ASSIGNMENT" | "COURSE" | "SESSION";
   objectId: string;
   objectTitle?: string;
   result?: {
@@ -264,6 +318,55 @@ export type EnrolledCourse = Course & {
 
 export type Category = { id: string; label: string };
 
+export interface CoursePrerequisite {
+  courseId: string;
+  prerequisiteCourseId: string;
+  requiredCompletion: boolean; // true = 수료 필수, false = 수강 이력만
+}
+
+export interface LearningPath {
+  id: string;
+  tenantId: string;
+  title: string;
+  description?: string;
+  thumbnailUrl?: string;
+  price?: number; // B2C
+  status: "PUBLISHED" | "DRAFT";
+  createdAt: string;
+}
+
+export interface LearningPathCourse {
+  learningPathId: string;
+  courseId: string;
+  order: number;
+}
+
+// ── SCORM ─────────────────────────────────────────────────
+
+export interface ScormSco {
+  id: string;
+  mediaAssetId: string; // SCORM MediaAsset
+  identifier: string;
+  title: string;
+  launchHref: string;
+  order: number;
+}
+
+export interface ScormRuntime {
+  id: string;
+  enrollmentId: string;
+  scoId: string; // ScormSco.id
+  learnerId: string;
+  lessonStatus: "not attempted" | "incomplete" | "completed" | "passed" | "failed";
+  suspendData?: string;
+  scoreRaw?: number;
+  scoreMin?: number;
+  scoreMax?: number;
+  sessionTime?: string; // HH:MM:SS
+  totalTime?: string;
+  updatedAt: string;
+}
+
 // ── 오프라인 수업 & 출결 ──────────────────────────────────
 
 export type OfflineSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
@@ -284,7 +387,7 @@ export interface OfflineSession {
 export type AttendanceStatus = "PRESENT" | "LATE" | "ABSENT" | "EXCUSED";
 export type AttendanceMethod = "QR" | "MANUAL";
 
-export interface AttendanceRecord {
+export interface OfflineAttendance {
   id: string;
   offlineSessionId: string;
   learnerId: string;
@@ -298,7 +401,7 @@ export interface AttendanceRecord {
 
 export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT";
 
-export interface Activity {
+export interface CourseActivity {
   id: string;
   title: string;
   type: ActivityType;
@@ -307,13 +410,14 @@ export interface Activity {
   mediaAssetId?: string; // 콘텐츠 라이브러리 ma* ID (VIDEO/SCORM)
   examTemplateId?: string; // QUIZ
   assignTemplateId?: string; // ASSIGNMENT
+  surveyTemplateId?: string; // SURVEY
 }
 
-export interface Subject {
+export interface CourseSubject {
   id: string;
   title: string;
   order: number;
-  activities: Activity[];
+  activities: CourseActivity[];
 }
 
 export type SessionType = "SELF_PACED" | "COHORT";
@@ -362,6 +466,7 @@ export interface CourseEnrollee {
 // ── 수강 ──────────────────────────────────────────────────
 
 export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+export type EnrollmentSource = "SELF" | "ADMIN_ASSIGNED" | "PAYMENT";
 
 export interface Enrollment {
   id: string;
@@ -372,12 +477,25 @@ export interface Enrollment {
   progress: number;
   enrolledAt: string;
   lastStudiedAt?: string;
+  paymentId?: string; // Payment.id
+  expiresAt?: string;
+  completedAt?: string;
+  source?: EnrollmentSource;
+}
+
+export interface WaitList {
+  id: string;
+  courseSessionId: string;
+  userId: string;
+  userName: string;
+  requestedAt: string;
+  status: "WAITING" | "APPROVED" | "CANCELLED";
 }
 
 // ── 학습 이력 ──────────────────────────────────────────────
 
-// 레슨별 완료 기록
-export interface LessonCompletion {
+// 액티비티별 완료 기록
+export interface ActivityCompletion {
   id: string;
   learnerId: string;
   learnerName: string;
@@ -427,22 +545,41 @@ export interface SurveyResponse {
   answers: { questionId: string; value: string | number }[];
 }
 
+// 동영상 시청 진행 기록
+export interface VideoProgress {
+  id: string;
+  enrollmentId: string;
+  activityId: string;
+  learnerId: string;
+  watchedSec: number;
+  totalSec: number;
+  lastPosition: number; // 마지막 재생 위치 (초)
+  completed: boolean;
+  updatedAt: string;
+}
+
 // ── 평가 ──────────────────────────────────────────────────
 
-export type BankQuestionKind = "EXAM" | "SURVEY";
+export type QuestionBankKind = "EXAM" | "SURVEY";
 export type QuestionType = "SINGLE" | "MULTIPLE" | "TRUE_FALSE" | "SHORT";
 export type SurveyQuestionType = "LIKERT" | "SINGLE" | "MULTIPLE" | "TEXT";
 
-export interface BankQuestion {
+export interface QuestionBank {
   id: string;
-  kind: BankQuestionKind;
+  kind: QuestionBankKind;
   type: QuestionType | SurveyQuestionType;
   text: string;
-  options?: { id: string; text: string; correct?: boolean }[];
+  options?: QuestionBankOption[];
   answer?: string; // SHORT 모범답안
   scale?: number; // LIKERT 척도
   tags: string[];
   createdAt: string;
+}
+
+export interface QuestionBankOption {
+  id: string;
+  text: string;
+  correct?: boolean; // EXAM 전용. SURVEY는 undefined
 }
 
 export interface CompositionRule {
@@ -502,7 +639,7 @@ export interface SurveyTemplate {
 
 export type CertStatus = "VALID" | "REVOKED" | "EXPIRED";
 
-export interface CertTemplate {
+export interface CertificateTemplate {
   id: string;
   name: string;
   active: boolean;
@@ -517,7 +654,7 @@ export interface CertVariableDef {
   source: string;
 }
 
-export interface IssuedCert {
+export interface IssuedCertificate {
   id: string;
   certNumber: string;
   publicToken: string;
@@ -563,6 +700,8 @@ export interface MediaAsset {
 // ── 운영 ──────────────────────────────────────────────────
 
 export type PaymentStatus = "PAID" | "REFUNDED" | "CANCELLED";
+export type PgProvider = "TOSS" | "IAMPORT" | "KCP" | "NICEPAY";
+export type PaymentMethod = "CARD" | "BANK_TRANSFER" | "KAKAO_PAY" | "NAVER_PAY";
 
 export interface Payment {
   id: string;
@@ -572,12 +711,50 @@ export interface Payment {
   amount: number; // KRW
   status: PaymentStatus;
   paidAt: string;
+  pgProvider?: PgProvider;
+  pgTid?: string; // PG사 거래번호
+  paymentMethod?: PaymentMethod;
+  receiptUrl?: string;
+  learningPathId?: string; // LearningPath.id
+}
+
+export interface PaymentRefund {
+  id: string;
+  paymentId: string;
+  amount: number;
+  reason: string;
+  refundedAt: string;
+  refundedBy: string; // actor name
+}
+
+export interface Coupon {
+  id: string;
+  tenantId: string;
+  code: string;
+  discountType: "AMOUNT" | "PERCENT";
+  discountValue: number;
+  maxUses: number | null; // null = 무제한
+  usedCount: number;
+  expiresAt: string | null;
+  applicableCourseIds: string[]; // 빈 배열 = 전체 적용
+  createdAt: string;
+}
+
+export interface CourseReview {
+  id: string;
+  courseId: string;
+  userId: string;
+  userName: string;
+  rating: number; // 1~5
+  body: string;
+  createdAt: string;
+  visible: boolean;
 }
 
 export type MessageChannel = "SMS" | "EMAIL" | "KAKAO";
 export type CreditTransactionType = "TOPUP" | "GRANT" | "USAGE";
 
-export interface CreditLedger {
+export interface CreditTransaction {
   id: string;
   channel: MessageChannel | null; // 단일 풀 — 발송 이력 참고용, TOPUP/GRANT는 null
   type: CreditTransactionType;
@@ -585,6 +762,15 @@ export interface CreditLedger {
   description: string;
   createdAt: string;
 }
+
+export interface CreditBalance {
+  tenantId: string;
+  balance: number;
+  autoTopUp: boolean;
+  autoTopUpThreshold?: number;
+  autoTopUpAmount?: number;
+}
+
 export type MessageStatus = "SENT" | "FAILED" | "SCHEDULED";
 export type KakaoApprovalStatus = "APPROVED" | "PENDING" | "REJECTED";
 export type AutomationTrigger =
@@ -635,7 +821,7 @@ export interface VariableDef {
   channels: MessageChannel[] | "ALL";
 }
 
-export interface ChannelConfig {
+export interface MessageConfig {
   sms: { senderNumber: string; apiKey: string; connected: boolean };
   email: {
     senderEmail: string;
@@ -646,7 +832,7 @@ export interface ChannelConfig {
   kakao: { channelId: string; channelKey: string; connected: boolean };
 }
 
-export interface AutomationRule {
+export interface MessageEventRule {
   id: string;
   trigger: AutomationTrigger;
   triggerLabel: string;
@@ -656,24 +842,38 @@ export interface AutomationRule {
   active: boolean;
 }
 
+// ── 공지 ──────────────────────────────────────────────────
+
 export type AnnouncementTarget = "ALL" | "COURSE";
 export type AnnouncementType = "ANNOUNCEMENT" | "SYSTEM_NOTICE";
 
-/**
- * Announcement — B2C/B2B(learner-facing)와 admin(content entity) flat optional 통합.
- * Learner-facing 필드: type(한글), date, isNew
- * Admin 필드: type(AnnouncementType), target, targetCourse, sentAt, views
- */
-export interface Announcement {
+/** OrgAnnouncement — 관리자가 생성하는 공지 (admin entity). */
+export interface OrgAnnouncement {
   id: string;
   title: string;
-  type: AnnouncementType | "공지" | "이벤트" | "업데이트";
-  // Admin 필드
-  target?: AnnouncementTarget;
+  type: AnnouncementType;
+  target: AnnouncementTarget;
   targetCourse?: string;
   sentAt?: string;
-  views?: number;
-  // Learner-facing 필드
-  date?: string;
+  views: number;
+}
+
+/** PortalAnnouncement — 학습자 포털에 노출되는 공지 (learner-facing view). */
+export interface PortalAnnouncement {
+  id: string;
+  title: string;
+  type: "공지" | "이벤트" | "업데이트";
+  date: string;
   isNew?: boolean;
+}
+
+// ── 포털 / 동의 ───────────────────────────────────────────
+
+export interface UserAgreement {
+  id: string;
+  userId: string;
+  legalDocumentId: string;
+  version: number;
+  agreedAt: string;
+  ip?: string;
 }

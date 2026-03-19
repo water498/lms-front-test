@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { automationRules, automationTriggerDefs, messageTemplates, type AutomationRule, type AutomationTrigger, type MessageChannel } from "../mockData";
+import { automationRules, automationTriggerDefs, messageTemplates, type MessageEventRule, type AutomationTrigger, type MessageChannel } from "../mockData";
 
 interface Props {
   channel: MessageChannel;
-  initialRule?: AutomationRule;
+  initialRule?: MessageEventRule;
   onClose: () => void;
 }
 
@@ -16,7 +16,7 @@ const CHANNEL_BADGE: Record<MessageChannel, { label: string; className: string }
   KAKAO: { label: "알림톡", className: "bg-amber-100 text-amber-700" },
 };
 
-export default function AutomationRuleModal({ channel, initialRule, onClose }: Props) {
+export default function MessageEventRuleModal({ channel, initialRule, onClose }: Props) {
   const isCreate = !initialRule;
   const [templateId, setTemplateId] = useState(initialRule?.templateId ?? "");
   const [selectedTrigger, setSelectedTrigger] = useState<AutomationTrigger | "">(

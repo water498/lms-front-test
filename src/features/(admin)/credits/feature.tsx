@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Zap, RefreshCw, X, Check } from "lucide-react";
-import type { MessageChannel, CreditLedger, CreditTransactionType } from "@/lib/models";
-import { creditPool, CREDITS_PER_MESSAGE, creditLedger as INITIAL_LEDGER } from "@/features/(admin)/messaging/mockData";
+import type { MessageChannel, CreditTransaction, CreditTransactionType } from "@/lib/models";
+import { creditPool, CREDITS_PER_MESSAGE, creditTransactions as INITIAL_LEDGER } from "@/features/(admin)/messaging/mockData";
 
 const TOPUP_PACKAGES = [1000, 5000, 10000, 30000];
 
@@ -37,7 +37,7 @@ export default function CreditsFeature() {
   const [autoTopUp, setAutoTopUp] = useState(creditPool.autoTopUp);
   const [autoThreshold, setAutoThreshold] = useState(creditPool.autoTopUpThreshold);
   const [autoAmount, setAutoAmount] = useState(creditPool.autoTopUpAmount);
-  const [ledger, setLedger] = useState<CreditLedger[]>(INITIAL_LEDGER);
+  const [ledger, setLedger] = useState<CreditTransaction[]>(INITIAL_LEDGER);
   const [topUpModal, setTopUpModal] = useState<TopUpModal | null>(null);
   const [autoEdit, setAutoEdit] = useState<AutoEdit | null>(null);
 
@@ -45,7 +45,7 @@ export default function CreditsFeature() {
     if (!topUpModal) return;
     const amt = topUpModal.selected ?? parseInt(topUpModal.customAmount, 10);
     if (!amt || amt <= 0) return;
-    const entry: CreditLedger = {
+    const entry: CreditTransaction = {
       id: `cl-${Date.now()}`,
       channel: null,
       type: "TOPUP",

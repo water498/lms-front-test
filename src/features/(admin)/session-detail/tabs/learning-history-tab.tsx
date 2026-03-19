@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BookOpen, ClipboardList } from "lucide-react";
-import { getLessonCompletions, getExamAttempts } from "../mockData";
+import { getActivityCompletions, getExamAttempts } from "../mockData";
 
 function formatDuration(sec: number): string {
   if (sec < 60) return `${sec}초`;
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function LearningHistoryTab({ sessionId }: Props) {
-  const completions = getLessonCompletions(sessionId);
+  const completions = getActivityCompletions(sessionId);
   const attempts = getExamAttempts(sessionId);
 
   const learnerNames = Array.from(new Set(completions.map((c) => c.learnerName)));

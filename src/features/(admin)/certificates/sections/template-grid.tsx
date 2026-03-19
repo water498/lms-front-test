@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Clock, Pencil, PlusCircle } from "lucide-react";
-import { CertTemplate } from "../mockData";
+import { CertificateTemplate } from "../mockData";
 import { useCertStore } from "../store";
 import { courses } from "@/features/(admin)/courses/mockData";
 import EditTemplateModal from "../modals/edit-template-modal";
@@ -10,7 +10,7 @@ import IssueCertModal from "../modals/issue-cert-modal";
 import CreateTemplateModal from "../modals/create-template-modal";
 import { CERT_W, CERT_H, buildSrcDoc } from "../utils/cert-preview";
 
-function CertThumbnail({ template }: { template: CertTemplate }) {
+function CertThumbnail({ template }: { template: CertificateTemplate }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.25);
 
@@ -52,8 +52,8 @@ function CertThumbnail({ template }: { template: CertTemplate }) {
 
 export default function TemplateGrid() {
   const templates = useCertStore((s) => s.templates);
-  const [editTarget, setEditTarget] = useState<CertTemplate | null>(null);
-  const [issueTarget, setIssueTarget] = useState<CertTemplate | null>(null);
+  const [editTarget, setEditTarget] = useState<CertificateTemplate | null>(null);
+  const [issueTarget, setIssueTarget] = useState<CertificateTemplate | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
   return (

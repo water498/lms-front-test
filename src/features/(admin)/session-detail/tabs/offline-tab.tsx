@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { QrCode, ClipboardList } from "lucide-react";
-import { type OfflineSession, type OfflineSessionStatus, getOfflineSessions, getAttendanceRecords } from "../../course-detail/mockData";
+import { type OfflineSession, type OfflineSessionStatus, getOfflineSessions, getOfflineAttendances } from "../../course-detail/mockData";
 import QrModal from "../../course-detail/modals/qr-modal";
 import AttendanceModal from "../../course-detail/modals/attendance-modal";
 import CreateOfflineSessionModal from "../../course-detail/modals/create-offline-session-modal";
@@ -14,7 +14,7 @@ const STATUS_CONFIG: Record<OfflineSessionStatus, { label: string; className: st
 };
 
 function calcAttendanceRate(offlineSessionId: string): string {
-  const records = getAttendanceRecords(offlineSessionId);
+  const records = getOfflineAttendances(offlineSessionId);
   if (records.length === 0) return "—";
   const attended = records.filter((r) => r.status === "PRESENT" || r.status === "LATE").length;
   return `${Math.round((attended / records.length) * 100)}%`;

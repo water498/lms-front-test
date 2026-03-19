@@ -5,7 +5,7 @@ import type {
   CourseType,
   EnrolledCourse,
   Category,
-  Announcement,
+  PortalAnnouncement,
   UserStats,
 } from "@/lib/models";
 export type {
@@ -13,7 +13,7 @@ export type {
   CourseType,
   EnrolledCourse,
   Category,
-  Announcement,
+  PortalAnnouncement,
   UserStats,
 } from "@/lib/models";
 
@@ -486,7 +486,7 @@ export const userStats: UserStats = {
 
 // ── Announcements ──────────────────────────────────────────────────────────
 
-export const announcements: Announcement[] = [
+export const announcements: PortalAnnouncement[] = [
   { id: "a1", type: "공지",     title: "[ACME Corp] 2분기 필수 교육 이수 기한 안내 (4/30)",    date: "2026-03-10", isNew: true },
   { id: "a2", type: "공지",     title: "수료증 발급 시스템 개선 안내",                          date: "2026-03-08", isNew: true },
   { id: "a3", type: "업데이트", title: "모바일 앱 v3.2 업데이트 — 오프라인 재생 지원",         date: "2026-03-05", isNew: false },

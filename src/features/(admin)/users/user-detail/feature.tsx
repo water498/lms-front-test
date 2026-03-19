@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { orgUsers } from "../mockData";
+import { users } from "../mockData";
 import ProfileTab from "./tabs/profile-tab";
 import EnrollmentsTab from "./tabs/enrollments-tab";
 import ActivityTab from "./tabs/activity-tab";
@@ -23,7 +23,7 @@ interface Props {
 
 export default function UserDetailFeature({ userId, hideBackLink }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-  const user = orgUsers.find((u) => u.id === userId);
+  const user = users.find((u) => u.id === userId);
 
   if (!user) {
     return (

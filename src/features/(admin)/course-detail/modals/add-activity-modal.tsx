@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Search } from "lucide-react";
-import { type Activity, type ActivityType } from "../mockData";
+import { type CourseActivity, type ActivityType } from "../mockData";
 import { mediaAssets } from "../../media/mockData";
 import { examTemplates, assignmentTemplates } from "../../assessments/mockData";
 
@@ -28,7 +28,7 @@ const SUBMISSION_LABELS: Record<string, string> = {
 
 interface Props {
   subjectTitle: string;
-  onAdd: (activity: Activity) => void;
+  onAdd: (activity: CourseActivity) => void;
   onClose: () => void;
 }
 
@@ -71,7 +71,7 @@ export default function AddActivityModal({
       (activeTab === "QUIZ" && selectedExamId !== null) ||
       (activeTab === "ASSIGNMENT" && selectedAssignId !== null));
 
-  function buildActivity(): Activity {
+  function buildActivity(): CourseActivity {
     const id = `a${Date.now()}`;
     if (activeTab === "MEDIA" && selectedMediaId) {
       const asset = mediaAssets.find((a) => a.id === selectedMediaId)!;

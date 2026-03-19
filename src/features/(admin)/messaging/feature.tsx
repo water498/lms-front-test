@@ -8,8 +8,8 @@ import AutomationTab from "./sections/automation-tab";
 import ChannelSettingsTab from "./sections/channel-settings-tab";
 import SendMessageModal from "./modals/send-message-modal";
 import CreateTemplateModal from "./modals/create-template-modal";
-import AutomationRuleModal from "./modals/automation-rule-modal";
-import { creditPool, CREDITS_PER_MESSAGE, type MessageChannel, type MessageTemplate, type AutomationRule } from "./mockData";
+import MessageEventRuleModal from "./modals/automation-rule-modal";
+import { creditPool, CREDITS_PER_MESSAGE, type MessageChannel, type MessageTemplate, type MessageEventRule } from "./mockData";
 
 type SubTab = "history" | "templates" | "automation" | "settings";
 
@@ -50,7 +50,7 @@ function CreditBar({ channel }: { channel: MessageChannel }) {
 export default function MessagingFeature({ channel }: { channel: MessageChannel }) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("history");
   const [modal, setModal] = useState<Modal>(null);
-  const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
+  const [editingRule, setEditingRule] = useState<MessageEventRule | null>(null);
   const [addingRule, setAddingRule] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null);
 
@@ -95,7 +95,7 @@ export default function MessagingFeature({ channel }: { channel: MessageChannel 
         />
       )}
       {(addingRule || editingRule) && (
-        <AutomationRuleModal
+        <MessageEventRuleModal
           channel={channel}
           initialRule={editingRule ?? undefined}
           onClose={() => { setEditingRule(null); setAddingRule(false); }}

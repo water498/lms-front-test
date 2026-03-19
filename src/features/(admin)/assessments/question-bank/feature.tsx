@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Plus, Trash2, X, Check } from "lucide-react";
 import {
-  type BankQuestion,
-  type BankQuestionKind,
+  type QuestionBank,
+  type QuestionBankKind,
   type QuestionType,
   type SurveyQuestionType,
   bankQuestions as initialBank,
@@ -15,7 +15,7 @@ function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newQuestion(kind: BankQuestionKind): BankQuestion {
+function newQuestion(kind: QuestionBankKind): QuestionBank {
   return {
     id: makeId(),
     kind,
@@ -45,8 +45,8 @@ const SURVEY_TYPE_LABELS: Record<SurveyQuestionType, string> = {
 };
 
 export default function QuestionBankFeature() {
-  const [kind, setKind]           = useState<BankQuestionKind>("EXAM");
-  const [questions, setQuestions] = useState<BankQuestion[]>(initialBank);
+  const [kind, setKind]           = useState<QuestionBankKind>("EXAM");
+  const [questions, setQuestions] = useState<QuestionBank[]>(initialBank);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [tagInput, setTagInput]   = useState("");
@@ -66,7 +66,7 @@ export default function QuestionBankFeature() {
       )
     : [];
 
-  function updateQ(id: string, patch: Partial<BankQuestion>) {
+  function updateQ(id: string, patch: Partial<QuestionBank>) {
     setQuestions((qs) => qs.map((q) => q.id === id ? { ...q, ...patch } : q));
   }
 
@@ -170,7 +170,7 @@ export default function QuestionBankFeature() {
 
         {/* Kind switcher */}
         <div className="ml-4 flex bg-slate-100 rounded-lg p-0.5 gap-0.5">
-          {(["EXAM", "SURVEY"] as BankQuestionKind[]).map((k) => (
+          {(["EXAM", "SURVEY"] as QuestionBankKind[]).map((k) => (
             <button
               key={k}
               onClick={() => { setKind(k); setSelectedId(null); setTagFilter(null); }}

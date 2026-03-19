@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { type OfflineSession, type AttendanceRecord, type AttendanceStatus, getAttendanceRecords } from "../mockData";
+import { type OfflineSession, type OfflineAttendance, type AttendanceStatus, getOfflineAttendances } from "../mockData";
 
 const STATUS_CONFIG: Record<AttendanceStatus, { label: string; className: string; activeClassName: string }> = {
   PRESENT: { label: "출석", className: "text-slate-500 hover:bg-slate-100",         activeClassName: "bg-emerald-100 text-emerald-700 font-semibold" },
@@ -24,7 +24,7 @@ interface Props {
 }
 
 export default function AttendanceModal({ session, onClose }: Props) {
-  const [records, setRecords] = useState<AttendanceRecord[]>(() => getAttendanceRecords(session.id));
+  const [records, setRecords] = useState<OfflineAttendance[]>(() => getOfflineAttendances(session.id));
 
   function changeStatus(id: string, status: AttendanceStatus) {
     setRecords((prev) =>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Download, Link2, RefreshCw, XCircle } from "lucide-react";
 import { useCertStore } from "../store";
-import { CertStatus, IssuedCert } from "../mockData";
+import { CertStatus, IssuedCertificate } from "../mockData";
 import RevokeModal from "../modals/revoke-modal";
 import ReissueModal from "../modals/reissue-modal";
 
@@ -14,8 +14,8 @@ const STATUS_BADGE: Record<CertStatus, { label: string; className: string }> = {
 };
 
 type ModalState =
-  | { type: "revoke"; cert: IssuedCert }
-  | { type: "reissue"; cert: IssuedCert }
+  | { type: "revoke"; cert: IssuedCertificate }
+  | { type: "reissue"; cert: IssuedCertificate }
   | null;
 
 export default function IssuedTable() {

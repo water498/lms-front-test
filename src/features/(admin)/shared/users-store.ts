@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-import { orgUsers, type OrgUser } from '../users/mockData';
+import { users as initialUsers, type User } from '../users/mockData';
 
 interface UsersStore {
-  users: OrgUser[];
-  addUser: (user: OrgUser) => void;
-  updateUser: (id: string, patch: Partial<OrgUser>) => void;
+  users: User[];
+  addUser: (user: User) => void;
+  updateUser: (id: string, patch: Partial<User>) => void;
   removeUser: (id: string) => void;
 }
 
 export const useUsersStore = create<UsersStore>((set) => ({
-  users: orgUsers,
+  users: initialUsers,
   addUser: (user) => set((s) => ({ users: [...s.users, user] })),
   updateUser: (id, patch) =>
     set((s) => ({ users: s.users.map((u) => (u.id === id ? { ...u, ...patch } : u)) })),

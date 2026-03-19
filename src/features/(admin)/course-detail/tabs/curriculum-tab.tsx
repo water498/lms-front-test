@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { ChevronDown, ChevronRight, GripVertical, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
-import { type Subject, type Activity, type ActivityType } from "../mockData";
+import { type CourseSubject, type CourseActivity, type ActivityType } from "../mockData";
 import { mediaAssets } from "../../media/mockData";
 import AddActivityModal from "../modals/add-activity-modal";
 
@@ -63,7 +63,7 @@ function DeleteWarningDialog({ enrolleeCount, onConfirm, onCancel }: DeleteWarni
 }
 
 interface ActivityRowProps {
-  activity: Activity;
+  activity: CourseActivity;
   hasOngoingSessions: boolean;
   enrolleeCount: number;
   onDelete: () => void;
@@ -130,12 +130,12 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
 }
 
 interface SubjectAccordionProps {
-  subject: Subject;
+  subject: CourseSubject;
   index: number;
   hasOngoingSessions: boolean;
   enrolleeCount: number;
   onDelete: () => void;
-  onAddActivity: (activity: Activity) => void;
+  onAddActivity: (activity: CourseActivity) => void;
   onDeleteActivity: (activityId: string) => void;
 }
 
@@ -217,12 +217,12 @@ function SubjectAccordion({
 }
 
 interface CurriculumTabProps {
-  subjects: Subject[];
+  subjects: CourseSubject[];
   hasOngoingSessions: boolean;
   enrolleeCount: number;
   onAddSubject: (title: string) => void;
   onDeleteSubject: (subjectId: string) => void;
-  onAddActivity: (subjectId: string, activity: Activity) => void;
+  onAddActivity: (subjectId: string, activity: CourseActivity) => void;
   onDeleteActivity: (subjectId: string, activityId: string) => void;
 }
 

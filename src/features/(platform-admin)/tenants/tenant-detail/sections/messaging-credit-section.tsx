@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { CreditLedger } from "@/lib/models";
+import type { CreditTransaction } from "@/lib/models";
 
 const GRANT_PRESETS = [1000, 5000, 10000, 30000];
 
@@ -23,14 +23,14 @@ const INITIAL_BALANCES: Record<string, number> = {
 
 export default function MessagingCreditSection({ tenantId }: Props) {
   const [balance, setBalance] = useState(INITIAL_BALANCES[tenantId] ?? INITIAL_BALANCES.default);
-  const [ledger, setLedger] = useState<CreditLedger[]>([]);
+  const [ledger, setLedger] = useState<CreditTransaction[]>([]);
   const [grantModal, setGrantModal] = useState<GrantModal | null>(null);
 
   function executeGrant() {
     if (!grantModal) return;
     const amt = grantModal.selected ?? parseInt(grantModal.customAmount, 10);
     if (!amt || amt <= 0) return;
-    const entry: CreditLedger = {
+    const entry: CreditTransaction = {
       id: `pg-${Date.now()}`,
       channel: null,
       type: "GRANT",

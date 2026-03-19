@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Settings, Trash2 } from "lucide-react";
-import { automationRules, messageTemplates, type AutomationRule, type MessageChannel } from "../mockData";
+import { automationRules, messageTemplates, type MessageEventRule, type MessageChannel } from "../mockData";
 
 const CHANNEL_BADGE: Record<MessageChannel, { label: string; className: string }> = {
   SMS:   { label: "SMS",    className: "bg-blue-100 text-blue-700" },
@@ -30,7 +30,7 @@ function Toggle({ active, onChange }: { active: boolean; onChange: (v: boolean) 
 
 interface Props {
   channel: MessageChannel;
-  onEditRule: (rule: AutomationRule) => void;
+  onEditRule: (rule: MessageEventRule) => void;
   onAddRule: () => void;
 }
 

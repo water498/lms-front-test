@@ -1,30 +1,30 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ACCESS_LOGS, AccessLog } from "./mockData";
+import { ACCESS_LOGS, UserAccessLog } from "./mockData";
 
-const EVENT_TYPE_LABELS: Record<AccessLog["type"], string> = {
+const EVENT_TYPE_LABELS: Record<UserAccessLog["type"], string> = {
   LOGIN: "로그인",
   LOGOUT: "로그아웃",
   SESSION_EXPIRED: "세션만료",
   AUTO_LOGIN: "자동로그인",
 };
 
-const EVENT_TYPE_COLORS: Record<AccessLog["type"], string> = {
+const EVENT_TYPE_COLORS: Record<UserAccessLog["type"], string> = {
   LOGIN: "bg-emerald-100 text-emerald-700",
   LOGOUT: "bg-slate-100 text-slate-600",
   SESSION_EXPIRED: "bg-amber-100 text-amber-700",
   AUTO_LOGIN: "bg-blue-100 text-blue-700",
 };
 
-const SCOPE_LABELS: Record<AccessLog["scope"], string> = {
+const SCOPE_LABELS: Record<UserAccessLog["scope"], string> = {
   USER: "사용자단",
   ADMIN: "관리자단",
 };
 
-export default function AccessLogsFeature() {
-  const [typeFilter, setTypeFilter] = useState<AccessLog["type"] | "ALL">("ALL");
-  const [scopeFilter, setScopeFilter] = useState<AccessLog["scope"] | "ALL">("ALL");
+export default function UserAccessLogsFeature() {
+  const [typeFilter, setTypeFilter] = useState<UserAccessLog["type"] | "ALL">("ALL");
+  const [scopeFilter, setScopeFilter] = useState<UserAccessLog["scope"] | "ALL">("ALL");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [nameSearch, setNameSearch] = useState("");
@@ -49,7 +49,7 @@ export default function AccessLogsFeature() {
           <label className="text-xs text-slate-500">이벤트 유형</label>
           <select
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as AccessLog["type"] | "ALL")}
+            onChange={(e) => setTypeFilter(e.target.value as UserAccessLog["type"] | "ALL")}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
           >
             <option value="ALL">전체</option>
@@ -65,7 +65,7 @@ export default function AccessLogsFeature() {
           <label className="text-xs text-slate-500">접속단</label>
           <select
             value={scopeFilter}
-            onChange={(e) => setScopeFilter(e.target.value as AccessLog["scope"] | "ALL")}
+            onChange={(e) => setScopeFilter(e.target.value as UserAccessLog["scope"] | "ALL")}
             className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
           >
             <option value="ALL">전체</option>

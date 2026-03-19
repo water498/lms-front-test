@@ -1,18 +1,18 @@
 import { create } from "zustand";
-import { CertTemplate, IssuedCert, certTemplates, initialIssuedCerts } from "./mockData";
+import { CertificateTemplate, IssuedCertificate, certTemplates, initialIssuedCertificates } from "./mockData";
 
 interface CertStore {
-  certs: IssuedCert[];
-  templates: CertTemplate[];
+  certs: IssuedCertificate[];
+  templates: CertificateTemplate[];
   revoke: (id: string, reason: string, adminName: string) => void;
   reissue: (id: string) => void;
-  updateTemplate: (id: string, patch: Partial<CertTemplate>) => void;
-  addTemplate: (t: Omit<CertTemplate, "id">) => void;
+  updateTemplate: (id: string, patch: Partial<CertificateTemplate>) => void;
+  addTemplate: (t: Omit<CertificateTemplate, "id">) => void;
   issueCert: (templateId: string, recipient: string, course: string) => void;
 }
 
 export const useCertStore = create<CertStore>((set, get) => ({
-  certs: initialIssuedCerts,
+  certs: initialIssuedCertificates,
   templates: certTemplates,
 
   revoke: (id, reason, adminName) =>
@@ -67,7 +67,7 @@ export const useCertStore = create<CertStore>((set, get) => ({
       expiredAt = expiry.toISOString().slice(0, 10);
     }
 
-    const newCert: IssuedCert = {
+    const newCert: IssuedCertificate = {
       id: `ic${Date.now()}`,
       certNumber,
       publicToken,

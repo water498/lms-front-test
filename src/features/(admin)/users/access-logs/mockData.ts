@@ -1,7 +1,7 @@
-export type { AccessLog } from "@/lib/models";
-import type { AccessLog } from "@/lib/models";
+export type { UserAccessLog } from "@/lib/models";
+import type { UserAccessLog } from "@/lib/models";
 
-export const ACCESS_LOGS: AccessLog[] = [
+export const ACCESS_LOGS: UserAccessLog[] = [
   { id: "al01", userId: "u2", userName: "홍길동", type: "LOGIN",          scope: "ADMIN", date: "2026-03-17 09:02", ip: "203.0.113.10", userAgent: "Chrome 122 / Windows 10" },
   { id: "al02", userId: "u3", userName: "이준혁", type: "LOGIN",          scope: "USER",  date: "2026-03-17 09:15", ip: "198.51.100.4",  userAgent: "Safari 17 / macOS 14" },
   { id: "al03", userId: "u5", userName: "김민준", type: "AUTO_LOGIN",     scope: "USER",  date: "2026-03-17 09:20", ip: "192.0.2.55",   userAgent: "Chrome 122 / Android 14" },

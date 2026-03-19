@@ -1,7 +1,7 @@
-export type { AnnouncementTarget, AnnouncementType, Announcement } from "@/lib/models";
-import type { Announcement } from "@/lib/models";
+export type { AnnouncementTarget, AnnouncementType, OrgAnnouncement } from "@/lib/models";
+import type { OrgAnnouncement } from "@/lib/models";
 
-export const announcements: Announcement[] = [
+export const announcements: OrgAnnouncement[] = [
   { id: "an1", title: "2025년 3월 신규 과정 안내",            type: "ANNOUNCEMENT",  target: "ALL",    sentAt: "2025-03-01", views: 892 },
   { id: "an2", title: "React 기초 3월기 개강 알림",           type: "ANNOUNCEMENT",  target: "COURSE", targetCourse: "React 기초",        sentAt: "2025-03-05", views: 314 },
   { id: "an3", title: "시스템 점검 안내 (3/20 02:00-04:00)",  type: "SYSTEM_NOTICE", target: "ALL",    sentAt: "2025-03-14", views: 1204 },

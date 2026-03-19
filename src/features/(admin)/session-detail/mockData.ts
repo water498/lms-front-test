@@ -1,8 +1,8 @@
-import type { LessonCompletion, ExamAttempt } from "@/lib/models";
+import type { ActivityCompletion, ExamAttempt, WaitList } from "@/lib/models";
 
 // se2 수강생: u7 박지호(100%), u8 최유진(72%)
 // se1 수강생: u10-u19 (진도율 분포)
-const lessonCompletions: Record<string, LessonCompletion[]> = {
+const activityCompletions: Record<string, ActivityCompletion[]> = {
   se2: [
     // 박지호 (u7) — 전 레슨 완료
     { id: "lc1",  learnerId: "u7", learnerName: "박지호", activityId: "a1", activityTitle: "React란 무엇인가",   courseSessionId: "se2", completedAt: "2025-02-05 10:30", durationSec: 780  },
@@ -45,10 +45,24 @@ const examAttempts: Record<string, ExamAttempt[]> = {
   ],
 };
 
-export function getLessonCompletions(sessionId: string): LessonCompletion[] {
-  return lessonCompletions[sessionId] ?? [];
+export function getActivityCompletions(sessionId: string): ActivityCompletion[] {
+  return activityCompletions[sessionId] ?? [];
 }
 
 export function getExamAttempts(sessionId: string): ExamAttempt[] {
   return examAttempts[sessionId] ?? [];
+}
+
+// ── 대기자 목록 ──────────────────────────────────────────────
+const waitLists: Record<string, WaitList[]> = {
+  se2: [
+    { id: "wl1", courseSessionId: "se2", userId: "u20", userName: "김지수", requestedAt: "2025-02-10", status: "WAITING"   },
+    { id: "wl2", courseSessionId: "se2", userId: "u21", userName: "이현우", requestedAt: "2025-02-11", status: "APPROVED"  },
+    { id: "wl3", courseSessionId: "se2", userId: "u22", userName: "박소연", requestedAt: "2025-02-12", status: "WAITING"   },
+    { id: "wl4", courseSessionId: "se2", userId: "u23", userName: "최준혁", requestedAt: "2025-02-13", status: "CANCELLED" },
+  ],
+};
+
+export function getWaitList(sessionId: string): WaitList[] {
+  return waitLists[sessionId] ?? [];
 }

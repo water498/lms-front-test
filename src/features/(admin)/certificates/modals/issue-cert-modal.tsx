@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { CertTemplate } from "../mockData";
+import { CertificateTemplate } from "../mockData";
 import { useCertStore } from "../store";
 import { courses } from "@/features/(admin)/courses/mockData";
 
 interface Props {
-  template: CertTemplate;
+  template: CertificateTemplate;
   onClose: () => void;
 }
 

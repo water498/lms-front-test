@@ -7,9 +7,9 @@ export type {
   MessageHistory,
   MessageTemplate,
   VariableDef,
-  ChannelConfig,
-  AutomationRule,
-  CreditLedger,
+  MessageConfig,
+  MessageEventRule,
+  CreditTransaction,
   CreditTransactionType,
 } from "@/lib/models";
 import type {
@@ -19,9 +19,9 @@ import type {
   MessageHistory,
   MessageTemplate,
   VariableDef,
-  ChannelConfig,
-  AutomationRule,
-  CreditLedger,
+  MessageConfig,
+  MessageEventRule,
+  CreditTransaction,
 } from "@/lib/models";
 
 // ── 단일 크레딧 풀 ────────────────────────────────────────
@@ -200,7 +200,7 @@ export function getVariableDefsForChannel(channel: MessageChannel): VariableDef[
   );
 }
 
-export const creditLedger: CreditLedger[] = [
+export const creditTransactions: CreditTransaction[] = [
   { id: "cl1",  channel: null,    type: "GRANT",  amount:  10000, description: "플랫폼 기본 지급",           createdAt: "2025-01-01 09:00" },
   { id: "cl2",  channel: null,    type: "TOPUP",  amount:   5000, description: "셀프 충전",                  createdAt: "2025-02-15 11:30" },
   { id: "cl3",  channel: "SMS",   type: "USAGE",  amount:    -15, description: "세션 시작 알림 (3건 × 5)",   createdAt: "2025-03-12 10:00" },
@@ -213,7 +213,7 @@ export const creditLedger: CreditLedger[] = [
 
 // ── 자동화 규칙 ───────────────────────────────────────────
 
-export const automationRules: AutomationRule[] = [
+export const automationRules: MessageEventRule[] = [
   {
     id: "a1",
     trigger: "ENROLLMENT_CREATED",
@@ -272,7 +272,7 @@ export const automationRules: AutomationRule[] = [
 
 // ── 채널 설정 ─────────────────────────────────────────────
 
-export const channelConfig: ChannelConfig = {
+export const channelConfig: MessageConfig = {
   sms:   { senderNumber: "02-1234-5678", apiKey: "sk_live_••••••••••••", connected: true },
   email: { senderEmail: "noreply@acme.com", smtpHost: "smtp.acme.com", smtpPort: "587", connected: true },
   kakao: { channelId: "@acme-lms", channelKey: "••••••••••••••••", connected: false },

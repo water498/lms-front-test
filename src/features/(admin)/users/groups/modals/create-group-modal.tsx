@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, Search } from "lucide-react";
-import { orgUsers } from "../../mockData";
+import { users } from "../../mockData";
 import type { UserGroup } from "../mockData";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -25,7 +25,7 @@ export default function CreateGroupModal({ onClose, onCreate }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
 
-  const filtered = orgUsers.filter(
+  const filtered = users.filter(
     (u) =>
       u.name.includes(search) ||
       u.email.includes(search) ||
