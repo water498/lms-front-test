@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, ChevronRight, AlertTriangle } from "lucide-react";
-import { messageTemplates, channelCredits, type MessageChannel } from "../mockData";
+import { messageTemplates, creditPool, CREDITS_PER_MESSAGE, type MessageChannel } from "../mockData";
 
 interface Props {
   channel: MessageChannel;
@@ -35,12 +35,10 @@ export default function SendMessageModal({ channel, onClose }: Props) {
 
   const availableTemplates = messageTemplates.filter((t) => t.channel === channel);
   const selectedTemplate   = messageTemplates.find((t) => t.id === templateId);
-  const credit             = channelCredits[channel];
-
   const recipientOption = RECIPIENT_OPTIONS.find((r) => r.value === recipient) ?? RECIPIENT_OPTIONS[0];
   const recipientCount  = recipientOption.count;
-  const totalCost       = recipientCount * credit.costPerMessage;
-  const afterBalance    = credit.balance - totalCost;
+  const totalCost       = recipientCount * CREDITS_PER_MESSAGE[channel];
+  const afterBalance    = creditPool.balance - totalCost;
   const insufficient    = afterBalance < 0;
 
   const handleTemplateSelect = (id: string) => {
@@ -196,19 +194,19 @@ export default function SendMessageModal({ channel, onClose }: Props) {
               <p className={`font-semibold mb-0.5 ${insufficient ? "text-red-700" : "text-slate-700"}`}>예상 크레딧 차감</p>
               <div className="flex justify-between text-slate-600">
                 <span>수신자</span>
-                <span className="tabular-nums font-medium">{recipientCount.toLocaleString()}명 × {credit.costPerMessage}원</span>
+                <span className="tabular-nums font-medium">{recipientCount.toLocaleString()}명 × {CREDITS_PER_MESSAGE[channel]} cr</span>
               </div>
               <div className="flex justify-between text-slate-600 border-t border-slate-200 pt-2">
                 <span>발송 비용</span>
-                <span className="tabular-nums font-semibold">{totalCost.toLocaleString()}원</span>
+                <span className="tabular-nums font-semibold">{totalCost.toLocaleString()} cr</span>
               </div>
               <div className="flex justify-between text-slate-500">
                 <span>현재 잔액</span>
-                <span className="tabular-nums">{credit.balance.toLocaleString()}원</span>
+                <span className="tabular-nums">{creditPool.balance.toLocaleString()} cr</span>
               </div>
               <div className={`flex justify-between font-semibold border-t border-slate-200 pt-2 ${insufficient ? "text-red-600" : "text-slate-700"}`}>
                 <span>차감 후 잔액</span>
-                <span className="tabular-nums">{afterBalance.toLocaleString()}원</span>
+                <span className="tabular-nums">{afterBalance.toLocaleString()} cr</span>
               </div>
               {insufficient && (
                 <div className="flex items-center gap-1.5 text-red-600 bg-red-100 rounded-lg px-3 py-2 mt-1">

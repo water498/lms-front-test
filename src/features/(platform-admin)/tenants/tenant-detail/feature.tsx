@@ -23,6 +23,7 @@ import {
 } from "../mockData";
 import type { InfraServiceStatus } from "@/lib/models";
 import SsoSection from "./sections/sso-section";
+import MessagingCreditSection from "./sections/messaging-credit-section";
 
 function ProgressBar({
   value,
@@ -102,6 +103,15 @@ const SUBDOMAIN_STATUS_MSG: Record<SubdomainStatus, string> = {
   valid: "사용 가능",
 };
 
+type DetailTab = "overview" | "sso" | "credits" | "infra";
+
+const DETAIL_TABS: { id: DetailTab; label: string }[] = [
+  { id: "overview", label: "개요" },
+  { id: "sso",      label: "SSO" },
+  { id: "credits",  label: "크레딧" },
+  { id: "infra",    label: "인프라" },
+];
+
 interface Props {
   tenantId: string;
 }
@@ -109,6 +119,8 @@ interface Props {
 export default function TenantDetailFeature({ tenantId }: Props) {
   const router = useRouter();
   const tenant = TENANTS.find((t) => t.id === tenantId);
+
+  const [activeTab, setActiveTab] = useState<DetailTab>("overview");
 
   const [localStatus, setLocalStatus] = useState<TenantStatus>(
     tenant?.status ?? "ACTIVE",
@@ -197,6 +209,26 @@ export default function TenantDetailFeature({ tenantId }: Props) {
           <StatusBadge status={localStatus} trialEndsAt={tenant.trialEndsAt} />
         </div>
       </div>
+
+      {/* Tab Bar */}
+      <div className="flex gap-1 border-b border-slate-200">
+        {DETAIL_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === tab.id
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Overview Tab */}
+      {activeTab === "overview" && <>
 
       {/* Basic Info */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -370,11 +402,34 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         </div>
       </div>
 
-      {/* SSO */}
-      <SsoSection tenant={tenant} />
+      {/* Actions */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <h3 className="text-sm font-semibold text-slate-700 mb-4">관리 액션</h3>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleToggleSuspend}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              localStatus === "SUSPENDED"
+                ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
+                : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
+            }`}
+          >
+            <PauseCircle size={15} />
+            {localStatus === "SUSPENDED" ? "정지 해제" : "기업 정지"}
+          </button>
+        </div>
+      </div>
 
-      {/* Infra Info */}
-      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+      </>}
+
+      {/* SSO Tab */}
+      {activeTab === "sso" && <SsoSection tenant={tenant} />}
+
+      {/* Credits Tab */}
+      {activeTab === "credits" && <MessagingCreditSection tenantId={tenant.id} />}
+
+      {/* Infra Tab */}
+      {activeTab === "infra" && <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-700">인프라 정보</h3>
           {tenant.infraStatus && (
@@ -420,26 +475,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
             </dd>
           </div>
         </dl>
-      </div>
-
-      {/* Actions */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">관리 액션</h3>
-        <div className="flex flex-wrap gap-3">
-          {/* Suspend */}
-          <button
-            onClick={handleToggleSuspend}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              localStatus === "SUSPENDED"
-                ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
-                : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
-            }`}
-          >
-            <PauseCircle size={15} />
-            {localStatus === "SUSPENDED" ? "정지 해제" : "기업 정지"}
-          </button>
-        </div>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -476,6 +476,16 @@ export interface Payment {
 }
 
 export type MessageChannel = "SMS" | "EMAIL" | "KAKAO";
+export type CreditTransactionType = "TOPUP" | "GRANT" | "USAGE";
+
+export interface CreditLedger {
+  id: string;
+  channel: MessageChannel | null; // 단일 풀 — 발송 이력 참고용, TOPUP/GRANT는 null
+  type: CreditTransactionType;
+  amount: number;      // 양수=충전/지급, 음수=사용 (크레딧 단위)
+  description: string;
+  createdAt: string;
+}
 export type MessageStatus = "SENT" | "FAILED" | "SCHEDULED";
 export type KakaoApprovalStatus = "APPROVED" | "PENDING" | "REJECTED";
 export type AutomationTrigger =

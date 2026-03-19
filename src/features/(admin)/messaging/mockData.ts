@@ -9,6 +9,8 @@ export type {
   VariableDef,
   ChannelConfig,
   AutomationRule,
+  CreditLedger,
+  CreditTransactionType,
 } from "@/lib/models";
 import type {
   MessageChannel,
@@ -19,7 +21,23 @@ import type {
   VariableDef,
   ChannelConfig,
   AutomationRule,
+  CreditLedger,
 } from "@/lib/models";
+
+// ── 단일 크레딧 풀 ────────────────────────────────────────
+
+export const CREDITS_PER_MESSAGE: Record<MessageChannel, number> = {
+  SMS: 5,
+  KAKAO: 3,
+  EMAIL: 1,
+};
+
+export const creditPool = {
+  balance: 10000,
+  autoTopUp: true,
+  autoTopUpThreshold: 2000,
+  autoTopUpAmount: 10000,
+};
 
 export const automationTriggerDefs: AutomationTriggerDef[] = [
   { trigger: "ENROLLMENT_CREATED",  label: "수강 등록 완료",       desc: "학습자가 과정에 수강 등록할 때" },
@@ -182,13 +200,16 @@ export function getVariableDefsForChannel(channel: MessageChannel): VariableDef[
   );
 }
 
-// ── 채널 크레딧 ───────────────────────────────────────────
-
-export const channelCredits: Record<MessageChannel, { balance: number; costPerMessage: number }> = {
-  SMS:   { balance: 45200, costPerMessage: 15 },
-  KAKAO: { balance: 12800, costPerMessage: 8 },
-  EMAIL: { balance: 98500, costPerMessage: 3 },
-};
+export const creditLedger: CreditLedger[] = [
+  { id: "cl1",  channel: null,    type: "GRANT",  amount:  10000, description: "플랫폼 기본 지급",           createdAt: "2025-01-01 09:00" },
+  { id: "cl2",  channel: null,    type: "TOPUP",  amount:   5000, description: "셀프 충전",                  createdAt: "2025-02-15 11:30" },
+  { id: "cl3",  channel: "SMS",   type: "USAGE",  amount:    -15, description: "세션 시작 알림 (3건 × 5)",   createdAt: "2025-03-12 10:00" },
+  { id: "cl4",  channel: "EMAIL", type: "USAGE",  amount:     -8, description: "신규 과정 안내 (8건 × 1)",   createdAt: "2025-03-14 09:00" },
+  { id: "cl5",  channel: "KAKAO", type: "USAGE",  amount:    -15, description: "과제 리마인더 (5건 × 3)",    createdAt: "2025-03-13 14:30" },
+  { id: "cl6",  channel: "SMS",   type: "USAGE",  amount:   -115, description: "마감 임박 알림 (23건 × 5)",  createdAt: "2026-03-18 10:00" },
+  { id: "cl7",  channel: "EMAIL", type: "USAGE",  amount:   -142, description: "월 학습현황 안내 (142건 × 1)", createdAt: "2026-03-20 14:00" },
+  { id: "cl8",  channel: "KAKAO", type: "USAGE",  amount:    -33, description: "라이브 세션 알림 (11건 × 3)", createdAt: "2026-03-22 09:00" },
+];
 
 // ── 자동화 규칙 ───────────────────────────────────────────
 

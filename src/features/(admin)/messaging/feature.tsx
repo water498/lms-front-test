@@ -9,15 +9,9 @@ import ChannelSettingsTab from "./sections/channel-settings-tab";
 import SendMessageModal from "./modals/send-message-modal";
 import CreateTemplateModal from "./modals/create-template-modal";
 import AutomationRuleModal from "./modals/automation-rule-modal";
-import { channelCredits, type MessageChannel, type MessageTemplate, type AutomationRule } from "./mockData";
+import { creditPool, CREDITS_PER_MESSAGE, type MessageChannel, type MessageTemplate, type AutomationRule } from "./mockData";
 
 type SubTab = "history" | "templates" | "automation" | "settings";
-
-const CHANNEL_TABS: { id: MessageChannel; label: string }[] = [
-  { id: "SMS",   label: "SMS" },
-  { id: "KAKAO", label: "알림톡" },
-  { id: "EMAIL", label: "이메일" },
-];
 
 const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "history",    label: "발송 이력" },
@@ -26,39 +20,28 @@ const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "settings",   label: "설정" },
 ];
 
-const CHANNEL_CREDIT_STYLE: Record<MessageChannel, { bg: string; text: string; badge: string }> = {
-  SMS:   { bg: "bg-blue-50",   text: "text-blue-700",   badge: "bg-blue-100 text-blue-700" },
-  KAKAO: { bg: "bg-amber-50",  text: "text-amber-700",  badge: "bg-amber-100 text-amber-700" },
-  EMAIL: { bg: "bg-violet-50", text: "text-violet-700", badge: "bg-violet-100 text-violet-700" },
-};
-
-const CHANNEL_LABEL: Record<MessageChannel, string> = {
-  SMS: "SMS", KAKAO: "알림톡", EMAIL: "이메일",
-};
-
 type Modal = "send" | "createTemplate" | null;
 
 function CreditBar({ channel }: { channel: MessageChannel }) {
-  const credit = channelCredits[channel];
-  const style = CHANNEL_CREDIT_STYLE[channel];
-  const low = credit.balance < credit.costPerMessage * 100;
+  const balance = creditPool.balance;
+  const costPerMsg = CREDITS_PER_MESSAGE[channel];
+  const estimated = Math.floor(balance / costPerMsg);
+  const low = balance < costPerMsg * 100;
   return (
     <div className="max-w-xs">
-      <div className={`${style.bg} rounded-xl p-4 flex flex-col gap-1.5`}>
+      <div className={`bg-slate-50 rounded-xl p-4 flex flex-col gap-1`}>
         <div className="flex items-center justify-between">
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>
-            {CHANNEL_LABEL[channel]}
-          </span>
+          <span className="text-xs font-semibold text-slate-500">크레딧 잔액</span>
           {low && (
             <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
               <AlertTriangle size={11} /> 잔액 부족
             </span>
           )}
         </div>
-        <p className={`text-lg font-bold tabular-nums ${style.text}`}>
-          {credit.balance.toLocaleString()}원
+        <p className="text-lg font-bold tabular-nums text-slate-800">
+          {balance.toLocaleString()} cr
         </p>
-        <p className="text-xs text-slate-500">건당 {credit.costPerMessage}원</p>
+        <p className="text-xs text-slate-500">건당 {costPerMsg} cr · 약 {estimated.toLocaleString()}건 발송 가능</p>
       </div>
     </div>
   );

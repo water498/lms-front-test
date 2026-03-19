@@ -20,6 +20,7 @@ import {
   ChevronDown,
   BarChart2,
   Globe,
+  Coins,
 } from "lucide-react";
 
 const BASE = "/experiments/admin";
@@ -159,7 +160,7 @@ const NAV_GROUPS: NavGroup[] = [
       {
         kind: "link",
         href: `${BASE}/payments`,
-        label: "결제 내역",
+        label: "결제 내역(B2C)",
         icon: CreditCard,
       },
       {
@@ -172,6 +173,12 @@ const NAV_GROUPS: NavGroup[] = [
           { href: `${BASE}/messaging/kakao`, label: "알림톡" },
           { href: `${BASE}/messaging/email`, label: "이메일" },
         ],
+      },
+      {
+        kind: "link",
+        href: `${BASE}/credits`,
+        label: "크레딧",
+        icon: Coins,
       },
       { kind: "link", href: `${BASE}/settings`, label: "설정", icon: Settings },
     ],

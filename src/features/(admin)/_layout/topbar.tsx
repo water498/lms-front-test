@@ -113,7 +113,7 @@ const PAGE_TITLE_MAP: {
   },
   {
     prefix: "/experiments/admin/payments",
-    label: "결제 내역",
+    label: "결제 내역(B2C)",
     description:
       "학습자의 과정 구매·환불 트랜잭션 이력을 조회합니다. (B2C 전용)",
   },
