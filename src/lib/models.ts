@@ -125,6 +125,26 @@ export interface AccessLog {
   userAgent: string;
 }
 
+// 테넌트 admin 감사 로그 (Layer 2 — 관리자 작업 이력)
+export type TenantAuditAction =
+  | "ENROLLMENT_CANCEL"
+  | "ENROLLMENT_CREATE"
+  | "COURSE_CREATE"
+  | "COURSE_UPDATE"
+  | "USER_ROLE_CHANGE"
+  | "ORG_STRUCTURE_UPDATE"
+  | "SETTINGS_UPDATE"
+  | "CERT_ISSUE";
+
+export interface TenantAuditLog {
+  id: string;
+  timestamp: string;
+  actor: string;
+  action: TenantAuditAction;
+  target: string;
+  detail: string;
+}
+
 export interface UserEnrollment {
   courseTitle: string;
   session: string;
@@ -133,10 +153,34 @@ export interface UserEnrollment {
   hasCertificate: boolean;
 }
 
-export interface ActivityLog {
-  date: string;
-  action: string;
-  detail: string;
+// 학습 이벤트 로그 (Layer 3 — append-only, xAPI verb 기반)
+export type EventVerb =
+  | "ENROLLED"
+  | "LESSON_STARTED"
+  | "LESSON_COMPLETED"
+  | "VIDEO_WATCHED"
+  | "EXAM_SUBMITTED"
+  | "ASSIGNMENT_SUBMITTED"
+  | "SURVEY_SUBMITTED"
+  | "COURSE_COMPLETED"
+  | "CERTIFICATE_ISSUED";
+
+export interface LearningEvent {
+  id: string;
+  learnerId: string;
+  verb: EventVerb;
+  objectType: "LESSON" | "EXAM" | "ASSIGNMENT" | "COURSE" | "SESSION";
+  objectId: string;
+  objectTitle?: string;
+  result?: {
+    score?: number;
+    passed?: boolean;
+    durationSec?: number;
+    progress?: number;
+  };
+  timestamp: string;
+  sessionId?: string;
+  courseId?: string;
 }
 
 export type UserStats = {
@@ -201,6 +245,7 @@ export interface Course {
   capacity?: number; // 오프라인 전용
   enrolledCount?: number; // 오프라인 전용
   // Admin 필드
+  defaultMinEnrollment?: number | null; // 차수 생성 시 기본값 (null = 미설정)
   status?: CourseStatus;
   mode?: CourseMode;
   sessions?: number; // 세션 수
@@ -290,6 +335,7 @@ export interface CourseSession {
   instructors: string[];
   location?: string;
   completionThreshold: number; // 수료 인정 최소 진도율 (%)
+  minEnrollment?: number | null; // 최소 수강 인원 (null = 이번 차수는 체크 없음)
   targetAudience?: {
     departments?: string[];
     jobGrades?: string[];
@@ -326,6 +372,59 @@ export interface Enrollment {
   progress: number;
   enrolledAt: string;
   lastStudiedAt?: string;
+}
+
+// ── 학습 이력 ──────────────────────────────────────────────
+
+// 레슨별 완료 기록
+export interface LessonCompletion {
+  id: string;
+  learnerId: string;
+  learnerName: string;
+  activityId: string;
+  activityTitle: string;
+  courseSessionId: string;
+  completedAt: string;
+  durationSec: number;
+}
+
+// 시험 응시 기록
+export interface ExamAttempt {
+  id: string;
+  learnerId: string;
+  learnerName: string;
+  examTemplateId: string;
+  examTitle: string;
+  courseSessionId: string;
+  score: number;
+  passed: boolean;
+  submittedAt: string;
+  durationSec?: number;
+}
+
+// 과제 제출 기록
+export interface AssignmentSubmission {
+  id: string;
+  learnerId: string;
+  learnerName: string;
+  assignmentTemplateId: string;
+  courseSessionId: string;
+  submittedAt: string;
+  fileUrl?: string;
+  textContent?: string;
+  grade?: number;
+  feedback?: string;
+}
+
+// 설문 응답 기록
+export interface SurveyResponse {
+  id: string;
+  learnerId: string;
+  surveyTemplateId: string;
+  courseSessionId: string;
+  submittedAt: string;
+  anonymous: boolean;
+  answers: { questionId: string; value: string | number }[];
 }
 
 // ── 평가 ──────────────────────────────────────────────────

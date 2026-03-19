@@ -68,6 +68,7 @@ interface DraftState {
   visible: boolean;
   forSale: boolean;
   completionThreshold: string;
+  minEnrollment: string;
   targetDepartments: string[];
   targetJobGrades: string[];
   targetSites: string[];
@@ -85,6 +86,7 @@ function toDraft(s: CourseSession): DraftState {
     visible: s.visible,
     forSale: s.forSale,
     completionThreshold: String(s.completionThreshold),
+    minEnrollment: s.minEnrollment != null ? String(s.minEnrollment) : "",
     targetDepartments: s.targetAudience?.departments ?? [],
     targetJobGrades: s.targetAudience?.jobGrades ?? [],
     targetSites: s.targetAudience?.sites ?? [],
@@ -134,6 +136,7 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       visible: draft.visible,
       forSale: draft.forSale,
       completionThreshold: Number(draft.completionThreshold),
+      minEnrollment: draft.minEnrollment !== "" ? Number(draft.minEnrollment) : null,
       targetAudience: {
         departments: draft.targetDepartments,
         jobGrades: draft.targetJobGrades,
@@ -307,6 +310,21 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             />
           </div>
 
+          {/* 최소 수강 인원 — COHORT only */}
+          {session.type === "COHORT" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-500">최소 수강 인원</label>
+              <input
+                type="number"
+                min={0}
+                value={draft.minEnrollment}
+                onChange={(e) => set("minEnrollment", e.target.value)}
+                placeholder="빈 값 = 체크 안 함"
+                className={inputCls}
+              />
+            </div>
+          )}
+
           {/* Toggles */}
           <div className="flex flex-col gap-3 justify-center">
             <div className="flex items-center gap-3">
@@ -394,6 +412,21 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             </span>
           </Field>
           <Field label="수료 기준">{session.completionThreshold}%</Field>
+          {session.type === "COHORT" && (
+            <Field label="최소 수강 인원">
+              {session.minEnrollment != null ? (
+                <span className="flex items-center gap-2">
+                  {session.minEnrollment}명
+                  {session.enrolled < session.minEnrollment &&
+                    (session.status === "OPEN" || session.status === "ONGOING") && (
+                    <span className="text-xs font-medium text-red-600">미달</span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-slate-400">—</span>
+              )}
+            </Field>
+          )}
           {(session.targetAudience?.sites?.length || session.targetAudience?.departments?.length || session.targetAudience?.jobGrades?.length) ? (
             <div className="col-span-2 flex flex-col gap-1">
               <span className="text-xs font-medium text-slate-500">수강 대상</span>

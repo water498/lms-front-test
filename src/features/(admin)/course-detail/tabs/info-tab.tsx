@@ -35,6 +35,9 @@ export default function InfoTab({ course }: { course: Course }) {
 
   const [description, setDescription] = useState(course.description ?? "");
   const [price, setPrice] = useState<string>(course.price !== undefined ? String(course.price) : "");
+  const [defaultMinEnrollment, setDefaultMinEnrollment] = useState<string>(
+    course.defaultMinEnrollment != null ? String(course.defaultMinEnrollment) : ""
+  );
   const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
 
   const suggestions = tagInput.trim()
@@ -223,6 +226,23 @@ export default function InfoTab({ course }: { course: Course }) {
           />
           <span className="text-sm text-slate-500">원</span>
           <span className="text-xs text-slate-400 ml-1">(빈 값 = 무료 과정)</span>
+        </div>
+      </div>
+
+      {/* 최소 수강 인원 (기본값) */}
+      <div>
+        <label className="text-xs font-medium text-slate-600 mb-1 block">최소 수강 인원 (기본값)</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={0}
+            className="w-40 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            placeholder="미설정"
+            value={defaultMinEnrollment}
+            onChange={(e) => setDefaultMinEnrollment(e.target.value)}
+          />
+          <span className="text-sm text-slate-500">명</span>
+          <span className="text-xs text-slate-400 ml-1">(빈 값 = 미설정)</span>
         </div>
       </div>
 

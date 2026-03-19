@@ -102,7 +102,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
             onDeleteActivity={handleDeleteActivity}
           />
         )}
-        {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} />}
+        {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} defaultMinEnrollment={course.defaultMinEnrollment} />}
       </div>
     </div>
   );

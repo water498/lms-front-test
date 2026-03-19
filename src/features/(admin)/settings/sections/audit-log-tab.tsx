@@ -2,27 +2,9 @@
 
 import { useState } from "react";
 import { Download, Search } from "lucide-react";
+import type { TenantAuditAction, TenantAuditLog } from "@/lib/models";
 
-type AuditAction =
-  | "ENROLLMENT_CANCEL"
-  | "ENROLLMENT_CREATE"
-  | "COURSE_CREATE"
-  | "COURSE_UPDATE"
-  | "USER_ROLE_CHANGE"
-  | "ORG_STRUCTURE_UPDATE"
-  | "SETTINGS_UPDATE"
-  | "CERT_ISSUE";
-
-interface AuditLog {
-  id: string;
-  timestamp: string;
-  actor: string;
-  action: AuditAction;
-  target: string;
-  detail: string;
-}
-
-const ACTION_LABEL: Record<AuditAction, string> = {
+const ACTION_LABEL: Record<TenantAuditAction, string> = {
   ENROLLMENT_CANCEL:   "수강 취소",
   ENROLLMENT_CREATE:   "수강 등록",
   COURSE_CREATE:       "과정 생성",
@@ -33,7 +15,7 @@ const ACTION_LABEL: Record<AuditAction, string> = {
   CERT_ISSUE:          "수료증 발급",
 };
 
-const ACTION_COLOR: Record<AuditAction, string> = {
+const ACTION_COLOR: Record<TenantAuditAction, string> = {
   ENROLLMENT_CANCEL:    "bg-red-100 text-red-600",
   ENROLLMENT_CREATE:    "bg-blue-100 text-blue-600",
   COURSE_CREATE:        "bg-violet-100 text-violet-600",
@@ -44,7 +26,7 @@ const ACTION_COLOR: Record<AuditAction, string> = {
   CERT_ISSUE:           "bg-green-100 text-green-600",
 };
 
-const auditLogs: AuditLog[] = [
+const auditLogs: TenantAuditLog[] = [
   { id: "al1",  timestamp: "2025-03-17 14:32:11", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CANCEL",    target: "정하은 / React 기초",             detail: "ACTIVE → CANCELLED" },
   { id: "al2",  timestamp: "2025-03-17 11:05:44", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CREATE",    target: "홍민재 / React 기초",             detail: "수동 수강 등록" },
   { id: "al3",  timestamp: "2025-03-16 17:22:03", actor: "홍길동 (관리자)",   action: "CERT_ISSUE",           target: "박지호 / Next.js 마스터",         detail: "수료증 수동 발급" },
@@ -57,11 +39,11 @@ const auditLogs: AuditLog[] = [
   { id: "al10", timestamp: "2025-03-10 09:11:05", actor: "홍길동 (관리자)",   action: "ORG_STRUCTURE_UPDATE", target: "직급",                            detail: "부장 직급 추가" },
 ];
 
-const ALL_ACTIONS = Object.keys(ACTION_LABEL) as AuditAction[];
+const ALL_ACTIONS = Object.keys(ACTION_LABEL) as TenantAuditAction[];
 
 export default function AuditLogTab() {
   const [search, setSearch] = useState("");
-  const [actionFilter, setActionFilter] = useState<"all" | AuditAction>("all");
+  const [actionFilter, setActionFilter] = useState<"all" | TenantAuditAction>("all");
 
   const filtered = auditLogs.filter((log) => {
     const matchSearch =
@@ -102,7 +84,7 @@ export default function AuditLogTab() {
         </div>
         <select
           value={actionFilter}
-          onChange={(e) => setActionFilter(e.target.value as "all" | AuditAction)}
+          onChange={(e) => setActionFilter(e.target.value as "all" | TenantAuditAction)}
           className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-400"
         >
           <option value="all">전체 작업</option>

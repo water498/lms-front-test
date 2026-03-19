@@ -7,16 +7,20 @@ import type { SessionType } from "../mockData";
 
 interface Props {
   isOffline?: boolean;
+  defaultMinEnrollment?: number | null;
   onClose: () => void;
 }
 
-export default function CreateSessionModal({ isOffline = false, onClose }: Props) {
+export default function CreateSessionModal({ isOffline = false, defaultMinEnrollment, onClose }: Props) {
   const [sessionType, setSessionType] = useState<SessionType>("COHORT");
   const [name, setName] = useState("");
   const [cohortNumber, setCohortNumber] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [capacity, setCapacity] = useState("30");
+  const [minEnrollment, setMinEnrollment] = useState<string>(
+    defaultMinEnrollment != null ? String(defaultMinEnrollment) : ""
+  );
   const [selectedInstructors, setSelectedInstructors] = useState<string[]>([instructors[0]]);
   const [location, setLocation] = useState("");
   const [visible, setVisible] = useState(true);
@@ -133,6 +137,26 @@ export default function CreateSessionModal({ isOffline = false, onClose }: Props
               onChange={(e) => setCapacity(e.target.value)}
             />
           </div>
+
+          {/* 최소 수강 인원 — COHORT only */}
+          {sessionType === "COHORT" && (
+            <div>
+              <label className="text-xs font-medium text-slate-600 mb-1 block">최소 수강 인원</label>
+              <input
+                type="number"
+                min="0"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                placeholder="빈 값 = 체크 안 함"
+                value={minEnrollment}
+                onChange={(e) => setMinEnrollment(e.target.value)}
+              />
+              {defaultMinEnrollment != null && (
+                <p className="text-xs text-slate-400 mt-1">
+                  과정 기본값 {defaultMinEnrollment}명에서 불러옴
+                </p>
+              )}
+            </div>
+          )}
 
           {/* 강사 배정 */}
           <div>

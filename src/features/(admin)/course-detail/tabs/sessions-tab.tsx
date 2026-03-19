@@ -32,9 +32,10 @@ function SessionTypeBadge({ session }: { session: CourseSession }) {
 interface SessionsTabProps {
   sessions: CourseSession[];
   courseId: string;
+  defaultMinEnrollment?: number | null;
 }
 
-export default function SessionsTab({ sessions, courseId }: SessionsTabProps) {
+export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }: SessionsTabProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
 
@@ -91,10 +92,19 @@ export default function SessionsTab({ sessions, courseId }: SessionsTabProps) {
                         }
                       </td>
                       <td className="px-4 py-3 text-slate-600">
-                        <span className={s.capacity > 0 && s.enrolled >= s.capacity ? "text-red-500 font-medium" : ""}>
-                          {s.enrolled}
-                        </span>
-                        <span className="text-slate-400"> / {s.capacity === 0 ? "무제한" : s.capacity}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={s.capacity > 0 && s.enrolled >= s.capacity ? "text-red-500 font-medium" : ""}>
+                            {s.enrolled}
+                          </span>
+                          <span className="text-slate-400"> / {s.capacity === 0 ? "무제한" : s.capacity}</span>
+                          {s.minEnrollment != null &&
+                            s.enrolled < s.minEnrollment &&
+                            (s.status === "OPEN" || s.status === "ONGOING") && (
+                            <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-red-100 text-red-600">
+                              미달
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-slate-600">{s.instructors.join(", ")}</td>
                       <td className="px-4 py-3 text-slate-400">{s.location ?? "온라인"}</td>
@@ -138,7 +148,10 @@ export default function SessionsTab({ sessions, courseId }: SessionsTabProps) {
       </div>
 
       {showModal && (
-        <CreateSessionModal onClose={() => setShowModal(false)} />
+        <CreateSessionModal
+          defaultMinEnrollment={defaultMinEnrollment}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </>
   );

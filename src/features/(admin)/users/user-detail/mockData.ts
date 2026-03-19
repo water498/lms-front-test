@@ -1,8 +1,8 @@
 import { orgUsers } from "../mockData";
-import type { UserEnrollment, ActivityLog } from "@/lib/models";
+import type { UserEnrollment, LearningEvent } from "@/lib/models";
 
 export { orgUsers };
-export type { UserEnrollment, ActivityLog } from "@/lib/models";
+export type { UserEnrollment, LearningEvent } from "@/lib/models";
 
 export const userEnrollments: Record<string, UserEnrollment[]> = {
   u5: [
@@ -16,14 +16,12 @@ export const userEnrollments: Record<string, UserEnrollment[]> = {
   ],
 };
 
-export const activityLogs: Record<string, ActivityLog[]> = {
+export const learningEvents: Record<string, LearningEvent[]> = {
   u5: [
-    { date: "2025-03-14 09:12", action: "로그인",        detail: "Chrome / macOS" },
-    { date: "2025-03-14 09:15", action: "강의 시청",     detail: "React 기초 > useState 기초" },
-    { date: "2025-03-14 09:48", action: "강의 시청",     detail: "React 기초 > useEffect 활용" },
-    { date: "2025-03-13 14:22", action: "퀴즈 제출",     detail: "TypeScript 심화 > 제네릭 퀴즈 (92점)" },
-    { date: "2025-03-12 10:05", action: "로그인",        detail: "Safari / iOS" },
-    { date: "2025-03-12 10:08", action: "강의 시청",     detail: "Next.js 마스터 > App Router 개요" },
-    { date: "2025-03-10 16:30", action: "수료증 발급",   detail: "TypeScript 심화 완료" },
+    { id: "le1", learnerId: "u5", verb: "VIDEO_WATCHED",      objectType: "LESSON", objectId: "a4",  objectTitle: "React 기초 > useState 기초",        result: { progress: 100, durationSec: 660 }, timestamp: "2025-03-14 09:15", courseId: "c1", sessionId: "se2" },
+    { id: "le2", learnerId: "u5", verb: "VIDEO_WATCHED",      objectType: "LESSON", objectId: "a7",  objectTitle: "React 기초 > useEffect 활용",       result: { progress: 100, durationSec: 580 }, timestamp: "2025-03-14 09:48", courseId: "c1", sessionId: "se2" },
+    { id: "le3", learnerId: "u5", verb: "EXAM_SUBMITTED",     objectType: "EXAM",   objectId: "ex2", objectTitle: "TypeScript 심화 > 제네릭 퀴즈",     result: { score: 92, passed: true },          timestamp: "2025-03-13 14:22", courseId: "c2" },
+    { id: "le4", learnerId: "u5", verb: "VIDEO_WATCHED",      objectType: "LESSON", objectId: "a1",  objectTitle: "Next.js 마스터 > App Router 개요",  result: { progress: 100, durationSec: 490 }, timestamp: "2025-03-12 10:08" },
+    { id: "le5", learnerId: "u5", verb: "CERTIFICATE_ISSUED", objectType: "COURSE", objectId: "c2",  objectTitle: "TypeScript 심화",                   timestamp: "2025-03-10 16:30" },
   ],
 };
