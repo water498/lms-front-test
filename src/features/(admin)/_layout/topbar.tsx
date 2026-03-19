@@ -107,7 +107,7 @@ const PAGE_TITLE_MAP: {
   },
   {
     prefix: "/experiments/admin/media",
-    label: "미디어 라이브러리",
+    label: "콘텐츠 라이브러리",
     description:
       "과정 콘텐츠에 사용할 영상·문서·이미지를 업로드하고 관리하는 중앙 저장소입니다.",
   },

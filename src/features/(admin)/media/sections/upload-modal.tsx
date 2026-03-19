@@ -37,6 +37,8 @@ export default function UploadModal({ onClose }: Props) {
   const [displayName, setDisplayName] = useState("");
   const [detectedType, setDetectedType] = useState<AssetType>("VIDEO");
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [progress, setProgress] = useState(0);
   const [cdnUrl, setCdnUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -172,6 +174,37 @@ export default function UploadModal({ onClose }: Props) {
                     placeholder="표시 이름을 입력하세요"
                   />
                 </div>
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">태그 <span className="text-slate-400">(선택)</span></label>
+                  <div className="flex flex-wrap gap-1 mb-1.5">
+                    {tags.map((tag) => (
+                      <span key={tag} className="flex items-center gap-1 text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}
+                          className="text-violet-400 hover:text-violet-700"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <input
+                    className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
+                        e.preventDefault();
+                        const newTag = tagInput.trim().replace(/,$/, "");
+                        if (newTag && !tags.includes(newTag)) setTags((prev) => [...prev, newTag]);
+                        setTagInput("");
+                      }
+                    }}
+                    placeholder="태그 입력 후 Enter 또는 쉼표"
+                  />
+                </div>
               </div>
               <button
                 onClick={startUpload}
@@ -234,6 +267,13 @@ export default function UploadModal({ onClose }: Props) {
               <div className="bg-slate-50 rounded-lg px-4 py-3">
                 <p className="text-sm font-medium text-slate-800 mb-0.5">{displayName}</p>
                 <p className="text-xs font-mono text-slate-400">{cdnUrl}</p>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {tags.map((tag) => (
+                      <span key={tag} className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

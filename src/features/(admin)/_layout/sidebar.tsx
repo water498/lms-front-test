@@ -103,7 +103,7 @@ const NAV_GROUPS: NavGroup[] = [
       {
         kind: "link",
         href: `${BASE}/media`,
-        label: "미디어 라이브러리",
+        label: "콘텐츠 라이브러리",
         icon: HardDrive,
       },
     ],
@@ -117,11 +117,11 @@ const NAV_GROUPS: NavGroup[] = [
         icon: Globe,
         basePaths: [`${BASE}/portal`],
         children: [
-          { href: `${BASE}/portal/info`,          label: "포털 정보" },
-          { href: `${BASE}/portal/theme`,         label: "테마" },
-          { href: `${BASE}/portal/banners`,       label: "배너 · 팝업" },
+          { href: `${BASE}/portal/info`, label: "포털 정보" },
+          { href: `${BASE}/portal/theme`, label: "테마" },
+          { href: `${BASE}/portal/banners`, label: "배너 · 팝업" },
           { href: `${BASE}/portal/announcements`, label: "공지사항" },
-          { href: `${BASE}/portal/legal`,         label: "약관 · 개인정보" },
+          { href: `${BASE}/portal/legal`, label: "약관 · 개인정보" },
         ],
       },
     ],
@@ -168,7 +168,7 @@ const NAV_GROUPS: NavGroup[] = [
         icon: MessageSquare,
         basePaths: [`${BASE}/messaging`],
         children: [
-          { href: `${BASE}/messaging/sms`,   label: "SMS" },
+          { href: `${BASE}/messaging/sms`, label: "SMS" },
           { href: `${BASE}/messaging/kakao`, label: "알림톡" },
           { href: `${BASE}/messaging/email`, label: "이메일" },
         ],

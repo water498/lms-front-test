@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X } from "lucide-react";
+import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban } from "lucide-react";
 import { mediaAssets, type MediaAsset, type AssetType, type UploadStatus } from "../mockData";
+import { getAllSessions } from "../../course-detail/mockData";
 
 const TYPE_ICON: Record<AssetType, React.ElementType> = {
   VIDEO: FileVideo,
@@ -32,6 +33,12 @@ const ROW_BG: Partial<Record<UploadStatus, string>> = {
 };
 
 type ViewMode = "grid" | "list";
+
+type DeleteModal =
+  | { type: "none" }
+  | { type: "safe"; assetId: string; assetName: string }
+  | { type: "warn"; assetId: string; assetName: string; courseNames: string[] }
+  | { type: "block"; assetName: string; courseNames: string[] };
 
 interface RenameModalProps {
   asset: MediaAsset;
@@ -76,6 +83,8 @@ function RenameModal({ asset, onSave, onClose }: RenameModalProps) {
   );
 }
 
+const ACTIVE_SESSION_STATUSES = new Set(["OPEN", "ONGOING", "CLOSED"]);
+
 interface Props {
   onUploadClick: () => void;
 }
@@ -83,20 +92,65 @@ interface Props {
 export default function MediaGrid({ onUploadClick }: Props) {
   const [assets, setAssets] = useState<MediaAsset[]>(mediaAssets);
   const [typeFilter, setTypeFilter] = useState<AssetType | "ALL">("ALL");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [renamingAsset, setRenamingAsset] = useState<MediaAsset | null>(null);
+  const [deleteModal, setDeleteModal] = useState<DeleteModal>({ type: "none" });
+
+  // Derive unique tags from all assets (sorted)
+  const allTags = Array.from(new Set(assets.flatMap((a) => a.tags))).sort();
 
   const filtered = assets.filter((a) => {
     const matchType = typeFilter === "ALL" || a.assetType === typeFilter;
     const q = search.toLowerCase();
     const matchSearch = a.displayName.toLowerCase().includes(q) || a.originalName.toLowerCase().includes(q);
-    return matchType && matchSearch;
+    const matchTag = selectedTags.length === 0 || selectedTags.some((t) => a.tags.includes(t));
+    return matchType && matchSearch && matchTag;
   });
 
   function handleRename(id: string, displayName: string) {
     setAssets((prev) => prev.map((a) => a.id === id ? { ...a, displayName } : a));
     setRenamingAsset(null);
+  }
+
+  function toggleTag(tag: string) {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }
+
+  function handleDeleteClick(asset: MediaAsset) {
+    if (asset.linkedCourses.length === 0) {
+      setDeleteModal({ type: "safe", assetId: asset.id, assetName: asset.displayName });
+      return;
+    }
+
+    // Check session statuses for linked courses
+    const allSessions = getAllSessions();
+    const activeCourseNames: string[] = [];
+    const draftCourseNames: string[] = [];
+
+    for (const courseName of asset.linkedCourses) {
+      const courseSessions = allSessions.filter((s) => s.courseTitle === courseName);
+      const hasActive = courseSessions.some((s) => ACTIVE_SESSION_STATUSES.has(s.status));
+      if (hasActive) {
+        activeCourseNames.push(courseName);
+      } else {
+        draftCourseNames.push(courseName);
+      }
+    }
+
+    if (activeCourseNames.length > 0) {
+      setDeleteModal({ type: "block", assetName: asset.displayName, courseNames: activeCourseNames });
+    } else {
+      setDeleteModal({ type: "warn", assetId: asset.id, assetName: asset.displayName, courseNames: draftCourseNames });
+    }
+  }
+
+  function confirmDelete(assetId: string) {
+    setAssets((prev) => prev.filter((a) => a.id !== assetId));
+    setDeleteModal({ type: "none" });
   }
 
   return (
@@ -148,6 +202,34 @@ export default function MediaGrid({ onUploadClick }: Props) {
         </button>
       </div>
 
+      {/* Tag filter */}
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 items-center">
+          <span className="text-xs text-slate-400 mr-1">태그</span>
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => toggleTag(tag)}
+              className={`px-2.5 py-1 text-xs rounded-full font-medium transition-colors ${
+                selectedTags.includes(tag)
+                  ? "bg-violet-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+          {selectedTags.length > 0 && (
+            <button
+              onClick={() => setSelectedTags([])}
+              className="text-xs text-slate-400 hover:text-slate-600 ml-1 underline"
+            >
+              초기화
+            </button>
+          )}
+        </div>
+      )}
+
       {viewMode === "list" ? (
         <div className="bg-white rounded-xl border border-slate-200">
           <table className="w-full text-sm">
@@ -158,7 +240,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                 <th className="text-left px-4 py-3 font-medium">상태</th>
                 <th className="text-left px-4 py-3 font-medium">크기</th>
                 <th className="text-left px-4 py-3 font-medium">업로드일</th>
-                <th className="text-left px-4 py-3 font-medium">연결 과정</th>
+                <th className="text-left px-4 py-3 font-medium">연결 과정 / 태그</th>
                 <th className="text-left px-4 py-3 font-medium">액션</th>
               </tr>
             </thead>
@@ -168,6 +250,8 @@ export default function MediaGrid({ onUploadClick }: Props) {
                 const typeCfg = TYPE_CONFIG[a.assetType];
                 const statusCfg = STATUS_CONFIG[a.status];
                 const rowBg = ROW_BG[a.status] ?? "";
+                const visibleTags = a.tags.slice(0, 2);
+                const hiddenTagCount = a.tags.length - visibleTags.length;
                 return (
                   <tr
                     key={a.id}
@@ -204,6 +288,14 @@ export default function MediaGrid({ onUploadClick }: Props) {
                             {c}
                           </span>
                         ))}
+                        {visibleTags.map((tag) => (
+                          <span key={tag} className="text-xs bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                        {hiddenTagCount > 0 && (
+                          <span className="text-xs text-slate-400 px-1">+{hiddenTagCount}</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -217,6 +309,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                         </button>
                         <button
                           title="삭제"
+                          onClick={() => handleDeleteClick(a)}
                           className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                         >
                           <Trash2 size={13} />
@@ -267,6 +360,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                     </button>
                     <button
                       title="삭제"
+                      onClick={() => handleDeleteClick(a)}
                       className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors"
                     >
                       <Trash2 size={13} />
@@ -287,6 +381,11 @@ export default function MediaGrid({ onUploadClick }: Props) {
                       {c}
                     </span>
                   ))}
+                  {a.tags.map((tag) => (
+                    <span key={tag} className="text-xs bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             );
@@ -305,6 +404,104 @@ export default function MediaGrid({ onUploadClick }: Props) {
           onSave={handleRename}
           onClose={() => setRenamingAsset(null)}
         />
+      )}
+
+      {/* Delete modals */}
+      {deleteModal.type === "safe" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-slate-800">자산 삭제</h2>
+              <button onClick={() => setDeleteModal({ type: "none" })} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+            </div>
+            <p className="text-sm text-slate-600 mb-1">
+              <span className="font-medium text-slate-800">{deleteModal.assetName}</span>을(를) 삭제하시겠습니까?
+            </p>
+            <p className="text-xs text-slate-400">이 작업은 되돌릴 수 없습니다.</p>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setDeleteModal({ type: "none" })}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => confirmDelete(deleteModal.assetId)}
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.type === "warn" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
+              <h2 className="text-base font-semibold text-slate-800">연결된 과정이 있습니다</h2>
+              <button onClick={() => setDeleteModal({ type: "none" })} className="ml-auto text-slate-400 hover:text-slate-600"><X size={18} /></button>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">
+              아래 <span className="font-medium">{deleteModal.courseNames.length}개</span> 과정 활동에서 미디어 연결이 해제됩니다. 계속하시겠습니까?
+            </p>
+            <ul className="text-xs text-slate-500 space-y-1 mb-4 bg-amber-50 rounded-lg p-3">
+              {deleteModal.courseNames.map((name) => (
+                <li key={name} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
+                  {name}
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteModal({ type: "none" })}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => confirmDelete(deleteModal.assetId)}
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.type === "block" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Ban size={18} className="text-red-500 flex-shrink-0" />
+              <h2 className="text-base font-semibold text-slate-800">삭제 불가</h2>
+              <button onClick={() => setDeleteModal({ type: "none" })} className="ml-auto text-slate-400 hover:text-slate-600"><X size={18} /></button>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">
+              진행 중이거나 종료된 과정에서 사용 중입니다. 삭제할 수 없습니다.
+            </p>
+            <ul className="text-xs text-slate-500 space-y-1 mb-4 bg-red-50 rounded-lg p-3">
+              {deleteModal.courseNames.map((name) => (
+                <li key={name} className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0" />
+                  {name}
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setDeleteModal({ type: "none" })}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
