@@ -414,7 +414,6 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
           )}
         </div>
       )}
-
       {/* Action row */}
       {isEditing && (
         <div className="flex items-center gap-2 pt-1">

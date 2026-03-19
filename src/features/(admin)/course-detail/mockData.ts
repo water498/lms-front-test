@@ -59,8 +59,8 @@ const curricula: Record<string, Subject[]> = {
 
 const sessions: Record<string, CourseSession[]> = {
   c1: [
-    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, targetAudience: { departments: ["개발팀", "기획팀"], jobGrades: ["사원", "대리"] } },
-    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
+    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, targetAudience: { departments: ["개발팀", "기획팀"], jobGrades: ["사원", "대리"] }, finalExamTemplateId: "ex1", postSurveyTemplateId: "sv1", postAssignmentTemplateId: "as1" },
+    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, preSurveyTemplateId: "sv2", postSurveyTemplateId: "sv1", preAssignmentTemplateId: "as2" },
     { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, targetAudience: { departments: ["개발팀"] } },
     { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
   ],

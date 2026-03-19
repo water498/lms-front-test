@@ -20,7 +20,7 @@ function newRule(): CompositionRule {
 }
 
 function defaultExam(): Omit<ExamTemplate, "id" | "usageCount" | "createdAt"> {
-  return { title: "", subType: "SHORT", passingScore: 70, timeLimit: null, rules: [] };
+  return { title: "", subType: "SHORT", passingScore: 70, timeLimit: null, maxAttempts: null, rules: [] };
 }
 
 // All unique tags in the bank (EXAM only)
@@ -38,6 +38,8 @@ export default function ExamEditorFeature({ examId }: Props) {
   const [subType, setSubType]           = useState<ExamSubType>(src.subType);
   const [passingScore, setPassingScore] = useState(src.passingScore);
   const [timeLimit, setTimeLimit]       = useState<string>(src.timeLimit?.toString() ?? "");
+  const [maxAttempts, setMaxAttempts]   = useState<string>(src.maxAttempts?.toString() ?? "");
+  const [unlimitedAttempts, setUnlimitedAttempts] = useState(src.maxAttempts === null);
   const [rules, setRules]               = useState<CompositionRule[]>(src.rules);
   const [selectedId, setSelectedId]     = useState<string | null>(src.rules[0]?.id ?? null);
   const [tagInput, setTagInput]         = useState("");
@@ -339,6 +341,32 @@ export default function ExamEditorFeature({ examId }: Props) {
                 placeholder="무제한"
                 onChange={(e) => setTimeLimit(e.target.value)}
               />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-500 block mb-1.5">재응시 횟수</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  disabled={unlimitedAttempts}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 disabled:bg-slate-50 disabled:text-slate-300"
+                  value={unlimitedAttempts ? "" : maxAttempts}
+                  placeholder="횟수"
+                  onChange={(e) => setMaxAttempts(e.target.value)}
+                />
+              </div>
+              <label className="flex items-center gap-1.5 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={unlimitedAttempts}
+                  onChange={(e) => {
+                    setUnlimitedAttempts(e.target.checked);
+                    if (e.target.checked) setMaxAttempts("");
+                  }}
+                  className="accent-violet-600"
+                />
+                <span className="text-xs text-slate-500">무제한</span>
+              </label>
             </div>
           </div>
 

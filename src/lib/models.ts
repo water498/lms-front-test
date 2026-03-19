@@ -295,6 +295,12 @@ export interface CourseSession {
     jobGrades?: string[];
     sites?: string[];
   };
+  preExamTemplateId?: string;         // 수강 전 시험 (진단)
+  preAssignmentTemplateId?: string;   // 수강 전 과제
+  preSurveyTemplateId?: string;       // 수강 시작 전 설문
+  postSurveyTemplateId?: string;      // 수료 후 설문
+  finalExamTemplateId?: string;       // 수료 조건 시험
+  postAssignmentTemplateId?: string;  // 수료 후 과제
 }
 
 export interface CourseEnrollee {
@@ -356,6 +362,7 @@ export interface ExamTemplate {
   subType: ExamSubType;
   passingScore: number;
   timeLimit: number | null;
+  maxAttempts: number | null;  // null = 무제한
   rules: CompositionRule[];
   usageCount: number;
   createdAt: string;

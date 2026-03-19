@@ -9,8 +9,9 @@ import SessionInfoTab from "./tabs/info-tab";
 import SessionEnrolleesTab from "./tabs/enrollees-tab";
 import SessionOfflineTab from "./tabs/offline-tab";
 import DashboardTab from "./tabs/dashboard-tab";
+import SessionAssessmentTab from "./tabs/assessment-tab";
 
-type TabId = "dashboard" | "info" | "enrollees" | "offline";
+type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "offline";
 
 interface Props {
   courseId: string;
@@ -30,9 +31,10 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
   const isOffline = course.mode === "OFFLINE" || course.mode === "BLENDED";
 
   const TABS: { id: TabId; label: string }[] = [
-    { id: "dashboard", label: "대시보드" },
-    { id: "info",      label: "차수 정보" },
-    { id: "enrollees", label: "수강생" },
+    { id: "dashboard",  label: "대시보드" },
+    { id: "info",       label: "차수 정보" },
+    { id: "enrollees",  label: "수강생" },
+    { id: "assessment", label: "평가 설정" },
     ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
   ];
 
@@ -77,10 +79,11 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
 
       {/* Tab content */}
       <div>
-        {activeTab === "dashboard" && <DashboardTab session={session} enrollees={enrollees} />}
-        {activeTab === "info"      && <SessionInfoTab session={session} />}
-        {activeTab === "enrollees" && <SessionEnrolleesTab enrollees={enrollees} sessionId={session.id} />}
-        {activeTab === "offline"   && <SessionOfflineTab sessionId={session.id} />}
+        {activeTab === "dashboard"  && <DashboardTab session={session} enrollees={enrollees} />}
+        {activeTab === "info"       && <SessionInfoTab session={session} />}
+        {activeTab === "enrollees"  && <SessionEnrolleesTab enrollees={enrollees} sessionId={session.id} />}
+        {activeTab === "assessment" && <SessionAssessmentTab session={session} />}
+        {activeTab === "offline"    && <SessionOfflineTab sessionId={session.id} />}
       </div>
     </div>
   );

@@ -37,6 +37,7 @@ export default function ExamTable() {
             <th className="text-left px-4 py-3 font-medium">문항 구성</th>
             <th className="text-left px-4 py-3 font-medium">통과 기준</th>
             <th className="text-left px-4 py-3 font-medium">시간제한</th>
+            <th className="text-left px-4 py-3 font-medium">재응시</th>
             <th className="text-left px-4 py-3 font-medium">사용 횟수</th>
             <th className="text-left px-4 py-3 font-medium">생성일</th>
           </tr>
@@ -65,6 +66,7 @@ export default function ExamTable() {
                 </td>
                 <td className="px-4 py-3 text-slate-600">{e.passingScore}%</td>
                 <td className="px-4 py-3 text-slate-500">{e.timeLimit ? `${e.timeLimit}분` : "무제한"}</td>
+                <td className="px-4 py-3 text-slate-500">{e.maxAttempts ? `${e.maxAttempts}회` : "무제한"}</td>
                 <td className="px-4 py-3 text-slate-600">{e.usageCount}회</td>
                 <td className="px-4 py-3 text-slate-400">{e.createdAt}</td>
               </tr>

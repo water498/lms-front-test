@@ -19,12 +19,18 @@ import {
   MessageSquare,
   ChevronDown,
   BarChart2,
+  Globe,
 } from "lucide-react";
 
 const BASE = "/experiments/admin";
 
 type NavChild = { href: string; label: string };
-type NavLink = { kind: "link"; href: string; label: string; icon: React.ElementType };
+type NavLink = {
+  kind: "link";
+  href: string;
+  label: string;
+  icon: React.ElementType;
+};
 type NavAccordion = {
   kind: "accordion";
   label: string;
@@ -39,7 +45,12 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "",
     items: [
-      { kind: "link", href: `${BASE}`, label: "대시보드", icon: LayoutDashboard },
+      {
+        kind: "link",
+        href: `${BASE}`,
+        label: "대시보드",
+        icon: LayoutDashboard,
+      },
     ],
   },
   {
@@ -52,7 +63,7 @@ const NAV_GROUPS: NavGroup[] = [
         basePaths: [`${BASE}/courses`, `${BASE}/sessions`],
         children: [
           { href: `${BASE}/courses`, label: "과정 목록" },
-          { href: `${BASE}/sessions`, label: "차수 목록" },
+          { href: `${BASE}/sessions`, label: "과정 운영(차수)" },
           { href: `${BASE}/courses/categories`, label: "카테고리" },
         ],
       },
@@ -86,11 +97,33 @@ const NAV_GROUPS: NavGroup[] = [
         basePaths: [`${BASE}/certificates`],
         children: [
           { href: `${BASE}/certificates/templates`, label: "템플릿" },
-          { href: `${BASE}/certificates/issued`,    label: "발급 내역" },
+          { href: `${BASE}/certificates/issued`, label: "발급 내역" },
         ],
       },
-      { kind: "link", href: `${BASE}/media`, label: "미디어 라이브러리", icon: HardDrive },
-      { kind: "link", href: `${BASE}/announcements`, label: "공지·메시지", icon: Megaphone },
+      {
+        kind: "link",
+        href: `${BASE}/media`,
+        label: "미디어 라이브러리",
+        icon: HardDrive,
+      },
+    ],
+  },
+  {
+    label: "포털 관리",
+    items: [
+      {
+        kind: "accordion",
+        label: "포털 관리",
+        icon: Globe,
+        basePaths: [`${BASE}/portal`],
+        children: [
+          { href: `${BASE}/portal/info`,          label: "포털 정보" },
+          { href: `${BASE}/portal/theme`,         label: "테마" },
+          { href: `${BASE}/portal/banners`,       label: "배너 · 팝업" },
+          { href: `${BASE}/portal/announcements`, label: "공지사항" },
+          { href: `${BASE}/portal/legal`,         label: "약관 · 개인정보" },
+        ],
+      },
     ],
   },
   {
@@ -119,12 +152,27 @@ const NAV_GROUPS: NavGroup[] = [
         basePaths: [`${BASE}/statistics`],
         children: [
           { href: `${BASE}/statistics/completion`, label: "수료율 현황" },
-          { href: `${BASE}/statistics/org`,        label: "조직별 학습 현황" },
+          { href: `${BASE}/statistics/org`, label: "조직별 학습 현황" },
           { href: `${BASE}/statistics/assessments`, label: "평가 점수 통계" },
         ],
       },
-      { kind: "link", href: `${BASE}/payments`, label: "결제 내역", icon: CreditCard },
-      { kind: "link", href: `${BASE}/messaging`, label: "메시징", icon: MessageSquare },
+      {
+        kind: "link",
+        href: `${BASE}/payments`,
+        label: "결제 내역",
+        icon: CreditCard,
+      },
+      {
+        kind: "accordion",
+        label: "메시징",
+        icon: MessageSquare,
+        basePaths: [`${BASE}/messaging`],
+        children: [
+          { href: `${BASE}/messaging/sms`,   label: "SMS" },
+          { href: `${BASE}/messaging/kakao`, label: "알림톡" },
+          { href: `${BASE}/messaging/email`, label: "이메일" },
+        ],
+      },
       { kind: "link", href: `${BASE}/settings`, label: "설정", icon: Settings },
     ],
   },
@@ -139,7 +187,12 @@ function bestChildMatch(pathname: string, children: NavChild[]): string | null {
   );
 }
 
-function AccordionItem({ label, icon: Icon, basePaths, children }: NavAccordion) {
+function AccordionItem({
+  label,
+  icon: Icon,
+  basePaths,
+  children,
+}: NavAccordion) {
   const pathname = usePathname();
   const isInSection = basePaths.some((p) => pathname.startsWith(p));
   const [open, setOpen] = useState(isInSection);
@@ -188,7 +241,11 @@ function AccordionItem({ label, icon: Icon, basePaths, children }: NavAccordion)
   );
 }
 
-export default function Sidebar({ isImpersonating = false }: { isImpersonating?: boolean }) {
+export default function Sidebar({
+  isImpersonating = false,
+}: {
+  isImpersonating?: boolean;
+}) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -197,7 +254,9 @@ export default function Sidebar({ isImpersonating = false }: { isImpersonating?:
   };
 
   return (
-    <aside className={`fixed left-0 h-screen w-60 bg-white border-r border-slate-200 flex flex-col z-30 overflow-y-auto ${isImpersonating ? "top-9" : "top-0"}`}>
+    <aside
+      className={`fixed left-0 h-screen w-60 bg-white border-r border-slate-200 flex flex-col z-30 overflow-y-auto ${isImpersonating ? "top-9" : "top-0"}`}
+    >
       {/* Org logo + name */}
       <div className="flex items-center gap-3 px-5 h-14 border-b border-slate-200 flex-shrink-0">
         <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
@@ -232,7 +291,7 @@ export default function Sidebar({ isImpersonating = false }: { isImpersonating?:
                     <item.icon size={16} />
                     {item.label}
                   </Link>
-                )
+                ),
               )}
             </div>
           </div>

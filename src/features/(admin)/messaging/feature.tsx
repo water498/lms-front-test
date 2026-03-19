@@ -38,38 +38,33 @@ const CHANNEL_LABEL: Record<MessageChannel, string> = {
 
 type Modal = "send" | "createTemplate" | null;
 
-function CreditBar() {
+function CreditBar({ channel }: { channel: MessageChannel }) {
+  const credit = channelCredits[channel];
+  const style = CHANNEL_CREDIT_STYLE[channel];
+  const low = credit.balance < credit.costPerMessage * 100;
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {CHANNEL_TABS.map(({ id }) => {
-        const credit = channelCredits[id];
-        const style = CHANNEL_CREDIT_STYLE[id];
-        const low = credit.balance < credit.costPerMessage * 100;
-        return (
-          <div key={id} className={`${style.bg} rounded-xl p-4 flex flex-col gap-1.5`}>
-            <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>
-                {CHANNEL_LABEL[id]}
-              </span>
-              {low && (
-                <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
-                  <AlertTriangle size={11} /> 잔액 부족
-                </span>
-              )}
-            </div>
-            <p className={`text-lg font-bold tabular-nums ${style.text}`}>
-              {credit.balance.toLocaleString()}원
-            </p>
-            <p className="text-xs text-slate-500">건당 {credit.costPerMessage}원</p>
-          </div>
-        );
-      })}
+    <div className="max-w-xs">
+      <div className={`${style.bg} rounded-xl p-4 flex flex-col gap-1.5`}>
+        <div className="flex items-center justify-between">
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.badge}`}>
+            {CHANNEL_LABEL[channel]}
+          </span>
+          {low && (
+            <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
+              <AlertTriangle size={11} /> 잔액 부족
+            </span>
+          )}
+        </div>
+        <p className={`text-lg font-bold tabular-nums ${style.text}`}>
+          {credit.balance.toLocaleString()}원
+        </p>
+        <p className="text-xs text-slate-500">건당 {credit.costPerMessage}원</p>
+      </div>
     </div>
   );
 }
 
-export default function MessagingFeature() {
-  const [activeChannel, setActiveChannel] = useState<MessageChannel>("SMS");
+export default function MessagingFeature({ channel }: { channel: MessageChannel }) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("history");
   const [modal, setModal] = useState<Modal>(null);
   const [editingRule, setEditingRule] = useState<AutomationRule | null>(null);
@@ -80,28 +75,11 @@ export default function MessagingFeature() {
     <>
       <div className="flex flex-col gap-5">
         {/* 크레딧 잔액 바 */}
-        <CreditBar />
+        <CreditBar channel={channel} />
 
-        {/* 채널 최상위 탭 */}
+        {/* 서브탭 */}
         <div className="flex flex-col gap-0">
-          <div className="flex gap-1 border-b border-slate-200">
-            {CHANNEL_TABS.map((ch) => (
-              <button
-                key={ch.id}
-                onClick={() => { setActiveChannel(ch.id); setActiveSubTab("history"); }}
-                className={`px-5 py-2.5 text-sm font-semibold transition-colors border-b-2 -mb-px ${
-                  activeChannel === ch.id
-                    ? "border-violet-600 text-violet-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
-                }`}
-              >
-                {ch.label}
-              </button>
-            ))}
-          </div>
-
-          {/* 서브탭 */}
-          <div className="flex gap-0.5 mt-3">
+          <div className="flex gap-0.5">
             {SUB_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -119,23 +97,23 @@ export default function MessagingFeature() {
         </div>
 
         {/* 서브탭 콘텐츠 */}
-        {activeSubTab === "history"    && <HistoryTab    channel={activeChannel} onSendClick={() => setModal("send")} />}
-        {activeSubTab === "templates"  && <TemplatesTab  channel={activeChannel} onCreateClick={() => setModal("createTemplate")} onEditClick={(t) => setEditingTemplate(t)} />}
-        {activeSubTab === "automation" && <AutomationTab channel={activeChannel} onEditRule={(rule) => setEditingRule(rule)} onAddRule={() => setAddingRule(true)} />}
-        {activeSubTab === "settings"   && <ChannelSettingsTab channel={activeChannel} />}
+        {activeSubTab === "history"    && <HistoryTab    channel={channel} onSendClick={() => setModal("send")} />}
+        {activeSubTab === "templates"  && <TemplatesTab  channel={channel} onCreateClick={() => setModal("createTemplate")} onEditClick={(t) => setEditingTemplate(t)} />}
+        {activeSubTab === "automation" && <AutomationTab channel={channel} onEditRule={(rule) => setEditingRule(rule)} onAddRule={() => setAddingRule(true)} />}
+        {activeSubTab === "settings"   && <ChannelSettingsTab channel={channel} />}
       </div>
 
-      {modal === "send" && <SendMessageModal channel={activeChannel} onClose={() => setModal(null)} />}
+      {modal === "send" && <SendMessageModal channel={channel} onClose={() => setModal(null)} />}
       {(modal === "createTemplate" || editingTemplate !== null) && (
         <CreateTemplateModal
-          channel={activeChannel}
+          channel={channel}
           initialTemplate={editingTemplate ?? undefined}
           onClose={() => { setModal(null); setEditingTemplate(null); }}
         />
       )}
       {(addingRule || editingRule) && (
         <AutomationRuleModal
-          channel={activeChannel}
+          channel={channel}
           initialRule={editingRule ?? undefined}
           onClose={() => { setEditingRule(null); setAddingRule(false); }}
         />

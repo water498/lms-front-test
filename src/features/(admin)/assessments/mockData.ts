@@ -166,6 +166,7 @@ export const examTemplates: ExamTemplate[] = [
     subType: "FINAL",
     passingScore: 70,
     timeLimit: 30,
+    maxAttempts: 1,
     usageCount: 3,
     createdAt: "2025-01-10",
     rules: [
@@ -180,6 +181,7 @@ export const examTemplates: ExamTemplate[] = [
     subType: "SHORT",
     passingScore: 75,
     timeLimit: 15,
+    maxAttempts: null,
     usageCount: 2,
     createdAt: "2025-01-15",
     rules: [],
@@ -190,6 +192,7 @@ export const examTemplates: ExamTemplate[] = [
     subType: "FINAL",
     passingScore: 80,
     timeLimit: 60,
+    maxAttempts: 2,
     usageCount: 1,
     createdAt: "2025-02-01",
     rules: [],
