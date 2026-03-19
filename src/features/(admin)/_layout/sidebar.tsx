@@ -76,7 +76,6 @@ const NAV_GROUPS: NavGroup[] = [
         children: [
           { href: `${BASE}/enrollments`, label: "수강 현황" },
           { href: `${BASE}/enrollments/assign`, label: "수강 배정" },
-          { href: `${BASE}/enrollments/progress`, label: "학습 진도" },
         ],
       },
       {
