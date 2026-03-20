@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Play, CheckCircle } from "lucide-react";
 import { inProgressCourses, type EnrolledCourse } from "../../home/mockData";
 
@@ -72,6 +73,7 @@ const completedCourseMock: EnrolledCourse[] = [
 export { completedCourseMock };
 
 export function LearningTab() {
+  const router = useRouter();
   return (
     <div className="flex flex-col gap-8">
       {/* In Progress */}
@@ -98,7 +100,10 @@ export function LearningTab() {
                 </div>
                 <p className="text-xs text-zinc-600 mt-1">다음: {course.nextLessonTitle}</p>
               </div>
-              <button className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium rounded-lg transition-colors">
+              <button
+                onClick={() => router.push(`/experiments/b2c-student/courses/${course.id}`)}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium rounded-lg transition-colors"
+              >
                 <Play className="w-3 h-3 fill-white" />
                 이어 학습
               </button>
@@ -126,7 +131,10 @@ export function LearningTab() {
                 <p className="text-xs text-zinc-500">{course.instructor}</p>
                 <p className="text-xs text-emerald-500 mt-1">✓ 완료 · {course.lastAccessedAt}</p>
               </div>
-              <button className="shrink-0 text-xs text-zinc-500 hover:text-zinc-300 px-3 py-2 border border-zinc-700 rounded-lg transition-colors">
+              <button
+                onClick={() => router.push(`/experiments/b2c-student/courses/${course.id}`)}
+                className="shrink-0 text-xs text-zinc-500 hover:text-zinc-300 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
+              >
                 다시 보기
               </button>
             </div>

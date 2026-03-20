@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban } from "lucide-react";
+import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban, Eye } from "lucide-react";
 import { mediaAssets, type MediaAsset, type AssetType, type UploadStatus } from "../mockData";
 import { getAllSessions } from "../../course-detail/mockData";
 
@@ -83,6 +83,64 @@ function RenameModal({ asset, onSave, onClose }: RenameModalProps) {
   );
 }
 
+function PreviewModal({ asset, onClose }: { asset: MediaAsset; onClose: () => void }) {
+  const typeCfg = TYPE_CONFIG[asset.assetType];
+  const src = asset.assetType === "SCORM"
+    ? `https://${asset.launchHref}`
+    : `https://${asset.cdnBaseUrl}`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/90">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-5 py-3 bg-slate-900 border-b border-slate-700 shrink-0">
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${typeCfg.className}`}>
+          {typeCfg.label}
+        </span>
+        <span className="text-sm font-medium text-white flex-1 truncate">{asset.displayName}</span>
+        <span className="text-xs text-slate-400 font-mono mr-2 hidden sm:block">{asset.originalName}</span>
+        <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <X size={18} />
+        </button>
+      </div>
+
+      {/* SCORM notice */}
+      {asset.assetType === "SCORM" && (
+        <div className="bg-amber-500/20 border-b border-amber-500/30 px-5 py-2 text-xs text-amber-300 text-center shrink-0">
+          콘텐츠 확인용 미리보기 — 진도 및 점수가 기록되지 않습니다
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center p-6 min-h-0">
+        {asset.assetType === "VIDEO" && (
+          <video
+            controls
+            autoPlay
+            className="max-h-full max-w-full rounded-lg shadow-2xl"
+            src={src}
+          >
+            미리보기를 지원하지 않는 형식입니다.
+          </video>
+        )}
+        {asset.assetType === "IMAGE" && (
+          <img
+            src={src}
+            alt={asset.displayName}
+            className="max-h-full max-w-full object-contain rounded-lg shadow-2xl"
+          />
+        )}
+        {(asset.assetType === "PDF" || asset.assetType === "SCORM") && (
+          <iframe
+            src={src}
+            className="w-full h-full rounded-lg shadow-2xl bg-white"
+            title={asset.displayName}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 const ACTIVE_SESSION_STATUSES = new Set(["OPEN", "ONGOING", "CLOSED"]);
 
 interface Props {
@@ -96,6 +154,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [renamingAsset, setRenamingAsset] = useState<MediaAsset | null>(null);
+  const [previewingAsset, setPreviewingAsset] = useState<MediaAsset | null>(null);
   const [deleteModal, setDeleteModal] = useState<DeleteModal>({ type: "none" });
 
   // Derive unique tags from all assets (sorted)
@@ -300,6 +359,15 @@ export default function MediaGrid({ onUploadClick }: Props) {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
+                        {a.status === "ACTIVE" && (
+                          <button
+                            title="미리보기"
+                            onClick={() => setPreviewingAsset(a)}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                          >
+                            <Eye size={13} />
+                          </button>
+                        )}
                         <button
                           title="이름 변경"
                           onClick={() => setRenamingAsset(a)}
@@ -351,6 +419,15 @@ export default function MediaGrid({ onUploadClick }: Props) {
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusCfg.className} ${statusCfg.pulse ? "animate-pulse" : ""}`}>
                       {statusCfg.label}
                     </span>
+                    {a.status === "ACTIVE" && (
+                      <button
+                        title="미리보기"
+                        onClick={() => setPreviewingAsset(a)}
+                        className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors"
+                      >
+                        <Eye size={13} />
+                      </button>
+                    )}
                     <button
                       title="이름 변경"
                       onClick={() => setRenamingAsset(a)}
@@ -396,6 +473,13 @@ export default function MediaGrid({ onUploadClick }: Props) {
             </div>
           )}
         </div>
+      )}
+
+      {previewingAsset && (
+        <PreviewModal
+          asset={previewingAsset}
+          onClose={() => setPreviewingAsset(null)}
+        />
       )}
 
       {renamingAsset && (

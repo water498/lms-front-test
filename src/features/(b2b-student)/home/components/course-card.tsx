@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MapPin, Calendar, Users, Play, Star } from "lucide-react";
 import { type Course, type EnrolledCourse, type CourseType } from "../mockData";
 
@@ -16,12 +17,16 @@ export function CourseCard({
   course: Course | EnrolledCourse;
   showProgress?: boolean;
 }) {
+  const router = useRouter();
   const enrolled = course as EnrolledCourse;
   const progress = showProgress && "progress" in enrolled ? enrolled.progress : null;
   const typeBadge = TYPE_BADGE[course.type!];
 
   return (
-    <div className="w-56 md:w-60 shrink-0 group cursor-pointer">
+    <div
+      className="w-56 md:w-60 shrink-0 group cursor-pointer"
+      onClick={() => router.push(`/experiments/b2b-student/courses/${course.id}`)}
+    >
       {/* Thumbnail */}
       <div
         className="w-full h-36 rounded-xl overflow-hidden mb-3 relative"
