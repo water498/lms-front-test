@@ -1,4 +1,4 @@
-import type { ActivityCompletion, ExamAttempt, WaitList } from "@/lib/models";
+import type { ActivityCompletion, ExamAttempt, WaitApply } from "@/lib/models";
 
 // se2 수강생: u7 박지호(100%), u8 최유진(72%)
 // se1 수강생: u10-u19 (진도율 분포)
@@ -54,7 +54,7 @@ export function getExamAttempts(sessionId: string): ExamAttempt[] {
 }
 
 // ── 대기자 목록 ──────────────────────────────────────────────
-const waitLists: Record<string, WaitList[]> = {
+const waitLists: Record<string, WaitApply[]> = {
   se2: [
     { id: "wl1", courseSessionId: "se2", userId: "u20", userName: "김지수", requestedAt: "2025-02-10", status: "WAITING"   },
     { id: "wl2", courseSessionId: "se2", userId: "u21", userName: "이현우", requestedAt: "2025-02-11", status: "APPROVED"  },
@@ -63,6 +63,6 @@ const waitLists: Record<string, WaitList[]> = {
   ],
 };
 
-export function getWaitList(sessionId: string): WaitList[] {
+export function getWaitList(sessionId: string): WaitApply[] {
   return waitLists[sessionId] ?? [];
 }

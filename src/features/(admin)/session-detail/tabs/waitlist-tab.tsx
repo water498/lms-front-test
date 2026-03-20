@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { WaitList } from "@/lib/models";
+import type { WaitApply } from "@/lib/models";
 import { getWaitList } from "../mockData";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function WaitlistTab({ sessionId }: Props) {
-  const [items, setItems] = useState<WaitList[]>(() => getWaitList(sessionId));
+  const [items, setItems] = useState<WaitApply[]>(() => getWaitList(sessionId));
 
   const pendingCount = items.filter((w) => w.status === "WAITING").length;
 

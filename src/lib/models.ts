@@ -568,13 +568,13 @@ export interface Enrollment {
   progress: number;
   enrolledAt: string;
   lastStudiedAt?: string;
-  paymentId?: string; // Payment.id
+  orderId?: string; // Order.id
   expiresAt?: string;
   completedAt?: string;
   source?: EnrollmentSource;
 }
 
-export interface WaitList {
+export interface WaitApply {
   id: string;
   courseSessionId: string;
   userId: string;
@@ -790,15 +790,37 @@ export interface MediaAsset {
 
 // ── 운영 ──────────────────────────────────────────────────
 
+export type OrderStatus = "PENDING" | "PAID" | "CANCELLED" | "REFUNDED";
+
+export interface Order {
+  id: string;
+  orderNumber: string;        // 사람이 읽는 주문번호 (e.g. OK-20260320-A4F2)
+  userId: string;             // FK → User
+  couponId?: string;          // FK → Coupon (적용된 쿠폰)
+  subtotalAmount: number;     // 할인 전 금액
+  discountAmount: number;     // 쿠폰 등 할인액
+  totalAmount: number;        // 실 결제 금액
+  status: OrderStatus;
+  createdAt: string;
+  paidAt?: string;
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;            // FK → Order
+  courseId: string;           // FK → Course
+  unitPrice: number;          // 결제 시점 가격 (이후 가격 변경 불영향)
+  discountAmount: number;     // 해당 아이템 할인액
+  finalPrice: number;         // unitPrice - discountAmount
+}
+
 export type PaymentStatus = "PAID" | "REFUNDED" | "CANCELLED";
 export type PgProvider = "TOSS" | "IAMPORT" | "KCP" | "NICEPAY";
 export type PaymentMethod = "CARD" | "BANK_TRANSFER" | "KAKAO_PAY" | "NAVER_PAY";
 
 export interface Payment {
   id: string;
-  orderNumber: string;
-  learner: string;
-  course: string;
+  orderId: string;            // FK → Order
   amount: number; // KRW
   status: PaymentStatus;
   paidAt: string;
@@ -806,7 +828,6 @@ export interface Payment {
   pgTid?: string; // PG사 거래번호
   paymentMethod?: PaymentMethod;
   receiptUrl?: string;
-  learningPathId?: string; // LearningPath.id
 }
 
 export interface PaymentRefund {
@@ -978,14 +999,14 @@ export interface PortalAnnouncement {
 
 // ── 장바구니 / 위시리스트 ─────────────────────────────────
 
-export interface Cart {
+export interface CartItem {
   id: string;
   userId: string;
   courseId: string;
   addedAt: string;
 }
 
-export interface Wishlist {
+export interface WishItem {
   id: string;
   userId: string;
   courseId: string;
@@ -1015,4 +1036,90 @@ export interface UserAgreement {
   version: number;
   agreedAt: string;
   ip?: string;
+}
+
+// ── 플랫폼 설정 ───────────────────────────────────────────
+
+export interface PlatformSetting {
+  id: string;
+  key: string;           // e.g. "maintenance_mode", "default_lang"
+  value: string;         // JSON-serialized
+  description?: string;
+  updatedAt: string;
+  updatedBy: string;     // admin userId
+}
+
+// ── 그룹 멤버 (junction) ──────────────────────────────────
+
+export interface UserGroupMember {
+  id: string;
+  groupId: string;       // FK → UserGroup
+  userId: string;        // FK → User
+  role: "MEMBER" | "MANAGER";
+  joinedAt: string;
+  addedBy: string;
+}
+
+// ── 차수별 강사 (junction) ────────────────────────────────
+
+export interface CourseSessionInstructor {
+  id: string;
+  courseSessionId: string;
+  userId: string;        // FK → User (강사 계정)
+  role: "PRIMARY" | "ASSISTANT";
+  addedAt: string;
+}
+
+// ── 과정 카테고리 ─────────────────────────────────────────
+
+export interface CourseCategory {
+  id: string;
+  tenantId: string | null;   // null = 전체 공통
+  label: string;
+  slug: string;
+  parentId: string | null;   // 계층 구조
+  order: number;
+}
+
+// ── 설문 개별 답변 ────────────────────────────────────────
+
+export interface SurveyAnswer {
+  id: string;
+  surveyResponseId: string;
+  questionId: string;
+  value: string;
+  numericValue?: number;     // 집계용 (rating, scale)
+}
+
+// ── 포털 배너 ─────────────────────────────────────────────
+
+export type PortalBannerTarget = "B2C" | "B2B" | "ALL";
+
+export interface PortalBanner {
+  id: string;
+  tenantId: string | null;
+  title: string;
+  imageUrl: string;
+  linkUrl?: string;
+  target: PortalBannerTarget;
+  startsAt: string;
+  endsAt: string | null;
+  order: number;
+  isActive: boolean;
+}
+
+// ── 법적 문서 ─────────────────────────────────────────────
+
+export type LegalDocumentType = "TERMS" | "PRIVACY" | "MARKETING" | "REFUND";
+
+export interface LegalDocument {
+  id: string;
+  tenantId: string | null;
+  type: LegalDocumentType;
+  version: number;
+  title: string;
+  body: string;
+  effectiveAt: string;
+  isActive: boolean;
+  createdAt: string;
 }
