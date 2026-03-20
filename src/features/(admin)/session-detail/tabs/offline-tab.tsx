@@ -2,7 +2,23 @@
 
 import { useState } from "react";
 import { QrCode, ClipboardList } from "lucide-react";
-import { type OfflineSession, type OfflineSessionStatus, getOfflineSessions, getOfflineAttendances } from "../../course-detail/mockData";
+import { type OfflineSession, type OfflineSessionStatus, type CourseInstructor, getOfflineSessions, getOfflineAttendances } from "../../course-detail/mockData";
+
+function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
+  const primary = instructors.find((i) => i.role === "PRIMARY");
+  const assistantCount = instructors.filter((i) => i.role === "ASSISTANT").length;
+  if (!primary) return <span className="text-slate-400">—</span>;
+  return (
+    <span className="flex items-center gap-1">
+      {primary.name}
+      {assistantCount > 0 && (
+        <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-full">
+          +{assistantCount}
+        </span>
+      )}
+    </span>
+  );
+}
 import QrModal from "../../course-detail/modals/qr-modal";
 import AttendanceModal from "../../course-detail/modals/attendance-modal";
 import CreateOfflineSessionModal from "../../course-detail/modals/create-offline-session-modal";
@@ -72,7 +88,7 @@ export default function SessionOfflineTab({ sessionId }: { sessionId: string }) 
                         {os.startTime} – {os.endTime}
                       </td>
                       <td className="px-4 py-3 text-slate-600">{os.location}</td>
-                      <td className="px-4 py-3 text-slate-600">{os.instructors.join(", ")}</td>
+                      <td className="px-4 py-3 text-slate-600"><InstructorCell instructors={os.instructors} /></td>
                       <td className="px-4 py-3 text-slate-600">{os.maxCapacity}명</td>
                       <td className="px-4 py-3 text-slate-600 font-medium">{rate}</td>
                       <td className="px-4 py-3">

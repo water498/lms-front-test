@@ -14,6 +14,7 @@ import type {
   CourseSession,
   CourseEnrollee,
   CoursePrerequisite,
+  CourseInstructor,
 } from "@/lib/models";
 export type {
   OfflineSessionStatus,
@@ -29,6 +30,7 @@ export type {
   CourseSession,
   CourseEnrollee,
   CoursePrerequisite,
+  CourseInstructor,
 } from "@/lib/models";
 
 const curricula: Record<string, CourseSubject[]> = {
@@ -61,14 +63,14 @@ const curricula: Record<string, CourseSubject[]> = {
 
 const sessions: Record<string, CourseSession[]> = {
   c1: [
-    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, targetAudience: { departments: ["개발팀", "기획팀"], jobGrades: ["사원", "대리"] }, finalExamTemplateId: "ex1", postSurveyTemplateId: "sv1", postAssignmentTemplateId: "as1" },
-    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, preSurveyTemplateId: "sv2", postSurveyTemplateId: "sv1", preAssignmentTemplateId: "as2" },
-    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80, minEnrollment: 20, targetAudience: { departments: ["개발팀"] } },
-    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: ["이준혁"], completionThreshold: 80 },
+    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }, { name: "박소연", role: "ASSISTANT" }], completionThreshold: 80, targetAudience: { departments: ["개발팀", "기획팀"], jobGrades: ["사원", "대리"] }, finalExamTemplateId: "ex1", postSurveyTemplateId: "sv1", postAssignmentTemplateId: "as1" },
+    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }, { name: "박소연", role: "ASSISTANT" }], completionThreshold: 80, preSurveyTemplateId: "sv2", postSurveyTemplateId: "sv1", preAssignmentTemplateId: "as2" },
+    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }], completionThreshold: 80, minEnrollment: 20, targetAudience: { departments: ["개발팀"] } },
+    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }], completionThreshold: 80 },
   ],
   c4: [
-    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F", completionThreshold: 80 },
-    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: ["김태호"], location: "강남교육센터 3F", completionThreshold: 80 },
+    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: [{ name: "김태호", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
+    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: [{ name: "김태호", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
   ],
 };
 
@@ -122,9 +124,9 @@ export function getAllSessions(): (CourseSession & { courseTitle: string })[] {
 // ── 오프라인 회차 Mock 데이터 ──────────────────────────────────
 const offlineSessions: Record<string, OfflineSession[]> = {
   se4: [
-    { id: "os1", courseSessionId: "se4", dayNum: 1, date: "2025-02-10", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "COMPLETED" },
-    { id: "os2", courseSessionId: "se4", dayNum: 2, date: "2025-02-17", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "COMPLETED" },
-    { id: "os3", courseSessionId: "se4", dayNum: 3, date: "2025-02-24", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: ["김태호"], maxCapacity: 30, status: "SCHEDULED" },
+    { id: "os1", courseSessionId: "se4", dayNum: 1, date: "2025-02-10", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: [{ name: "김태호", role: "PRIMARY" }], maxCapacity: 30, status: "COMPLETED" },
+    { id: "os2", courseSessionId: "se4", dayNum: 2, date: "2025-02-17", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: [{ name: "김태호", role: "PRIMARY" }, { name: "박소연", role: "ASSISTANT" }], maxCapacity: 30, status: "COMPLETED" },
+    { id: "os3", courseSessionId: "se4", dayNum: 3, date: "2025-02-24", startTime: "10:00", endTime: "18:00", location: "강남교육센터 3F", instructors: [{ name: "김태호", role: "PRIMARY" }], maxCapacity: 30, status: "SCHEDULED" },
   ],
 };
 

@@ -47,7 +47,6 @@ export default function CreditsFeature() {
     if (!amt || amt <= 0) return;
     const entry: CreditTransaction = {
       id: `cl-${Date.now()}`,
-      channel: null,
       type: "TOPUP",
       amount: amt,
       description: "셀프 충전",

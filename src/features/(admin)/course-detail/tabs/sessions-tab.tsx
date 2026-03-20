@@ -2,7 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { type CourseSession, type SessionStatus, type SessionType } from "../mockData";
+import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../mockData";
+
+function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
+  const primary = instructors.find((i) => i.role === "PRIMARY");
+  const assistantCount = instructors.filter((i) => i.role === "ASSISTANT").length;
+  if (!primary) return <span className="text-slate-400">—</span>;
+  return (
+    <span className="flex items-center gap-1">
+      {primary.name}
+      {assistantCount > 0 && (
+        <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-full">
+          +{assistantCount}
+        </span>
+      )}
+    </span>
+  );
+}
 import CreateSessionModal from "../modals/create-session-modal";
 
 const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }> = {
@@ -106,7 +122,7 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-600">{s.instructors.join(", ")}</td>
+                      <td className="px-4 py-3 text-slate-600"><InstructorCell instructors={s.instructors} /></td>
                       <td className="px-4 py-3 text-slate-400">{s.location ?? "온라인"}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>

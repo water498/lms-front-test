@@ -32,7 +32,6 @@ export default function MessagingCreditSection({ tenantId }: Props) {
     if (!amt || amt <= 0) return;
     const entry: CreditTransaction = {
       id: `pg-${Date.now()}`,
-      channel: null,
       type: "GRANT",
       amount: amt,
       description: grantModal.note.trim() || "플랫폼 수동 지급",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { instructors } from "../../courses/mockData";
-import type { SessionType } from "../mockData";
+import type { SessionType, CourseInstructor } from "../mockData";
 
 interface Props {
   isOffline?: boolean;
@@ -21,14 +21,25 @@ export default function CreateSessionModal({ isOffline = false, defaultMinEnroll
   const [minEnrollment, setMinEnrollment] = useState<string>(
     defaultMinEnrollment != null ? String(defaultMinEnrollment) : ""
   );
-  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([instructors[0]]);
+  const [selectedInstructors, setSelectedInstructors] = useState<CourseInstructor[]>([
+    { name: instructors[0], role: "PRIMARY" },
+  ]);
   const [location, setLocation] = useState("");
   const [visible, setVisible] = useState(true);
   const [forSale, setForSale] = useState(true);
 
   function toggleInstructor(name: string) {
+    setSelectedInstructors((prev) => {
+      const exists = prev.find((i) => i.name === name);
+      if (exists) return prev.filter((i) => i.name !== name);
+      const hasPrimary = prev.some((i) => i.role === "PRIMARY");
+      return [...prev, { name, role: hasPrimary ? "ASSISTANT" : "PRIMARY" }];
+    });
+  }
+
+  function setInstructorRole(name: string, role: "PRIMARY" | "ASSISTANT") {
     setSelectedInstructors((prev) =>
-      prev.includes(name) ? prev.filter((i) => i !== name) : [...prev, name]
+      prev.map((i) => (i.name === name ? { ...i, role } : i))
     );
   }
 
@@ -161,25 +172,47 @@ export default function CreateSessionModal({ isOffline = false, defaultMinEnroll
           {/* 강사 배정 */}
           <div>
             <label className="text-xs font-medium text-slate-600 mb-2 block">강사 배정</label>
-            <div className="flex flex-wrap gap-2">
-              {instructors.map((i) => (
-                <label
-                  key={i}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs cursor-pointer border transition-colors ${
-                    selectedInstructors.includes(i)
-                      ? "bg-violet-100 border-violet-300 text-violet-700"
-                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedInstructors.includes(i)}
-                    onChange={() => toggleInstructor(i)}
-                    className="sr-only"
-                  />
-                  {i}
-                </label>
-              ))}
+            <div className="flex flex-col gap-2">
+              {instructors.map((name) => {
+                const selected = selectedInstructors.find((i) => i.name === name);
+                return (
+                  <div key={name} className="flex items-center gap-2">
+                    <label
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs cursor-pointer border transition-colors ${
+                        selected
+                          ? "bg-violet-100 border-violet-300 text-violet-700"
+                          : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!selected}
+                        onChange={() => toggleInstructor(name)}
+                        className="sr-only"
+                      />
+                      {name}
+                    </label>
+                    {selected && (
+                      <div className="flex gap-1">
+                        {(["PRIMARY", "ASSISTANT"] as const).map((role) => (
+                          <button
+                            key={role}
+                            type="button"
+                            onClick={() => setInstructorRole(name, role)}
+                            className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                              selected.role === role
+                                ? "bg-violet-600 border-violet-600 text-white"
+                                : "border-slate-200 text-slate-400 hover:border-violet-300"
+                            }`}
+                          >
+                            {role === "PRIMARY" ? "주강사" : "보조강사"}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

@@ -201,14 +201,14 @@ export function getVariableDefsForChannel(channel: MessageChannel): VariableDef[
 }
 
 export const creditTransactions: CreditTransaction[] = [
-  { id: "cl1",  channel: null,    type: "GRANT",  amount:  10000, description: "플랫폼 기본 지급",           createdAt: "2025-01-01 09:00" },
-  { id: "cl2",  channel: null,    type: "TOPUP",  amount:   5000, description: "셀프 충전",                  createdAt: "2025-02-15 11:30" },
-  { id: "cl3",  channel: "SMS",   type: "USAGE",  amount:    -15, description: "세션 시작 알림 (3건 × 5)",   createdAt: "2025-03-12 10:00" },
-  { id: "cl4",  channel: "EMAIL", type: "USAGE",  amount:     -8, description: "신규 과정 안내 (8건 × 1)",   createdAt: "2025-03-14 09:00" },
-  { id: "cl5",  channel: "KAKAO", type: "USAGE",  amount:    -15, description: "과제 리마인더 (5건 × 3)",    createdAt: "2025-03-13 14:30" },
-  { id: "cl6",  channel: "SMS",   type: "USAGE",  amount:   -115, description: "마감 임박 알림 (23건 × 5)",  createdAt: "2026-03-18 10:00" },
-  { id: "cl7",  channel: "EMAIL", type: "USAGE",  amount:   -142, description: "월 학습현황 안내 (142건 × 1)", createdAt: "2026-03-20 14:00" },
-  { id: "cl8",  channel: "KAKAO", type: "USAGE",  amount:    -33, description: "라이브 세션 알림 (11건 × 3)", createdAt: "2026-03-22 09:00" },
+  { id: "cl1",  type: "GRANT",  amount:  10000, description: "플랫폼 기본 지급",           createdAt: "2025-01-01 09:00" },
+  { id: "cl2",  type: "TOPUP",  amount:   5000, description: "셀프 충전",                  createdAt: "2025-02-15 11:30" },
+  { id: "cl3",  type: "USAGE",  serviceType: "MESSAGING", channel: "SMS",   amount:    -15, description: "세션 시작 알림 (3건 × 5)",   createdAt: "2025-03-12 10:00" },
+  { id: "cl4",  type: "USAGE",  serviceType: "MESSAGING", channel: "EMAIL", amount:     -8, description: "신규 과정 안내 (8건 × 1)",   createdAt: "2025-03-14 09:00" },
+  { id: "cl5",  type: "USAGE",  serviceType: "MESSAGING", channel: "KAKAO", amount:    -15, description: "과제 리마인더 (5건 × 3)",    createdAt: "2025-03-13 14:30" },
+  { id: "cl6",  type: "USAGE",  serviceType: "MESSAGING", channel: "SMS",   amount:   -115, description: "마감 임박 알림 (23건 × 5)",  createdAt: "2026-03-18 10:00" },
+  { id: "cl7",  type: "USAGE",  serviceType: "MESSAGING", channel: "EMAIL", amount:   -142, description: "월 학습현황 안내 (142건 × 1)", createdAt: "2026-03-20 14:00" },
+  { id: "cl8",  type: "USAGE",  serviceType: "MESSAGING", channel: "KAKAO", amount:    -33, description: "라이브 세션 알림 (11건 × 3)", createdAt: "2026-03-22 09:00" },
 ];
 
 // ── 자동화 규칙 ───────────────────────────────────────────

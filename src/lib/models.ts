@@ -84,6 +84,7 @@ export interface Tenant {
   infra: TenantInfra;
   infraStatus?: TenantInfraStatus;
   sso?: TenantSsoConfig;
+  ipWhitelist?: string[]; // IP 접근 제한 (CIDR 표기 허용, e.g. "1.2.3.4/24")
 }
 
 // ── 조직 구조 ─────────────────────────────────────────────
@@ -122,6 +123,8 @@ export interface OrgSetting {
 
 export type UserRole = "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN" | "SUPER_ADMIN";
 export type UserStatus = "ACTIVE" | "INACTIVE";
+export type AuthProvider = "EMAIL" | "GOOGLE" | "KAKAO" | "SSO";
+export type MfaMethod = "TOTP" | "SMS" | "EMAIL";
 
 export interface User {
   id: string;
@@ -136,6 +139,22 @@ export interface User {
   siteId?: string; // OrgSite.id
   departmentId?: string; // OrgTeam.id
   jobGradeId?: string; // OrgPosition.id
+  // 인증
+  authProvider: AuthProvider;
+  providerUserId?: string; // 소셜/SSO 외부 ID
+  emailVerified: boolean;
+  emailVerifiedAt?: string;
+  // 계정 잠금
+  failedLoginAttempts: number;
+  lockedUntil?: string;
+  lastFailedLoginAt?: string;
+  // MFA
+  mfaEnabled: boolean;
+  mfaMethod?: MfaMethod;
+  mfaSecret?: string; // 암호화 저장
+  // 세션 설정
+  sessionTimeoutMin?: number;
+  rememberMeEnabled?: boolean;
 }
 
 export interface UserGroup {
@@ -150,11 +169,33 @@ export interface UserAccessLog {
   id: string;
   userId: string;
   userName: string;
-  type: "LOGIN" | "LOGOUT" | "SESSION_EXPIRED" | "AUTO_LOGIN";
+  type: "LOGIN" | "LOGOUT" | "SESSION_EXPIRED" | "AUTO_LOGIN" | "PASSWORD_RESET";
   scope: "USER" | "ADMIN";
   date: string; // "YYYY-MM-DD HH:MM"
   ip: string;
   userAgent: string;
+}
+
+export interface UserSession {
+  id: string;
+  userId: string;
+  deviceName?: string; // e.g. "Chrome / macOS"
+  ipAddress: string;
+  userAgent: string;
+  refreshToken: string;
+  expiresAt: string;
+  rememberMe: boolean;
+  lastActivityAt: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface PasswordResetToken {
+  id: string;
+  userId: string;
+  token: string; // 해시된 토큰
+  expiresAt: string;
+  // usedAt 없음 — 사용 즉시 행 DELETE (업계 관행)
 }
 
 export interface UserInvitation {
@@ -367,6 +408,56 @@ export interface ScormRuntime {
   updatedAt: string;
 }
 
+// ── 강사 ──────────────────────────────────────────────────
+
+export interface CourseInstructor {
+  name: string;
+  role: "PRIMARY" | "ASSISTANT";
+}
+
+export interface InstructorProfile {
+  id: string;
+  userId: string; // FK → User (INSTRUCTOR role)
+  headline: string; // e.g. "React 전문 강사 / 전 카카오 개발자"
+  bio: string;
+  profileImageUrl?: string;
+  expertise: string[]; // e.g. ["React", "TypeScript"]
+  affiliatedCompany?: string; // 외부 강사 소속사
+}
+
+export interface InstructorReview {
+  id: string;
+  instructorUserId: string; // FK → User
+  courseSessionId: string; // FK → CourseSession (어떤 차수에서 수강했을 때)
+  learnerId: string; // FK → User
+  rating: number; // 1~5
+  body: string;
+  createdAt: string;
+}
+
+export interface InstructorBankAccount {
+  id: string;
+  instructorUserId: string; // FK → User
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  isPrimary: boolean;
+}
+
+export type InstructorPayoutStatus = "PENDING" | "CONFIRMED" | "PAID";
+
+export interface InstructorPayout {
+  id: string;
+  instructorUserId: string; // FK → User
+  periodStart: string; // "YYYY-MM-DD"
+  periodEnd: string;
+  grossRevenue: number; // 총 매출 (KRW)
+  platformFee: number; // 플랫폼 수수료 금액
+  netAmount: number; // 실 지급액
+  status: InstructorPayoutStatus;
+  paidAt?: string;
+}
+
 // ── 오프라인 수업 & 출결 ──────────────────────────────────
 
 export type OfflineSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
@@ -379,7 +470,7 @@ export interface OfflineSession {
   startTime: string;
   endTime: string;
   location: string;
-  instructors: string[];
+  instructors: CourseInstructor[];
   maxCapacity: number;
   status: OfflineSessionStatus;
 }
@@ -436,7 +527,7 @@ export interface CourseSession {
   status: SessionStatus;
   visible: boolean;
   forSale: boolean;
-  instructors: string[];
+  instructors: CourseInstructor[];
   location?: string;
   completionThreshold: number; // 수료 인정 최소 진도율 (%)
   minEnrollment?: number | null; // 최소 수강 인원 (null = 이번 차수는 체크 없음)
@@ -753,11 +844,29 @@ export interface CourseReview {
 
 export type MessageChannel = "SMS" | "EMAIL" | "KAKAO";
 export type CreditTransactionType = "TOPUP" | "GRANT" | "USAGE";
+export type CreditServiceType = "MESSAGING" | "AI";
+
+export interface CreditServiceRate {
+  id: string;
+  serviceType: CreditServiceType;
+  subType: string;        // MESSAGING: "SMS"|"EMAIL"|"KAKAO" / AI: 모델 ID (e.g. "claude-sonnet-4-6")
+  direction?: "INPUT" | "OUTPUT"; // AI 토큰 방향 (MESSAGING은 undefined)
+  creditsPerUnit: number; // 크레딧 / unitSize
+  unitSize: number;       // 1 (메시지 1건) | 1000 (1K 토큰)
+  unitLabel: string;      // "메시지" | "1K 토큰"
+  effectiveFrom: string;  // ISO date — 요율 이력 관리
+}
 
 export interface CreditTransaction {
   id: string;
-  channel: MessageChannel | null; // 단일 풀 — 발송 이력 참고용, TOPUP/GRANT는 null
   type: CreditTransactionType;
+  serviceType?: CreditServiceType; // USAGE일 때만 의미 있음
+  channel?: MessageChannel;        // serviceType === "MESSAGING"일 때
+  aiUsage?: {                      // serviceType === "AI"일 때
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+  };
   amount: number;      // 양수=충전/지급, 음수=사용 (크레딧 단위)
   description: string;
   createdAt: string;

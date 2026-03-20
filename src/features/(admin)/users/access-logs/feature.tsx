@@ -8,6 +8,7 @@ const EVENT_TYPE_LABELS: Record<UserAccessLog["type"], string> = {
   LOGOUT: "로그아웃",
   SESSION_EXPIRED: "세션만료",
   AUTO_LOGIN: "자동로그인",
+  PASSWORD_RESET: "비밀번호재설정",
 };
 
 const EVENT_TYPE_COLORS: Record<UserAccessLog["type"], string> = {
@@ -15,6 +16,7 @@ const EVENT_TYPE_COLORS: Record<UserAccessLog["type"], string> = {
   LOGOUT: "bg-slate-100 text-slate-600",
   SESSION_EXPIRED: "bg-amber-100 text-amber-700",
   AUTO_LOGIN: "bg-blue-100 text-blue-700",
+  PASSWORD_RESET: "bg-violet-100 text-violet-700",
 };
 
 const SCOPE_LABELS: Record<UserAccessLog["scope"], string> = {

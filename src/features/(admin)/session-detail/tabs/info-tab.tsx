@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Pencil } from "lucide-react";
-import { type CourseSession, type SessionStatus, type SessionType } from "../../course-detail/mockData";
+import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../../course-detail/mockData";
+import { instructors as instructorNames } from "../../courses/mockData";
 import { useOrgStructureStore, type DeptNode } from "../../shared/org-structure-store";
 
 function flatDeptNames(nodes: DeptNode[]): string[] {
@@ -63,7 +64,7 @@ interface DraftState {
   startDate: string;
   endDate: string;
   capacity: string;
-  instructors: string;
+  instructors: CourseInstructor[];
   location: string;
   visible: boolean;
   forSale: boolean;
@@ -81,7 +82,7 @@ function toDraft(s: CourseSession): DraftState {
     startDate: s.startDate ?? "",
     endDate: s.endDate ?? "",
     capacity: String(s.capacity),
-    instructors: s.instructors.join(", "),
+    instructors: s.instructors,
     location: s.location ?? "",
     visible: s.visible,
     forSale: s.forSale,
@@ -131,7 +132,7 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       startDate: draft.startDate || undefined,
       endDate: draft.endDate || undefined,
       capacity: Number(draft.capacity),
-      instructors: draft.instructors.split(",").map((s) => s.trim()).filter(Boolean),
+      instructors: draft.instructors,
       location: draft.location || undefined,
       visible: draft.visible,
       forSale: draft.forSale,
@@ -273,15 +274,64 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
           )}
 
           {/* 강사 */}
-          <div className="col-span-2 flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-500">강사 (쉼표 구분)</label>
-            <input
-              type="text"
-              value={draft.instructors}
-              onChange={(e) => set("instructors", e.target.value)}
-              placeholder="예: 김강사, 이강사"
-              className={inputCls}
-            />
+          <div className="col-span-2 flex flex-col gap-2">
+            <label className="text-xs font-medium text-slate-500">강사</label>
+            {draft.instructors.map((inst) => (
+              <div key={inst.name} className="flex items-center gap-2">
+                <span className="text-sm text-slate-800 flex-1">{inst.name}</span>
+                <div className="flex gap-1">
+                  {(["PRIMARY", "ASSISTANT"] as const).map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setDraft((prev) => ({
+                        ...prev,
+                        instructors: prev.instructors.map((i) =>
+                          i.name === inst.name ? { ...i, role } : i
+                        ),
+                      }))}
+                      className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                        inst.role === role
+                          ? "bg-violet-600 border-violet-600 text-white"
+                          : "border-slate-200 text-slate-500 hover:border-violet-300"
+                      }`}
+                    >
+                      {role === "PRIMARY" ? "주강사" : "보조강사"}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDraft((prev) => ({
+                    ...prev,
+                    instructors: prev.instructors.filter((i) => i.name !== inst.name),
+                  }))}
+                  className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {instructorNames
+                .filter((name) => !draft.instructors.find((i) => i.name === name))
+                .map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setDraft((prev) => ({
+                      ...prev,
+                      instructors: [
+                        ...prev.instructors,
+                        { name, role: prev.instructors.some((i) => i.role === "PRIMARY") ? "ASSISTANT" : "PRIMARY" },
+                      ],
+                    }))}
+                    className="text-xs px-2 py-0.5 border border-dashed border-slate-300 text-slate-500 rounded hover:border-violet-400 hover:text-violet-600 transition-colors"
+                  >
+                    + {name}
+                  </button>
+                ))}
+            </div>
           </div>
 
           {/* 장소 — offline only */}
@@ -397,7 +447,19 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
           <Field label="유형">{typeLabel}</Field>
           <Field label="기간">{periodLabel}</Field>
           <Field label="정원 / 수강">{capacityLabel}</Field>
-          <Field label="강사">{session.instructors.join(", ") || "—"}</Field>
+          <Field label="강사">
+            {(() => {
+              const primary = session.instructors.find((i) => i.role === "PRIMARY");
+              const assistantCount = session.instructors.filter((i) => i.role === "ASSISTANT").length;
+              if (!primary) return <span className="text-slate-400">—</span>;
+              return assistantCount > 0 ? (
+                <span className="flex items-center gap-1.5">
+                  {primary.name}
+                  <span className="text-xs px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-full">+{assistantCount}</span>
+                </span>
+              ) : primary.name;
+            })()}
+          </Field>
           {session.location && (
             <Field label="장소">{session.location}</Field>
           )}
