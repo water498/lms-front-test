@@ -10,17 +10,19 @@ import { IntroTab } from "@/features/(b2c-student)/courses/sections/intro-tab";
 import { CurriculumTab } from "@/features/(b2c-student)/courses/sections/curriculum-tab";
 import { InstructorTab } from "@/features/(b2c-student)/courses/sections/instructor-tab";
 import { ReviewsTab } from "@/features/(b2c-student)/courses/sections/reviews-tab";
+import { QnaTab } from "@/features/(b2c-student)/courses/sections/qna-tab";
 import { DetailSidebar } from "@/features/(b2c-student)/courses/sections/detail-sidebar";
 import { allCourses, inProgressCourses } from "../home/mockData";
 import { courseDetails, defaultCourseDetail } from "@/features/(b2c-student)/courses/mockData";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 
-type Tab = "intro" | "curriculum" | "instructor" | "reviews";
+type Tab = "intro" | "curriculum" | "instructor" | "reviews" | "qna";
 const TABS: { id: Tab; label: string }[] = [
   { id: "intro", label: "소개" },
   { id: "curriculum", label: "커리큘럼" },
   { id: "instructor", label: "강사" },
   { id: "reviews", label: "리뷰" },
+  { id: "qna", label: "Q&A" },
 ];
 
 interface Props {
@@ -103,6 +105,7 @@ export default function B2bCourseDetailFeature({ courseId }: Props) {
           {activeTab === "reviews" && (
             <ReviewsTab reviews={detail.reviews} averageRating={averageRating} />
           )}
+          {activeTab === "qna" && <QnaTab courseId={courseId} />}
         </div>
 
         {/* Right: sidebar */}

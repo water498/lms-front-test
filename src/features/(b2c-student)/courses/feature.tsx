@@ -10,18 +10,20 @@ import { IntroTab } from "./sections/intro-tab";
 import { CurriculumTab } from "./sections/curriculum-tab";
 import { InstructorTab } from "./sections/instructor-tab";
 import { ReviewsTab } from "./sections/reviews-tab";
+import { QnaTab } from "./sections/qna-tab";
 import { DetailSidebar } from "./sections/detail-sidebar";
 import { allCourses, inProgressCourses } from "../home/mockData";
 import { courseDetails, defaultCourseDetail } from "./mockData";
 import store from "../home/store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 
-type Tab = "intro" | "curriculum" | "instructor" | "reviews";
+type Tab = "intro" | "curriculum" | "instructor" | "reviews" | "qna";
 const TABS: { id: Tab; label: string }[] = [
   { id: "intro", label: "소개" },
   { id: "curriculum", label: "커리큘럼" },
   { id: "instructor", label: "강사" },
   { id: "reviews", label: "리뷰" },
+  { id: "qna", label: "Q&A" },
 ];
 
 interface Props {
@@ -117,8 +119,14 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
           {activeTab === "curriculum" && <CurriculumTab subjects={detail.subjects} />}
           {activeTab === "instructor" && <InstructorTab instructor={detail.instructor} />}
           {activeTab === "reviews" && (
-            <ReviewsTab reviews={detail.reviews} averageRating={averageRating} />
+            <ReviewsTab
+              reviews={detail.reviews}
+              averageRating={averageRating}
+              isEnrolled={isEnrolled}
+              courseId={courseId}
+            />
           )}
+          {activeTab === "qna" && <QnaTab courseId={courseId} />}
         </div>
 
         {/* Right: sidebar */}

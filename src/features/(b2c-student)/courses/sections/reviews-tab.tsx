@@ -1,11 +1,14 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { useState } from "react";
+import { Star, PenLine, X } from "lucide-react";
 import { type CourseReview } from "@/lib/models";
 
 interface Props {
   reviews: CourseReview[];
   averageRating: number;
+  isEnrolled?: boolean;
+  courseId?: string;
 }
 
 function StarBar({ rating, count, total }: { rating: number; count: number; total: number }) {
@@ -22,33 +25,89 @@ function StarBar({ rating, count, total }: { rating: number; count: number; tota
   );
 }
 
-export function ReviewsTab({ reviews, averageRating }: Props) {
+function InteractiveStar({ value, hovered, filled, onHover, onClick }: {
+  value: number; hovered: number; filled: number;
+  onHover: (v: number) => void; onClick: (v: number) => void;
+}) {
+  const active = hovered >= value || (!hovered && filled >= value);
+  return (
+    <button
+      type="button"
+      onMouseEnter={() => onHover(value)}
+      onMouseLeave={() => onHover(0)}
+      onClick={() => onClick(value)}
+      className="p-0.5"
+    >
+      <Star className={`w-7 h-7 transition-colors ${active ? "fill-amber-400 text-amber-400" : "text-zinc-700"}`} />
+    </button>
+  );
+}
+
+export function ReviewsTab({ reviews: initialReviews, averageRating: initialAvg, isEnrolled, courseId }: Props) {
+  const [reviews, setReviews] = useState(initialReviews);
+  const [showModal, setShowModal] = useState(false);
+  const [hovered, setHovered] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [body, setBody] = useState("");
+
+  const avg = reviews.length > 0
+    ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+    : initialAvg;
+
   const counts = [5, 4, 3, 2, 1].map((r) => ({
     rating: r,
     count: reviews.filter((rv) => Math.round(rv.rating) === r).length,
   }));
 
+  const handleSubmit = () => {
+    if (rating === 0 || !body.trim()) return;
+    const newReview: CourseReview = {
+      id: `rv-new-${Date.now()}`,
+      courseId: courseId ?? "",
+      userId: "me",
+      userName: "홍길동",
+      rating,
+      body: body.trim(),
+      createdAt: new Date().toISOString().slice(0, 10),
+      visible: true,
+    };
+    setReviews((prev) => [newReview, ...prev]);
+    setShowModal(false);
+    setRating(0);
+    setBody("");
+  };
+
+  const LABELS = ["", "별로예요", "그저 그래요", "괜찮아요", "좋아요", "최고예요!"];
+
   return (
     <div>
-      <h2 className="text-base font-semibold text-white mb-5">수강생 리뷰</h2>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-base font-semibold text-white">수강생 리뷰</h2>
+        {(isEnrolled ?? true) && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-sm rounded-lg transition-colors"
+          >
+            <PenLine className="w-3.5 h-3.5" />
+            리뷰 작성
+          </button>
+        )}
+      </div>
 
       {/* Rating summary */}
       <div className="flex items-center gap-8 mb-7 p-4 bg-zinc-900 rounded-xl border border-zinc-800">
         <div className="flex flex-col items-center shrink-0">
-          <span className="text-4xl font-bold text-amber-400">{averageRating.toFixed(1)}</span>
+          <span className="text-4xl font-bold text-amber-400">{avg.toFixed(1)}</span>
           <div className="flex items-center gap-0.5 mt-1">
             {[1, 2, 3, 4, 5].map((s) => (
-              <Star
-                key={s}
-                className={`w-3.5 h-3.5 ${s <= Math.round(averageRating) ? "fill-amber-400 text-amber-400" : "text-zinc-700"}`}
-              />
+              <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(avg) ? "fill-amber-400 text-amber-400" : "text-zinc-700"}`} />
             ))}
           </div>
           <span className="text-xs text-zinc-500 mt-1">{reviews.length}개 리뷰</span>
         </div>
         <div className="flex-1 flex flex-col gap-1.5">
-          {counts.map(({ rating, count }) => (
-            <StarBar key={rating} rating={rating} count={count} total={reviews.length} />
+          {counts.map(({ rating: r, count }) => (
+            <StarBar key={r} rating={r} count={count} total={reviews.length} />
           ))}
         </div>
       </div>
@@ -66,10 +125,7 @@ export function ReviewsTab({ reviews, averageRating }: Props) {
                   <p className="text-sm font-medium text-white">{review.userName}</p>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        className={`w-3 h-3 ${s <= review.rating ? "fill-amber-400 text-amber-400" : "text-zinc-700"}`}
-                      />
+                      <Star key={s} className={`w-3 h-3 ${s <= review.rating ? "fill-amber-400 text-amber-400" : "text-zinc-700"}`} />
                     ))}
                   </div>
                 </div>
@@ -81,6 +137,59 @@ export function ReviewsTab({ reviews, averageRating }: Props) {
         </div>
       ) : (
         <p className="text-sm text-zinc-500">아직 리뷰가 없습니다.</p>
+      )}
+
+      {/* Write modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl p-6 flex flex-col gap-5 shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">리뷰 작성</h3>
+              <button onClick={() => setShowModal(false)} className="p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Star rating */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((v) => (
+                  <InteractiveStar
+                    key={v}
+                    value={v}
+                    hovered={hovered}
+                    filled={rating}
+                    onHover={setHovered}
+                    onClick={setRating}
+                  />
+                ))}
+              </div>
+              <p className={`text-sm font-medium transition-colors ${rating ? "text-amber-400" : "text-zinc-600"}`}>
+                {LABELS[hovered || rating] || "별점을 선택해주세요"}
+              </p>
+            </div>
+
+            {/* Body */}
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="이 강의에 대한 솔직한 리뷰를 남겨주세요. 다른 수강생들에게 큰 도움이 됩니다."
+              rows={5}
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 resize-none"
+            />
+
+            {/* Submit */}
+            <button
+              onClick={handleSubmit}
+              disabled={rating === 0 || !body.trim()}
+              className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-semibold text-sm rounded-xl transition-colors"
+            >
+              리뷰 등록
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
