@@ -37,6 +37,7 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
   const allCoursesList = [...allCourses, ...inProgressCourses];
   const course = allCoursesList.find((c) => c.id === courseId);
   const detail = courseDetails[courseId] ?? defaultCourseDetail;
+  const isEnrolled = inProgressCourses.some((c) => c.id === courseId);
 
   const addToCart = (id: string) => {
     store.cart = new Set([...store.cart, id]);
@@ -127,6 +128,7 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
           subjects={detail.subjects}
           cart={cart}
           wishlist={wishlist}
+          isEnrolled={isEnrolled}
           onAddToCart={addToCart}
           onToggleWishlist={toggleWishlist}
         />

@@ -1,8 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Play, CheckCircle } from "lucide-react";
 import { inProgressCourses, type EnrolledCourse } from "../../home/mockData";
+import { courseDetails, defaultCourseDetail } from "../../courses/mockData";
+
+function firstActivityId(courseId: string): string {
+  const detail = courseDetails[courseId] ?? defaultCourseDetail;
+  return detail.subjects[0]?.activities[0]?.id ?? "";
+}
 
 const completedCourseMock: EnrolledCourse[] = [
   {
@@ -100,13 +107,13 @@ export function LearningTab() {
                 </div>
                 <p className="text-xs text-zinc-600 mt-1">다음: {course.nextLessonTitle}</p>
               </div>
-              <button
-                onClick={() => router.push(`/experiments/b2c-student/courses/${course.id}`)}
+              <Link
+                href={`/experiments/b2c-student/learn/${course.id}/${firstActivityId(course.id)}`}
                 className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium rounded-lg transition-colors"
               >
                 <Play className="w-3 h-3 fill-white" />
                 이어 학습
-              </button>
+              </Link>
             </div>
           ))}
         </div>

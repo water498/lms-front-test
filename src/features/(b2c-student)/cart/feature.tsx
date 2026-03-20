@@ -236,13 +236,12 @@ export default function CartFeature() {
               </div>
 
               {/* Checkout button */}
-              <button className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors text-sm">
+              <Link
+                href="/experiments/b2c-student/checkout"
+                className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors text-sm text-center block"
+              >
                 결제하기 (₩{total.toLocaleString()})
-              </button>
-
-              <p className="text-xs text-zinc-600 text-center">
-                결제 버튼은 UI 데모용입니다
-              </p>
+              </Link>
             </div>
           </div>
         )}

@@ -1,8 +1,10 @@
 "use client";
 
-import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock } from "lucide-react";
+import Link from "next/link";
+import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play } from "lucide-react";
 import { type Course } from "../../home/mockData";
 import { type CourseSubject } from "@/lib/models";
+import { courseDetails, defaultCourseDetail } from "../mockData";
 
 interface Props {
   course: Course;
@@ -10,11 +12,16 @@ interface Props {
   subjects: CourseSubject[];
   cart: Set<string>;
   wishlist: Set<string>;
+  isEnrolled?: boolean;
   onAddToCart: (id: string) => void;
   onToggleWishlist: (id: string) => void;
 }
 
-export function DetailSidebar({ course, variant, subjects, cart, onAddToCart }: Props) {
+export function DetailSidebar({ course, variant, subjects, cart, isEnrolled, onAddToCart }: Props) {
+  const firstActivityId = (() => {
+    const detail = courseDetails[course.id] ?? defaultCourseDetail;
+    return detail.subjects[0]?.activities[0]?.id ?? "";
+  })();
   const totalActivities = subjects.reduce((sum, s) => sum + s.activities.length, 0);
   const totalMinutes = subjects.reduce(
     (sum, s) => sum + s.activities.reduce((acc, a) => acc + (a.duration ?? 0), 0),
@@ -35,32 +42,57 @@ export function DetailSidebar({ course, variant, subjects, cart, onAddToCart }: 
           {/* B2C: price + buttons */}
           {variant === "b2c" && (
             <div className="flex flex-col gap-2">
-              <p className="text-2xl font-bold text-white">
-                {(course.price ?? 0) === 0 ? "무료" : `₩${(course.price ?? 0).toLocaleString()}`}
-              </p>
-              {(course.price ?? 0) > 0 && (
+              {isEnrolled ? (
                 <>
-                  <button
-                    onClick={() => { if (!isInCart) onAddToCart(course.id); }}
-                    className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                      isInCart
-                        ? "bg-zinc-700 text-zinc-400 cursor-default"
-                        : "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
-                    }`}
+                  <span className="text-center text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    수강 중
+                  </span>
+                  <Link
+                    href={`/experiments/b2c-student/learn/${course.id}/${firstActivityId}`}
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2"
                   >
-                    <ShoppingCart className="w-4 h-4" />
-                    {isInCart ? "장바구니에 담김" : "장바구니 담기"}
-                  </button>
-                  <button className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2">
-                    <CreditCard className="w-4 h-4" />
-                    바로 결제하기
-                  </button>
+                    <Play className="w-4 h-4 fill-white" />
+                    이어 보기
+                  </Link>
                 </>
-              )}
-              {(course.price ?? 0) === 0 && (
-                <button className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors">
-                  무료 수강신청
-                </button>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold text-white">
+                    {(course.price ?? 0) === 0 ? "무료" : `₩${(course.price ?? 0).toLocaleString()}`}
+                  </p>
+                  {(course.price ?? 0) > 0 && (
+                    <>
+                      <button
+                        onClick={() => { if (!isInCart) onAddToCart(course.id); }}
+                        className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                          isInCart
+                            ? "bg-zinc-700 text-zinc-400 cursor-default"
+                            : "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                        }`}
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        {isInCart ? "장바구니에 담김" : "장바구니 담기"}
+                      </button>
+                      <Link
+                        href="/experiments/b2c-student/checkout"
+                        onClick={() => { if (!isInCart) onAddToCart(course.id); }}
+                        className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        바로 결제하기
+                      </Link>
+                    </>
+                  )}
+                  {(course.price ?? 0) === 0 && (
+                    <Link
+                      href={`/experiments/b2c-student/learn/${course.id}/${firstActivityId}`}
+                      className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Play className="w-4 h-4 fill-white" />
+                      무료 수강하기
+                    </Link>
+                  )}
+                </>
               )}
             </div>
           )}
