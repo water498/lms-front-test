@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Bell,
@@ -49,6 +50,7 @@ export interface CardActions {
 }
 
 export function Navbar({ cartCount }: { cartCount: number }) {
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -84,9 +86,9 @@ export function Navbar({ cartCount }: { cartCount: number }) {
 
         {/* Nav links */}
         <div className="hidden md:flex items-center gap-1">
-          <button className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+          <Link href="/experiments/b2c-student/search" className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
             강의 탐색
-          </button>
+          </Link>
 
           <div
             className="relative"
@@ -121,7 +123,17 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {/* Search */}
           <div className="flex items-center">
             {searchOpen ? (
-              <div className="flex items-center bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchValue.trim()) {
+                    router.push(`/experiments/b2c-student/search?q=${encodeURIComponent(searchValue.trim())}`);
+                    setSearchOpen(false);
+                    setSearchValue("");
+                  }
+                }}
+                className="flex items-center bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden"
+              >
                 <Search className="w-4 h-4 text-zinc-500 ml-3 shrink-0" />
                 <input
                   autoFocus
@@ -132,7 +144,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                   placeholder="강의 검색..."
                   className="bg-transparent px-2 py-2 text-sm text-white placeholder-zinc-600 w-48 focus:outline-none"
                 />
-              </div>
+              </form>
             ) : (
               <button
                 onClick={() => setSearchOpen(true)}
