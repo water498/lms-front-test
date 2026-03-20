@@ -15,10 +15,12 @@ import {
   popularCourses,
   requiredCourses,
 } from "./mockData";
+import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 
 export default function B2bStudentFeature() {
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
+      <StudentImpersonationBanner />
       <Navbar />
       <ContextPanel />
 

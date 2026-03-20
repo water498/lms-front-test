@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { X, Upload, FileText, CheckCircle, XCircle } from "lucide-react";
+import { useOrgStructureStore, type DeptNode } from "../../shared/org-structure-store";
 
 interface Props {
   onClose: () => void;
@@ -29,11 +30,18 @@ const STATUS_LABEL = {
   ERROR:     "오류",
 };
 
+function flattenDepts(nodes: DeptNode[]): DeptNode[] {
+  return nodes.flatMap((n) => [n, ...flattenDepts(n.children)]);
+}
+
 export default function ImportUsersModal({ onClose }: Props) {
   const [step, setStep] = useState<"upload" | "preview">("upload");
   const [dragging, setDragging] = useState(false);
+  const [defaultDeptId, setDefaultDeptId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const { departments } = useOrgStructureStore();
 
+  const flatDepts = flattenDepts(departments);
   const okCount = PREVIEW_ROWS.filter((r) => r.status === "OK").length;
 
   const handleFile = () => setStep("preview");
@@ -42,7 +50,7 @@ export default function ImportUsersModal({ onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-slate-800">유저 가져오기 (CSV)</h2>
+          <h2 className="text-base font-semibold text-slate-800">일괄 등록</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X size={18} />
           </button>
@@ -50,8 +58,40 @@ export default function ImportUsersModal({ onClose }: Props) {
 
         {step === "upload" ? (
           <>
+            {/* 안내 섹션 */}
+            <ol className="flex flex-col gap-1.5 mb-4 text-sm text-slate-600">
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold flex items-center justify-center">1</span>
+                샘플 양식을 다운로드 후 작성하여 업로드하세요.
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold flex items-center justify-center">2</span>
+                미리보기로 데이터를 확인한 후 등록하기를 클릭하면 완료됩니다.
+              </li>
+            </ol>
+
+            {/* 기본 부서 배정 섹션 */}
+            <div className="mb-4 rounded-xl border border-slate-200 px-4 py-3 flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-slate-700">기본 부서</label>
+              <p className="text-xs text-slate-400">
+                파일에 부서 코드가 없는 행은 아래 선택한 부서로 배정됩니다.
+              </p>
+              <select
+                value={defaultDeptId}
+                onChange={(e) => setDefaultDeptId(e.target.value)}
+                className="mt-0.5 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+              >
+                <option value="">부서 없음</option>
+                {flatDepts.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 파일 업로드 섹션 */}
+            <p className="text-xs text-slate-400 mb-2">.xlsx 파일만 지원 · 복수 시트 불가</p>
             <div
-              className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center gap-3 transition-colors cursor-pointer ${
+              className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center gap-3 transition-colors cursor-pointer ${
                 dragging ? "border-violet-400 bg-violet-50" : "border-slate-200 hover:border-slate-300"
               }`}
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -60,9 +100,8 @@ export default function ImportUsersModal({ onClose }: Props) {
               onClick={() => inputRef.current?.click()}
             >
               <Upload size={28} className="text-slate-400" />
-              <p className="text-sm text-slate-600 font-medium">CSV 파일을 드래그하거나 클릭해서 선택</p>
-              <p className="text-xs text-slate-400">이름, 이메일, 역할 컬럼 포함 필요</p>
-              <input ref={inputRef} type="file" accept=".csv" className="hidden" onChange={handleFile} />
+              <p className="text-sm text-slate-600 font-medium">파일을 드래그하거나 클릭해서 선택</p>
+              <input ref={inputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
             </div>
             <div className="flex items-center justify-between mt-4">
               <button className="text-xs text-violet-600 hover:underline flex items-center gap-1">
@@ -132,7 +171,7 @@ export default function ImportUsersModal({ onClose }: Props) {
                 onClick={onClose}
                 className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
               >
-                {okCount}건 가져오기 확인
+                {okCount}건 등록하기
               </button>
             </div>
           </>

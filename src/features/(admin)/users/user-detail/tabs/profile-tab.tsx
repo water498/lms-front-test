@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import type { User } from "../../mockData";
 import { useOrgStructureStore, findDeptNode } from "../../../shared/org-structure-store";
+import { useImpersonationStore } from "../../../shared/impersonation-store";
 
 const ROLE_CONFIG = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -17,6 +19,17 @@ const STATUS_CONFIG = {
 
 export default function ProfileTab({ user }: { user: User }) {
   const { departments, jobGrades, sites } = useOrgStructureStore();
+  const { start } = useImpersonationStore();
+  const router = useRouter();
+
+  function handleImpersonate() {
+    start(user.id);
+    const dest =
+      user.authProvider === "SSO"
+        ? "/experiments/b2b-student"
+        : "/experiments/b2c-student";
+    router.push(dest);
+  }
 
   const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
@@ -48,11 +61,21 @@ export default function ProfileTab({ user }: { user: User }) {
             <p className="text-xs text-slate-400 mt-0.5">{deptName}</p>
           )}
         </div>
-        {user.role !== "SUPER_ADMIN" && (
-          <button className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors">
-            역할 변경
-          </button>
-        )}
+        <div className="flex gap-2 flex-shrink-0">
+          {user.role === "LEARNER" && (
+            <button
+              onClick={handleImpersonate}
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              이 유저로 보기
+            </button>
+          )}
+          {user.role !== "SUPER_ADMIN" && (
+            <button className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors">
+              역할 변경
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-4">

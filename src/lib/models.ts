@@ -212,7 +212,7 @@ export interface UserInvitation {
 export interface Notification {
   id: string;
   userId: string;
-  type: "ENROLLMENT" | "CERT_ISSUED" | "EXAM_RESULT" | "ANNOUNCEMENT" | "SYSTEM";
+  type: "ENROLLMENT" | "CERT_ISSUED" | "EXAM_RESULT" | "ANNOUNCEMENT" | "QNA_ANSWERED" | "SYSTEM";
   title: string;
   body: string;
   read: boolean;
@@ -974,6 +974,36 @@ export interface PortalAnnouncement {
   type: "공지" | "이벤트" | "업데이트";
   date: string;
   isNew?: boolean;
+}
+
+// ── 장바구니 / 위시리스트 ─────────────────────────────────
+
+export interface Cart {
+  id: string;
+  userId: string;
+  courseId: string;
+  addedAt: string;
+}
+
+export interface Wishlist {
+  id: string;
+  userId: string;
+  courseId: string;
+  addedAt: string;
+}
+
+// ── Q&A ───────────────────────────────────────────────────
+
+export interface CourseQnA {
+  id: string;
+  courseSessionId: string;  // FK → CourseSession
+  activityId?: string;      // FK → CourseActivity (특정 영상/퀴즈에 대한 질문)
+  authorId: string;         // FK → User (수강생)
+  parentId?: string;        // FK → CourseQnA (답글)
+  body: string;
+  isAnswered: boolean;
+  isPinned: boolean;        // 강사 고정 Q&A
+  createdAt: string;
 }
 
 // ── 포털 / 동의 ───────────────────────────────────────────

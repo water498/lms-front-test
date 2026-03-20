@@ -13,6 +13,7 @@ import { ContextPanel } from "./sections/context-panel";
 import { type CardActions } from "./components/course-card";
 import { inProgressCourses, recommendedCourses, popularCourses } from "./mockData";
 import store from "./store";
+import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 
 export default function B2cStudentFeature() {
   const [cart, setCartState] = useState<Set<string>>(store.cart);
@@ -35,6 +36,7 @@ export default function B2cStudentFeature() {
 
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
+      <StudentImpersonationBanner />
       <Navbar cartCount={cart.size} />
       <ContextPanel />
       <HeroBanner />

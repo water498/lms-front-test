@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { X, Search } from "lucide-react";
 import { users } from "../../mockData";
 import type { UserGroup } from "../mockData";
+import { useOrgStructureStore, type DeptNode } from "../../../shared/org-structure-store";
 
 const ROLE_LABEL: Record<string, string> = {
   LEARNER: "수강생",
@@ -19,18 +20,36 @@ interface Props {
 
 let _nextGroupId = 4;
 
+function flattenDepts(nodes: DeptNode[]): DeptNode[] {
+  return nodes.flatMap((n) => [n, ...flattenDepts(n.children)]);
+}
+
 export default function CreateGroupModal({ onClose, onCreate }: Props) {
+  const { sites, departments, jobGrades } = useOrgStructureStore();
+  const flatDepts = useMemo(() => flattenDepts(departments), [departments]);
+
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
+  const [siteFilter, setSiteFilter] = useState("");
+  const [deptFilter, setDeptFilter] = useState("");
+  const [gradeFilter, setGradeFilter] = useState("");
 
-  const filtered = users.filter(
-    (u) =>
-      u.name.includes(search) ||
-      u.email.includes(search) ||
-      ROLE_LABEL[u.role]?.includes(search)
-  );
+  const filtered = useMemo(() => {
+    return users.filter((u) => {
+      const matchSearch =
+        !search ||
+        u.name.includes(search) ||
+        u.email.includes(search) ||
+        ROLE_LABEL[u.role]?.includes(search);
+      if (!matchSearch) return false;
+      if (siteFilter && u.siteId !== siteFilter) return false;
+      if (deptFilter && u.departmentId !== deptFilter) return false;
+      if (gradeFilter && u.jobGradeId !== gradeFilter) return false;
+      return true;
+    });
+  }, [search, siteFilter, deptFilter, gradeFilter]);
 
   function toggle(id: string) {
     setSelectedIds((prev) => {
@@ -97,6 +116,38 @@ export default function CreateGroupModal({ onClose, onCreate }: Props) {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+            </div>
+            <div className="flex gap-2 mb-2">
+              <select
+                className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                value={siteFilter}
+                onChange={(e) => setSiteFilter(e.target.value)}
+              >
+                <option value="">사업장 전체</option>
+                {sites.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+              <select
+                className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                value={deptFilter}
+                onChange={(e) => setDeptFilter(e.target.value)}
+              >
+                <option value="">부서 전체</option>
+                {flatDepts.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+              <select
+                className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                value={gradeFilter}
+                onChange={(e) => setGradeFilter(e.target.value)}
+              >
+                <option value="">직급 전체</option>
+                {jobGrades.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
             </div>
             <div className="border border-slate-200 rounded-lg divide-y divide-slate-100 max-h-48 overflow-y-auto">
               {filtered.length === 0 && (

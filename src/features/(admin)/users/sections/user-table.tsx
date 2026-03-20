@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Upload } from "lucide-react";
+import { Download, Upload, Search } from "lucide-react";
 import { useUsersStore } from "../../shared/users-store";
 import { userStats, type User, type UserRole, type UserStatus } from "../mockData";
+import { useOrgStructureStore, findDeptNode, flatDeptIds, type DeptNode } from "../../shared/org-structure-store";
+import { userGroups } from "../groups/mockData";
 
 const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -32,6 +34,10 @@ function handleExport(users: User[]) {
   URL.revokeObjectURL(url);
 }
 
+function flattenDepts(nodes: DeptNode[]): DeptNode[] {
+  return nodes.flatMap((n) => [n, ...flattenDepts(n.children)]);
+}
+
 type RoleTab = "ALL" | "LEARNER" | "INSTRUCTOR" | "ADMIN";
 
 const ROLE_TABS: { value: RoleTab; label: string }[] = [
@@ -49,8 +55,15 @@ interface Props {
 export default function UserTable({ onCreateClick, onImportClick }: Props) {
   const router = useRouter();
   const { users } = useUsersStore();
+  const { departments, jobGrades } = useOrgStructureStore();
   const [roleTab, setRoleTab] = useState<RoleTab>("ALL");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "ACTIVE_ONLY">("ACTIVE_ONLY");
+  const [search, setSearch] = useState("");
+  const [deptFilter, setDeptFilter] = useState("");
+  const [gradeFilter, setGradeFilter] = useState("");
+  const [groupFilter, setGroupFilter] = useState("");
+
+  const flatDepts = flattenDepts(departments);
 
   const filtered = users.filter((u) => {
     if (u.role === "SUPER_ADMIN") return false;
@@ -59,7 +72,18 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
       roleTab === "ADMIN" ? u.role === "ORG_ADMIN" :
       u.role === roleTab;
     const matchStatus = statusFilter === "ACTIVE_ONLY" ? u.status === "ACTIVE" : true;
-    return matchRole && matchStatus;
+    const q = search.toLowerCase();
+    const matchSearch = q === "" || (
+      u.name.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q) ||
+      (u.employeeId?.toLowerCase().includes(q) ?? false)
+    );
+    const matchDept = deptFilter === "" || u.departmentId === deptFilter;
+    const matchGrade = gradeFilter === "" || u.jobGradeId === gradeFilter;
+    const matchGroup = groupFilter === "" || (
+      userGroups.find((g) => g.id === groupFilter)?.memberIds.includes(u.id) ?? false
+    );
+    return matchRole && matchStatus && matchSearch && matchDept && matchGrade && matchGroup;
   });
 
   return (
@@ -95,7 +119,47 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
 
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 gap-3 flex-wrap">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap items-center">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="이름·이메일·사번 검색"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white w-52"
+              />
+            </div>
+            <select
+              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+              value={deptFilter}
+              onChange={(e) => setDeptFilter(e.target.value)}
+            >
+              <option value="">전체 부서</option>
+              {flatDepts.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+            <select
+              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+              value={gradeFilter}
+              onChange={(e) => setGradeFilter(e.target.value)}
+            >
+              <option value="">전체 직급</option>
+              {jobGrades.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
+            <select
+              className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+              value={groupFilter}
+              onChange={(e) => setGroupFilter(e.target.value)}
+            >
+              <option value="">전체 그룹</option>
+              {userGroups.map((g) => (
+                <option key={g.id} value={g.id}>{g.name}</option>
+              ))}
+            </select>
             <select
               className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
               value={statusFilter}
@@ -116,7 +180,7 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
               onClick={onImportClick}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
             >
-              <Upload size={14} /> 가져오기
+              <Upload size={14} /> 일괄 등록
             </button>
             <button
               onClick={onCreateClick}
@@ -133,22 +197,34 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
               <th className="text-left px-5 py-3 font-medium">이름 / 이메일</th>
               <th className="text-left px-4 py-3 font-medium">역할</th>
               <th className="text-left px-4 py-3 font-medium">상태</th>
+              <th className="text-left px-4 py-3 font-medium">부서 / 직급</th>
+              <th className="text-left px-4 py-3 font-medium">그룹</th>
               <th className="text-left px-4 py-3 font-medium">수강 과정</th>
               <th className="text-left px-4 py-3 font-medium">마지막 로그인</th>
               <th className="text-left px-4 py-3 font-medium">액션</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((user) => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onClick={() => router.push(`/experiments/admin/users/${user.id}`)}
-              />
-            ))}
+            {filtered.map((user) => {
+              const deptName = user.departmentId
+                ? (findDeptNode(departments, user.departmentId)?.name ?? undefined)
+                : undefined;
+              const gradeName = user.jobGradeId
+                ? (jobGrades.find((g) => g.id === user.jobGradeId)?.name ?? undefined)
+                : undefined;
+              return (
+                <UserRow
+                  key={user.id}
+                  user={user}
+                  deptName={deptName}
+                  gradeName={gradeName}
+                  onClick={() => router.push(`/experiments/admin/users/${user.id}`)}
+                />
+              );
+            })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-slate-400 text-sm">
+                <td colSpan={8} className="text-center py-10 text-slate-400 text-sm">
                   해당하는 유저가 없습니다.
                 </td>
               </tr>
@@ -160,9 +236,18 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
   );
 }
 
-function UserRow({ user, onClick }: { user: User; onClick: () => void }) {
+interface UserRowProps {
+  user: User;
+  deptName?: string;
+  gradeName?: string;
+  onClick: () => void;
+}
+
+function UserRow({ user, deptName, gradeName, onClick }: UserRowProps) {
   const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
+  const groups = userGroups.filter((g) => g.memberIds.includes(user.id));
+
   return (
     <tr
       className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60 transition-colors cursor-pointer"
@@ -181,6 +266,32 @@ function UserRow({ user, onClick }: { user: User; onClick: () => void }) {
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>
           {status.label}
         </span>
+      </td>
+      <td className="px-4 py-3">
+        {deptName || gradeName ? (
+          <div>
+            {deptName && <p className="text-slate-700 text-xs">{deptName}</p>}
+            {gradeName && <p className="text-slate-400 text-xs">{gradeName}</p>}
+          </div>
+        ) : (
+          <span className="text-slate-300">—</span>
+        )}
+      </td>
+      <td className="px-4 py-3">
+        {groups.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {groups.map((g) => (
+              <span
+                key={g.id}
+                className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium whitespace-nowrap"
+              >
+                {g.name}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-slate-300">—</span>
+        )}
       </td>
       <td className="px-4 py-3 text-slate-600">{user.enrolledCourses}</td>
       <td className="px-4 py-3 text-slate-400">{user.lastLogin}</td>

@@ -61,11 +61,12 @@ const NAV_GROUPS: NavGroup[] = [
         kind: "accordion",
         label: "과정 관리",
         icon: BookOpen,
-        basePaths: [`${BASE}/courses`, `${BASE}/sessions`],
+        basePaths: [`${BASE}/courses`, `${BASE}/sessions`, `${BASE}/learning-paths`],
         children: [
           { href: `${BASE}/courses`, label: "과정 목록" },
           { href: `${BASE}/sessions`, label: "과정 운영(차수)" },
           { href: `${BASE}/courses/categories`, label: "카테고리" },
+          { href: `${BASE}/learning-paths`, label: "학습 경로" },
         ],
       },
       {
