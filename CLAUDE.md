@@ -87,8 +87,10 @@ pnpm lint     # ESLint
 | **B2B** | SSO (SAML/OIDC — Azure AD, Okta 등) | 기업 직원, 테넌트 관리자 존재, 개인 결제 없음 |
 
 ### 실험 구조
-- `b2c-student`: B2C 대시보드 (결제, 장바구니, 위시리스트)
-- `b2b-student`: B2B 대시보드 (테넌트 브랜딩, 필수 수강, SSO 프로필)
+- `student` (통합): TenantContext feature flag 기반, dev switcher로 B2C/B2B 전환
+  - `b2c-student` / `b2b-student`: deprecated, 폴더만 참고용 유지
+- `admin`: ORG_ADMIN 멀티페이지 관리자
+- `platform-admin`: 슈퍼어드민 — 전체 테넌트(B2B·B2C) 생명주기 관리 내부툴
 
 ### 개발 원칙
 - 기능은 B2C·B2B **공통으로 구현**, 해당 컨텍스트에서 필요 없는 UI는 **hide만** (제거 X)
@@ -113,6 +115,26 @@ pnpm lint     # ESLint
 | API 연동 시 | DB 스키마 1:1 반영 | 필드 필수화 + feature별 `Pick`/DTO |
 
 실제 API 연동 시점에 `models.ts`를 `data-model.dbml` 기준으로 재정비한다.
+
+---
+
+---
+
+## TenantContext 패턴
+
+feature flag 기반 UI 분기. `tenantType` 직접 분기 금지 — `features.*` 플래그 사용.
+
+**Store 위치:**
+- `src/features/(b2c-student)/shared/tenant-context-store.ts` (기본값: B2C)
+- `src/features/(admin)/shared/tenant-context-store.ts` (기본값: B2B)
+
+| 플래그 | B2C | B2B | 용도 |
+|--------|-----|-----|------|
+| `payments` | ✅ | ❌ | 결제 버튼, 주문 내역 탭 |
+| `cart` | ✅ | ❌ | 장바구니 아이콘·버튼 |
+| `orgStructure` | ❌ | ✅ | 조직 구조 설정 |
+| `sso` | ❌ | ✅ | SSO 설정 |
+| `mandatoryCourses` | ❌ | ✅ | 필수 수강 과정 |
 
 ---
 

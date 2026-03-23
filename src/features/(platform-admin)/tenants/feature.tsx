@@ -69,9 +69,9 @@ export default function TenantsFeature() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">기업 목록</h2>
+          <h2 className="text-lg font-semibold text-slate-800">테넌트 목록</h2>
           <p className="text-sm text-slate-500 mt-0.5">
-            총 {TENANTS.length}개 기업
+            총 {TENANTS.length}개 테넌트
           </p>
         </div>
         <button
@@ -79,7 +79,7 @@ export default function TenantsFeature() {
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus size={15} />
-          신규 기업
+          신규 테넌트 추가
         </button>
       </div>
 
@@ -88,7 +88,10 @@ export default function TenantsFeature() {
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50">
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                기업명
+                테넌트명
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                유형
               </th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 서브도메인
@@ -118,6 +121,19 @@ export default function TenantsFeature() {
               >
                 <td className="px-4 py-3 font-medium text-slate-800">
                   {t.name}
+                </td>
+                <td className="px-4 py-3">
+                  {t.tenantType && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        t.tenantType === "B2C"
+                          ? "bg-violet-100 text-violet-700"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
+                    >
+                      {t.tenantType}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-slate-500 font-mono text-xs">
                   {t.subdomain}.{PLATFORM_DOMAIN}

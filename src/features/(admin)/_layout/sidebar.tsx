@@ -22,6 +22,7 @@ import {
   BarChart2,
   Globe,
   Coins,
+  Bell,
 } from "lucide-react";
 
 const BASE = "/experiments/admin";
@@ -53,6 +54,12 @@ const NAV_GROUPS: NavGroup[] = [
         href: `${BASE}`,
         label: "대시보드",
         icon: LayoutDashboard,
+      },
+      {
+        kind: "link",
+        href: `${BASE}/announcements`,
+        label: "플랫폼 공지",
+        icon: Bell,
       },
     ],
   },

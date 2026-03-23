@@ -313,17 +313,20 @@ export default function PlatformAdminDashboard() {
 
       {/* ── 핵심 지표 3장 ── */}
       <div className="grid grid-cols-3 gap-4">
-        {/* 계약 기업 */}
+        {/* 테넌트 */}
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
               <Building2 size={15} className="text-white" />
             </div>
-            <span className="text-xs text-slate-500">계약 기업</span>
+            <span className="text-xs text-slate-500">테넌트</span>
           </div>
-          <p className="text-3xl font-bold text-slate-800 mb-3">
+          <p className="text-3xl font-bold text-slate-800 mb-1">
             {TENANTS.length}
             <span className="text-sm font-normal text-slate-400 ml-1">개</span>
+          </p>
+          <p className="text-xs text-slate-400 mb-2">
+            B2B {TENANTS.filter((t) => t.tenantType === "B2B").length}개 · B2C {TENANTS.filter((t) => t.tenantType === "B2C").length}개
           </p>
           <div className="flex flex-wrap gap-1.5">
             <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">
@@ -390,10 +393,10 @@ export default function PlatformAdminDashboard() {
         </div>
       </div>
 
-      {/* ── 조치 필요 패널 ── */}
+      {/* ── 운영 현황 패널 ── */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-700">조치 필요</h3>
+          <h3 className="text-sm font-semibold text-slate-700">운영 현황</h3>
           {actionItems.length === 0 && (
             <span className="text-xs text-green-600 font-medium">
               ✓ 이상 없음
@@ -464,11 +467,9 @@ export default function PlatformAdminDashboard() {
         </div>
       </div>
 
-      {/* ── 테넌트 현황 요약 ── */}
+      {/* ── 테넌트 현황 ── */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">
-          기업 현황 요약
-        </h3>
+        <h3 className="text-sm font-semibold text-slate-700 mb-4">테넌트 현황</h3>
         <div className="flex flex-col gap-3">
           {TENANTS.map((t) => {
             const hasInfraAlert =
@@ -486,6 +487,13 @@ export default function PlatformAdminDashboard() {
                 </Link>
                 <span className="w-16 text-slate-400 text-xs truncate">
                   {t.subdomain}
+                </span>
+                <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                  t.tenantType === "B2B"
+                    ? "bg-blue-50 text-blue-600"
+                    : "bg-violet-50 text-violet-600"
+                }`}>
+                  {t.tenantType}
                 </span>
                 <StatusBadge status={t.status} trialEndsAt={t.trialEndsAt} />
                 <span className="text-xs text-slate-500">

@@ -17,6 +17,7 @@ const ACTION_LABELS: Record<PlatformAuditAction, string> = {
   ADMIN_INVITED:             "어드민 초대",
   ADMIN_INVITE_RESENT:       "초대 재발송",
   PLATFORM_SETTINGS_UPDATED: "플랫폼 설정 변경",
+  PLATFORM_PLAN_CHANGED:     "플랫폼 플랜 변경",
 };
 
 type Range = "today" | "7d" | "30d" | "all";

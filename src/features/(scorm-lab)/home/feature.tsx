@@ -381,6 +381,7 @@ export default function ScormLabFeature() {
               <CachedPackagesList
                 packages={cachedPackages}
                 selectedId={selectedPkg?.manifestId ?? null}
+                learnerId={learnerId}
                 onSelect={(pkg) => setSelectedPkg(pkg)}
                 onDelete={handleDelete}
               />

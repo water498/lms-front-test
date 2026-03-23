@@ -40,6 +40,7 @@ export const AUDIT_LOGS: PlatformAuditLog[] = [
   { id: "al-013", timestamp: "2026-02-15T13:20:00Z", actorId: "pa-ops-1",   actor: "ops@open-knock.com",   action: "PLAN_CHANGED",             targetType: "TENANT",   targetName: "삼성전자",   detail: "BUSINESS → ENTERPRISE",                       ip: "10.0.1.45" },
   { id: "al-014", timestamp: "2026-02-10T09:15:00Z", actorId: "pa-ops-1",   actor: "ops@open-knock.com",   action: "SSO_ENABLED",              targetType: "TENANT",   targetName: "삼성전자",   detail: "SAML 연동 활성화 (Azure AD)",                  ip: "10.0.1.45" },
   { id: "al-015", timestamp: "2026-01-15T11:00:00Z", actorId: "pa-ops-1",   actor: "ops@open-knock.com",   action: "TENANT_CREATED",           targetType: "TENANT",   targetName: "현대자동차", detail: "신규 기업 생성 (ENTERPRISE)",                   ip: "10.0.1.45" },
+  { id: "al-018", timestamp: "2026-03-10T10:00:00Z", actorId: "pa-admin-1", actor: "admin@open-knock.com", action: "PLATFORM_PLAN_CHANGED",     targetType: "PLATFORM", targetName: "플랫폼",     detail: "인프라 플랜 STANDARD → PREMIUM (트래픽 증가)", ip: "10.0.1.12" },
 ];
 
 export const INITIAL_SETTINGS: PlatformSettings = {

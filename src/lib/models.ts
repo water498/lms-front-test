@@ -46,7 +46,8 @@ export type PlatformAuditAction =
   | "SSO_DISABLED"
   | "ADMIN_INVITED"
   | "ADMIN_INVITE_RESENT"
-  | "PLATFORM_SETTINGS_UPDATED";
+  | "PLATFORM_SETTINGS_UPDATED"
+  | "PLATFORM_PLAN_CHANGED";
 
 export interface PlatformAuditLog {
   id: string;
@@ -72,6 +73,7 @@ export interface Tenant {
   id: string;
   name: string;
   subdomain: string;
+  tenantType?: TenantType;
   status: TenantStatus;
   trialEndsAt?: string;
   maxUsers: number; // 0 = unlimited
@@ -86,6 +88,50 @@ export interface Tenant {
   infraStatus?: TenantInfraStatus;
   sso?: TenantSsoConfig;
   ipWhitelist?: string[]; // IP 접근 제한 (CIDR 표기 허용, e.g. "1.2.3.4/24")
+}
+
+// ── 플랫폼 청구/결제 ────────────────────────────────────────
+
+export type BillingPlan = "TRIAL" | "STARTER" | "BUSINESS" | "ENTERPRISE";
+export type BillingPaymentStatus = "PAID" | "OVERDUE" | "PENDING" | "EXEMPT";
+
+export interface TenantInvoice {
+  id: string;
+  issuedAt: string;
+  periodStart: string;
+  periodEnd: string;
+  amountKRW: number;
+  status: "PAID" | "OVERDUE" | "PENDING";
+}
+
+export interface TenantBilling {
+  tenantId: string;
+  tenantName: string;
+  tenantType: "B2B" | "B2C";
+  plan: BillingPlan;
+  monthlyFeeKRW: number;
+  paymentStatus: BillingPaymentStatus;
+  lastPaidAt?: string;
+  nextBillingAt?: string;
+  invoices: TenantInvoice[];
+}
+
+// ── 플랫폼 공지 ────────────────────────────────────────────
+
+export type PlatformAnnouncementType = "MAINTENANCE" | "UPDATE" | "URGENT" | "GENERAL";
+export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
+
+export interface PlatformAnnouncement {
+  id: string;
+  type: PlatformAnnouncementType;
+  title: string;
+  body: string;
+  targetTenants: string[] | "ALL";
+  status: AnnouncementStatus;
+  scheduledAt?: string;
+  sentAt?: string;
+  createdAt: string;
+  createdBy: string;
 }
 
 // ── 조직 구조 ─────────────────────────────────────────────

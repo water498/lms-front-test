@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Building2,
-  Users,
+  CreditCard,
+  Megaphone,
   Settings,
   LogOut,
   ShieldCheck,
@@ -13,46 +14,32 @@ import {
 
 const BASE = "/experiments/platform-admin";
 
-type NavLink = {
-  kind: "link";
+type NavItem = {
   href: string;
   label: string;
   icon: React.ElementType;
 };
-type NavPlaceholder = {
-  kind: "placeholder";
-  label: string;
-  icon: React.ElementType;
-};
-type NavItem = NavLink | NavPlaceholder;
 type NavGroup = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "",
     items: [
-      { kind: "link", href: BASE, label: "대시보드", icon: LayoutDashboard },
+      { href: BASE, label: "대시보드", icon: LayoutDashboard },
     ],
   },
   {
-    label: "B2B 기업 관리",
+    label: "테넌트 관리",
     items: [
-      {
-        kind: "link",
-        href: `${BASE}/tenants`,
-        label: "기업 목록",
-        icon: Building2,
-      },
+      { href: `${BASE}/tenants`,  label: "테넌트 목록", icon: Building2 },
+      { href: `${BASE}/billing`,  label: "청구/결제",   icon: CreditCard },
     ],
   },
   {
-    label: "B2C 운영",
-    items: [{ kind: "placeholder", label: "B2C 운영", icon: Users }],
-  },
-  {
-    label: "플랫폼 설정",
+    label: "플랫폼",
     items: [
-      { kind: "link", href: `${BASE}/settings`, label: "플랫폼 설정", icon: Settings },
+      { href: `${BASE}/announcements`, label: "플랫폼 공지", icon: Megaphone },
+      { href: `${BASE}/settings`,      label: "플랫폼 설정", icon: Settings },
     ],
   },
 ];
@@ -85,34 +72,20 @@ export default function PlatformAdminSidebar() {
               </p>
             )}
             <div className="flex flex-col gap-0.5">
-              {group.items.map((item) =>
-                item.kind === "placeholder" ? (
-                  <div
-                    key={item.label}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 cursor-not-allowed select-none"
-                    title="준비중"
-                  >
-                    <item.icon size={16} />
-                    {item.label}
-                    <span className="ml-auto text-xs bg-slate-100 text-slate-400 rounded px-1.5 py-0.5">
-                      준비중
-                    </span>
-                  </div>
-                ) : (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    <item.icon size={16} />
-                    {item.label}
-                  </Link>
-                ),
-              )}
+              {group.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive(item.href)
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
+                >
+                  <item.icon size={16} />
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         ))}
