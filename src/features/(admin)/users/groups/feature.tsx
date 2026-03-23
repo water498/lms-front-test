@@ -32,7 +32,7 @@ export default function GroupsFeature() {
   const selectedGroup = groups.find((g) => g.id === selectedGroupId) ?? null;
 
   const selectedMembers = selectedGroup
-    ? users.filter((u) => selectedGroup.memberIds.includes(u.id))
+    ? users.filter((u) => selectedGroup.memberIds?.includes(u.id))
     : [];
 
   function handleCreate(group: UserGroup) {
@@ -45,7 +45,7 @@ export default function GroupsFeature() {
     setGroups((prev) =>
       prev.map((g) =>
         g.id === groupId
-          ? { ...g, memberIds: g.memberIds.filter((id) => id !== userId) }
+          ? { ...g, memberIds: (g.memberIds ?? []).filter((id) => id !== userId) }
           : g
       )
     );
@@ -55,7 +55,7 @@ export default function GroupsFeature() {
     setGroups((prev) =>
       prev.map((g) =>
         g.id === selectedGroupId
-          ? { ...g, memberIds: [...new Set([...g.memberIds, ...ids])] }
+          ? { ...g, memberIds: [...new Set([...(g.memberIds ?? []), ...ids])] }
           : g
       )
     );
@@ -128,7 +128,7 @@ export default function GroupsFeature() {
                     <div className="flex items-center gap-3 text-xs text-slate-400">
                       <span className="flex items-center gap-1">
                         <Users size={11} />
-                        {g.memberIds.length}명
+                        {g.memberIds?.length ?? 0}명
                       </span>
                       <span className="flex items-center gap-1">
                         <CalendarDays size={11} />
@@ -192,8 +192,8 @@ export default function GroupsFeature() {
                       <p className="text-sm font-medium text-slate-800">{u.name}</p>
                       <p className="text-xs text-slate-400 truncate">{u.email}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_COLOR[u.role] ?? "bg-slate-100 text-slate-500"}`}>
-                      {ROLE_LABEL[u.role]}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_COLOR[u.roles[0]] ?? "bg-slate-100 text-slate-500"}`}>
+                      {ROLE_LABEL[u.roles[0]]}
                     </span>
                     <button
                       onClick={() => removeMember(selectedGroup.id, u.id)}

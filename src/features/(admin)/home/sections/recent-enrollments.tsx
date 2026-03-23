@@ -1,4 +1,5 @@
 import { recentEnrollments, type EnrollmentStatus } from "../mockData";
+import { learnerNames, courseTitlesMap, sessionNamesMap } from "../../enrollments/mockData";
 
 const STATUS_BADGE: Record<EnrollmentStatus, { label: string; className: string }> = {
   ACTIVE:    { label: "활성",     className: "bg-emerald-100 text-emerald-700" },
@@ -26,9 +27,9 @@ export default function RecentEnrollments() {
             const badge = STATUS_BADGE[e.status];
             return (
               <tr key={e.id} className="border-b border-slate-50 last:border-0">
-                <td className="py-2.5 font-medium text-slate-800">{e.learner}</td>
-                <td className="py-2.5 text-slate-600">{e.course}</td>
-                <td className="py-2.5 text-slate-500">{e.session}</td>
+                <td className="py-2.5 font-medium text-slate-800">{learnerNames[e.learnerId] ?? e.learnerId}</td>
+                <td className="py-2.5 text-slate-600">{courseTitlesMap[e.courseId] ?? e.courseId}</td>
+                <td className="py-2.5 text-slate-500">{sessionNamesMap[e.courseSessionId] ?? e.courseSessionId}</td>
                 <td className="py-2.5">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}>
                     {badge.label}

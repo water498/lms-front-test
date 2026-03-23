@@ -5,7 +5,7 @@ import { ChevronRight, Users, Search } from "lucide-react";
 import { courses } from "../../courses/mockData";
 import { getSessions, getEnrolleesBySession } from "../../course-detail/mockData";
 import { users } from "../../users/mockData";
-import { userGroups } from "../../users/groups/mockData";
+import { userGroups, userGroupMembers } from "../../users/groups/mockData";
 import {
   useOrgStructureStore,
   findDeptNode,
@@ -84,16 +84,18 @@ export default function AssignPanel() {
     () => (selectedCourseId ? getSessions(selectedCourseId) : []),
     [selectedCourseId]
   );
-  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
 
   const groupUserIds = useMemo(() => {
     const ids = new Set<string>();
     userGroups
       .filter((g) => selectedGroups.has(g.id))
       .forEach((g) => {
-        g.memberIds.forEach((id) => {
-          if (learners.some((u) => u.id === id)) ids.add(id);
-        });
+        userGroupMembers
+          .filter((m) => m.groupId === g.id)
+          .forEach((m) => {
+            if (learners.some((u) => u.id === m.userId)) ids.add(m.userId);
+          });
       });
     return ids;
   }, [selectedGroups, learners]);
@@ -301,7 +303,7 @@ export default function AssignPanel() {
                   {userGroups.map((group) => {
                     const isSelected = selectedGroups.has(group.id);
                     const memberLearners = learners.filter((u) =>
-                      group.memberIds.includes(u.id)
+                      userGroupMembers.some((m) => m.groupId === group.id && m.userId === u.id)
                     );
                     return (
                       <label

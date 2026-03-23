@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Bell } from "lucide-react";
-import { enrollments, type Enrollment, type EnrollmentStatus } from "../mockData";
+import { enrollments, learnerNames, courseTitlesMap, sessionNamesMap, type Enrollment, type EnrollmentStatus } from "../mockData";
 
 type ProgressFilter = "all" | "zero" | "partial" | "complete";
 
@@ -45,19 +45,19 @@ export default function EnrollmentTable() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const uniqueCourses = useMemo(
-    () => [...new Set(enrollments.map((e) => e.course))],
+    () => Object.entries(courseTitlesMap).map(([id, title]) => ({ id, title })),
     []
   );
   const uniqueSessions = useMemo(
-    () => [...new Set(enrollments.map((e) => e.session))],
+    () => Object.entries(sessionNamesMap).map(([id, name]) => ({ id, name })),
     []
   );
 
   const filtered = useMemo(() => {
     return enrollments.filter((e) => {
       if (statusFilter !== "ALL" && e.status !== statusFilter) return false;
-      if (courseFilter !== "all" && e.course !== courseFilter) return false;
-      if (sessionFilter !== "all" && e.session !== sessionFilter) return false;
+      if (courseFilter !== "all" && e.courseId !== courseFilter) return false;
+      if (sessionFilter !== "all" && e.courseSessionId !== sessionFilter) return false;
       if (zeroOnly && e.progress > 0) return false;
       if (progressFilter === "zero" && e.progress > 0) return false;
       if (progressFilter === "partial" && (e.progress === 0 || e.progress === 100)) return false;
@@ -149,7 +149,7 @@ export default function EnrollmentTable() {
           >
             <option value="all">전체 과정</option>
             {uniqueCourses.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c.id} value={c.id}>{c.title}</option>
             ))}
           </select>
 
@@ -160,7 +160,7 @@ export default function EnrollmentTable() {
           >
             <option value="all">전체 차수</option>
             {uniqueSessions.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
 
@@ -271,9 +271,9 @@ function EnrollmentRow({
           className="accent-violet-600 w-4 h-4"
         />
       </td>
-      <td className="px-4 py-3 font-medium text-slate-800">{e.learner}</td>
-      <td className="px-4 py-3 text-slate-600">{e.course}</td>
-      <td className="px-4 py-3 text-slate-500">{e.session}</td>
+      <td className="px-4 py-3 font-medium text-slate-800">{learnerNames[e.learnerId] ?? e.learnerId}</td>
+      <td className="px-4 py-3 text-slate-600">{courseTitlesMap[e.courseId] ?? e.courseId}</td>
+      <td className="px-4 py-3 text-slate-500">{sessionNamesMap[e.courseSessionId] ?? e.courseSessionId}</td>
       <td className="px-4 py-3">
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}>
           {badge.label}

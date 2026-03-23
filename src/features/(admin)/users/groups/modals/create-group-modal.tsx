@@ -42,7 +42,7 @@ export default function CreateGroupModal({ onClose, onCreate }: Props) {
         !search ||
         u.name.includes(search) ||
         u.email.includes(search) ||
-        ROLE_LABEL[u.role]?.includes(search);
+        u.roles.some((r) => ROLE_LABEL[r]?.includes(search));
       if (!matchSearch) return false;
       if (siteFilter && u.siteId !== siteFilter) return false;
       if (deptFilter && u.departmentId !== deptFilter) return false;
@@ -163,7 +163,7 @@ export default function CreateGroupModal({ onClose, onCreate }: Props) {
                   />
                   <span className="flex-1 text-sm text-slate-700">{u.name}</span>
                   <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
-                    {ROLE_LABEL[u.role]}
+                    {ROLE_LABEL[u.roles[0]]}
                   </span>
                 </label>
               ))}

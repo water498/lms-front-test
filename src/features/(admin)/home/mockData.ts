@@ -16,19 +16,19 @@ import type { EnrollmentStatus } from "@/lib/models";
 
 export interface RecentEnrollment {
   id: string;
-  learner: string;
-  course: string;
-  session: string;
+  learnerId: string;
+  courseId: string;
+  courseSessionId: string;
   status: EnrollmentStatus;
   enrolledAt: string;
 }
 
 export const recentEnrollments: RecentEnrollment[] = [
-  { id: "e1", learner: "김민준", course: "React 기초",        session: "2025-03기",  status: "ACTIVE",    enrolledAt: "2025-03-14" },
-  { id: "e2", learner: "이서연", course: "TypeScript 심화",   session: "2025-03기",  status: "ACTIVE",    enrolledAt: "2025-03-13" },
-  { id: "e3", learner: "박지호", course: "Next.js 마스터",    session: "2025-02기",  status: "COMPLETED", enrolledAt: "2025-02-20" },
-  { id: "e4", learner: "최유진", course: "AWS 클라우드 입문", session: "2025-03기",  status: "ACTIVE",    enrolledAt: "2025-03-12" },
-  { id: "e5", learner: "정하은", course: "React 기초",        session: "2025-03기",  status: "CANCELLED", enrolledAt: "2025-03-10" },
+  { id: "e1", learnerId: "u5",  courseId: "c1", courseSessionId: "se3", status: "ACTIVE",    enrolledAt: "2025-03-14" },
+  { id: "e2", learnerId: "u6",  courseId: "c2", courseSessionId: "se7", status: "ACTIVE",    enrolledAt: "2025-03-13" },
+  { id: "e3", learnerId: "u7",  courseId: "c3", courseSessionId: "se8", status: "COMPLETED", enrolledAt: "2025-02-20" },
+  { id: "e4", learnerId: "u8",  courseId: "c4", courseSessionId: "se5", status: "ACTIVE",    enrolledAt: "2025-03-12" },
+  { id: "e5", learnerId: "u9",  courseId: "c1", courseSessionId: "se3", status: "CANCELLED", enrolledAt: "2025-03-10" },
 ];
 
 export interface ActivityItem {

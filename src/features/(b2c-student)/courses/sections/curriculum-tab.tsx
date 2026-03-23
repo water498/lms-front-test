@@ -9,6 +9,7 @@ const ACTIVITY_ICON: Record<ActivityType, React.ReactNode> = {
   QUIZ:       <HelpCircle className="w-3.5 h-3.5 text-amber-400" />,
   ASSIGNMENT: <Clipboard className="w-3.5 h-3.5 text-violet-400" />,
   SCORM:      <FileText className="w-3.5 h-3.5 text-emerald-400" />,
+  SURVEY:     <FileText className="w-3.5 h-3.5 text-indigo-400" />,
 };
 
 interface Props {

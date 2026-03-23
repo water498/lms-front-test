@@ -4,6 +4,7 @@ import { useState } from "react";
 import { payments, orders, orderItems, learnerNames, courseTitles, type PaymentStatus } from "../mockData";
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; className: string }> = {
+  PENDING:   { label: "결제 대기", className: "bg-amber-100 text-amber-700" },
   PAID:      { label: "결제 완료", className: "bg-emerald-100 text-emerald-700" },
   REFUNDED:  { label: "환불",     className: "bg-blue-100 text-blue-700" },
   CANCELLED: { label: "취소",     className: "bg-slate-100 text-slate-500" },

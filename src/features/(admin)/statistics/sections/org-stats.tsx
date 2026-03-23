@@ -9,7 +9,7 @@ import { useOrgStructureStore, findDeptNode } from "../../shared/org-structure-s
 export default function OrgStats() {
   const { departments, sites } = useOrgStructureStore();
 
-  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
 
   const deptStats = useMemo(() => {
     // Collect all department IDs that have learners
@@ -19,11 +19,11 @@ export default function OrgStats() {
       const deptNode = findDeptNode(departments, deptId);
       const deptLearners = learners.filter((u) => u.departmentId === deptId);
       const deptEnrollments = enrollments.filter((e) =>
-        deptLearners.some((u) => u.name === e.learner)
+        deptLearners.some((u) => u.id === e.learnerId)
       );
 
       const total = deptLearners.length;
-      const enrolledCount = new Set(deptEnrollments.map((e) => e.learner)).size;
+      const enrolledCount = new Set(deptEnrollments.map((e) => e.learnerId)).size;
       const completedCount = deptEnrollments.filter(
         (e) => e.status === "COMPLETED"
       ).length;

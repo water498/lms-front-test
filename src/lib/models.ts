@@ -51,6 +51,7 @@ export type PlatformAuditAction =
 export interface PlatformAuditLog {
   id: string;
   timestamp: string;
+  actorId?: string;
   actor: string;
   action: PlatformAuditAction;
   targetType: "TENANT" | "PLATFORM";
@@ -128,9 +129,10 @@ export type MfaMethod = "TOTP" | "SMS" | "EMAIL";
 
 export interface User {
   id: string;
+  tenantId?: string;
   name: string;
   email: string;
-  role: UserRole;
+  roles: UserRole[];
   status: UserStatus;
   enrolledCourses: number;
   lastLogin: string;
@@ -161,7 +163,7 @@ export interface UserGroup {
   id: string;
   name: string;
   description: string;
-  memberIds: string[];
+  memberIds?: string[]; // 편의용 캐시. 정규 원천은 UserGroupMember junction.
   createdAt: string;
 }
 
@@ -234,6 +236,7 @@ export type TenantAuditAction =
 export interface TenantAuditLog {
   id: string;
   timestamp: string;
+  actorId?: string;
   actor: string;
   action: TenantAuditAction;
   target: string;
@@ -318,6 +321,7 @@ export interface CancellationPolicy {
  */
 export interface Course {
   id: string;
+  tenantId?: string;
   title: string;
   instructor: string;
   category: string;
@@ -418,6 +422,7 @@ export interface CourseInstructor {
 export interface InstructorProfile {
   id: string;
   userId: string; // FK → User (INSTRUCTOR role)
+  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
   headline: string; // e.g. "React 전문 강사 / 전 카카오 개발자"
   bio: string;
   profileImageUrl?: string;
@@ -490,7 +495,7 @@ export interface OfflineAttendance {
 
 // ── 커리큘럼 ──────────────────────────────────────────────
 
-export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT";
+export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "SURVEY";
 
 export interface CourseActivity {
   id: string;
@@ -561,9 +566,10 @@ export type EnrollmentSource = "SELF" | "ADMIN_ASSIGNED" | "PAYMENT";
 
 export interface Enrollment {
   id: string;
-  learner: string;
-  course: string;
-  session: string;
+  tenantId?: string;
+  learnerId: string;
+  courseId: string;
+  courseSessionId: string;
   status: EnrollmentStatus;
   progress: number;
   enrolledAt: string;
@@ -623,6 +629,8 @@ export interface AssignmentSubmission {
   textContent?: string;
   grade?: number;
   feedback?: string;
+  gradedBy?: string;
+  gradedAt?: string;
 }
 
 // 설문 응답 기록
@@ -633,7 +641,6 @@ export interface SurveyResponse {
   courseSessionId: string;
   submittedAt: string;
   anonymous: boolean;
-  answers: { questionId: string; value: string | number }[];
 }
 
 // 동영상 시청 진행 기록
@@ -749,6 +756,7 @@ export interface IssuedCertificate {
   id: string;
   certNumber: string;
   publicToken: string;
+  recipientId?: string;
   recipient: string;
   course: string;
   templateId: string;
@@ -814,7 +822,7 @@ export interface OrderItem {
   finalPrice: number;         // unitPrice - discountAmount
 }
 
-export type PaymentStatus = "PAID" | "REFUNDED" | "CANCELLED";
+export type PaymentStatus = "PENDING" | "PAID" | "REFUNDED" | "CANCELLED";
 export type PgProvider = "TOSS" | "IAMPORT" | "KCP" | "NICEPAY";
 export type PaymentMethod = "CARD" | "BANK_TRANSFER" | "KAKAO_PAY" | "NAVER_PAY";
 

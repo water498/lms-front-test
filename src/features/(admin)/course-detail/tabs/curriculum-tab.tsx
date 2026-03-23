@@ -11,6 +11,7 @@ const ACTIVITY_ICON: Record<ActivityType, string> = {
   SCORM:      "📄",
   QUIZ:       "📝",
   ASSIGNMENT: "📋",
+  SURVEY:     "📊",
 };
 
 const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
@@ -18,6 +19,7 @@ const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
   SCORM:      "SCORM",
   QUIZ:       "시험",
   ASSIGNMENT: "과제",
+  SURVEY:     "설문",
 };
 
 interface DeleteWarningDialogProps {

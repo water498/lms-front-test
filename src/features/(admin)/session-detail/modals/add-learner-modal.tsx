@@ -69,7 +69,7 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
   const [selectedDepts, setSelectedDepts] = useState<Set<string>>(new Set());
   const [selectedGrades, setSelectedGrades] = useState<Set<string>>(new Set());
 
-  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
+  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
 
   const filtered = learners.filter(
     (u) => u.name.includes(search) || u.email.includes(search)
@@ -90,7 +90,7 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
   function toggleGroup(groupId: string) {
     const group = userGroups.find((g) => g.id === groupId);
     if (!group) return;
-    const memberIds = group.memberIds.filter(
+    const memberIds = (group.memberIds ?? []).filter(
       (id) => !enrolledLearnerIds.includes(id) && learners.some((u) => u.id === id)
     );
     const allSelected = memberIds.every((id) => selected.has(id));
@@ -262,7 +262,7 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
             <div className="grid grid-cols-1 gap-3">
               {userGroups.map((group) => {
                 const memberLearners = learners.filter((u) =>
-                  group.memberIds.includes(u.id)
+                  group.memberIds?.includes(u.id)
                 );
                 const selectableMemberIds = memberLearners
                   .filter((u) => !enrolledLearnerIds.includes(u.id))

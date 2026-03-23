@@ -31,7 +31,7 @@ export default function ProfileTab({ user }: { user: User }) {
     router.push(dest);
   }
 
-  const role = ROLE_CONFIG[user.role];
+  const role = ROLE_CONFIG[user.roles[0]];
   const status = STATUS_CONFIG[user.status];
 
   const deptName = user.departmentId
@@ -62,7 +62,7 @@ export default function ProfileTab({ user }: { user: User }) {
           )}
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          {user.role === "LEARNER" && (
+          {user.roles.includes("LEARNER") && (
             <button
               onClick={handleImpersonate}
               className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
@@ -70,7 +70,7 @@ export default function ProfileTab({ user }: { user: User }) {
               이 유저로 보기
             </button>
           )}
-          {user.role !== "SUPER_ADMIN" && (
+          {!user.roles.includes("SUPER_ADMIN") && (
             <button className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors">
               역할 변경
             </button>
@@ -114,7 +114,7 @@ export default function ProfileTab({ user }: { user: User }) {
         </dl>
       </div>
 
-      {user.status === "ACTIVE" && user.role !== "SUPER_ADMIN" && (
+      {user.status === "ACTIVE" && !user.roles.includes("SUPER_ADMIN") && (
         <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-3">계정 관리</h3>
           <div className="flex gap-2">

@@ -20,7 +20,7 @@ export default function CompletionStats() {
 
   const courseStats = useMemo(() => {
     return publishedCourses.map((course) => {
-      let courseEnrollments = enrollments.filter((e) => e.course === course.title);
+      let courseEnrollments = enrollments.filter((e) => e.courseId === course.id);
       if (periodFilter !== "all") {
         courseEnrollments = courseEnrollments.filter((e) =>
           e.enrolledAt.startsWith(periodFilter)
