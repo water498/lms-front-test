@@ -2,7 +2,7 @@
 
 > **용도:** 서버 DB 모델링 전 전체 테이블 점검용. FigJam에서 도메인별 색상 카드로 배치할 것.
 > **기준:** `src/lib/models.ts` + 각 feature `mockData.ts` / `store.ts` 전수 탐색 결과
-> **총계:** 68개 테이블 / 19개 도메인
+> **총계:** 71개 테이블 / 19개 도메인
 
 ---
 
@@ -24,10 +24,10 @@
 | 12 | 평가 & 문항은행 | 호박 | `#F59E0B` | 7 |
 | 13 | 수료증 | 황금 | `#B45309` | 2 |
 | 14 | 미디어 라이브러리 | 슬레이트 | `#64748B` | 1 |
-| 15 | 결제 | 라임 | `#65A30D` | 2 |
+| 15 | 결제 | 라임 | `#65A30D` | 4 |
 | 16 | B2C 전용 | 로즈 | `#F43F5E` | 4 |
 | 17 | 코스 묶음 | 시안 | `#06B6D4` | 2 |
-| 18 | 메시징 & 크레딧 | 자주 | `#A855F7` | 6 |
+| 18 | 메시징 & 크레딧 | 자주 | `#A855F7` | 7 |
 | 19 | 조직 공지 | 하늘 | `#0EA5E9` | 1 |
 
 ---
@@ -82,22 +82,23 @@
  51  CertificateTemplate     53  MediaAsset
  52  IssuedCertificate
 
-💚 결제 (2)                  🌸 B2C 전용 (4)
- 54  Payment                 56  Cart
- 55  PaymentRefund           57  Wishlist
-                             58  Coupon
-                             59  CourseReview
+💚 결제 (4)                  🌸 B2C 전용 (4)
+ 54  Order                   58  Cart
+ 55  OrderItem               59  Wishlist
+ 56  Payment                 60  Coupon
+ 57  PaymentRefund           61  CourseReview
 
-🔷 코스 묶음 (2)             🟣 메시징 & 크레딧 (6)
- 60  LearningPath            62  MessageTemplate
- 61  LearningPathCourse      63  MessageHistory
-                             64  MessageEventRule
-                             65  MessageConfig ⚠️
-                             66  CreditTransaction [append-only]
-                             67  CreditBalance
+🔷 코스 묶음 (2)             🟣 메시징 & 크레딧 (7)
+ 62  LearningPath            64  MessageTemplate
+ 63  LearningPathCourse      65  MessageHistory
+                             66  MessageEventRule
+                             67  MessageConfig ⚠️
+                             68  CreditTransaction [append-only]
+                             69  CreditBalance
+                             70  CreditServiceRate
 
 ☁️ 조직 공지 (1)
- 68  OrgAnnouncement
+ 71  OrgAnnouncement
 ```
 
 ---
@@ -1003,17 +1004,48 @@
 
 ### 💚 결제 — 라임 `#65A30D`
 
-#### 54. Payment
+#### 54. Order
+> 주문 헤더. 쿠폰 적용 및 결제 상태 추적의 기준 단위.
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | UUID PK | |
+| tenant_id | UUID FK → Tenant | |
+| order_number | varchar UNIQUE | 사람이 읽는 주문번호 (OK-20260320-A4F2) |
+| user_id | UUID FK → User | |
+| coupon_id | UUID? FK → Coupon | 적용 쿠폰 |
+| subtotal_amount | int | 할인 전 금액 (KRW) |
+| discount_amount | int | 쿠폰 등 할인액 |
+| total_amount | int | 실 결제 금액 |
+| status | enum | PENDING / PAID / CANCELLED / REFUNDED |
+| created_at | timestamptz | |
+| paid_at | timestamptz? | |
+
+---
+
+#### 55. OrderItem
+> 주문 라인 아이템. Order ↔ Course N:M.
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | UUID PK | |
+| order_id | UUID FK → Order | |
+| course_id | UUID FK → Course | |
+| unit_price | int | 결제 시점 가격 (이후 변경 불영향) |
+| discount_amount | int | 해당 아이템 할인액 |
+| final_price | int | unit_price - discount_amount |
+
+---
+
+#### 56. Payment
 > 결제 내역. B2C 전용. B2B는 Payment 레코드 없음.
 
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
 | id | UUID PK | |
 | tenant_id | UUID FK → Tenant | |
-| order_number | varchar UNIQUE | PG사 주문번호 |
+| order_id | UUID FK → Order | |
 | user_id | UUID FK → User | |
-| course_session_id | UUID FK → CourseSession | |
-| learning_path_id | UUID? FK → LearningPath | 코스 묶음 결제 |
 | amount | int | KRW |
 | status | enum | PAID / REFUNDED / CANCELLED |
 | pg_provider | enum? | TOSS / IAMPORT / KCP / NICEPAY |
@@ -1024,7 +1056,7 @@
 
 ---
 
-#### 55. PaymentRefund
+#### 57. PaymentRefund
 > 환불 내역. Payment에서 분리하여 부분 환불 이력 관리.
 
 | 컬럼 | 타입 | 설명 |
@@ -1040,7 +1072,7 @@
 
 ### 🌸 B2C 전용 — 로즈 `#F43F5E`
 
-#### 56. Cart
+#### 58. Cart
 > 장바구니. B2C 학습자가 CourseSession을 담아두는 임시 저장.
 
 | 컬럼 | 타입 | 설명 |
@@ -1051,7 +1083,7 @@
 
 ---
 
-#### 57. Wishlist
+#### 59. Wishlist
 > 위시리스트. B2C 학습자가 관심 Course를 저장.
 
 | 컬럼 | 타입 | 설명 |
@@ -1062,7 +1094,7 @@
 
 ---
 
-#### 58. Coupon
+#### 60. Coupon
 > 할인 쿠폰. B2C 결제 시 적용.
 
 | 컬럼 | 타입 | 설명 |
@@ -1080,7 +1112,7 @@
 
 ---
 
-#### 59. CourseReview
+#### 61. CourseReview
 > 과정 수강 후기. B2C 학습자가 작성.
 
 | 컬럼 | 타입 | 설명 |
@@ -1098,7 +1130,7 @@
 
 ### 🔷 코스 묶음 — 시안 `#06B6D4`
 
-#### 60. LearningPath
+#### 62. LearningPath
 > 여러 과정을 묶은 코스 묶음 (학습 패키지).
 
 | 컬럼 | 타입 | 설명 |
@@ -1114,7 +1146,7 @@
 
 ---
 
-#### 61. LearningPathCourse [pivot]
+#### 63. LearningPathCourse [pivot]
 > LearningPath ↔ Course N:M.
 
 | 컬럼 | 타입 | 설명 |
@@ -1127,7 +1159,7 @@
 
 ### 🟣 메시징 & 크레딧 — 자주 `#A855F7`
 
-#### 62. MessageTemplate
+#### 64. MessageTemplate
 > 메시지 템플릿. SMS/EMAIL/KAKAO 채널별로 분리.
 
 | 컬럼 | 타입 | 설명 |
@@ -1147,7 +1179,7 @@
 
 ---
 
-#### 63. MessageHistory
+#### 65. MessageHistory
 > 발송 이력.
 
 | 컬럼 | 타입 | 설명 |
@@ -1164,7 +1196,7 @@
 
 ---
 
-#### 64. MessageEventRule
+#### 66. MessageEventRule
 > 자동화 규칙. 트리거 이벤트 발생 시 지정 채널로 자동 발송.
 
 | 컬럼 | 타입 | 설명 |
@@ -1178,7 +1210,7 @@
 
 ---
 
-#### 65. MessageConfig ⚠️
+#### 67. MessageConfig ⚠️
 > 발송 채널 자격증명. API 키 암호화 저장 필수. Tenant 1:1.
 
 | 컬럼 | 타입 | 설명 |
@@ -1197,7 +1229,7 @@
 
 ---
 
-#### 66. CreditTransaction [append-only]
+#### 68. CreditTransaction [append-only]
 > 크레딧 원장. 충전(TOPUP/GRANT)과 사용(USAGE) 전체 이력. 삭제/수정 없음.
 
 | 컬럼 | 타입 | 설명 |
@@ -1212,7 +1244,7 @@
 
 ---
 
-#### 67. CreditBalance
+#### 69. CreditBalance
 > 테넌트 크레딧 풀 설정 + 잔액 캐시. CreditTransaction SUM으로 재계산 가능.
 
 | 컬럼 | 타입 | 설명 |
@@ -1225,9 +1257,25 @@
 
 ---
 
+#### 70. CreditServiceRate
+> 메시지·AI 서비스별 크레딧 요율표. 요율 변경 이력을 effective_from으로 관리.
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | UUID PK | |
+| service_type | enum | MESSAGING / AI |
+| sub_type | varchar | SMS / EMAIL / KAKAO 또는 AI 모델 ID |
+| direction | enum? | INPUT / OUTPUT (AI 전용) |
+| credits_per_unit | int | 크레딧 / unit_size |
+| unit_size | int | 1 (메시지 1건) / 1000 (1K 토큰) |
+| unit_label | varchar | "메시지" / "1K 토큰" |
+| effective_from | date | 요율 이력 관리용 |
+
+---
+
 ### ☁️ 조직 공지 — 하늘 `#0EA5E9`
 
-#### 68. OrgAnnouncement
+#### 71. OrgAnnouncement
 > 관리자가 생성하는 공지사항 엔티티.
 
 | 컬럼 | 타입 | 설명 |
