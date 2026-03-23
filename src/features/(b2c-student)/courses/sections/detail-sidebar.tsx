@@ -5,10 +5,10 @@ import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play } fro
 import { type Course } from "../../home/mockData";
 import { type CourseSubject } from "@/lib/models";
 import { courseDetails, defaultCourseDetail } from "../mockData";
+import { useTenantContextStore } from "../../shared/tenant-context-store";
 
 interface Props {
   course: Course;
-  variant: "b2c" | "b2b";
   subjects: CourseSubject[];
   cart: Set<string>;
   wishlist: Set<string>;
@@ -17,7 +17,8 @@ interface Props {
   onToggleWishlist: (id: string) => void;
 }
 
-export function DetailSidebar({ course, variant, subjects, cart, isEnrolled, onAddToCart }: Props) {
+export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart }: Props) {
+  const { features } = useTenantContextStore((s) => s.tenant);
   const firstActivityId = (() => {
     const detail = courseDetails[course.id] ?? defaultCourseDetail;
     return detail.subjects[0]?.activities[0]?.id ?? "";
@@ -39,8 +40,8 @@ export function DetailSidebar({ course, variant, subjects, cart, isEnrolled, onA
         />
 
         <div className="p-5 flex flex-col gap-4">
-          {/* B2C: price + buttons */}
-          {variant === "b2c" && (
+          {/* 결제/장바구니 — [B2C only] */}
+          {features.payments ? (
             <div className="flex flex-col gap-2">
               {isEnrolled ? (
                 <>
@@ -62,17 +63,19 @@ export function DetailSidebar({ course, variant, subjects, cart, isEnrolled, onA
                   </p>
                   {(course.price ?? 0) > 0 && (
                     <>
-                      <button
-                        onClick={() => { if (!isInCart) onAddToCart(course.id); }}
-                        className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                          isInCart
-                            ? "bg-zinc-700 text-zinc-400 cursor-default"
-                            : "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
-                        }`}
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        {isInCart ? "장바구니에 담김" : "장바구니 담기"}
-                      </button>
+                      {features.cart && (
+                        <button
+                          onClick={() => { if (!isInCart) onAddToCart(course.id); }}
+                          className={`w-full py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                            isInCart
+                              ? "bg-zinc-700 text-zinc-400 cursor-default"
+                              : "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                          }`}
+                        >
+                          <ShoppingCart className="w-4 h-4" />
+                          {isInCart ? "장바구니에 담김" : "장바구니 담기"}
+                        </button>
+                      )}
                       <Link
                         href="/experiments/b2c-student/checkout"
                         onClick={() => { if (!isInCart) onAddToCart(course.id); }}
@@ -95,16 +98,17 @@ export function DetailSidebar({ course, variant, subjects, cart, isEnrolled, onA
                 </>
               )}
             </div>
-          )}
-
-          {/* B2B: enroll button */}
-          {variant === "b2b" && (
+          ) : (
+            /* B2B: 수강 신청은 관리자 경유 */
             <div className="flex flex-col gap-2">
               {course.isRequired && (
                 <span className="text-center text-xs font-semibold px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
                   필수 수강 과정
                 </span>
               )}
+              <p className="text-xs text-zinc-500 text-center">
+                수강 신청은 관리자에게 문의하세요
+              </p>
               <button className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2">
                 <BookOpen className="w-4 h-4" />
                 수강하기

@@ -3,8 +3,8 @@ import Link from "next/link";
 const experiments: { href: string; title: string; description: string }[] = [
   {
     href: "/experiments/platform-admin",
-    title: "🌐 OpenKnock 관리자(B2C + B2B)",
-    description: "Platform Admin — B2B 기업 온보딩·테넌트 관리 내부 운영툴",
+    title: "🌐 OpenKnock 슈퍼어드민",
+    description: "Control Plane — 전체 테넌트(B2C·B2B) 생성·플랜·SSO·인프라 생명주기 관리 내부툴",
   },
   {
     href: "/experiments/admin",
@@ -12,14 +12,9 @@ const experiments: { href: string; title: string; description: string }[] = [
     description: "ORG_ADMIN 멀티페이지 관리자 대시보드 (과정·유저·수강·설정)",
   },
   {
-    href: "/experiments/b2c-student",
-    title: "🌐 B2C 수강생",
-    description: "Netflix 스타일 LMS 수강생 대시보드 (B2C)",
-  },
-  {
-    href: "/experiments/b2b-student",
-    title: "🌐 B2B 수강생",
-    description: "기업 LMS 수강생 대시보드 (B2B · SSO 테넌트)",
+    href: "/experiments/student",
+    title: "🌐 통합 수강생 (B2C/B2B 토글)",
+    description: "TenantContext feature flag 기반 — dev switcher로 B2C/B2B 전환",
   },
   {
     href: "/experiments/scorm-lab",

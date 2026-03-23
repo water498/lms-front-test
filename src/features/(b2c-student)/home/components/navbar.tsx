@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTenantContextStore } from "../../shared/tenant-context-store";
 import Link from "next/link";
 import {
   Bell,
@@ -51,6 +52,8 @@ export interface CardActions {
 
 export function Navbar({ cartCount }: { cartCount: number }) {
   const router = useRouter();
+  const { tenant, switchTenant } = useTenantContextStore();
+  const { features } = tenant;
   const [searchOpen, setSearchOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -227,18 +230,20 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             )}
           </div>
 
-          {/* Cart */}
-          <Link
-            href="/experiments/b2c-student/cart"
-            className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {/* Cart — [B2C only] */}
+          {features.cart && (
+            <Link
+              href="/experiments/b2c-student/cart"
+              className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* My page */}
           <Link
@@ -250,6 +255,30 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             </div>
             <span className="text-sm text-zinc-300 hidden md:block">홍길동</span>
           </Link>
+
+          {/* DEV: Tenant Switcher */}
+          <div className="hidden md:flex items-center gap-1 ml-2 px-2 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50">
+            <button
+              onClick={() => switchTenant("B2C")}
+              className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                tenant.tenantType === "B2C"
+                  ? "bg-violet-600 text-white"
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              B2C
+            </button>
+            <button
+              onClick={() => switchTenant("B2B")}
+              className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                tenant.tenantType === "B2B"
+                  ? "bg-violet-600 text-white"
+                  : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              B2B
+            </button>
+          </div>
         </div>
       </div>
     </nav>

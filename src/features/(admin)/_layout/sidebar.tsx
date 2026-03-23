@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useTenantContextStore } from "../shared/tenant-context-store";
 import {
   LayoutDashboard,
   BookOpen,
@@ -31,6 +32,7 @@ type NavLink = {
   href: string;
   label: string;
   icon: React.ElementType;
+  featureFlag?: "payments" | "orgStructure";
 };
 type NavAccordion = {
   kind: "accordion";
@@ -160,8 +162,9 @@ const NAV_GROUPS: NavGroup[] = [
       {
         kind: "link",
         href: `${BASE}/payments`,
-        label: "결제 내역(B2C)",
+        label: "결제 내역", // [B2C only]
         icon: CreditCard,
+        featureFlag: "payments" as const,
       },
       {
         kind: "accordion",
@@ -254,6 +257,8 @@ export default function Sidebar({
   isImpersonating?: boolean;
 }) {
   const pathname = usePathname();
+  const { tenant, switchTenant } = useTenantContextStore();
+  const { features } = tenant;
 
   const isActive = (href: string) => {
     if (href === `${BASE}`) return pathname === href;
@@ -282,8 +287,11 @@ export default function Sidebar({
               </p>
             )}
             <div className="flex flex-col gap-0.5">
-              {group.items.map((item) =>
-                item.kind === "accordion" ? (
+              {group.items.map((item) => {
+                if (item.kind === "link" && item.featureFlag && !features[item.featureFlag]) {
+                  return null;
+                }
+                return item.kind === "accordion" ? (
                   <AccordionItem key={item.label} {...item} />
                 ) : (
                   <Link
@@ -298,12 +306,42 @@ export default function Sidebar({
                     <item.icon size={16} />
                     {item.label}
                   </Link>
-                ),
-              )}
+                );
+              })}
             </div>
           </div>
         ))}
       </nav>
+
+      {/* DEV: Tenant Switcher */}
+      <div className="border-t border-slate-200 px-3 py-2 flex flex-col gap-1 flex-shrink-0">
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">
+          DEV · 테넌트 전환
+        </p>
+        <div className="flex gap-1">
+          <button
+            onClick={() => switchTenant("B2C")}
+            className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
+              tenant.tenantType === "B2C"
+                ? "bg-violet-100 text-violet-700"
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+            }`}
+          >
+            B2C
+          </button>
+          <button
+            onClick={() => switchTenant("B2B")}
+            className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
+              tenant.tenantType === "B2B"
+                ? "bg-violet-100 text-violet-700"
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+            }`}
+          >
+            B2B
+          </button>
+        </div>
+        <p className="text-[10px] text-slate-400 px-1">{tenant.tenantName}</p>
+      </div>
 
       {/* Bottom user info */}
       <div className="border-t border-slate-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">

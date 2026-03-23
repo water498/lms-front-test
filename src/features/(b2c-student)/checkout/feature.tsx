@@ -1,3 +1,4 @@
+// [B2C only] — B2B tenantType에서는 접근 불가
 "use client";
 
 import { useState } from "react";

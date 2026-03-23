@@ -12,6 +12,7 @@ import {
   CreditCard,
   Heart,
   Settings,
+  GraduationCap,
 } from "lucide-react";
 import { LearningTab, completedCourseMock } from "./sections/learning-tab";
 import { CertificatesTab } from "./sections/certificates-tab";
@@ -20,8 +21,10 @@ import { WishlistTab } from "./sections/wishlist-tab";
 import { ProfileTab } from "./sections/profile-tab";
 import { inProgressCourses } from "../home/mockData";
 import store from "../home/store";
+import { useTenantContextStore } from "../shared/tenant-context-store";
 
-function Navbar({ cartCount }: { cartCount: number }) {
+function MyNavbar({ cartCount }: { cartCount: number }) {
+  const { features } = useTenantContextStore((s) => s.tenant);
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
@@ -36,17 +39,20 @@ function Navbar({ cartCount }: { cartCount: number }) {
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-400 rounded-full" />
           </button>
-          <Link
-            href="/experiments/b2c-student/cart"
-            className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {/* Cart — [B2C only] */}
+          {features.cart && (
+            <Link
+              href="/experiments/b2c-student/cart"
+              className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
           <div className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-zinc-800">
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
               <User className="w-4 h-4 text-white" />
@@ -59,19 +65,43 @@ function Navbar({ cartCount }: { cartCount: number }) {
   );
 }
 
-type TabId = "learning" | "certificates" | "orders" | "wishlist" | "profile";
+// [INSTRUCTOR only] placeholder tab
+function InstructorTab() {
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
+      <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+        <GraduationCap className="w-5 h-5 text-violet-400" />
+        내 강의 목록
+      </h2>
+      <p className="text-sm text-zinc-500">강의 관리 기능은 준비 중입니다.</p>
+    </div>
+  );
+}
 
-const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
-  { id: "learning",     label: "내 학습",   icon: <BookOpen className="w-4 h-4" /> },
-  { id: "certificates", label: "수료증",    icon: <Award className="w-4 h-4" /> },
-  { id: "orders",       label: "주문 내역", icon: <CreditCard className="w-4 h-4" /> },
+type TabId = "learning" | "certificates" | "orders" | "wishlist" | "profile" | "instructor";
+
+const ALL_TABS: { id: TabId; label: string; icon: React.ReactNode; featureFlag?: "payments"; roleFlag?: "INSTRUCTOR" }[] = [
+  { id: "learning",     label: "내 학습",    icon: <BookOpen className="w-4 h-4" /> },
+  { id: "certificates", label: "수료증",     icon: <Award className="w-4 h-4" /> },
+  { id: "orders",       label: "주문 내역",  icon: <CreditCard className="w-4 h-4" />, featureFlag: "payments" }, // [B2C only]
   { id: "wishlist",     label: "위시리스트", icon: <Heart className="w-4 h-4" /> },
-  { id: "profile",      label: "내 정보",   icon: <Settings className="w-4 h-4" /> },
+  { id: "profile",      label: "내 정보",    icon: <Settings className="w-4 h-4" /> },
+  { id: "instructor",   label: "강의 관리",  icon: <GraduationCap className="w-4 h-4" />, roleFlag: "INSTRUCTOR" }, // [INSTRUCTOR only]
 ];
+
+// Mock: 현재 사용자의 roles
+const CURRENT_USER_ROLES: string[] = ["STUDENT", "INSTRUCTOR"];
 
 export default function MyFeature() {
   const [activeTab, setActiveTab] = useState<TabId>("learning");
   const [cart, setCartState] = useState<Set<string>>(store.cart);
+  const { features } = useTenantContextStore((s) => s.tenant);
+
+  const TABS = ALL_TABS.filter((tab) => {
+    if (tab.featureFlag && !features[tab.featureFlag]) return false;
+    if (tab.roleFlag && !CURRENT_USER_ROLES.includes(tab.roleFlag)) return false;
+    return true;
+  });
 
   const addToCart = (id: string) => {
     store.cart = new Set([...store.cart, id]);
@@ -82,7 +112,7 @@ export default function MyFeature() {
 
   return (
     <div className="bg-zinc-950 text-white min-h-screen">
-      <Navbar cartCount={cart.size} />
+      <MyNavbar cartCount={cart.size} />
 
       <div className="max-w-screen-xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8 items-start">
         {/* Left sidebar */}
@@ -149,6 +179,7 @@ export default function MyFeature() {
           {activeTab === "orders"       && <OrdersTab />}
           {activeTab === "wishlist"     && <WishlistTab cart={cart} onAddToCart={addToCart} />}
           {activeTab === "profile"      && <ProfileTab />}
+          {activeTab === "instructor"   && <InstructorTab />}
         </div>
       </div>
     </div>

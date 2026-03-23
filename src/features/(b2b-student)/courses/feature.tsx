@@ -111,7 +111,6 @@ export default function B2bCourseDetailFeature({ courseId }: Props) {
         {/* Right: sidebar */}
         <DetailSidebar
           course={course}
-          variant="b2b"
           subjects={detail.subjects}
           cart={new Set()}
           wishlist={new Set()}

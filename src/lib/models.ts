@@ -1116,6 +1116,23 @@ export interface PortalBanner {
   isActive: boolean;
 }
 
+// ── 테넌트 컨텍스트 (feature flag 기반 UI 분기) ────────────
+
+export type TenantType = "B2C" | "B2B";
+
+export interface TenantContext {
+  tenantId: string;
+  tenantType: TenantType;         // 메타 정보용 (직접 분기에 쓰지 않음)
+  tenantName: string;
+  features: {
+    payments: boolean;            // [B2C only] 결제
+    cart: boolean;                // [B2C only] 장바구니
+    orgStructure: boolean;        // [B2B only] 조직 구조
+    sso: boolean;                 // [B2B only] SSO 설정
+    mandatoryCourses: boolean;    // [B2B only] 필수 수강
+  };
+}
+
 // ── 법적 문서 ─────────────────────────────────────────────
 
 export type LegalDocumentType = "TERMS" | "PRIVACY" | "MARKETING" | "REFUND";

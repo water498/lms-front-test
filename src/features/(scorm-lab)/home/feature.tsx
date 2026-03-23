@@ -180,7 +180,7 @@ export default function ScormLabFeature() {
 
       // Re-parse manifest to get correct version/entryPath.
       // IndexedDB may have stale version from before the manifest-parser fix.
-      const manifestXml = await manifestEntry.async("text");
+      const manifestXml = await manifestEntry!.async("text");
       const freshInfo = parseManifest(manifestXml);
       const effectiveVersion = freshInfo.version;
       const effectiveEntryPath = freshInfo.entryPath;
