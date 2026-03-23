@@ -57,7 +57,7 @@ const LOG_COLORS: Record<LogType, string> = {
 export default function ProgressPanel({
   version, data, checklist, logs, lastSaved, onReset,
 }: Props) {
-  const [logOpen, setLogOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(true);
 
   const status = getLessonStatus(version, data);
   const statusLabel = STATUS_LABELS[status] ?? status;
@@ -156,16 +156,49 @@ export default function ProgressPanel({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-zinc-500">suspend_data</span>
-            <span className={`font-medium ${suspendData ? "text-emerald-600" : "text-zinc-400"}`}>
-              {suspendData ? `저장됨 (${suspendData.length}자)` : "없음"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
             <span className="text-zinc-500">SCORM 버전</span>
             <span className="text-zinc-700">SCORM {version}</span>
           </div>
         </div>
+
+        {/* suspend_data capacity */}
+        {(() => {
+          const limit = version === "1.2" ? 4096 : 64000;
+          const used = suspendData.length;
+          const pct = Math.min(100, Math.round((used / limit) * 100));
+          const isDanger = pct >= 100;
+          const isWarn = pct >= 80 && !isDanger;
+          return (
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-zinc-500">suspend_data</span>
+                <span className={`text-xs font-medium ${isDanger ? "text-red-600" : isWarn ? "text-amber-600" : suspendData ? "text-emerald-600" : "text-zinc-400"}`}>
+                  {suspendData ? `${used.toLocaleString()} / ${limit.toLocaleString()}자 (${pct}%)` : "없음"}
+                </span>
+              </div>
+              {suspendData ? (
+                <>
+                  <div className="h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${isDanger ? "bg-red-500" : isWarn ? "bg-amber-400" : "bg-emerald-400"}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  {isDanger && (
+                    <p className="mt-1.5 text-xs text-red-600">
+                      한도 초과! LMS가 저장을 거부할 수 있습니다.
+                    </p>
+                  )}
+                  {isWarn && (
+                    <p className="mt-1.5 text-xs text-amber-600">
+                      한도({limit.toLocaleString()}자)의 80% 초과. 주의가 필요합니다.
+                    </p>
+                  )}
+                </>
+              ) : null}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Actions */}

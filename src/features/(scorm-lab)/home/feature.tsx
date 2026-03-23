@@ -80,6 +80,7 @@ export default function ScormLabFeature() {
 
   const logIdRef = useRef(0);
   const uninstallRuntimeRef = useRef<(() => void) | null>(null);
+  const activatingRef = useRef(false); // prevents re-entrant activatePackage calls
 
   // ── SW registration ───────────────────────────────────────────────────
 
@@ -153,7 +154,9 @@ export default function ScormLabFeature() {
     pkg: PackageSummary,
     mode: "resume" | "new"
   ) => {
-    if (!swReady) { setError("Service Worker가 아직 준비되지 않았습니다."); return; }
+    if (activatingRef.current) return; // prevent double-activation
+    activatingRef.current = true;
+    if (!swReady) { activatingRef.current = false; setError("Service Worker가 아직 준비되지 않았습니다."); return; }
     setLoadingPackage(true);
     setError(null);
 
@@ -175,6 +178,20 @@ export default function ScormLabFeature() {
         ? manifestEntry.name.slice(0, manifestEntry.name.lastIndexOf("imsmanifest.xml"))
         : "";
 
+      // Re-parse manifest to get correct version/entryPath.
+      // IndexedDB may have stale version from before the manifest-parser fix.
+      const manifestXml = await manifestEntry.async("text");
+      const freshInfo = parseManifest(manifestXml);
+      const effectiveVersion = freshInfo.version;
+      const effectiveEntryPath = freshInfo.entryPath;
+
+      // Update selectedPkg state if version/entryPath changed vs cached value
+      if (effectiveVersion !== pkg.version || effectiveEntryPath !== pkg.entryPath) {
+        setSelectedPkg((prev) =>
+          prev ? { ...prev, version: effectiveVersion, entryPath: effectiveEntryPath } : prev
+        );
+      }
+
       const fileMap = new Map<string, Uint8Array>();
       for (const [path, file] of Object.entries(zip.files)) {
         if (!file.dir) {
@@ -183,28 +200,42 @@ export default function ScormLabFeature() {
         }
       }
 
-      // Generate unique session ID for SW path isolation
-      const newPkgId = `${pkg.manifestId}-${Date.now()}`;
+      // Use stable ID so iSpring's URL-based internal storage can restore progress
+      const newPkgId = pkg.manifestId;
       await loadPackageToSW(newPkgId, fileMap);
       setPackageId(newPkgId);
 
-      // Determine initial SCORM data
+      // Determine initial SCORM data.
+      // Read directly from localStorage (not React state) to avoid stale closure issues.
+      const freshSession = mode === "resume"
+        ? loadSession(pkg.manifestId, learnerId)
+        : null;
+
       let initialData: Record<string, string>;
-      if (mode === "resume" && savedSession) {
-        initialData = { ...savedSession.data };
-        // Set entry to "resume" so content knows to resume
-        if (pkg.version === "1.2") {
+      if (freshSession) {
+        initialData = { ...freshSession.data };
+        // Set entry to "resume" so content knows to restore position
+        if (effectiveVersion === "1.2") {
           initialData["cmi.core.entry"] = "resume";
+          initialData["cmi.core.session_time"] = "00:00:00";
         } else {
           initialData["cmi.entry"] = "resume";
+          // session_time tracks current session only — must reset each session
+          initialData["cmi.session_time"] = "PT0S";
         }
       } else {
         if (mode === "new") clearSession(pkg.manifestId, learnerId);
         initialData =
-          pkg.version === "1.2"
+          effectiveVersion === "1.2"
             ? getDefaultData12(learnerId, learnerName)
             : getDefaultData2004(learnerId, learnerName);
       }
+
+      console.log(
+        `[SCORM-LAB] activate | ver:${effectiveVersion} | mode:${mode}` +
+        ` | session:${!!freshSession} | entry:${initialData[effectiveVersion === "1.2" ? "cmi.core.entry" : "cmi.entry"]}` +
+        ` | suspend:${(initialData["cmi.suspend_data"] ?? "").length}자`
+      );
 
       // Reset runtime state
       setScormData(initialData);
@@ -222,14 +253,14 @@ export default function ScormLabFeature() {
         onLog: (entry: LogEntry) => setLogs((prev) => [entry, ...prev].slice(0, 300)),
         onChecklist: (state: ChecklistState) => setChecklist({ ...state }),
         onSave: (data: Record<string, string>) => {
-          saveSession(pkg.manifestId, learnerId, learnerName, pkg.version, data);
+          saveSession(pkg.manifestId, learnerId, learnerName, effectiveVersion, data);
           setLastSaved(formatSavedTime(new Date().toISOString()));
           setSavedSession(loadSession(pkg.manifestId, learnerId));
         },
       };
 
       const uninstall =
-        pkg.version === "1.2"
+        effectiveVersion === "1.2"
           ? installScorm12(initialData, callbacks)
           : installScorm2004(initialData, callbacks);
       uninstallRuntimeRef.current = uninstall;
@@ -239,6 +270,7 @@ export default function ScormLabFeature() {
       setError((e as Error).message ?? "패키지 로드 중 오류가 발생했습니다.");
     } finally {
       setLoadingPackage(false);
+      activatingRef.current = false;
     }
   };
 

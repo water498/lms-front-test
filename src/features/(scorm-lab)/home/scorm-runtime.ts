@@ -65,6 +65,9 @@ export function getDefaultData2004(
   return {
     "cmi.learner_id": learnerId,
     "cmi.learner_name": learnerName,
+    "cmi.mode": "normal",
+    "cmi.credit": "credit",
+    "cmi.entry": "ab-initio",
     "cmi.completion_status": "not attempted",
     "cmi.success_status": "unknown",
     "cmi.score.scaled": "",
@@ -75,7 +78,7 @@ export function getDefaultData2004(
     "cmi.total_time": "PT0S",
     "cmi.location": "",
     "cmi.suspend_data": "",
-    "cmi.entry": "ab-initio",
+    "cmi.exit": "",
   };
 }
 
@@ -234,7 +237,12 @@ export function installScorm12(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).API = api;
-  addLog("window.API", "installed", "SCORM 1.2 ready", "info");
+  addLog(
+    "window.API",
+    "installed",
+    `SCORM 1.2 ready | entry=${_data["cmi.core.entry"] || "(none)"} | suspend_data=${(_data["cmi.suspend_data"] ?? "").length}자`,
+    "info"
+  );
 
   return () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -272,7 +280,14 @@ export function installScorm2004(
   const api = {
     Initialize(param: string): "true" | "false" {
       if (_terminated) { _errorCode = "104"; addLog("Initialize", param, "false (terminated)", "error"); return "false"; }
-      if (_initialized) { _errorCode = "103"; addLog("Initialize", param, "false (already init)", "error"); return "false"; }
+      if (_initialized) {
+        // Idempotent: return "true" for duplicate Initialize calls.
+        // iSpring SCORM 2004 creates an about:blank inner frame that may call Initialize first;
+        // the main content then calls it again — returning "false" would break tracking.
+        _errorCode = "0";
+        addLog("Initialize", param, "true (already init, idempotent)", "info");
+        return "true";
+      }
       _initialized = true; _errorCode = "0";
       checklist.sessionStarted = true;
       notifyChecklist();
@@ -291,7 +306,21 @@ export function installScorm2004(
       return "true";
     },
     GetValue(element: string): string {
-      if (!_initialized) { _errorCode = "122"; addLog("GetValue", element, "ERROR:122", "error"); return ""; }
+      if (!_initialized) {
+        // LMS-managed fields may be read before Initialize (iSpring SCORM 2004 does this)
+        const preInitAllowed = [
+          "cmi.entry", "cmi.suspend_data", "cmi.location",
+          "cmi.learner_id", "cmi.learner_name", "cmi.completion_status",
+        ];
+        if (!preInitAllowed.includes(element)) {
+          _errorCode = "122";
+          addLog("GetValue", element, "ERROR:122", "error");
+          return "";
+        }
+        const value = _data[element] ?? "";
+        addLog("GetValue", element, `${JSON.stringify(value)} ⚠pre-init`, "error");
+        return value;
+      }
       const value = _data[element] ?? "";
       _errorCode = "0";
       addLog("GetValue", element, JSON.stringify(value), "get");
@@ -332,7 +361,12 @@ export function installScorm2004(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).API_1484_11 = api;
-  addLog("window.API_1484_11", "installed", "SCORM 2004 ready", "info");
+  addLog(
+    "window.API_1484_11",
+    "installed",
+    `SCORM 2004 ready | entry=${_data["cmi.entry"] || "(none)"} | suspend_data=${(_data["cmi.suspend_data"] ?? "").length}자`,
+    "info"
+  );
 
   return () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

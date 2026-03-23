@@ -32,11 +32,15 @@ export function parseManifest(xmlText: string): ManifestInfo {
   const title = titleEl?.textContent?.trim() ?? "SCORM 패키지";
 
   // ── SCORM Version ─────────────────────────────────────────────────────
-  // SCORM 1.2: <metadata><schemaversion>1.2</schemaversion>
-  // SCORM 2004: <metadata><schemaversion>2004 ...</schemaversion>
-  const schemaVer =
-    doc.querySelector("metadata > schemaversion")?.textContent?.trim() ?? "";
-  const version: ScormVersion = schemaVer.startsWith("2004") ? "2004" : "1.2";
+  // SCORM 1.2: <schemaversion>1.2</schemaversion>
+  // SCORM 2004: <schemaversion>SCORM 2004 4th Edition</schemaversion> (iSpring)
+  // XML 네임스페이스로 인해 querySelector("metadata > schemaversion")가 실패할 수 있음
+  const schemaVer = (
+    doc.querySelector("metadata > schemaversion") ??
+    doc.querySelector("schemaversion") ??
+    [...doc.getElementsByTagName("schemaversion")][0]
+  )?.textContent?.trim() ?? "";
+  const version: ScormVersion = schemaVer.includes("2004") ? "2004" : "1.2";
 
   // ── Entry Point ───────────────────────────────────────────────────────
   // adlcp:masteryScorede etc, but primarily href on the first SCO resource
