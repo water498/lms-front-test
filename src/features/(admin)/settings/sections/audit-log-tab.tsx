@@ -27,16 +27,16 @@ const ACTION_COLOR: Record<TenantAuditAction, string> = {
 };
 
 const auditLogs: TenantAuditLog[] = [
-  { id: "al1",  timestamp: "2025-03-17 14:32:11", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CANCEL",    target: "정하은 / React 기초",             detail: "ACTIVE → CANCELLED" },
-  { id: "al2",  timestamp: "2025-03-17 11:05:44", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CREATE",    target: "홍민재 / React 기초",             detail: "수동 수강 등록" },
-  { id: "al3",  timestamp: "2025-03-16 17:22:03", actor: "홍길동 (관리자)",   action: "CERT_ISSUE",           target: "박지호 / Next.js 마스터",         detail: "수료증 수동 발급" },
-  { id: "al4",  timestamp: "2025-03-16 15:48:30", actor: "홍길동 (관리자)",   action: "COURSE_UPDATE",        target: "React 기초",                      detail: "수료 기준 80% → 70%" },
-  { id: "al5",  timestamp: "2025-03-15 10:13:55", actor: "홍길동 (관리자)",   action: "USER_ROLE_CHANGE",     target: "이준혁",                          detail: "LEARNER → INSTRUCTOR" },
-  { id: "al6",  timestamp: "2025-03-14 09:50:22", actor: "홍길동 (관리자)",   action: "ORG_STRUCTURE_UPDATE", target: "개발본부 / 백엔드팀",             detail: "부서 추가" },
-  { id: "al7",  timestamp: "2025-03-13 16:05:10", actor: "홍길동 (관리자)",   action: "COURSE_CREATE",        target: "Docker & Kubernetes",             detail: "신규 과정 생성 (DRAFT)" },
-  { id: "al8",  timestamp: "2025-03-12 14:30:00", actor: "홍길동 (관리자)",   action: "SETTINGS_UPDATE",      target: "브랜딩 설정",                     detail: "로고 이미지 업데이트" },
-  { id: "al9",  timestamp: "2025-03-11 11:22:18", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CREATE",    target: "신입 온보딩 그룹 (3명) / React 기초", detail: "그룹 일괄 배정" },
-  { id: "al10", timestamp: "2025-03-10 09:11:05", actor: "홍길동 (관리자)",   action: "ORG_STRUCTURE_UPDATE", target: "직급",                            detail: "부장 직급 추가" },
+  { id: "al1",  timestamp: "2025-03-17 14:32:11", actorId: "u2", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CANCEL",    target: "정하은 / React 기초",             detail: "ACTIVE → CANCELLED" },
+  { id: "al2",  timestamp: "2025-03-17 11:05:44", actorId: "u2", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CREATE",    target: "홍민재 / React 기초",             detail: "수동 수강 등록" },
+  { id: "al3",  timestamp: "2025-03-16 17:22:03", actorId: "u2", actor: "홍길동 (관리자)",   action: "CERT_ISSUE",           target: "박지호 / Next.js 마스터",         detail: "수료증 수동 발급" },
+  { id: "al4",  timestamp: "2025-03-16 15:48:30", actorId: "u2", actor: "홍길동 (관리자)",   action: "COURSE_UPDATE",        target: "React 기초",                      detail: "수료 기준 80% → 70%" },
+  { id: "al5",  timestamp: "2025-03-15 10:13:55", actorId: "u2", actor: "홍길동 (관리자)",   action: "USER_ROLE_CHANGE",     target: "이준혁",                          detail: "LEARNER → INSTRUCTOR" },
+  { id: "al6",  timestamp: "2025-03-14 09:50:22", actorId: "u2", actor: "홍길동 (관리자)",   action: "ORG_STRUCTURE_UPDATE", target: "개발본부 / 백엔드팀",             detail: "부서 추가" },
+  { id: "al7",  timestamp: "2025-03-13 16:05:10", actorId: "u2", actor: "홍길동 (관리자)",   action: "COURSE_CREATE",        target: "Docker & Kubernetes",             detail: "신규 과정 생성 (DRAFT)" },
+  { id: "al8",  timestamp: "2025-03-12 14:30:00", actorId: "u2", actor: "홍길동 (관리자)",   action: "SETTINGS_UPDATE",      target: "브랜딩 설정",                     detail: "로고 이미지 업데이트" },
+  { id: "al9",  timestamp: "2025-03-11 11:22:18", actorId: "u2", actor: "홍길동 (관리자)",   action: "ENROLLMENT_CREATE",    target: "신입 온보딩 그룹 (3명) / React 기초", detail: "그룹 일괄 배정" },
+  { id: "al10", timestamp: "2025-03-10 09:11:05", actorId: "u2", actor: "홍길동 (관리자)",   action: "ORG_STRUCTURE_UPDATE", target: "직급",                            detail: "부장 직급 추가" },
 ];
 
 const ALL_ACTIONS = Object.keys(ACTION_LABEL) as TenantAuditAction[];

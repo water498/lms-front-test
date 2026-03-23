@@ -51,7 +51,7 @@ export type PlatformAuditAction =
 export interface PlatformAuditLog {
   id: string;
   timestamp: string;
-  actorId?: string;
+  actorId: string;
   actor: string;
   action: PlatformAuditAction;
   targetType: "TENANT" | "PLATFORM";
@@ -236,7 +236,7 @@ export type TenantAuditAction =
 export interface TenantAuditLog {
   id: string;
   timestamp: string;
-  actorId?: string;
+  actorId: string;
   actor: string;
   action: TenantAuditAction;
   target: string;
@@ -422,7 +422,7 @@ export interface CourseInstructor {
 export interface InstructorProfile {
   id: string;
   userId: string; // FK → User (INSTRUCTOR role)
-  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
+  type: "INTERNAL" | "EXTERNAL" | "CREATOR";
   headline: string; // e.g. "React 전문 강사 / 전 카카오 개발자"
   bio: string;
   profileImageUrl?: string;

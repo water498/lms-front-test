@@ -22,6 +22,11 @@ const experiments: { href: string; title: string; description: string }[] = [
     description: "기업 LMS 수강생 대시보드 (B2B · SSO 테넌트)",
   },
   {
+    href: "/experiments/scorm-lab",
+    title: "iSpring SCORM 테스트👩🏻‍🎓",
+    description: "ZIP 업로드 · 진행률 저장/재개 · 완료 조건 진단 (비개발자용)",
+  },
+  {
     href: "/experiments/scorm12",
     title: "SCORM 1.2",
     description: "Mock SCORM 1.2 API + iframe 연동 테스트",
