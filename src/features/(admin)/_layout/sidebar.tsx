@@ -23,6 +23,7 @@ import {
   Globe,
   Coins,
   Bell,
+  Wallet,
 } from "lucide-react";
 
 const BASE = "/experiments/admin";
@@ -171,6 +172,13 @@ const NAV_GROUPS: NavGroup[] = [
         href: `${BASE}/payments`,
         label: "결제 내역", // [B2C only]
         icon: CreditCard,
+        featureFlag: "payments" as const,
+      },
+      {
+        kind: "link",
+        href: `${BASE}/payouts`,
+        label: "강사 정산", // [B2C only]
+        icon: Wallet,
         featureFlag: "payments" as const,
       },
       {

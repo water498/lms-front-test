@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTenantContextStore } from "../shared/tenant-context-store";
 import GeneralTab from "./sections/general-tab";
 import OrgStructureTab from "./sections/org-structure-tab";
 import AuditLogTab from "./sections/audit-log-tab";
@@ -14,18 +15,27 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 export default function SettingsFeature() {
+  const { tenant } = useTenantContextStore();
+  const { features } = tenant;
+
+  const visibleTabs = TABS.filter(
+    (tab) => tab.id !== "org" || features.orgStructure
+  );
+
   const [activeTab, setActiveTab] = useState<TabId>("general");
+  const resolvedTab =
+    activeTab === "org" && !features.orgStructure ? "general" : activeTab;
 
   return (
     <div className="flex flex-col gap-5">
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-slate-200 pb-0">
-        {TABS.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              activeTab === tab.id
+              resolvedTab === tab.id
                 ? "border-violet-600 text-violet-600"
                 : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
@@ -37,9 +47,9 @@ export default function SettingsFeature() {
 
       {/* Tab content */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        {activeTab === "general" && <GeneralTab />}
-        {activeTab === "org"     && <OrgStructureTab />}
-        {activeTab === "audit"   && <AuditLogTab />}
+        {resolvedTab === "general" && <GeneralTab />}
+        {resolvedTab === "org"     && <OrgStructureTab />}
+        {resolvedTab === "audit"   && <AuditLogTab />}
       </div>
     </div>
   );

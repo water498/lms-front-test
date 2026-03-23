@@ -1,0 +1,72 @@
+import type { InstructorPayout } from "@/lib/models";
+
+export const payouts: InstructorPayout[] = [
+  {
+    id: "p1",
+    instructorUserId: "u-inst-1",
+    periodStart: "2025-03-01",
+    periodEnd: "2025-03-31",
+    grossRevenue: 2400000,
+    platformFee: 480000,
+    netAmount: 1920000,
+    status: "PENDING",
+  },
+  {
+    id: "p2",
+    instructorUserId: "u-inst-2",
+    periodStart: "2025-03-01",
+    periodEnd: "2025-03-31",
+    grossRevenue: 1800000,
+    platformFee: 360000,
+    netAmount: 1440000,
+    status: "CONFIRMED",
+  },
+  {
+    id: "p3",
+    instructorUserId: "u-inst-1",
+    periodStart: "2025-02-01",
+    periodEnd: "2025-02-28",
+    grossRevenue: 2100000,
+    platformFee: 420000,
+    netAmount: 1680000,
+    status: "PAID",
+    paidAt: "2025-03-05",
+  },
+  {
+    id: "p4",
+    instructorUserId: "u-inst-3",
+    periodStart: "2025-03-01",
+    periodEnd: "2025-03-31",
+    grossRevenue: 950000,
+    platformFee: 190000,
+    netAmount: 760000,
+    status: "PENDING",
+  },
+  {
+    id: "p5",
+    instructorUserId: "u-inst-2",
+    periodStart: "2025-02-01",
+    periodEnd: "2025-02-28",
+    grossRevenue: 1600000,
+    platformFee: 320000,
+    netAmount: 1280000,
+    status: "PAID",
+    paidAt: "2025-03-05",
+  },
+  {
+    id: "p6",
+    instructorUserId: "u-inst-3",
+    periodStart: "2025-02-01",
+    periodEnd: "2025-02-28",
+    grossRevenue: 720000,
+    platformFee: 144000,
+    netAmount: 576000,
+    status: "CONFIRMED",
+  },
+];
+
+export const INSTRUCTOR_NAMES: Record<string, string> = {
+  "u-inst-1": "김민준",
+  "u-inst-2": "이서연",
+  "u-inst-3": "박지호",
+};
