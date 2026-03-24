@@ -103,7 +103,8 @@ pnpm lint     # ESLint
 
 모든 도메인 타입/인터페이스는 `src/lib/models.ts`에 정의한다.
 
-- 새 도메인 엔티티 추가 시 → `models.ts`에 먼저 정의 후 `mockData.ts`에서 import
+- 타입의 기준은 백엔드 SQLAlchemy 모델 (`backend/app/modules/`)
+- 새 도메인 엔티티 추가 시 → 백엔드 모델 변경 후 `models.ts` 반영
 - UI 전용 타입 (컴포넌트 props, 로컬 상태 shape 등) → 해당 파일에 로컬 정의 허용
 - `mockData.ts` / `store.ts`는 타입을 재정의하지 않고 `models.ts`에서 import
 
@@ -111,10 +112,10 @@ pnpm lint     # ESLint
 
 | 단계 | `models.ts` 역할 | Course 등 타입 방식 |
 |------|-----------------|-------------------|
-| 현재 (실험) | 공통 타입 SoT | flat optional 통합 |
+| 현재 (실험) | 백엔드 모델 반영 | flat optional 통합 |
 | API 연동 시 | DB 스키마 1:1 반영 | 필드 필수화 + feature별 `Pick`/DTO |
 
-실제 API 연동 시점에 `models.ts`를 `data-model.dbml` 기준으로 재정비한다.
+실제 API 연동 시점에 `models.ts`를 백엔드 SQLAlchemy 모델 기준으로 재정비한다.
 
 ---
 

@@ -7,10 +7,10 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 const TENANT_ID = "t-001";
 
 const PLATFORM_TYPE_CONFIG: Record<string, { label: string; className: string }> = {
-  URGENT:      { label: "긴급",   className: "bg-red-100 text-red-700" },
-  MAINTENANCE: { label: "점검",   className: "bg-amber-100 text-amber-700" },
+  URGENT:      { label: "긴급",     className: "bg-red-100 text-red-700" },
+  MAINTENANCE: { label: "점검",     className: "bg-amber-100 text-amber-700" },
   UPDATE:      { label: "업데이트", className: "bg-blue-100 text-blue-700" },
-  GENERAL:     { label: "일반",   className: "bg-slate-100 text-slate-600" },
+  GENERAL:     { label: "일반",     className: "bg-slate-100 text-slate-600" },
 };
 
 export default function AnnouncementTable() {
@@ -19,7 +19,7 @@ export default function AnnouncementTable() {
   const items = PLATFORM_ANNOUNCEMENTS.filter(
     (a) =>
       a.status === "PUBLISHED" &&
-      (a.targetTenants === "ALL" || (Array.isArray(a.targetTenants) && a.targetTenants.includes(TENANT_ID)))
+      (a.targetType === "ALL_TENANTS" || (a.targetIds && a.targetIds.includes(TENANT_ID)))
   );
 
   return (
@@ -38,7 +38,8 @@ export default function AnnouncementTable() {
         </thead>
         <tbody>
           {items.map((a) => {
-            const badge = PLATFORM_TYPE_CONFIG[a.type] ?? { label: a.type, className: "bg-slate-100 text-slate-600" };
+            const subtype = a.subtype ?? "GENERAL";
+            const badge = PLATFORM_TYPE_CONFIG[subtype] ?? { label: subtype, className: "bg-slate-100 text-slate-600" };
             const isExpanded = expandedId === a.id;
             return (
               <React.Fragment key={a.id}>
@@ -56,7 +57,7 @@ export default function AnnouncementTable() {
                     {isExpanded ? <ChevronUp size={13} className="text-slate-400" /> : <ChevronDown size={13} className="text-slate-400" />}
                   </td>
                   <td className="px-4 py-3 text-slate-500">
-                    {a.targetTenants === "ALL" ? "전체 테넌트" : (a.targetTenants as string[]).join(", ")}
+                    {a.targetType === "ALL_TENANTS" ? "전체 테넌트" : (a.targetIds ?? []).join(", ")}
                   </td>
                   <td className="px-4 py-3 text-slate-400">
                     {a.sentAt ? new Date(a.sentAt).toLocaleDateString("ko-KR") : "-"}
@@ -65,7 +66,7 @@ export default function AnnouncementTable() {
                 {isExpanded && (
                   <tr className="border-b border-slate-100 bg-slate-50">
                     <td colSpan={4} className="px-5 py-4 text-sm text-slate-600 whitespace-pre-wrap">
-                      {a.body}
+                      {a.content}
                     </td>
                   </tr>
                 )}

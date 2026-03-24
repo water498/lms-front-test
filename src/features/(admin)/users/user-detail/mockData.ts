@@ -6,13 +6,13 @@ export type { UserEnrollment, ActivityLog } from "@/lib/models";
 
 export const userEnrollments: Record<string, UserEnrollment[]> = {
   u5: [
-    { courseTitle: "React 기초",       session: "2025-01기", progress: 85, status: "IN_PROGRESS", hasCertificate: false },
+    { courseTitle: "React 기초",       session: "2025-01기", progress: 85, status: "ACTIVE", hasCertificate: false },
     { courseTitle: "TypeScript 심화",  session: "2025-02기", progress: 100, status: "COMPLETED",  hasCertificate: true },
-    { courseTitle: "Next.js 마스터",   session: "2025-01기", progress: 30,  status: "IN_PROGRESS", hasCertificate: false },
+    { courseTitle: "Next.js 마스터",   session: "2025-01기", progress: 30,  status: "ACTIVE", hasCertificate: false },
   ],
   u6: [
     { courseTitle: "CSS 레이아웃 심화", session: "2025-01기", progress: 100, status: "COMPLETED", hasCertificate: true },
-    { courseTitle: "React 기초",        session: "2025-01기", progress: 60,  status: "IN_PROGRESS", hasCertificate: false },
+    { courseTitle: "React 기초",        session: "2025-01기", progress: 60,  status: "ACTIVE", hasCertificate: false },
   ],
 };
 

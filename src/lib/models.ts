@@ -116,22 +116,34 @@ export interface TenantBilling {
   invoices: TenantInvoice[];
 }
 
-// ── 플랫폼 공지 ────────────────────────────────────────────
+// ── 공지 ──────────────────────────────────────────────────
 
-export type PlatformAnnouncementType = "MAINTENANCE" | "UPDATE" | "URGENT" | "GENERAL";
+export type AnnouncementScope = "PLATFORM" | "ORG";
+export type AnnouncementTargetType = "ALL_TENANTS" | "SPECIFIC_TENANTS" | "ALL_MEMBERS" | "SPECIFIC_COURSE";
 export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
 
-export interface PlatformAnnouncement {
+/**
+ * Announcement — 통합 공지사항.
+ * scope=PLATFORM: 플랫폼 어드민 → 테넌트 어드민 공지
+ * scope=ORG: 테넌트 어드민 → 수강생 공지 (기존 OrgAnnouncement + PortalAnnouncement 통합)
+ */
+export interface Announcement {
   id: string;
-  type: PlatformAnnouncementType;
+  scope: AnnouncementScope;
+  tenantId?: string;
   title: string;
-  body: string;
-  targetTenants: string[] | "ALL";
+  content?: string;
+  /** 선택적 세부 분류. PLATFORM: MAINTENANCE/UPDATE/URGENT/GENERAL. ORG: 공지/이벤트/업데이트 등 */
+  subtype?: string;
+  targetType: AnnouncementTargetType;
+  targetIds?: string[];
+  targetCourseId?: string;
   status: AnnouncementStatus;
   scheduledAt?: string;
   sentAt?: string;
+  views: number;
+  createdBy?: string;
   createdAt: string;
-  createdBy: string;
 }
 
 // ── 조직 구조 ─────────────────────────────────────────────
@@ -293,7 +305,7 @@ export interface UserEnrollment {
   courseTitle: string;
   session: string;
   progress: number;
-  status: "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
   hasCertificate: boolean;
 }
 
@@ -440,6 +452,7 @@ export interface ScormSco {
   identifier: string;
   title: string;
   launchHref: string;
+  scormVersion: "1.2" | "2004";
   order: number;
 }
 
@@ -468,19 +481,19 @@ export interface CourseInstructor {
 export interface InstructorProfile {
   // ── DB 기준 필드 (backend: instructor_profile) ──
   userId: string; // PK + FK → User (1:1). INSTRUCTOR role 사용자만 해당
+  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
+  headline?: string; // 한 줄 소개. 예: "AI/ML 전문 강사 · 전 네이버 AI Lab"
   bio?: string;
   career?: string;
   specialty?: string; // 전문 분야. 예: '데이터 분석, Python'
+  expertise?: string[];
+  affiliatedCompany?: string;
   websiteUrl?: string;
   isPublic?: boolean; // false이면 수강생에게 숨김
   updatedAt?: string;
   // ── UI 전용 (실험 단계, API 연동 시 별도 DTO로 분리) ──
   id?: string;
-  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
-  headline?: string; // 한 줄 소개. 예: "AI/ML 전문 강사 · 전 네이버 AI Lab"
   profileImageUrl?: string;
-  expertise?: string[];
-  affiliatedCompany?: string;
 }
 
 export interface InstructorReview {
@@ -754,6 +767,7 @@ export interface QuestionBankOption {
   id: string;
   text: string;
   correct?: boolean; // EXAM 전용. SURVEY는 undefined
+  order: number;
 }
 
 export interface CompositionRule {
@@ -784,6 +798,7 @@ export interface RubricItem {
   id: string;
   criteria: string;
   points: number;
+  order: number;
 }
 
 export interface AssignmentTemplate {
@@ -1056,30 +1071,7 @@ export interface MessageEventRule {
   active: boolean;
 }
 
-// ── 공지 ──────────────────────────────────────────────────
-
-export type AnnouncementTarget = "ALL" | "COURSE";
-export type AnnouncementType = "ANNOUNCEMENT" | "SYSTEM_NOTICE";
-
-/** OrgAnnouncement — 관리자가 생성하는 공지 (admin entity). */
-export interface OrgAnnouncement {
-  id: string;
-  title: string;
-  type: AnnouncementType;
-  target: AnnouncementTarget;
-  targetCourse?: string;
-  sentAt?: string;
-  views: number;
-}
-
-/** PortalAnnouncement — 학습자 포털에 노출되는 공지 (learner-facing view). */
-export interface PortalAnnouncement {
-  id: string;
-  title: string;
-  type: "공지" | "이벤트" | "업데이트";
-  date: string;
-  isNew?: boolean;
-}
+// (OrgAnnouncement, PortalAnnouncement → Announcement 로 통합. 위 // ── 공지 섹션 참조)
 
 // ── 장바구니 / 위시리스트 ─────────────────────────────────
 
@@ -1151,6 +1143,7 @@ export interface CourseSessionInstructor {
   courseSessionId: string;
   userId: string;        // FK → User (강사 계정)
   role: "PRIMARY" | "ASSISTANT";
+  order: number;         // 차수 내 표시 순서
   addedAt: string;
 }
 

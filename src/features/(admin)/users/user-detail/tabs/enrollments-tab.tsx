@@ -3,9 +3,10 @@
 import { userEnrollments, type UserEnrollment } from "../mockData";
 
 const STATUS_CONFIG = {
-  IN_PROGRESS: { label: "진행중",  className: "bg-blue-100 text-blue-700" },
-  COMPLETED:   { label: "완료",    className: "bg-emerald-100 text-emerald-700" },
-  CANCELLED:   { label: "취소",    className: "bg-slate-100 text-slate-500" },
+  ACTIVE:    { label: "진행중",  className: "bg-blue-100 text-blue-700" },
+  COMPLETED: { label: "완료",    className: "bg-emerald-100 text-emerald-700" },
+  CANCELLED: { label: "취소",    className: "bg-slate-100 text-slate-500" },
+  EXPIRED:   { label: "만료",    className: "bg-amber-100 text-amber-700" },
 } satisfies Record<UserEnrollment["status"], { label: string; className: string }>;
 
 export default function EnrollmentsTab({ userId }: { userId: string }) {

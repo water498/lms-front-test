@@ -22,7 +22,7 @@ function newQuestion(kind: QuestionBankKind): QuestionBank {
     type: kind === "EXAM" ? "SINGLE" : "LIKERT",
     text: "",
     options: kind === "EXAM"
-      ? [{ id: makeId(), text: "", correct: true }, { id: makeId(), text: "", correct: false }]
+      ? [{ id: makeId(), text: "", correct: true, order: 1 }, { id: makeId(), text: "", correct: false, order: 2 }]
       : undefined,
     scale: kind === "SURVEY" ? 5 : undefined,
     tags: [],
@@ -90,21 +90,21 @@ export default function QuestionBankFeature() {
       if (q.kind === "EXAM") {
         const t = type as QuestionType;
         if (t === "TRUE_FALSE") return { ...q, type: t, options: [
-          { id: "tf_t", text: "True", correct: true },
-          { id: "tf_f", text: "False", correct: false },
+          { id: "tf_t", text: "True", correct: true, order: 1 },
+          { id: "tf_f", text: "False", correct: false, order: 2 },
         ]};
         if (t === "SHORT") return { ...q, type: t, options: undefined };
         return { ...q, type: t, options: q.options?.length ? q.options : [
-          { id: makeId(), text: "", correct: true },
-          { id: makeId(), text: "", correct: false },
+          { id: makeId(), text: "", correct: true, order: 1 },
+          { id: makeId(), text: "", correct: false, order: 2 },
         ]};
       } else {
         const t = type as SurveyQuestionType;
         if (t === "LIKERT") return { ...q, type: t, scale: 5, options: undefined };
         if (t === "TEXT")   return { ...q, type: t, scale: undefined, options: undefined };
         return { ...q, type: t, scale: undefined, options: q.options?.length ? q.options : [
-          { id: makeId(), text: "" },
-          { id: makeId(), text: "" },
+          { id: makeId(), text: "", order: 1 },
+          { id: makeId(), text: "", order: 2 },
         ]};
       }
     }));
@@ -113,7 +113,7 @@ export default function QuestionBankFeature() {
   function addOption(id: string) {
     setQuestions((qs) => qs.map((q) => q.id !== id ? q : {
       ...q,
-      options: [...(q.options ?? []), { id: makeId(), text: "", correct: false }],
+      options: [...(q.options ?? []), { id: makeId(), text: "", correct: false, order: (q.options?.length ?? 0) + 1 }],
     }));
   }
 

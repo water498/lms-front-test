@@ -17,8 +17,8 @@ function PlatformBanners() {
   const banners = ANNOUNCEMENTS.filter(
     (a) =>
       a.status === "PUBLISHED" &&
-      (a.type === "URGENT" || a.type === "MAINTENANCE") &&
-      (a.targetTenants === "ALL" || (Array.isArray(a.targetTenants) && a.targetTenants.includes(TENANT_ID))) &&
+      (a.subtype === "URGENT" || a.subtype === "MAINTENANCE") &&
+      (a.targetType === "ALL_TENANTS" || (a.targetIds && a.targetIds.includes(TENANT_ID))) &&
       !dismissedIds.includes(a.id)
   );
 
@@ -27,7 +27,7 @@ function PlatformBanners() {
   return (
     <div className="flex flex-col gap-2">
       {banners.map((b) => {
-        const isUrgent = b.type === "URGENT";
+        const isUrgent = b.subtype === "URGENT";
         return (
           <div
             key={b.id}

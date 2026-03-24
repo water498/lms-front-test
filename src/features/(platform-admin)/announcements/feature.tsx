@@ -4,11 +4,13 @@ import { useState } from "react";
 import { Megaphone, Plus, X } from "lucide-react";
 import { ANNOUNCEMENTS } from "./mockData";
 import { TENANTS } from "../tenants/mockData";
-import type { PlatformAnnouncementType, PlatformAnnouncement, AnnouncementStatus } from "@/lib/models";
+import type { Announcement, AnnouncementStatus } from "@/lib/models";
 
 // ── 상수 ───────────────────────────────────────────────────
 
-const TYPE_CFG: Record<PlatformAnnouncementType, { label: string; cls: string }> = {
+type PlatformSubtype = "MAINTENANCE" | "UPDATE" | "URGENT" | "GENERAL";
+
+const TYPE_CFG: Record<PlatformSubtype, { label: string; cls: string }> = {
   MAINTENANCE: { label: "점검",   cls: "bg-amber-100 text-amber-700" },
   UPDATE:      { label: "업데이트", cls: "bg-blue-100 text-blue-700" },
   URGENT:      { label: "긴급",   cls: "bg-red-100 text-red-700" },
@@ -21,12 +23,13 @@ const STATUS_CFG: Record<"DRAFT" | "SCHEDULED" | "PUBLISHED", { label: string; c
   PUBLISHED: { label: "게시 중",  cls: "text-green-600 font-medium" },
 };
 
-function targetLabel(target: PlatformAnnouncement["targetTenants"]): string {
-  if (target === "ALL") return "전체 테넌트";
-  return `${target.length}개 테넌트`;
+function targetLabel(ann: Announcement): string {
+  if (ann.targetType === "ALL_TENANTS") return "전체 테넌트";
+  if (ann.targetIds) return `${ann.targetIds.length}개 테넌트`;
+  return "—";
 }
 
-function dateLabel(ann: PlatformAnnouncement, effectiveStatus: AnnouncementStatus): string {
+function dateLabel(ann: Announcement, effectiveStatus: AnnouncementStatus): string {
   if (effectiveStatus === "PUBLISHED" && ann.sentAt)
     return new Date(ann.sentAt).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
   if (effectiveStatus === "SCHEDULED" && ann.scheduledAt)
@@ -41,14 +44,14 @@ function ComposeModal({
   initialData,
 }: {
   onClose: () => void;
-  initialData?: PlatformAnnouncement;
+  initialData?: Announcement;
 }) {
-  const [type, setType] = useState<PlatformAnnouncementType>(initialData?.type ?? "GENERAL");
+  const [type, setType] = useState<PlatformSubtype>((initialData?.subtype as PlatformSubtype) ?? "GENERAL");
   const [title, setTitle] = useState(initialData?.title ?? "");
-  const [body, setBody] = useState(initialData?.body ?? "");
-  const [targetAll, setTargetAll] = useState(initialData ? initialData.targetTenants === "ALL" : true);
+  const [body, setBody] = useState(initialData?.content ?? "");
+  const [targetAll, setTargetAll] = useState(initialData ? initialData.targetType === "ALL_TENANTS" : true);
   const [selectedTenants, setSelectedTenants] = useState<string[]>(
-    initialData && Array.isArray(initialData.targetTenants) ? initialData.targetTenants : [],
+    initialData?.targetIds ?? [],
   );
   const [scheduleMode, setScheduleMode] = useState(false);
   const [scheduledAt, setScheduledAt] = useState("");
@@ -75,7 +78,7 @@ function ComposeModal({
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-2">공지 유형</label>
             <div className="flex gap-2 flex-wrap">
-              {(Object.keys(TYPE_CFG) as PlatformAnnouncementType[]).map((t) => (
+              {(Object.keys(TYPE_CFG) as PlatformSubtype[]).map((t) => (
                 <button
                   key={t}
                   onClick={() => setType(t)}
@@ -223,11 +226,11 @@ function AnnouncementDetail({
   effectiveStatus,
   onClose,
 }: {
-  ann: PlatformAnnouncement;
+  ann: Announcement;
   effectiveStatus: AnnouncementStatus;
   onClose: () => void;
 }) {
-  const typeCfg = TYPE_CFG[ann.type];
+  const typeCfg = TYPE_CFG[(ann.subtype as PlatformSubtype) ?? "GENERAL"];
   const statusCfg = STATUS_CFG[effectiveStatus];
 
   return (
@@ -245,13 +248,13 @@ function AnnouncementDetail({
       </div>
       <div className="flex gap-4 text-xs text-slate-500 mb-4 flex-wrap">
         <span>작성: {ann.createdBy}</span>
-        <span>대상: {targetLabel(ann.targetTenants)}</span>
+        <span>대상: {targetLabel(ann)}</span>
         <span className={statusCfg.cls}>{statusCfg.label}</span>
         {ann.sentAt && effectiveStatus === "PUBLISHED" && <span>{dateLabel(ann, effectiveStatus)}</span>}
         {ann.scheduledAt && effectiveStatus === "SCHEDULED" && <span>{dateLabel(ann, effectiveStatus)}</span>}
       </div>
       <pre className="text-sm text-slate-700 whitespace-pre-wrap bg-slate-50 rounded-lg p-4 leading-relaxed">
-        {ann.body}
+        {ann.content}
       </pre>
     </div>
   );
@@ -261,11 +264,11 @@ function AnnouncementDetail({
 
 export default function AnnouncementsFeature() {
   const [showCompose, setShowCompose] = useState(false);
-  const [editTarget, setEditTarget] = useState<PlatformAnnouncement | null>(null);
+  const [editTarget, setEditTarget] = useState<Announcement | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, AnnouncementStatus>>({});
 
-  const effectiveStatus = (ann: PlatformAnnouncement): AnnouncementStatus =>
+  const effectiveStatus = (ann: Announcement): AnnouncementStatus =>
     statusOverrides[ann.id] ?? ann.status;
 
   const publishedCount = ANNOUNCEMENTS.filter((a) => effectiveStatus(a) === "PUBLISHED").length;
@@ -276,7 +279,7 @@ export default function AnnouncementsFeature() {
     ? ANNOUNCEMENTS.find((a) => a.id === selectedId) ?? null
     : null;
 
-  function togglePublish(ann: PlatformAnnouncement) {
+  function togglePublish(ann: Announcement) {
     const current = effectiveStatus(ann);
     const next: AnnouncementStatus = current === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
     setStatusOverrides((prev) => ({ ...prev, [ann.id]: next }));
@@ -330,7 +333,7 @@ export default function AnnouncementsFeature() {
           </thead>
           <tbody>
             {ANNOUNCEMENTS.map((ann) => {
-              const typeCfg = TYPE_CFG[ann.type];
+              const typeCfg = TYPE_CFG[(ann.subtype as PlatformSubtype) ?? "GENERAL"];
               const es = effectiveStatus(ann);
               const statusCfg = STATUS_CFG[es];
               const isSelected = selectedId === ann.id;
@@ -351,7 +354,7 @@ export default function AnnouncementsFeature() {
                     {ann.title}
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500">
-                    {targetLabel(ann.targetTenants)}
+                    {targetLabel(ann)}
                   </td>
                   <td className={`px-4 py-3 text-xs ${statusCfg.cls}`}>
                     {statusCfg.label}

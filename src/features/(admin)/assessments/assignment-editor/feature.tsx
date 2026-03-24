@@ -42,7 +42,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
   const totalPoints = rubric.reduce((sum, r) => sum + r.points, 0);
 
   function addRubricItem() {
-    setRubric((r) => [...r, { id: makeId(), criteria: "", points: 0 }]);
+    setRubric((r) => [...r, { id: makeId(), criteria: "", points: 0, order: r.length + 1 }]);
   }
 
   function updateRubricItem(id: string, patch: Partial<RubricItem>) {

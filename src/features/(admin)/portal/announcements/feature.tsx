@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { announcements as initialAnnouncements, type AnnouncementType } from "../../announcements/mockData";
+import { announcements as initialAnnouncements } from "../../announcements/mockData";
 import { X } from "lucide-react";
 import RichEditor from "../../shared/rich-editor";
 
-const TYPE_CONFIG: Record<AnnouncementType, { label: string; className: string }> = {
-  ANNOUNCEMENT:  { label: "공지",   className: "bg-blue-100 text-blue-700" },
-  SYSTEM_NOTICE: { label: "시스템", className: "bg-amber-100 text-amber-700" },
+type OrgSubtype = "공지" | "시스템";
+
+const TYPE_CONFIG: Record<OrgSubtype, { label: string; className: string }> = {
+  "공지":   { label: "공지",   className: "bg-blue-100 text-blue-700" },
+  "시스템": { label: "시스템", className: "bg-amber-100 text-amber-700" },
 };
 
 function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
@@ -90,7 +92,7 @@ export default function PortalAnnouncementsFeature() {
           </thead>
           <tbody>
             {initialAnnouncements.map((a) => {
-              const badge = TYPE_CONFIG[a.type as AnnouncementType];
+              const badge = TYPE_CONFIG[(a.subtype as OrgSubtype) ?? "공지"];
               return (
                 <tr key={a.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="px-5 py-3 font-medium text-slate-800">{a.title}</td>
@@ -100,7 +102,7 @@ export default function PortalAnnouncementsFeature() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-slate-500">
-                    {a.target === "ALL" ? "전체" : a.targetCourse}
+                    {a.targetType === "ALL_MEMBERS" ? "전체" : "특정 과정"}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{a.sentAt}</td>
                   <td className="px-4 py-3 text-slate-600">{a.views?.toLocaleString()}</td>
