@@ -466,14 +466,21 @@ export interface CourseInstructor {
 }
 
 export interface InstructorProfile {
-  id: string;
-  userId: string; // FK → User (INSTRUCTOR role)
-  type: "INTERNAL" | "EXTERNAL" | "CREATOR";
-  headline: string; // e.g. "React 전문 강사 / 전 카카오 개발자"
-  bio: string;
+  // ── DB 기준 필드 (backend: instructor_profile) ──
+  userId: string; // PK + FK → User (1:1). INSTRUCTOR role 사용자만 해당
+  bio?: string;
+  career?: string;
+  specialty?: string; // 전문 분야. 예: '데이터 분석, Python'
+  websiteUrl?: string;
+  isPublic?: boolean; // false이면 수강생에게 숨김
+  updatedAt?: string;
+  // ── UI 전용 (실험 단계, API 연동 시 별도 DTO로 분리) ──
+  id?: string;
+  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
+  headline?: string; // 한 줄 소개. 예: "AI/ML 전문 강사 · 전 네이버 AI Lab"
   profileImageUrl?: string;
-  expertise: string[]; // e.g. ["React", "TypeScript"]
-  affiliatedCompany?: string; // 외부 강사 소속사
+  expertise?: string[];
+  affiliatedCompany?: string;
 }
 
 export interface InstructorReview {
@@ -495,18 +502,41 @@ export interface InstructorBankAccount {
   isPrimary: boolean;
 }
 
+// InstructorPayout — UI 전용 정산 목록 타입 (실험 단계 mock용)
 export type InstructorPayoutStatus = "PENDING" | "CONFIRMED" | "PAID";
 
 export interface InstructorPayout {
   id: string;
-  instructorUserId: string; // FK → User
-  periodStart: string; // "YYYY-MM-DD"
+  instructorUserId: string;
+  periodStart: string;
   periodEnd: string;
-  grossRevenue: number; // 총 매출 (KRW)
-  platformFee: number; // 플랫폼 수수료 금액
-  netAmount: number; // 실 지급액
+  grossRevenue: number;
+  platformFee: number;
+  netAmount: number;
   status: InstructorPayoutStatus;
   paidAt?: string;
+}
+
+// InstructorRevenue — 강사 정산 내역 (backend: instructor_revenue)
+export type InstructorRevenueType = "COURSE_SALE" | "FLAT_FEE" | "BONUS" | "ADJUSTMENT";
+export type InstructorRevenueStatus = "PENDING" | "APPROVED" | "PAID";
+
+export interface InstructorRevenue {
+  id: string;
+  tenantId: string;
+  instructorId: string; // FK → User (role=INSTRUCTOR)
+  courseId?: string; // FK → Course. null이면 과정 무관 정산
+  orderItemId?: string; // [B2C] FK → OrderItem. B2B는 null
+  revenueType: InstructorRevenueType;
+  grossAmount: number; // 매출 총액 (KRW)
+  commissionRate?: number; // 플랫폼 수수료율 (%). null이면 수수료 없음
+  netAmount: number; // 실 정산액
+  status: InstructorRevenueStatus;
+  periodStart?: string;
+  periodEnd?: string;
+  paidAt?: string;
+  note?: string;
+  createdAt: string;
 }
 
 // ── 오프라인 수업 & 출결 ──────────────────────────────────

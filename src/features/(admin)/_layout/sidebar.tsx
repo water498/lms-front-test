@@ -149,6 +149,7 @@ const NAV_GROUPS: NavGroup[] = [
           { href: `${BASE}/users`, label: "유저 목록" },
           { href: `${BASE}/users/groups`, label: "그룹 관리" },
           { href: `${BASE}/users/access-logs`, label: "접속 이력" },
+          { href: `${BASE}/users/instructor-applications`, label: "강사 심사" },
         ],
       },
     ],

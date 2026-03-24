@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { users } from "../mockData";
+import type { User } from "../mockData";
 import ProfileTab from "./tabs/profile-tab";
 import EnrollmentsTab from "./tabs/enrollments-tab";
 import ActivityTab from "./tabs/activity-tab";
@@ -23,7 +24,7 @@ interface Props {
 
 export default function UserDetailFeature({ userId, hideBackLink }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
-  const user = users.find((u) => u.id === userId);
+  const [user, setUser] = useState<User | undefined>(() => users.find((u) => u.id === userId));
 
   if (!user) {
     return (
@@ -68,7 +69,7 @@ export default function UserDetailFeature({ userId, hideBackLink }: Props) {
         ))}
       </div>
 
-      {activeTab === "profile"     && <ProfileTab user={user} />}
+      {activeTab === "profile"     && <ProfileTab user={user} onUserChange={setUser} />}
       {activeTab === "enrollments" && <EnrollmentsTab userId={userId} />}
       {activeTab === "activity"    && <ActivityTab userId={userId} />}
     </div>

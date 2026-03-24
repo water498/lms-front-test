@@ -1,23 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import type { InstructorPayout, InstructorPayoutStatus } from "@/lib/models";
+import type { InstructorRevenue, InstructorRevenueStatus } from "@/lib/models";
 import { payouts as initialPayouts, INSTRUCTOR_NAMES } from "./mockData";
 
-const STATUS_TABS: { id: InstructorPayoutStatus | "ALL"; label: string }[] = [
+const STATUS_TABS: { id: InstructorRevenueStatus | "ALL"; label: string }[] = [
   { id: "ALL", label: "전체" },
   { id: "PENDING", label: "정산 대기" },
-  { id: "CONFIRMED", label: "확정" },
+  { id: "APPROVED", label: "확정" },
   { id: "PAID", label: "지급 완료" },
 ];
 
 const STATUS_BADGE: Record<
-  InstructorPayoutStatus,
+  InstructorRevenueStatus,
   { label: string; className: string }
 > = {
-  PENDING: { label: "정산 대기", className: "bg-amber-100 text-amber-700" },
-  CONFIRMED: { label: "확정", className: "bg-blue-100 text-blue-700" },
-  PAID: { label: "지급 완료", className: "bg-green-100 text-green-700" },
+  PENDING:  { label: "정산 대기", className: "bg-amber-100 text-amber-700" },
+  APPROVED: { label: "확정",     className: "bg-blue-100 text-blue-700" },
+  PAID:     { label: "지급 완료", className: "bg-green-100 text-green-700" },
 };
 
 function formatKRW(n: number) {
@@ -29,17 +29,17 @@ function formatPeriod(start: string, end: string) {
 }
 
 export default function PayoutsFeature() {
-  const [payouts, setPayouts] = useState<InstructorPayout[]>(initialPayouts);
+  const [payouts, setPayouts] = useState<InstructorRevenue[]>(initialPayouts);
   const [activeFilter, setActiveFilter] = useState<
-    InstructorPayoutStatus | "ALL"
+    InstructorRevenueStatus | "ALL"
   >("ALL");
 
   const pendingTotal = payouts
     .filter((p) => p.status === "PENDING")
     .reduce((acc, p) => acc + p.netAmount, 0);
 
-  const confirmedTotal = payouts
-    .filter((p) => p.status === "CONFIRMED")
+  const approvedTotal = payouts
+    .filter((p) => p.status === "APPROVED")
     .reduce((acc, p) => acc + p.netAmount, 0);
 
   const paidTotal = payouts
@@ -53,7 +53,7 @@ export default function PayoutsFeature() {
 
   function handleConfirm(id: string) {
     setPayouts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "CONFIRMED" } : p))
+      prev.map((p) => (p.id === id ? { ...p, status: "APPROVED" as const } : p))
     );
   }
 
@@ -61,7 +61,7 @@ export default function PayoutsFeature() {
     const today = new Date().toISOString().slice(0, 10);
     setPayouts((prev) =>
       prev.map((p) =>
-        p.id === id ? { ...p, status: "PAID", paidAt: today } : p
+        p.id === id ? { ...p, status: "PAID" as const, paidAt: today } : p
       )
     );
   }
@@ -84,7 +84,7 @@ export default function PayoutsFeature() {
         />
         <SummaryCard
           label="이번 달 지급 예정"
-          value={formatKRW(confirmedTotal)}
+          value={formatKRW(approvedTotal)}
           accent="blue"
         />
         <SummaryCard
@@ -153,23 +153,28 @@ export default function PayoutsFeature() {
             )}
             {visible.map((payout) => {
               const badge = STATUS_BADGE[payout.status];
+              const commission = Math.round(
+                payout.grossAmount * (payout.commissionRate ?? 20) / 100
+              );
               return (
                 <tr
                   key={payout.id}
                   className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
                 >
                   <td className="px-4 py-3 font-medium text-slate-800">
-                    {INSTRUCTOR_NAMES[payout.instructorUserId] ??
-                      payout.instructorUserId}
+                    {INSTRUCTOR_NAMES[payout.instructorId] ??
+                      payout.instructorId}
                   </td>
                   <td className="px-4 py-3 text-slate-600">
-                    {formatPeriod(payout.periodStart, payout.periodEnd)}
+                    {payout.periodStart && payout.periodEnd
+                      ? formatPeriod(payout.periodStart, payout.periodEnd)
+                      : "—"}
                   </td>
                   <td className="px-4 py-3 text-right text-slate-700">
-                    {formatKRW(payout.grossRevenue)}
+                    {formatKRW(payout.grossAmount)}
                   </td>
                   <td className="px-4 py-3 text-right text-slate-500">
-                    {formatKRW(payout.platformFee)}
+                    {formatKRW(commission)}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold text-slate-800">
                     {formatKRW(payout.netAmount)}
@@ -193,7 +198,7 @@ export default function PayoutsFeature() {
                         정산 확정
                       </button>
                     )}
-                    {payout.status === "CONFIRMED" && (
+                    {payout.status === "APPROVED" && (
                       <button
                         onClick={() => handlePay(payout.id)}
                         className="text-xs font-medium px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"

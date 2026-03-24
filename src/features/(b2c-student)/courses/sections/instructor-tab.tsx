@@ -15,11 +15,11 @@ export function InstructorTab({ instructor }: Props) {
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center shrink-0">
             <span className="text-2xl font-bold text-zinc-400">
-              {instructor.headline.charAt(0)}
+              {instructor.headline?.charAt(0) ?? "?"}
             </span>
           </div>
           <div>
-            <p className="text-base font-semibold text-white">{instructor.headline.split("·")[0].trim()}</p>
+            <p className="text-base font-semibold text-white">{instructor.headline?.split("·")[0].trim()}</p>
             <p className="text-sm text-zinc-400">{instructor.headline}</p>
             {instructor.affiliatedCompany && (
               <p className="text-xs text-zinc-500 mt-0.5">{instructor.affiliatedCompany}</p>
@@ -28,9 +28,9 @@ export function InstructorTab({ instructor }: Props) {
         </div>
 
         {/* Expertise tags */}
-        {instructor.expertise.length > 0 && (
+        {(instructor.expertise?.length ?? 0) > 0 && (
           <div className="flex flex-wrap gap-2">
-            {instructor.expertise.map((tag) => (
+            {instructor.expertise?.map((tag) => (
               <span
                 key={tag}
                 className="text-xs px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700"
