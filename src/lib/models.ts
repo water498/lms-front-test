@@ -159,6 +159,7 @@ export interface OrgTeam {
   id: string;
   tenantId: string;
   name: string;
+  siteId?: string;   // NULL = 전사 공통 부서
   parentId?: string; // NULL = 최상위
   order: number;
 }
@@ -167,7 +168,20 @@ export interface OrgPosition {
   id: string;
   tenantId: string;
   name: string;
-  order: number; // 낮은 값 = 하위 직급
+  order: number;    // 낮은 값 = 하위 직급
+  isLeader: boolean; // 리더급 여부 (팀장/본부장 등)
+}
+
+export interface OrgTransfer {
+  id: string;
+  tenantId: string;
+  userId: string;
+  changedBy?: string;  // HR 담당자 User ID
+  changedAt: string;
+  note?: string;
+  siteFrom?: string; siteTo?: string;
+  teamFrom?: string; teamTo?: string;
+  positionFrom?: string; positionTo?: string;
 }
 
 export interface OrgSetting {
