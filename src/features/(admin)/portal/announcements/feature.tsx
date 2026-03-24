@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { announcements as initialAnnouncements, type AnnouncementType } from "../../announcements/mockData";
 import { X } from "lucide-react";
+import RichEditor from "../../shared/rich-editor";
 
 const TYPE_CONFIG: Record<AnnouncementType, { label: string; className: string }> = {
   ANNOUNCEMENT:  { label: "공지",   className: "bg-blue-100 text-blue-700" },
@@ -33,12 +34,10 @@ function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
           </div>
           <div>
             <label className="text-xs font-medium text-slate-600 mb-1 block">내용</label>
-            <textarea
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
-              rows={4}
-              placeholder="공지 내용을 입력하세요"
+            <RichEditor
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={setContent}
+              placeholder="공지 내용을 입력하세요"
             />
           </div>
           <div>

@@ -5,6 +5,21 @@ import { ChevronDown, ChevronRight, GripVertical, Plus, Pencil, Trash2, AlertTri
 import { type CourseSubject, type CourseActivity, type ActivityType } from "../mockData";
 import { mediaAssets } from "../../media/mockData";
 import AddActivityModal from "../modals/add-activity-modal";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const ACTIVITY_ICON: Record<ActivityType, string> = {
   VIDEO:      "📹",
@@ -73,6 +88,7 @@ interface ActivityRowProps {
 
 function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: ActivityRowProps) {
   const [showWarning, setShowWarning] = useState(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: activity.id });
 
   const asset = activity.mediaAssetId
     ? mediaAssets.find((a) => a.id === activity.mediaAssetId)
@@ -95,8 +111,12 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
 
   return (
     <>
-      <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 group rounded-lg">
-        <GripVertical size={14} className="text-slate-300 cursor-grab flex-shrink-0" />
+      <div
+        ref={setNodeRef}
+        style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+        className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 group rounded-lg"
+      >
+        <GripVertical size={14} className="text-slate-300 cursor-grab flex-shrink-0" {...attributes} {...listeners} />
         <span className="text-base flex-shrink-0">{ACTIVITY_ICON[activity.type]}</span>
         <div className="flex-1 min-w-0">
           <span className="text-sm text-slate-700">{activity.title}</span>
@@ -152,15 +172,35 @@ function SubjectAccordion({
 }: SubjectAccordionProps) {
   const [open, setOpen] = useState(true);
   const [showAddActivity, setShowAddActivity] = useState(false);
+  const [localActivities, setLocalActivities] = useState(subject.activities);
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: subject.id });
+
+  const activitySensors = useSensors(useSensor(PointerSensor));
+
+  function handleActivityDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setLocalActivities((items) => {
+        const oldIndex = items.findIndex((a) => a.id === active.id);
+        const newIndex = items.findIndex((a) => a.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      className="border border-slate-200 rounded-xl overflow-hidden"
+    >
       {/* Subject header */}
       <div
         className="flex items-center gap-3 px-4 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors"
         onClick={() => setOpen((v) => !v)}
       >
-        <GripVertical size={15} className="text-slate-300 cursor-grab flex-shrink-0" />
+        <GripVertical size={15} className="text-slate-300 cursor-grab flex-shrink-0" {...attributes} {...listeners} />
         {open ? (
           <ChevronDown size={15} className="text-slate-500 flex-shrink-0" />
         ) : (
@@ -185,15 +225,19 @@ function SubjectAccordion({
 
       {open && (
         <div className="px-2 py-1">
-          {subject.activities.map((activity) => (
-            <ActivityRow
-              key={activity.id}
-              activity={activity}
-              hasOngoingSessions={hasOngoingSessions}
-              enrolleeCount={enrolleeCount}
-              onDelete={() => onDeleteActivity(activity.id)}
-            />
-          ))}
+          <DndContext sensors={activitySensors} collisionDetection={closestCenter} onDragEnd={handleActivityDragEnd}>
+            <SortableContext items={localActivities.map((a) => a.id)} strategy={verticalListSortingStrategy}>
+              {localActivities.map((activity) => (
+                <ActivityRow
+                  key={activity.id}
+                  activity={activity}
+                  hasOngoingSessions={hasOngoingSessions}
+                  enrolleeCount={enrolleeCount}
+                  onDelete={() => onDeleteActivity(activity.id)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
           <button
             onClick={() => setShowAddActivity(true)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors mt-1"
@@ -239,7 +283,10 @@ export default function CurriculumTab({
 }: CurriculumTabProps) {
   const [addingSubject, setAddingSubject] = useState(false);
   const [newSubjectTitle, setNewSubjectTitle] = useState("");
+  const [localSubjects, setLocalSubjects] = useState(subjects);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor));
 
   function commitNewSubject() {
     const trimmed = newSubjectTitle.trim();
@@ -248,20 +295,35 @@ export default function CurriculumTab({
     setAddingSubject(false);
   }
 
+  function handleSubjectDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setLocalSubjects((items) => {
+        const oldIndex = items.findIndex((s) => s.id === active.id);
+        const newIndex = items.findIndex((s) => s.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3 max-w-2xl">
-      {subjects.map((subject, i) => (
-        <SubjectAccordion
-          key={subject.id}
-          subject={subject}
-          index={i}
-          hasOngoingSessions={hasOngoingSessions}
-          enrolleeCount={enrolleeCount}
-          onDelete={() => onDeleteSubject(subject.id)}
-          onAddActivity={(activity) => onAddActivity(subject.id, activity)}
-          onDeleteActivity={(activityId) => onDeleteActivity(subject.id, activityId)}
-        />
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
+        <SortableContext items={localSubjects.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+          {localSubjects.map((subject, i) => (
+            <SubjectAccordion
+              key={subject.id}
+              subject={subject}
+              index={i}
+              hasOngoingSessions={hasOngoingSessions}
+              enrolleeCount={enrolleeCount}
+              onDelete={() => onDeleteSubject(subject.id)}
+              onAddActivity={(activity) => onAddActivity(subject.id, activity)}
+              onDeleteActivity={(activityId) => onDeleteActivity(subject.id, activityId)}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       {addingSubject ? (
         <div className="flex items-center gap-2 px-4 py-3 border-2 border-violet-300 rounded-xl bg-violet-50">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { type AssignmentTemplate, type SubmissionType, type RubricItem, assignmentTemplates } from "../mockData";
+import RichEditor from "../../shared/rich-editor";
 
 const SUBMISSION_LABELS: Record<SubmissionType, string> = {
   FILE: "파일 업로드",
@@ -117,11 +118,11 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
                   <p className="text-xs text-slate-400 mt-0.5">학습자에게 보여질 과제 안내문을 작성하세요</p>
                 </div>
                 <div className="p-6">
-                  <textarea
-                    className="w-full text-[15px] text-slate-700 bg-transparent resize-none focus:outline-none placeholder:text-slate-300 leading-relaxed min-h-[240px]"
-                    placeholder="과제 설명을 입력하세요..."
+                  <RichEditor
                     value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
+                    onChange={setInstructions}
+                    placeholder="과제 설명을 입력하세요..."
+                    minHeight="240px"
                   />
                 </div>
               </div>

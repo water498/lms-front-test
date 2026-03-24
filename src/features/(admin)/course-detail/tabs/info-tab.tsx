@@ -11,6 +11,9 @@ import {
   instructors,
   DEFAULT_CANCELLATION_POLICY,
 } from "../../courses/mockData";
+import { type CertConfig } from "../../../../lib/models";
+import { useCertStore } from "../../certificates/store";
+import RichEditor from "../../shared/rich-editor";
 import { type CoursePrerequisite, getPrerequisites } from "../mockData";
 import { useTaxonomyStore } from "../../shared/taxonomy-store";
 
@@ -40,6 +43,8 @@ export default function InfoTab({ course }: { course: Course }) {
     course.defaultMinEnrollment != null ? String(course.defaultMinEnrollment) : ""
   );
   const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
+  const { templates } = useCertStore();
+  const [certConfig, setCertConfig] = useState<CertConfig | null>(course.certConfig ?? null);
   const [prereqs, setPrereqs] = useState<CoursePrerequisite[]>(() => getPrerequisites(course.id));
 
   const otherCourses = courses.filter((c) => c.id !== course.id);
@@ -225,12 +230,10 @@ export default function InfoTab({ course }: { course: Course }) {
       {/* 과정 소개 */}
       <div>
         <label className="text-xs font-medium text-slate-600 mb-1 block">과정 소개</label>
-        <textarea
-          rows={4}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
-          placeholder="학습 목표, 대상 수강생, 주요 내용을 입력하세요"
+        <RichEditor
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={setDescription}
+          placeholder="학습 목표, 대상 수강생, 주요 내용을 입력하세요"
         />
       </div>
 
@@ -324,6 +327,79 @@ export default function InfoTab({ course }: { course: Course }) {
             ))}
           </div>
         )}
+      </div>
+
+      {/* 수료증 설정 */}
+      <div>
+        <label className="text-xs font-medium text-slate-600 mb-2 block">수료증 설정</label>
+        <div className="border border-slate-200 rounded-xl p-4 flex flex-col gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={certConfig !== null}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  const first = templates.find((t) => t.active);
+                  setCertConfig({ templateId: first?.id ?? "", completionRate: 80, requireExam: false, autoIssue: false });
+                } else {
+                  setCertConfig(null);
+                }
+              }}
+              className="accent-violet-600"
+            />
+            <span className="text-sm text-slate-700 font-medium">수료증 발급 사용</span>
+          </label>
+
+          {certConfig !== null && (
+            <div className="flex flex-col gap-3 pt-1 border-t border-slate-100">
+              <div>
+                <label className="text-xs font-medium text-slate-500 mb-1 block">템플릿</label>
+                <select
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+                  value={certConfig.templateId}
+                  onChange={(e) => setCertConfig({ ...certConfig, templateId: e.target.value })}
+                >
+                  {templates.filter((t) => t.active).map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-medium text-slate-500 whitespace-nowrap">이수율 기준</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="w-20 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  value={certConfig.completionRate}
+                  onChange={(e) => setCertConfig({ ...certConfig, completionRate: Number(e.target.value) })}
+                />
+                <span className="text-sm text-slate-500">% 이상 달성 시</span>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={certConfig.requireExam}
+                  onChange={(e) => setCertConfig({ ...certConfig, requireExam: e.target.checked })}
+                  className="accent-violet-600"
+                />
+                <span className="text-sm text-slate-700">최종 시험 통과 필수</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={certConfig.autoIssue}
+                  onChange={(e) => setCertConfig({ ...certConfig, autoIssue: e.target.checked })}
+                  className="accent-violet-600"
+                />
+                <span className="text-sm text-slate-700">조건 충족 시 자동 발급</span>
+              </label>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 취소·환불 규정 */}
