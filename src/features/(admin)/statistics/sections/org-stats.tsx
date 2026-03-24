@@ -13,11 +13,11 @@ export default function OrgStats() {
 
   const deptStats = useMemo(() => {
     // Collect all department IDs that have learners
-    const deptIds = [...new Set(learners.map((u) => u.departmentId).filter(Boolean))] as string[];
+    const deptIds = [...new Set(learners.map((u) => u.orgTeamId).filter(Boolean))] as string[];
 
     return deptIds.map((deptId) => {
       const deptNode = findDeptNode(departments, deptId);
-      const deptLearners = learners.filter((u) => u.departmentId === deptId);
+      const deptLearners = learners.filter((u) => u.orgTeamId === deptId);
       const deptEnrollments = enrollments.filter((e) =>
         deptLearners.some((u) => u.id === e.learnerId)
       );
@@ -41,7 +41,7 @@ export default function OrgStats() {
       const notStarted = deptEnrollments.filter((e) => e.progress === 0).length;
 
       const site = sites.find(
-        (s) => s.id === deptLearners[0]?.siteId
+        (s) => s.id === deptLearners[0]?.orgSiteId
       );
 
       return {

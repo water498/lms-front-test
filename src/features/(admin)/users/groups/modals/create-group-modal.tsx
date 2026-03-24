@@ -44,9 +44,9 @@ export default function CreateGroupModal({ onClose, onCreate }: Props) {
         u.email.includes(search) ||
         u.roles.some((r) => ROLE_LABEL[r]?.includes(search));
       if (!matchSearch) return false;
-      if (siteFilter && u.siteId !== siteFilter) return false;
-      if (deptFilter && u.departmentId !== deptFilter) return false;
-      if (gradeFilter && u.jobGradeId !== gradeFilter) return false;
+      if (siteFilter && u.orgSiteId !== siteFilter) return false;
+      if (deptFilter && u.orgTeamId !== deptFilter) return false;
+      if (gradeFilter && u.orgPositionId !== gradeFilter) return false;
       return true;
     });
   }, [search, siteFilter, deptFilter, gradeFilter]);

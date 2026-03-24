@@ -114,13 +114,13 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
       .filter((u) => {
         const siteOk =
           selectedSites.size === 0 ||
-          (u.siteId != null && selectedSites.has(u.siteId));
+          (u.orgSiteId != null && selectedSites.has(u.orgSiteId));
         const deptOk =
           selectedDepts.size === 0 ||
-          (u.departmentId != null && selectedDepts.has(u.departmentId));
+          (u.orgTeamId != null && selectedDepts.has(u.orgTeamId));
         const gradeOk =
           selectedGrades.size === 0 ||
-          (u.jobGradeId != null && selectedGrades.has(u.jobGradeId));
+          (u.orgPositionId != null && selectedGrades.has(u.orgPositionId));
         return siteOk && deptOk && gradeOk;
       })
       .map((u) => u.id);
@@ -239,13 +239,13 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
                           </td>
                           <td className="py-2.5 text-slate-500">{u.email}</td>
                           <td className="py-2.5 text-slate-500">
-                            {u.departmentId
-                              ? (findDeptNode(departments, u.departmentId)?.name ?? "—")
+                            {u.orgTeamId
+                              ? (findDeptNode(departments, u.orgTeamId)?.name ?? "—")
                               : "—"}
                           </td>
                           <td className="py-2.5 text-slate-500">
-                            {u.jobGradeId
-                              ? (jobGrades.find((g) => g.id === u.jobGradeId)?.name ?? "—")
+                            {u.orgPositionId
+                              ? (jobGrades.find((g) => g.id === u.orgPositionId)?.name ?? "—")
                               : "—"}
                           </td>
                         </tr>

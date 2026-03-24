@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import type { User } from "../../mockData";
-import type { UserRole } from "@/lib/models";
+import type { UserRole, UserStatus } from "@/lib/models";
 import { useOrgStructureStore, findDeptNode } from "../../../shared/org-structure-store";
 import { useImpersonationStore } from "../../../shared/impersonation-store";
 
@@ -15,10 +15,11 @@ const ROLE_CONFIG = {
   SUPER_ADMIN: { label: "최고관리자", className: "bg-red-100 text-red-700" },
 } as const;
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = {
   ACTIVE:   { label: "활성",   className: "bg-emerald-100 text-emerald-700" },
   INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
-} as const;
+  BLOCKED:  { label: "차단",   className: "bg-red-100 text-red-700" },
+};
 
 const CHANGEABLE_ROLES: { value: UserRole; label: string }[] = [
   { value: "LEARNER",    label: "수강생" },
@@ -50,14 +51,14 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
   const role = ROLE_CONFIG[user.roles[0]];
   const status = STATUS_CONFIG[user.status];
 
-  const deptName = user.departmentId
-    ? (findDeptNode(departments, user.departmentId)?.name ?? "—")
+  const deptName = user.orgTeamId
+    ? (findDeptNode(departments, user.orgTeamId)?.name ?? "—")
     : "—";
-  const gradeName = user.jobGradeId
-    ? (jobGrades.find((g) => g.id === user.jobGradeId)?.name ?? "—")
+  const gradeName = user.orgPositionId
+    ? (jobGrades.find((g) => g.id === user.orgPositionId)?.name ?? "—")
     : "—";
-  const siteName = user.siteId
-    ? (sites.find((s) => s.id === user.siteId)?.name ?? "—")
+  const siteName = user.orgSiteId
+    ? (sites.find((s) => s.id === user.orgSiteId)?.name ?? "—")
     : "—";
 
   return (
@@ -74,7 +75,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>{status.label}</span>
           </div>
           <p className="text-sm text-slate-500">{user.email}</p>
-          {user.departmentId && (
+          {user.orgTeamId && (
             <p className="text-xs text-slate-400 mt-0.5">{deptName}</p>
           )}
         </div>

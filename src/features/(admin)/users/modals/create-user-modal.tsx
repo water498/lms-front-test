@@ -25,9 +25,9 @@ export default function CreateUserModal({ onClose }: Props) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole>("LEARNER");
   const [employeeId, setEmployeeId] = useState("");
-  const [siteId, setSiteId] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
-  const [jobGradeId, setJobGradeId] = useState("");
+  const [orgSiteId, setOrgSiteId] = useState("");
+  const [orgTeamId, setOrgTeamId] = useState("");
+  const [orgPositionId, setOrgPositionId] = useState("");
   const [tempPassword] = useState(generateTempPassword);
   const [showPassword, setShowPassword] = useState(false);
   const [created, setCreated] = useState(false);
@@ -142,8 +142,8 @@ export default function CreateUserModal({ onClose }: Props) {
               <label className="text-xs font-medium text-slate-600 mb-1 block">사업장 <span className="text-slate-400 font-normal">(선택)</span></label>
               <select
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-                value={siteId}
-                onChange={(e) => setSiteId(e.target.value)}
+                value={orgSiteId}
+                onChange={(e) => setOrgSiteId(e.target.value)}
               >
                 <option value="">미지정</option>
                 {sites.map((s) => (
@@ -155,8 +155,8 @@ export default function CreateUserModal({ onClose }: Props) {
               <label className="text-xs font-medium text-slate-600 mb-1 block">직급 <span className="text-slate-400 font-normal">(선택)</span></label>
               <select
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-                value={jobGradeId}
-                onChange={(e) => setJobGradeId(e.target.value)}
+                value={orgPositionId}
+                onChange={(e) => setOrgPositionId(e.target.value)}
               >
                 <option value="">미지정</option>
                 {jobGrades.map((g) => (
@@ -169,8 +169,8 @@ export default function CreateUserModal({ onClose }: Props) {
             <label className="text-xs font-medium text-slate-600 mb-1 block">부서 <span className="text-slate-400 font-normal">(선택)</span></label>
             <select
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-              value={departmentId}
-              onChange={(e) => setDepartmentId(e.target.value)}
+              value={orgTeamId}
+              onChange={(e) => setOrgTeamId(e.target.value)}
             >
               <option value="">미지정</option>
               {flatDepts.map((d) => (

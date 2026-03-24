@@ -109,13 +109,13 @@ export default function AssignPanel() {
         .filter((u) => {
           const siteOk =
             selectedSites.size === 0 ||
-            (u.siteId != null && selectedSites.has(u.siteId));
+            (u.orgSiteId != null && selectedSites.has(u.orgSiteId));
           const deptOk =
             selectedDepts.size === 0 ||
-            (u.departmentId != null && selectedDepts.has(u.departmentId));
+            (u.orgTeamId != null && selectedDepts.has(u.orgTeamId));
           const gradeOk =
             selectedGrades.size === 0 ||
-            (u.jobGradeId != null && selectedGrades.has(u.jobGradeId));
+            (u.orgPositionId != null && selectedGrades.has(u.orgPositionId));
           return siteOk && deptOk && gradeOk;
         })
         .map((u) => u.id)
@@ -444,11 +444,11 @@ export default function AssignPanel() {
                     <tbody>
                       {filteredLearners.map((u) => {
                         const isChecked = selectedIndividuals.has(u.id);
-                        const deptName = u.departmentId
-                          ? (findDeptNode(departments, u.departmentId)?.name ?? "—")
+                        const deptName = u.orgTeamId
+                          ? (findDeptNode(departments, u.orgTeamId)?.name ?? "—")
                           : "—";
-                        const gradeName = u.jobGradeId
-                          ? (jobGrades.find((g) => g.id === u.jobGradeId)?.name ?? "—")
+                        const gradeName = u.orgPositionId
+                          ? (jobGrades.find((g) => g.id === u.orgPositionId)?.name ?? "—")
                           : "—";
                         return (
                           <tr
@@ -569,11 +569,11 @@ export default function AssignPanel() {
               </thead>
               <tbody>
                 {previewUsers.map(({ id, user, alreadyEnrolled }) => {
-                  const deptName = user?.departmentId
-                    ? (findDeptNode(departments, user.departmentId)?.name ?? "—")
+                  const deptName = user?.orgTeamId
+                    ? (findDeptNode(departments, user.orgTeamId)?.name ?? "—")
                     : "—";
-                  const gradeName = user?.jobGradeId
-                    ? (jobGrades.find((g) => g.id === user.jobGradeId)?.name ?? "—")
+                  const gradeName = user?.orgPositionId
+                    ? (jobGrades.find((g) => g.id === user.orgPositionId)?.name ?? "—")
                     : "—";
                   return (
                     <tr

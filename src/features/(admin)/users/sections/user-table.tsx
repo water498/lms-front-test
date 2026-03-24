@@ -18,6 +18,7 @@ const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
 const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = {
   ACTIVE:   { label: "활성",   className: "bg-emerald-100 text-emerald-700" },
   INACTIVE: { label: "비활성", className: "bg-slate-100 text-slate-600" },
+  BLOCKED:  { label: "차단",   className: "bg-red-100 text-red-700" },
 };
 
 function handleExport(users: User[]) {
@@ -78,8 +79,8 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
       u.email.toLowerCase().includes(q) ||
       (u.employeeId?.toLowerCase().includes(q) ?? false)
     );
-    const matchDept = deptFilter === "" || u.departmentId === deptFilter;
-    const matchGrade = gradeFilter === "" || u.jobGradeId === gradeFilter;
+    const matchDept = deptFilter === "" || u.orgTeamId === deptFilter;
+    const matchGrade = gradeFilter === "" || u.orgPositionId === gradeFilter;
     const matchGroup = groupFilter === "" || (
       userGroups.find((g) => g.id === groupFilter)?.memberIds?.includes(u.id) ?? false
     );
@@ -206,11 +207,11 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
           </thead>
           <tbody>
             {filtered.map((user) => {
-              const deptName = user.departmentId
-                ? (findDeptNode(departments, user.departmentId)?.name ?? undefined)
+              const deptName = user.orgTeamId
+                ? (findDeptNode(departments, user.orgTeamId)?.name ?? undefined)
                 : undefined;
-              const gradeName = user.jobGradeId
-                ? (jobGrades.find((g) => g.id === user.jobGradeId)?.name ?? undefined)
+              const gradeName = user.orgPositionId
+                ? (jobGrades.find((g) => g.id === user.orgPositionId)?.name ?? undefined)
                 : undefined;
               return (
                 <UserRow

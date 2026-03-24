@@ -374,21 +374,21 @@ export default function OrgStructureTab() {
     const node = findDeptNode(departments, id);
     if (!node) return;
     const idsToRemove = new Set(flatDeptIds([node]));
-    const affectedCount = users.filter((u) => u.departmentId && idsToRemove.has(u.departmentId)).length;
+    const affectedCount = users.filter((u) => u.orgTeamId && idsToRemove.has(u.orgTeamId)).length;
     setDeleteTarget({ type: 'dept', id, name: node.name, affectedCount });
   }
 
   function requestGradeDelete(id: string) {
     const grade = jobGrades.find((g) => g.id === id);
     if (!grade) return;
-    const affectedCount = users.filter((u) => u.jobGradeId === id).length;
+    const affectedCount = users.filter((u) => u.orgPositionId === id).length;
     setDeleteTarget({ type: 'grade', id, name: grade.name, affectedCount });
   }
 
   function requestSiteDelete(id: string) {
     const site = sites.find((s) => s.id === id);
     if (!site) return;
-    const affectedCount = users.filter((u) => u.siteId === id).length;
+    const affectedCount = users.filter((u) => u.orgSiteId === id).length;
     setDeleteTarget({ type: 'site', id, name: site.name, affectedCount });
   }
 
@@ -403,20 +403,20 @@ export default function OrgStructureTab() {
       if (node) {
         const idsToRemove = new Set(flatDeptIds([node]));
         users.forEach((u) => {
-          if (u.departmentId && idsToRemove.has(u.departmentId)) {
-            updateUser(u.id, { departmentId: undefined });
+          if (u.orgTeamId && idsToRemove.has(u.orgTeamId)) {
+            updateUser(u.id, { orgTeamId: undefined });
           }
         });
       }
       removeDept(id);
     } else if (type === 'grade') {
       users.forEach((u) => {
-        if (u.jobGradeId === id) updateUser(u.id, { jobGradeId: undefined });
+        if (u.orgPositionId === id) updateUser(u.id, { orgPositionId: undefined });
       });
       removeJobGrade(id);
     } else {
       users.forEach((u) => {
-        if (u.siteId === id) updateUser(u.id, { siteId: undefined });
+        if (u.orgSiteId === id) updateUser(u.id, { orgSiteId: undefined });
       });
       removeSite(id);
     }

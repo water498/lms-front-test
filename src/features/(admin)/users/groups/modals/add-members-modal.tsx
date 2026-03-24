@@ -37,9 +37,9 @@ export default function AddMembersModal({ group, onClose, onAdd }: Props) {
     return users.filter((u) => {
       if (group.memberIds?.includes(u.id)) return false;
       if (search && !u.name.includes(search) && !u.email.includes(search)) return false;
-      if (siteFilter && u.siteId !== siteFilter) return false;
-      if (deptFilter && u.departmentId !== deptFilter) return false;
-      if (gradeFilter && u.jobGradeId !== gradeFilter) return false;
+      if (siteFilter && u.orgSiteId !== siteFilter) return false;
+      if (deptFilter && u.orgTeamId !== deptFilter) return false;
+      if (gradeFilter && u.orgPositionId !== gradeFilter) return false;
       return true;
     });
   }, [group.memberIds, search, siteFilter, deptFilter, gradeFilter]); // eslint-disable-line react-hooks/exhaustive-deps

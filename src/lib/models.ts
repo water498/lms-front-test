@@ -80,6 +80,7 @@ export interface Tenant {
   currentUsers: number;
   adminEmail: string;
   adminInviteStatus?: AdminInviteStatus;
+  ownerUserId?: string; // 테넌트 소유자 User.id. NULL = 초대 수락 전
   contractStart: string;
   contractEnd: string;
   storageUsedGB: number;
@@ -181,7 +182,7 @@ export interface OrgSetting {
 // ── 사용자 ────────────────────────────────────────────────
 
 export type UserRole = "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN" | "SUPER_ADMIN";
-export type UserStatus = "ACTIVE" | "INACTIVE";
+export type UserStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";
 export type AuthProvider = "EMAIL" | "GOOGLE" | "KAKAO" | "SSO";
 export type MfaMethod = "TOTP" | "SMS" | "EMAIL";
 
@@ -193,12 +194,18 @@ export interface User {
   roles: UserRole[];
   status: UserStatus;
   enrolledCourses: number;
+  completedCourses: number;
   lastLogin: string;
+  lastLoginIp?: string;
+  lastLoginUa?: string;
+  mustChangePassword: boolean;
   joinedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   employeeId?: string; // 사번
-  siteId?: string; // OrgSite.id
-  departmentId?: string; // OrgTeam.id
-  jobGradeId?: string; // OrgPosition.id
+  orgSiteId?: string; // OrgSite.id
+  orgTeamId?: string; // OrgTeam.id
+  orgPositionId?: string; // OrgPosition.id
   // 인증
   authProvider: AuthProvider;
   providerUserId?: string; // 소셜/SSO 외부 ID
@@ -208,6 +215,15 @@ export interface User {
   failedLoginAttempts: number;
   lockedUntil?: string;
   lastFailedLoginAt?: string;
+  // 차단
+  blockedAt?: string;
+  blockedReason?: string;
+  // 소프트 삭제
+  deletedAt?: string;
+  // 마케팅 수신 동의
+  marketingEmailAgreed: boolean;
+  marketingSmsAgreed: boolean;
+  marketingAgreedAt?: string;
   // MFA
   mfaEnabled: boolean;
   mfaMethod?: MfaMethod;

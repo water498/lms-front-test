@@ -98,9 +98,9 @@ erDiagram
     string role "LEARNER|INSTRUCTOR|ORG_ADMIN|SUPER_ADMIN"
     string status "ACTIVE|INACTIVE"
     string employeeId
-    string siteId FK
-    string departmentId FK
-    string jobGradeId FK
+    string orgSiteId FK
+    string orgTeamId FK
+    string orgPositionId FK
     string joinedAt
     string lastLogin
     string[] idpManagedFields "SSO only"
@@ -503,9 +503,9 @@ AWS 인프라 프로비저닝 정보 (platform-admin 전용 뷰).
 | role | `LEARNER\|INSTRUCTOR\|ORG_ADMIN\|SUPER_ADMIN` | 권한 |
 | status | `ACTIVE\|INACTIVE` | 계정 활성화 여부 |
 | employeeId | string? | B2B 사번 |
-| siteId | FK? → Site | 소속 사업장 |
-| departmentId | FK? → Department | 소속 부서 |
-| jobGradeId | FK? → JobGrade | 직급 |
+| orgSiteId | FK? → OrgSite | 소속 사업장 |
+| orgTeamId | FK? → OrgTeam | 소속 팀/부서 |
+| orgPositionId | FK? → OrgPosition | 직급 |
 | authProvider | `LOCAL\|SSO` | 인증 방식 |
 | idpManagedFields | string[]? | SSO 사용자만. IdP가 관리하는 필드 목록 (read-only 처리 필요) |
 
