@@ -87,8 +87,8 @@ pnpm lint     # ESLint
 | **B2B** | SSO (SAML/OIDC — Azure AD, Okta 등) | 기업 직원, 테넌트 관리자 존재, 개인 결제 없음 |
 
 ### 실험 구조
-- `student` (통합): TenantContext feature flag 기반, dev switcher로 B2C/B2B 전환
-  - `b2c-student` / `b2b-student`: deprecated, 폴더만 참고용 유지
+- `student` (통합): TenantContext feature flag 기반, dev switcher로 B2C/B2B 전환. `features/(student)/`
+- `instructor`: 강사 전용 포털 (사이드바, role guard). `features/(instructor)/`
 - `admin`: ORG_ADMIN 멀티페이지 관리자
 - `platform-admin`: 슈퍼어드민 — 전체 테넌트(B2B·B2C) 생명주기 관리 내부툴
 
@@ -126,7 +126,7 @@ pnpm lint     # ESLint
 feature flag 기반 UI 분기. `tenantType` 직접 분기 금지 — `features.*` 플래그 사용.
 
 **Store 위치:**
-- `src/features/(b2c-student)/shared/tenant-context-store.ts` (기본값: B2C)
+- `src/features/(student)/shared/tenant-context-store.ts` (기본값: B2C)
 - `src/features/(admin)/shared/tenant-context-store.ts` (기본값: B2B)
 
 | 플래그 | B2C | B2B | 용도 |

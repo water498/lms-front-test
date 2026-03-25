@@ -62,10 +62,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
 
   function handleImpersonate() {
     start(user.id);
-    const dest =
-      user.authProvider === "SSO"
-        ? "/experiments/b2b-student"
-        : "/experiments/b2c-student";
+    const dest = "/experiments/student";
     router.push(dest);
   }
 
