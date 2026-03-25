@@ -32,10 +32,10 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
   const { start } = useImpersonationStore();
   const router = useRouter();
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<UserRole>(user.roles[0]);
+  const [selectedRole, setSelectedRole] = useState<UserRole>(user.role);
 
   function handleRoleConfirm() {
-    onUserChange?.({ ...user, roles: [selectedRole] });
+    onUserChange?.({ ...user, role: selectedRole });
     setShowRoleModal(false);
   }
 
@@ -48,7 +48,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
     router.push(dest);
   }
 
-  const role = ROLE_CONFIG[user.roles[0]];
+  const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
 
   const deptName = user.orgTeamId
@@ -80,7 +80,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
           )}
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          {user.roles.includes("LEARNER") && (
+          {user.role === "LEARNER" && (
             <button
               onClick={handleImpersonate}
               className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
@@ -88,9 +88,9 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
               이 유저로 보기
             </button>
           )}
-          {!user.roles.includes("SUPER_ADMIN") && (
+          {user.role !== "SUPER_ADMIN" && (
             <button
-              onClick={() => { setSelectedRole(user.roles[0]); setShowRoleModal(true); }}
+              onClick={() => { setSelectedRole(user.role); setShowRoleModal(true); }}
               className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors"
             >
               역할 변경
@@ -106,7 +106,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
             { label: "이메일",       value: user.email },
             { label: "역할",         value: role.label },
             { label: "가입일",       value: user.joinedAt },
-            { label: "마지막 로그인", value: user.lastLogin },
+            { label: "마지막 로그인", value: user.lastLoginAt },
           ].map(({ label, value }) => (
             <div key={label} className="flex justify-between text-sm">
               <dt className="text-slate-400">{label}</dt>
@@ -135,7 +135,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
         </dl>
       </div>
 
-      {user.status === "ACTIVE" && !user.roles.includes("SUPER_ADMIN") && (
+      {user.status === "ACTIVE" && user.role !== "SUPER_ADMIN" && (
         <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-3">계정 관리</h3>
           <div className="flex gap-2">
@@ -149,7 +149,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
         </div>
       )}
 
-      {user.roles.includes("INSTRUCTOR") && (
+      {user.role === "INSTRUCTOR" && (
         <InstructorProfileSection />
       )}
     </div>

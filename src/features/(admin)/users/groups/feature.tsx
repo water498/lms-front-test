@@ -192,8 +192,8 @@ export default function GroupsFeature() {
                       <p className="text-sm font-medium text-slate-800">{u.name}</p>
                       <p className="text-xs text-slate-400 truncate">{u.email}</p>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_COLOR[u.roles[0]] ?? "bg-slate-100 text-slate-500"}`}>
-                      {ROLE_LABEL[u.roles[0]]}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ROLE_COLOR[u.role] ?? "bg-slate-100 text-slate-500"}`}>
+                      {ROLE_LABEL[u.role]}
                     </span>
                     <button
                       onClick={() => removeMember(selectedGroup.id, u.id)}

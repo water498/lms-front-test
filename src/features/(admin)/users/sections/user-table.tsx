@@ -24,7 +24,7 @@ const STATUS_CONFIG: Record<UserStatus, { label: string; className: string }> = 
 function handleExport(users: User[]) {
   const header = "이름,이메일,역할,상태,수강과정,마지막로그인\n";
   const rows = users
-    .map((u) => `${u.name},${u.email},${ROLE_CONFIG[u.roles[0]].label},${STATUS_CONFIG[u.status].label},${u.enrolledCourses},${u.lastLogin}`)
+    .map((u) => `${u.name},${u.email},${ROLE_CONFIG[u.role].label},${STATUS_CONFIG[u.status].label},${u.enrolledCourses},${u.lastLoginAt}`)
     .join("\n");
   const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -67,11 +67,11 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
   const flatDepts = flattenDepts(departments);
 
   const filtered = users.filter((u) => {
-    if (u.roles.includes("SUPER_ADMIN")) return false;
+    if (u.role === "SUPER_ADMIN") return false;
     const matchRole =
       roleTab === "ALL" ? true :
-      roleTab === "ADMIN" ? u.roles.includes("ORG_ADMIN") :
-      u.roles.includes(roleTab as import("@/lib/models").UserRole);
+      roleTab === "ADMIN" ? u.role === "ORG_ADMIN" :
+      u.role === (roleTab as import("@/lib/models").UserRole);
     const matchStatus = statusFilter === "ACTIVE_ONLY" ? u.status === "ACTIVE" : true;
     const q = search.toLowerCase();
     const matchSearch = q === "" || (
@@ -245,7 +245,7 @@ interface UserRowProps {
 }
 
 function UserRow({ user, deptName, gradeName, onClick }: UserRowProps) {
-  const role = ROLE_CONFIG[user.roles[0]];
+  const role = ROLE_CONFIG[user.role];
   const status = STATUS_CONFIG[user.status];
   const groups = userGroups.filter((g) => g.memberIds?.includes(user.id));
 
@@ -295,15 +295,15 @@ function UserRow({ user, deptName, gradeName, onClick }: UserRowProps) {
         )}
       </td>
       <td className="px-4 py-3 text-slate-600">{user.enrolledCourses}</td>
-      <td className="px-4 py-3 text-slate-400">{user.lastLogin}</td>
+      <td className="px-4 py-3 text-slate-400">{user.lastLoginAt}</td>
       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
         <div className="flex gap-1">
-          {!user.roles.includes("SUPER_ADMIN") && (
+          {user.role !== "SUPER_ADMIN" && (
             <button className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors">
               역할 변경
             </button>
           )}
-          {user.status === "ACTIVE" && !user.roles.includes("SUPER_ADMIN") && (
+          {user.status === "ACTIVE" && user.role !== "SUPER_ADMIN" && (
             <button className="text-xs px-2 py-1 text-slate-500 hover:bg-slate-100 rounded transition-colors">
               비활성화
             </button>

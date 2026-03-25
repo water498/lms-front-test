@@ -69,7 +69,7 @@ export default function AddLearnerModal({ sessionId, enrolledLearnerIds, onClose
   const [selectedDepts, setSelectedDepts] = useState<Set<string>>(new Set());
   const [selectedGrades, setSelectedGrades] = useState<Set<string>>(new Set());
 
-  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const filtered = learners.filter(
     (u) => u.name.includes(search) || u.email.includes(search)

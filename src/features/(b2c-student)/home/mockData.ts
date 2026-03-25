@@ -5,7 +5,7 @@ import type {
   CourseType,
   EnrolledCourse,
   Category,
-  Announcement,
+  OrgAnnouncement,
   UserStats,
 } from "@/lib/models";
 export type {
@@ -13,7 +13,7 @@ export type {
   CourseType,
   EnrolledCourse,
   Category,
-  Announcement,
+  OrgAnnouncement,
   UserStats,
 } from "@/lib/models";
 
@@ -460,11 +460,11 @@ export const userStats: UserStats = {
 
 // ── Announcements ──────────────────────────────────────────────────────────
 
-export const announcements: Announcement[] = [
-  { id: "a1", scope: "ORG", subtype: "이벤트",   title: "봄맞이 전 강의 30% 할인 — 3/31까지",           targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-10", views: 0, createdAt: "2026-03-10T00:00:00Z" },
-  { id: "a2", scope: "ORG", subtype: "공지",     title: "수료증 발급 시스템 개선 안내",                  targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-08", views: 0, createdAt: "2026-03-08T00:00:00Z" },
-  { id: "a3", scope: "ORG", subtype: "업데이트", title: "모바일 앱 v3.2 업데이트 — 오프라인 재생 지원", targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-05", views: 0, createdAt: "2026-03-05T00:00:00Z" },
-  { id: "a4", scope: "ORG", subtype: "공지",     title: "[필독] 개인정보 처리방침 개정 안내",            targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-02-28", views: 0, createdAt: "2026-02-28T00:00:00Z" },
-  { id: "a5", scope: "ORG", subtype: "이벤트",   title: "친구 초대 이벤트 — 수강권 증정",               targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-02-20", views: 0, createdAt: "2026-02-20T00:00:00Z" },
-  { id: "a6", scope: "ORG", subtype: "공지",     title: "연휴 기간 CS 운영 시간 안내",                  targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-01-25", views: 0, createdAt: "2026-01-25T00:00:00Z" },
+export const announcements: OrgAnnouncement[] = [
+  { id: "a1", tenantId: "t-b2c", subtype: "이벤트",   title: "봄맞이 전 강의 30% 할인 — 3/31까지",           targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-10", views: 0, createdAt: "2026-03-10T00:00:00Z" },
+  { id: "a2", tenantId: "t-b2c", subtype: "공지",     title: "수료증 발급 시스템 개선 안내",                  targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-08", views: 0, createdAt: "2026-03-08T00:00:00Z" },
+  { id: "a3", tenantId: "t-b2c", subtype: "업데이트", title: "모바일 앱 v3.2 업데이트 — 오프라인 재생 지원", targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-03-05", views: 0, createdAt: "2026-03-05T00:00:00Z" },
+  { id: "a4", tenantId: "t-b2c", subtype: "공지",     title: "[필독] 개인정보 처리방침 개정 안내",            targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-02-28", views: 0, createdAt: "2026-02-28T00:00:00Z" },
+  { id: "a5", tenantId: "t-b2c", subtype: "이벤트",   title: "친구 초대 이벤트 — 수강권 증정",               targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-02-20", views: 0, createdAt: "2026-02-20T00:00:00Z" },
+  { id: "a6", tenantId: "t-b2c", subtype: "공지",     title: "연휴 기간 CS 운영 시간 안내",                  targetType: "ALL_MEMBERS", status: "PUBLISHED", sentAt: "2026-01-25", views: 0, createdAt: "2026-01-25T00:00:00Z" },
 ];

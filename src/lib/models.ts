@@ -74,6 +74,8 @@ export interface Tenant {
   name: string;
   subdomain: string;
   tenantType?: TenantType;
+  /** 영업 계약 시 수동 입력. 예: 'STARTER' / 'ENTERPRISE' / 'CUSTOM' */
+  planName?: string;
   status: TenantStatus;
   trialEndsAt?: string;
   maxUsers: number; // 0 = unlimited
@@ -208,23 +210,54 @@ export interface OrgSetting {
   faviconUrl?: string;
 }
 
+// ── RBAC ───────────────────────────────────────────────────
+
+/** 시스템 역할명 (시드값). 커스텀 역할은 자유 문자열. */
+export type SystemRoleName = "SUPER_ADMIN" | "ORG_ADMIN" | "INSTRUCTOR" | "LEARNER";
+
+export interface Role {
+  id: string;
+  tenantId?: string; // NULL = 플랫폼 공통 시스템 역할
+  name: string;      // SystemRoleName 또는 커스텀 역할명
+  description?: string;
+  isSystem: boolean; // True = 삭제 불가
+  createdAt: string;
+}
+
+export interface Permission {
+  code: string;       // 'course.manage', 'user.view' 등
+  name: string;
+  description?: string;
+  module: string;     // 'course' | 'user' | 'org' | 'report' | ...
+}
+
+export interface RolePermission {
+  roleId: string;
+  permissionCode: string;
+}
+
 // ── 사용자 ────────────────────────────────────────────────
 
-export type UserRole = "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN" | "SUPER_ADMIN";
 export type UserStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";
-export type AuthProvider = "EMAIL" | "GOOGLE" | "KAKAO" | "SSO";
+export type AuthProvider = "LOCAL" | "SOCIAL" | "SSO";
+export type SocialProvider = "GOOGLE" | "KAKAO" | "NAVER" | "APPLE";
 export type MfaMethod = "TOTP" | "SMS" | "EMAIL";
+/** 시스템 역할명. 커스텀 역할은 string. */
+export type UserRole = SystemRoleName;
 
 export interface User {
   id: string;
   tenantId?: string;
   name: string;
   email: string;
-  roles: UserRole[];
+  /** role 테이블 FK UUID */
+  roleId: string;
+  /** UI 편의용 — role.name 값. 조회 시 JOIN 또는 별도 필드로 제공 */
+  role: UserRole;
   status: UserStatus;
   enrolledCourses: number;
   completedCourses: number;
-  lastLogin: string;
+  lastLoginAt?: string;
   lastLoginIp?: string;
   lastLoginUa?: string;
   mustChangePassword: boolean;
@@ -232,14 +265,18 @@ export interface User {
   createdAt?: string;
   updatedAt?: string;
   employeeId?: string; // 사번
-  orgSiteId?: string; // OrgSite.id
-  orgTeamId?: string; // OrgTeam.id
-  orgPositionId?: string; // OrgPosition.id
+  orgSiteId?: string;
+  orgTeamId?: string;
+  orgPositionId?: string;
   // 인증
   authProvider: AuthProvider;
-  providerUserId?: string; // 소셜/SSO 외부 ID
+  socialProvider?: SocialProvider; // auth_provider=SOCIAL일 때
+  socialProviderId?: string;
   emailVerified: boolean;
   emailVerifiedAt?: string;
+  // 비밀번호 재설정
+  passwordResetToken?: string;
+  passwordResetTokenExpiresAt?: string;
   // 계정 잠금
   failedLoginAttempts: number;
   lockedUntil?: string;
@@ -253,13 +290,9 @@ export interface User {
   marketingEmailAgreed: boolean;
   marketingSmsAgreed: boolean;
   marketingAgreedAt?: string;
-  // MFA
+  // MFA (미구현, 구조만 예약)
   mfaEnabled: boolean;
   mfaMethod?: MfaMethod;
-  mfaSecret?: string; // 암호화 저장
-  // 세션 설정
-  sessionTimeoutMin?: number;
-  rememberMeEnabled?: boolean;
 }
 
 export interface UserGroup {
@@ -284,23 +317,17 @@ export interface UserAccessLog {
 export interface UserSession {
   id: string;
   userId: string;
-  deviceName?: string; // e.g. "Chrome / macOS"
-  ipAddress: string;
+  tenantId: string;
+  /** SHA-256 해시. 원문(refresh token)은 클라이언트에만 존재 */
+  tokenHash: string;
+  ip: string;
   userAgent: string;
-  refreshToken: string;
-  expiresAt: string;
-  rememberMe: boolean;
-  lastActivityAt: string;
-  isActive: boolean;
+  deviceName?: string; // "Chrome / macOS" 등 파싱된 표시명
   createdAt: string;
-}
-
-export interface PasswordResetToken {
-  id: string;
-  userId: string;
-  token: string; // 해시된 토큰
   expiresAt: string;
-  // usedAt 없음 — 사용 즉시 행 DELETE (업계 관행)
+  lastUsedAt?: string;
+  revokedAt?: string;
+  revokedReason?: "LOGOUT" | "NEW_LOGIN" | "ADMIN_REVOKE" | "EXPIRED";
 }
 
 export interface UserInvitation {

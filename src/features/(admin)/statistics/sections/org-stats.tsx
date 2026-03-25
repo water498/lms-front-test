@@ -9,7 +9,7 @@ import { useOrgStructureStore, findDeptNode } from "../../shared/org-structure-s
 export default function OrgStats() {
   const { departments, sites } = useOrgStructureStore();
 
-  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const deptStats = useMemo(() => {
     // Collect all department IDs that have learners

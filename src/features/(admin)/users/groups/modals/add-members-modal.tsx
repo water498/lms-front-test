@@ -181,7 +181,7 @@ export default function AddMembersModal({ group, onClose, onAdd }: Props) {
                       <p className="text-xs text-slate-400 truncate">{u.email}</p>
                     </div>
                     <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 flex-shrink-0">
-                      {ROLE_LABEL[u.roles[0]] ?? u.roles[0]}
+                      {ROLE_LABEL[u.role] ?? u.role}
                     </span>
                   </label>
                 ))

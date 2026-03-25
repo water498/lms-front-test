@@ -84,7 +84,7 @@ export default function AssignPanel() {
     () => (selectedCourseId ? getSessions(selectedCourseId) : []),
     [selectedCourseId]
   );
-  const learners = useMemo(() => users.filter((u) => u.roles.includes("LEARNER")), []);
+  const learners = useMemo(() => users.filter((u) => u.role === "LEARNER"), []);
 
   const groupUserIds = useMemo(() => {
     const ids = new Set<string>();

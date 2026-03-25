@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Megaphone, Plus, X } from "lucide-react";
 import { ANNOUNCEMENTS } from "./mockData";
 import { TENANTS } from "../tenants/mockData";
-import type { Announcement, AnnouncementStatus } from "@/lib/models";
+import type { PlatformAnnouncement, AnnouncementStatus } from "@/lib/models";
 
 // ── 상수 ───────────────────────────────────────────────────
 
@@ -23,13 +23,13 @@ const STATUS_CFG: Record<"DRAFT" | "SCHEDULED" | "PUBLISHED", { label: string; c
   PUBLISHED: { label: "게시 중",  cls: "text-green-600 font-medium" },
 };
 
-function targetLabel(ann: Announcement): string {
+function targetLabel(ann: PlatformAnnouncement): string {
   if (ann.targetType === "ALL_TENANTS") return "전체 테넌트";
   if (ann.targetIds) return `${ann.targetIds.length}개 테넌트`;
   return "—";
 }
 
-function dateLabel(ann: Announcement, effectiveStatus: AnnouncementStatus): string {
+function dateLabel(ann: PlatformAnnouncement, effectiveStatus: AnnouncementStatus): string {
   if (effectiveStatus === "PUBLISHED" && ann.sentAt)
     return new Date(ann.sentAt).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
   if (effectiveStatus === "SCHEDULED" && ann.scheduledAt)
@@ -44,7 +44,7 @@ function ComposeModal({
   initialData,
 }: {
   onClose: () => void;
-  initialData?: Announcement;
+  initialData?: PlatformAnnouncement;
 }) {
   const [type, setType] = useState<PlatformSubtype>((initialData?.subtype as PlatformSubtype) ?? "GENERAL");
   const [title, setTitle] = useState(initialData?.title ?? "");
@@ -221,12 +221,12 @@ function ComposeModal({
 
 // ── 상세 드로어 ─────────────────────────────────────────────
 
-function AnnouncementDetail({
+function PlatformAnnouncementDetail({
   ann,
   effectiveStatus,
   onClose,
 }: {
-  ann: Announcement;
+  ann: PlatformAnnouncement;
   effectiveStatus: AnnouncementStatus;
   onClose: () => void;
 }) {
@@ -262,13 +262,13 @@ function AnnouncementDetail({
 
 // ── 메인 ───────────────────────────────────────────────────
 
-export default function AnnouncementsFeature() {
+export default function PlatformAnnouncementsFeature() {
   const [showCompose, setShowCompose] = useState(false);
-  const [editTarget, setEditTarget] = useState<Announcement | null>(null);
+  const [editTarget, setEditTarget] = useState<PlatformAnnouncement | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, AnnouncementStatus>>({});
 
-  const effectiveStatus = (ann: Announcement): AnnouncementStatus =>
+  const effectiveStatus = (ann: PlatformAnnouncement): AnnouncementStatus =>
     statusOverrides[ann.id] ?? ann.status;
 
   const publishedCount = ANNOUNCEMENTS.filter((a) => effectiveStatus(a) === "PUBLISHED").length;
@@ -279,7 +279,7 @@ export default function AnnouncementsFeature() {
     ? ANNOUNCEMENTS.find((a) => a.id === selectedId) ?? null
     : null;
 
-  function togglePublish(ann: Announcement) {
+  function togglePublish(ann: PlatformAnnouncement) {
     const current = effectiveStatus(ann);
     const next: AnnouncementStatus = current === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
     setStatusOverrides((prev) => ({ ...prev, [ann.id]: next }));
@@ -312,7 +312,7 @@ export default function AnnouncementsFeature() {
 
       {/* 상세 패널 */}
       {selectedAnn && (
-        <AnnouncementDetail
+        <PlatformAnnouncementDetail
           ann={selectedAnn}
           effectiveStatus={effectiveStatus(selectedAnn)}
           onClose={() => setSelectedId(null)}
