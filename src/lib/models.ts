@@ -119,25 +119,40 @@ export interface TenantBilling {
 
 // ── 공지 ──────────────────────────────────────────────────
 
-export type AnnouncementScope = "PLATFORM" | "ORG";
-export type AnnouncementTargetType = "ALL_TENANTS" | "SPECIFIC_TENANTS" | "ALL_MEMBERS" | "SPECIFIC_COURSE";
 export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
 
-/**
- * Announcement — 통합 공지사항.
- * scope=PLATFORM: 플랫폼 어드민 → 테넌트 어드민 공지
- * scope=ORG: 테넌트 어드민 → 수강생 공지 (기존 OrgAnnouncement + PortalAnnouncement 통합)
- */
-export interface Announcement {
+/** PlatformAnnouncement — 플랫폼 어드민 → 테넌트 어드민 공지 */
+export type PlatformAnnouncementTargetType = "ALL_TENANTS" | "SPECIFIC_TENANTS";
+
+export interface PlatformAnnouncement {
   id: string;
-  scope: AnnouncementScope;
-  tenantId?: string;
   title: string;
   content?: string;
-  /** 선택적 세부 분류. PLATFORM: MAINTENANCE/UPDATE/URGENT/GENERAL. ORG: 공지/이벤트/업데이트 등 */
+  /** MAINTENANCE / UPDATE / URGENT / GENERAL 등 */
   subtype?: string;
-  targetType: AnnouncementTargetType;
+  targetType: PlatformAnnouncementTargetType;
+  /** SPECIFIC_TENANTS일 때 대상 테넌트 ID 목록 */
   targetIds?: string[];
+  status: AnnouncementStatus;
+  scheduledAt?: string;
+  sentAt?: string;
+  views: number;
+  createdBy?: string;
+  createdAt: string;
+}
+
+/** OrgAnnouncement — 테넌트 어드민 → 수강생 공지 */
+export type OrgAnnouncementTargetType = "ALL_MEMBERS" | "SPECIFIC_COURSE";
+
+export interface OrgAnnouncement {
+  id: string;
+  tenantId: string;
+  title: string;
+  content?: string;
+  /** 공지 / 이벤트 / 업데이트 / 긴급 등 자유 분류 */
+  subtype?: string;
+  targetType: OrgAnnouncementTargetType;
+  /** SPECIFIC_COURSE일 때 대상 과정 ID */
   targetCourseId?: string;
   status: AnnouncementStatus;
   scheduledAt?: string;
