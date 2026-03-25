@@ -22,6 +22,7 @@ import { OrdersTab } from "./sections/orders-tab";
 import { WishlistTab } from "./sections/wishlist-tab";
 import { ProfileTab } from "./sections/profile-tab";
 import { InstructorTab } from "./sections/instructor-tab";
+import { InstructorCoursesTab } from "./sections/instructor-courses-tab";
 import { inProgressCourses } from "../home/mockData";
 import store from "../home/store";
 import { useTenantContextStore } from "../shared/tenant-context-store";
@@ -79,7 +80,8 @@ type TabId =
   | "orders"
   | "wishlist"
   | "profile"
-  | "instructor";
+  | "instructor"
+  | "instructor-courses";
 
 const ALL_TABS: {
   id: TabId;
@@ -100,8 +102,14 @@ const ALL_TABS: {
   { id: "profile", label: "내 정보", icon: <Settings className="w-4 h-4" /> },
   {
     id: "instructor",
-    label: "강의 관리",
+    label: "강사 프로필",
     icon: <GraduationCap className="w-4 h-4" />,
+    roleFlag: "INSTRUCTOR",
+  }, // [INSTRUCTOR only]
+  {
+    id: "instructor-courses",
+    label: "내 과정 관리",
+    icon: <BookOpen className="w-4 h-4" />,
     roleFlag: "INSTRUCTOR",
   }, // [INSTRUCTOR only]
 ];
@@ -327,6 +335,7 @@ export default function MyFeature() {
             )}
             {activeTab === "profile" && <ProfileTab />}
             {activeTab === "instructor" && <InstructorTab />}
+            {activeTab === "instructor-courses" && <InstructorCoursesTab />}
           </div>
         </div>
       </div>

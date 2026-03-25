@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { InstructorRevenue, InstructorRevenueStatus } from "@/lib/models";
+import Link from "next/link";
+import type { InstructorRevenue, InstructorRevenueStatus, InstructorRevenueType } from "@/lib/models";
 import { payouts as initialPayouts, INSTRUCTOR_NAMES } from "./mockData";
 
 const STATUS_TABS: { id: InstructorRevenueStatus | "ALL"; label: string }[] = [
@@ -10,6 +11,13 @@ const STATUS_TABS: { id: InstructorRevenueStatus | "ALL"; label: string }[] = [
   { id: "APPROVED", label: "확정" },
   { id: "PAID", label: "지급 완료" },
 ];
+
+const REVENUE_TYPE_LABEL: Record<InstructorRevenueType, string> = {
+  COURSE_SALE: "과정 판매",
+  FLAT_FEE:    "고정 계약",
+  BONUS:       "보너스",
+  ADJUSTMENT:  "조정",
+};
 
 const STATUS_BADGE: Record<
   InstructorRevenueStatus,
@@ -30,9 +38,8 @@ function formatPeriod(start: string, end: string) {
 
 export default function PayoutsFeature() {
   const [payouts, setPayouts] = useState<InstructorRevenue[]>(initialPayouts);
-  const [activeFilter, setActiveFilter] = useState<
-    InstructorRevenueStatus | "ALL"
-  >("ALL");
+  const [activeFilter, setActiveFilter] = useState<InstructorRevenueStatus | "ALL">("ALL");
+  const [typeFilter, setTypeFilter] = useState<InstructorRevenueType | "ALL">("ALL");
 
   const pendingTotal = payouts
     .filter((p) => p.status === "PENDING")
@@ -46,10 +53,11 @@ export default function PayoutsFeature() {
     .filter((p) => p.status === "PAID")
     .reduce((acc, p) => acc + p.netAmount, 0);
 
-  const visible =
-    activeFilter === "ALL"
-      ? payouts
-      : payouts.filter((p) => p.status === activeFilter);
+  const visible = payouts.filter((p) => {
+    if (activeFilter !== "ALL" && p.status !== activeFilter) return false;
+    if (typeFilter !== "ALL" && p.revenueType !== typeFilter) return false;
+    return true;
+  });
 
   function handleConfirm(id: string) {
     setPayouts((prev) =>
@@ -94,21 +102,36 @@ export default function PayoutsFeature() {
         />
       </div>
 
-      {/* 필터 탭 */}
-      <div className="flex gap-1 border-b border-slate-200">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFilter(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-              activeFilter === tab.id
-                ? "border-violet-600 text-violet-600"
-                : "border-transparent text-slate-500 hover:text-slate-700"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* 필터 영역 */}
+      <div className="flex items-center gap-3">
+        {/* 상태 탭 */}
+        <div className="flex gap-1 border-b border-slate-200 flex-1">
+          {STATUS_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveFilter(tab.id)}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+                activeFilter === tab.id
+                  ? "border-violet-600 text-violet-600"
+                  : "border-transparent text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        {/* 유형 필터 */}
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value as InstructorRevenueType | "ALL")}
+          className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300 shrink-0"
+        >
+          <option value="ALL">전체 유형</option>
+          <option value="COURSE_SALE">과정 판매</option>
+          <option value="FLAT_FEE">고정 계약</option>
+          <option value="BONUS">보너스</option>
+          <option value="ADJUSTMENT">조정</option>
+        </select>
       </div>
 
       {/* 테이블 */}
@@ -116,38 +139,22 @@ export default function PayoutsFeature() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50">
-              <th className="text-left px-4 py-3 font-medium text-slate-500">
-                강사
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-slate-500">
-                정산 기간
-              </th>
-              <th className="text-right px-4 py-3 font-medium text-slate-500">
-                총 매출
-              </th>
-              <th className="text-right px-4 py-3 font-medium text-slate-500">
-                수수료 (20%)
-              </th>
-              <th className="text-right px-4 py-3 font-medium text-slate-500">
-                실 지급액
-              </th>
-              <th className="text-center px-4 py-3 font-medium text-slate-500">
-                상태
-              </th>
-              <th className="text-left px-4 py-3 font-medium text-slate-500">
-                지급일
-              </th>
+              <th className="text-left px-4 py-3 font-medium text-slate-500">강사</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-500">정산 유형</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-500">정산 기간</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-500">총 매출</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-500">수수료</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-500">실 지급액</th>
+              <th className="text-center px-4 py-3 font-medium text-slate-500">상태</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-500">지급일</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {visible.length === 0 && (
               <tr>
-                <td
-                  colSpan={8}
-                  className="text-center py-12 text-slate-400 text-sm"
-                >
-                  해당 상태의 정산 내역이 없습니다.
+                <td colSpan={9} className="text-center py-12 text-slate-400 text-sm">
+                  해당 조건의 정산 내역이 없습니다.
                 </td>
               </tr>
             )}
@@ -162,8 +169,15 @@ export default function PayoutsFeature() {
                   className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
                 >
                   <td className="px-4 py-3 font-medium text-slate-800">
-                    {INSTRUCTOR_NAMES[payout.instructorId] ??
-                      payout.instructorId}
+                    <Link
+                      href={`/experiments/admin/instructors/${payout.instructorId}`}
+                      className="hover:text-violet-600 transition-colors"
+                    >
+                      {INSTRUCTOR_NAMES[payout.instructorId] ?? payout.instructorId}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {REVENUE_TYPE_LABEL[payout.revenueType] ?? payout.revenueType}
                   </td>
                   <td className="px-4 py-3 text-slate-600">
                     {payout.periodStart && payout.periodEnd

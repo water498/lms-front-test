@@ -81,6 +81,30 @@ export const payouts: InstructorRevenue[] = [
     periodEnd: "2025-02-28",
     createdAt: "2025-03-01T00:00:00Z",
   },
+  {
+    id: "p7",
+    tenantId: "tenant-1",
+    instructorId: "u-inst-2",
+    revenueType: "FLAT_FEE",
+    grossAmount: 3000000,
+    netAmount: 3000000,
+    status: "PENDING",
+    periodStart: "2025-03-01",
+    periodEnd: "2025-03-31",
+    note: "B2B 기업 교육 출강 계약 (A사 2일 과정)",
+    createdAt: "2025-03-31T00:00:00Z",
+  },
+  {
+    id: "p8",
+    tenantId: "tenant-1",
+    instructorId: "u-inst-1",
+    revenueType: "BONUS",
+    grossAmount: 500000,
+    netAmount: 500000,
+    status: "APPROVED",
+    note: "분기 우수 강사 보너스",
+    createdAt: "2025-03-31T00:00:00Z",
+  },
 ];
 
 export const INSTRUCTOR_NAMES: Record<string, string> = {

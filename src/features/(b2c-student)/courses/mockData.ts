@@ -14,7 +14,6 @@ export interface CourseDetail {
 const instructorKimMinjun: InstructorProfile = {
   id: "inst-1",
   userId: "user-inst-1",
-  type: "CREATOR",
   headline: "AI/ML 전문 강사 · 전 네이버 AI Lab",
   bio: "10년 이상의 머신러닝·딥러닝 실무 경험을 보유한 AI 전문가입니다. 네이버 AI Lab에서 추천 시스템과 자연어 처리 프로젝트를 리드했으며, 현재는 국내외 기업 대상 AI 교육과 컨설팅을 진행하고 있습니다. TensorFlow, PyTorch 공인 강사로 활동 중입니다.",
   profileImageUrl: undefined,
@@ -25,7 +24,6 @@ const instructorKimMinjun: InstructorProfile = {
 const instructorLeeSeoyeon: InstructorProfile = {
   id: "inst-2",
   userId: "user-inst-2",
-  type: "CREATOR",
   headline: "프론트엔드 아키텍트 · React 코어 컨트리뷰터",
   bio: "카카오, 토스를 거친 시니어 프론트엔드 개발자입니다. React 생태계와 TypeScript 기반 대규모 앱 아키텍처 설계 경험을 강의로 공유합니다. GitHub Star 프로젝트 다수 보유, 오픈소스 기여 활동 중입니다.",
   profileImageUrl: undefined,
@@ -36,7 +34,6 @@ const instructorLeeSeoyeon: InstructorProfile = {
 const instructorParkJiho: InstructorProfile = {
   id: "inst-3",
   userId: "user-inst-3",
-  type: "CREATOR",
   headline: "데이터 엔지니어 · 전 삼성 SDS 빅데이터팀",
   bio: "삼성 SDS 빅데이터팀에서 대용량 데이터 파이프라인 설계·운영을 담당했습니다. 현재는 스타트업 CTO로 재직하며 데이터 분석 교육 콘텐츠를 제작하고 있습니다. SQL, Python, Spark를 활용한 실무 중심 강의로 누적 수강생 2만 명 이상을 배출했습니다.",
   profileImageUrl: undefined,

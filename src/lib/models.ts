@@ -554,7 +554,6 @@ export interface CourseInstructor {
 export interface InstructorProfile {
   // ── DB 기준 필드 (backend: instructor_profile) ──
   userId: string; // PK + FK → User (1:1). INSTRUCTOR role 사용자만 해당
-  type?: "INTERNAL" | "EXTERNAL" | "CREATOR";
   headline?: string; // 한 줄 소개. 예: "AI/ML 전문 강사 · 전 네이버 AI Lab"
   bio?: string;
   career?: string;
@@ -569,38 +568,27 @@ export interface InstructorProfile {
   profileImageUrl?: string;
 }
 
+// InstructorReview — 강사 평가 (backend: instructor_review). B2C 수강생 작성.
 export interface InstructorReview {
   id: string;
-  instructorUserId: string; // FK → User
-  courseSessionId: string; // FK → CourseSession (어떤 차수에서 수강했을 때)
-  learnerId: string; // FK → User
-  rating: number; // 1~5
+  instructorId: string; // FK → User (role=INSTRUCTOR)
+  courseId?: string;    // 리뷰 작성 시 수강한 과정 (맥락 참고용)
+  learnerId: string;    // FK → User
+  learnerName: string;  // 작성자 이름 스냅샷
+  rating: number;       // 1~5
   body: string;
   createdAt: string;
+  visible: boolean;
 }
 
 export interface InstructorBankAccount {
   id: string;
-  instructorUserId: string; // FK → User
+  instructorId: string; // FK → User (role=INSTRUCTOR)
   bankName: string;
   accountNumber: string;
   accountHolder: string;
   isPrimary: boolean;
-}
-
-// InstructorPayout — UI 전용 정산 목록 타입 (실험 단계 mock용)
-export type InstructorPayoutStatus = "PENDING" | "CONFIRMED" | "PAID";
-
-export interface InstructorPayout {
-  id: string;
-  instructorUserId: string;
-  periodStart: string;
-  periodEnd: string;
-  grossRevenue: number;
-  platformFee: number;
-  netAmount: number;
-  status: InstructorPayoutStatus;
-  paidAt?: string;
+  createdAt: string;
 }
 
 // InstructorRevenue — 강사 정산 내역 (backend: instructor_revenue)
