@@ -8,11 +8,13 @@ export interface Site {
 export interface JobGrade {
   id: string;
   name: string;
+  isLeader: boolean;
 }
 
 export interface DeptNode {
   id: string;
   name: string;
+  siteId?: string;   // 루트 노드에만 설정. children은 부모 siteId 상속
   children: DeptNode[];
 }
 
@@ -68,14 +70,14 @@ function genGradeId() { return `grade-${_nextGradeId++}`; }
 
 interface OrgStructureStore {
   departments: DeptNode[];
-  addRootDept: (name: string) => void;
+  addRootDept: (name: string, siteId?: string) => void;
   addChildDept: (parentId: string, name: string) => void;
   updateDept: (id: string, name: string) => void;
   removeDept: (id: string) => void;
 
   jobGrades: JobGrade[];
-  addJobGrade: (name: string) => void;
-  updateJobGrade: (id: string, name: string) => void;
+  addJobGrade: (name: string, isLeader: boolean) => void;
+  updateJobGrade: (id: string, name: string, isLeader: boolean) => void;
   removeJobGrade: (id: string) => void;
 
   sites: Site[];
@@ -88,6 +90,7 @@ const initialDepts: DeptNode[] = [
   {
     id: 'dept-1',
     name: '개발본부',
+    siteId: 'site-1',
     children: [
       { id: 'dept-2', name: '백엔드팀', children: [] },
       { id: 'dept-3', name: '프론트엔드팀', children: [] },
@@ -96,19 +99,20 @@ const initialDepts: DeptNode[] = [
   {
     id: 'dept-4',
     name: '마케팅본부',
+    siteId: 'site-1',
     children: [
       { id: 'dept-5', name: '콘텐츠팀', children: [] },
     ],
   },
-  { id: 'dept-6', name: '기획팀', children: [] },
-  { id: 'dept-7', name: '디자인팀', children: [] },
+  { id: 'dept-6', name: '기획팀', siteId: 'site-2', children: [] },
+  { id: 'dept-7', name: '디자인팀', children: [] },  // 전사 공통
 ];
 
 const initialJobGrades: JobGrade[] = [
-  { id: 'grade-1', name: '사원' },
-  { id: 'grade-2', name: '대리' },
-  { id: 'grade-3', name: '과장' },
-  { id: 'grade-4', name: '부장' },
+  { id: 'grade-1', name: '사원', isLeader: false },
+  { id: 'grade-2', name: '대리', isLeader: false },
+  { id: 'grade-3', name: '과장', isLeader: false },
+  { id: 'grade-4', name: '부장', isLeader: true },
 ];
 
 const initialSites: Site[] = [
@@ -118,9 +122,9 @@ const initialSites: Site[] = [
 
 export const useOrgStructureStore = create<OrgStructureStore>((set) => ({
   departments: initialDepts,
-  addRootDept: (name) =>
+  addRootDept: (name, siteId) =>
     set((s) => ({
-      departments: [...s.departments, { id: genDeptId(), name, children: [] }],
+      departments: [...s.departments, { id: genDeptId(), name, siteId, children: [] }],
     })),
   addChildDept: (parentId, name) =>
     set((s) => ({
@@ -132,10 +136,10 @@ export const useOrgStructureStore = create<OrgStructureStore>((set) => ({
     set((s) => ({ departments: removeNode(s.departments, id) })),
 
   jobGrades: initialJobGrades,
-  addJobGrade: (name) =>
-    set((s) => ({ jobGrades: [...s.jobGrades, { id: genGradeId(), name }] })),
-  updateJobGrade: (id, name) =>
-    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g.id === id ? { ...g, name } : g)) })),
+  addJobGrade: (name, isLeader) =>
+    set((s) => ({ jobGrades: [...s.jobGrades, { id: genGradeId(), name, isLeader }] })),
+  updateJobGrade: (id, name, isLeader) =>
+    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g.id === id ? { ...g, name, isLeader } : g)) })),
   removeJobGrade: (id) =>
     set((s) => ({ jobGrades: s.jobGrades.filter((g) => g.id !== id) })),
 
@@ -145,5 +149,9 @@ export const useOrgStructureStore = create<OrgStructureStore>((set) => ({
   updateSite: (id, name) =>
     set((s) => ({ sites: s.sites.map((site) => (site.id === id ? { ...site, name } : site)) })),
   removeSite: (id) =>
-    set((s) => ({ sites: s.sites.filter((site) => site.id !== id) })),
+    set((s) => ({
+      sites: s.sites.filter((site) => site.id !== id),
+      // 해당 사업장 소속 루트 부서도 함께 제거
+      departments: s.departments.filter((d) => d.siteId !== id),
+    })),
 }));
