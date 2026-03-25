@@ -8,13 +8,17 @@ import type { User } from "../mockData";
 import ProfileTab from "./tabs/profile-tab";
 import EnrollmentsTab from "./tabs/enrollments-tab";
 import ActivityTab from "./tabs/activity-tab";
+import SessionsTab from "./tabs/sessions-tab";
+import AccessLogsFeature from "../access-logs/feature";
 
-type Tab = "profile" | "enrollments" | "activity";
+type Tab = "profile" | "enrollments" | "activity" | "sessions" | "accessLogs";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profile",     label: "기본 정보" },
   { id: "enrollments", label: "수강 이력" },
   { id: "activity",    label: "활동 로그" },
+  { id: "sessions",    label: "접속 기기" },
+  { id: "accessLogs",  label: "접속 이력" },
 ];
 
 interface Props {
@@ -72,6 +76,8 @@ export default function UserDetailFeature({ userId, hideBackLink }: Props) {
       {activeTab === "profile"     && <ProfileTab user={user} onUserChange={setUser} />}
       {activeTab === "enrollments" && <EnrollmentsTab userId={userId} />}
       {activeTab === "activity"    && <ActivityTab userId={userId} />}
+      {activeTab === "sessions"    && <SessionsTab userId={userId} />}
+      {activeTab === "accessLogs"  && <AccessLogsFeature userId={userId} />}
     </div>
   );
 }

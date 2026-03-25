@@ -7,6 +7,7 @@ import type { User } from "../../mockData";
 import type { UserRole, UserStatus } from "@/lib/models";
 import { useOrgStructureStore, findDeptNode } from "../../../shared/org-structure-store";
 import { useImpersonationStore } from "../../../shared/impersonation-store";
+import { orgTransfers } from "../mockData";
 
 const ROLE_CONFIG = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },
@@ -27,6 +28,26 @@ const CHANGEABLE_ROLES: { value: UserRole; label: string }[] = [
   { value: "ORG_ADMIN",  label: "관리자" },
 ];
 
+const ROLE_ID_MAP: Record<UserRole, string> = {
+  LEARNER:     "role-learner",
+  INSTRUCTOR:  "role-instructor",
+  ORG_ADMIN:   "role-org-admin",
+  SUPER_ADMIN: "role-super-admin",
+};
+
+const AUTH_PROVIDER_LABEL: Record<string, string> = {
+  LOCAL:  "이메일/비밀번호",
+  SOCIAL: "소셜 로그인",
+  SSO:    "SSO (회사 계정)",
+};
+
+const SOCIAL_PROVIDER_LABEL: Record<string, string> = {
+  GOOGLE: "구글",
+  KAKAO:  "카카오",
+  NAVER:  "네이버",
+  APPLE:  "애플",
+};
+
 export default function ProfileTab({ user, onUserChange }: { user: User; onUserChange?: (u: User) => void }) {
   const { departments, jobGrades, sites } = useOrgStructureStore();
   const { start } = useImpersonationStore();
@@ -35,7 +56,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role);
 
   function handleRoleConfirm() {
-    onUserChange?.({ ...user, role: selectedRole });
+    onUserChange?.({ ...user, role: selectedRole, roleId: ROLE_ID_MAP[selectedRole] });
     setShowRoleModal(false);
   }
 
@@ -113,6 +134,14 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
               <dd className="text-slate-700 font-medium">{value}</dd>
             </div>
           ))}
+          <div className="flex justify-between text-sm">
+            <dt className="text-slate-400">인증 방식</dt>
+            <dd className="text-slate-700 font-medium">
+              {user.authProvider === "SOCIAL" && user.socialProvider
+                ? `${AUTH_PROVIDER_LABEL["SOCIAL"]} (${SOCIAL_PROVIDER_LABEL[user.socialProvider] ?? user.socialProvider})`
+                : (AUTH_PROVIDER_LABEL[user.authProvider] ?? user.authProvider)}
+            </dd>
+          </div>
         </dl>
       </div>
 
@@ -152,6 +181,8 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
       {user.role === "INSTRUCTOR" && (
         <InstructorProfileSection />
       )}
+
+      <OrgTransferSection userId={user.id} departments={departments} sites={sites} jobGrades={jobGrades} />
     </div>
 
     {showRoleModal && (
@@ -203,6 +234,70 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
       </div>
     )}
     </>
+  );
+}
+
+interface OrgTransferSectionProps {
+  userId: string;
+  departments: import("../../../shared/org-structure-store").DeptNode[];
+  sites: import("../../../shared/org-structure-store").Site[];
+  jobGrades: import("../../../shared/org-structure-store").JobGrade[];
+}
+
+function OrgTransferSection({ userId, departments, sites, jobGrades }: OrgTransferSectionProps) {
+  const transfers = orgTransfers[userId] ?? [];
+  if (transfers.length === 0) return null;
+
+  function teamName(id?: string) {
+    if (!id) return "—";
+    return findDeptNode(departments, id)?.name ?? id;
+  }
+  function siteName(id?: string) {
+    if (!id) return "—";
+    return sites.find((s) => s.id === id)?.name ?? id;
+  }
+  function gradeName(id?: string) {
+    if (!id) return "—";
+    return jobGrades.find((g) => g.id === id)?.name ?? id;
+  }
+
+  return (
+    <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-4">
+      <h3 className="text-sm font-semibold text-slate-700">조직 이동 이력</h3>
+      <div className="flex flex-col gap-3">
+        {transfers.map((t) => (
+          <div key={t.id} className="flex items-start gap-3 text-sm">
+            <span className="text-xs text-slate-400 font-mono whitespace-nowrap mt-0.5">
+              {new Date(t.changedAt).toLocaleDateString("ko-KR")}
+            </span>
+            <div className="flex flex-col gap-1">
+              {(t.siteFrom || t.siteTo) && (
+                <p className="text-slate-600">
+                  사업장: <span className="text-slate-400">{siteName(t.siteFrom)}</span>
+                  {" → "}
+                  <span className="font-medium text-slate-700">{siteName(t.siteTo)}</span>
+                </p>
+              )}
+              {(t.teamFrom || t.teamTo) && (
+                <p className="text-slate-600">
+                  부서: <span className="text-slate-400">{teamName(t.teamFrom)}</span>
+                  {" → "}
+                  <span className="font-medium text-slate-700">{teamName(t.teamTo)}</span>
+                </p>
+              )}
+              {(t.positionFrom || t.positionTo) && (
+                <p className="text-slate-600">
+                  직급: <span className="text-slate-400">{gradeName(t.positionFrom)}</span>
+                  {" → "}
+                  <span className="font-medium text-slate-700">{gradeName(t.positionTo)}</span>
+                </p>
+              )}
+              {t.note && <p className="text-xs text-slate-400">{t.note}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

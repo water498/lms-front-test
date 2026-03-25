@@ -1,8 +1,8 @@
 import { users } from "../mockData";
-import type { UserEnrollment, ActivityLog } from "@/lib/models";
+import type { UserEnrollment, ActivityLog, UserSession, OrgTransfer } from "@/lib/models";
 
 export { users };
-export type { UserEnrollment, ActivityLog } from "@/lib/models";
+export type { UserEnrollment, ActivityLog, UserSession, OrgTransfer } from "@/lib/models";
 
 export const userEnrollments: Record<string, UserEnrollment[]> = {
   u5: [
@@ -13,6 +13,26 @@ export const userEnrollments: Record<string, UserEnrollment[]> = {
   u6: [
     { courseTitle: "CSS 레이아웃 심화", session: "2025-01기", progress: 100, status: "COMPLETED", hasCertificate: true },
     { courseTitle: "React 기초",        session: "2025-01기", progress: 60,  status: "ACTIVE", hasCertificate: false },
+  ],
+};
+
+export const userSessions: Record<string, UserSession[]> = {
+  u5: [
+    { id: "ses-u5-1", userId: "u5", tenantId: "t1", tokenHash: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2", ip: "192.0.2.55",   userAgent: "Mozilla/5.0 (Android 14; Mobile) Chrome/122", deviceName: "Chrome / Android",  createdAt: "2025-03-14T09:20:00Z", expiresAt: "2025-04-13T09:20:00Z", lastUsedAt: "2025-03-15T08:30:00Z" },
+    { id: "ses-u5-2", userId: "u5", tenantId: "t1", tokenHash: "b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3", ip: "192.0.2.20",   userAgent: "Mozilla/5.0 (Windows NT 10.0) Chrome/122",    deviceName: "Chrome / Windows",  createdAt: "2025-03-10T14:00:00Z", expiresAt: "2025-04-09T14:00:00Z", lastUsedAt: "2025-03-12T11:00:00Z", revokedAt: "2025-03-12T11:05:00Z", revokedReason: "NEW_LOGIN" },
+  ],
+  u6: [
+    { id: "ses-u6-1", userId: "u6", tenantId: "t1", tokenHash: "c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4", ip: "10.0.0.22",    userAgent: "Mozilla/5.0 (Macintosh) Safari/17",           deviceName: "Safari / macOS",    createdAt: "2025-03-13T08:00:00Z", expiresAt: "2025-04-12T08:00:00Z", lastUsedAt: "2025-03-13T17:00:00Z" },
+    { id: "ses-u6-2", userId: "u6", tenantId: "t1", tokenHash: "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5", ip: "10.0.0.100",   userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17) Safari", deviceName: "Safari / iPhone",  createdAt: "2025-03-01T10:00:00Z", expiresAt: "2025-03-31T10:00:00Z", lastUsedAt: "2025-03-05T09:00:00Z", revokedAt: "2025-03-10T00:00:00Z", revokedReason: "EXPIRED" },
+  ],
+};
+
+export const orgTransfers: Record<string, OrgTransfer[]> = {
+  u5: [
+    { id: "tr-u5-1", tenantId: "t1", userId: "u5", changedBy: "u2", changedAt: "2025-02-01T10:00:00Z", teamFrom: "dept-3", teamTo: "dept-2", positionFrom: "grade-1", positionTo: "grade-2", note: "팀 이동 및 직급 조정" },
+  ],
+  u6: [
+    { id: "tr-u6-1", tenantId: "t1", userId: "u6", changedBy: "u2", changedAt: "2025-01-20T10:00:00Z", siteFrom: "site-2", siteTo: "site-1", teamFrom: "dept-5", teamTo: "dept-7" },
   ],
 };
 

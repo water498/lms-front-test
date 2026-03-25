@@ -14,7 +14,8 @@ export interface JobGrade {
 export interface DeptNode {
   id: string;
   name: string;
-  siteId?: string;   // 루트 노드에만 설정. children은 부모 siteId 상속
+  siteId?: string;    // 루트 노드에만 설정. children은 부모 siteId 상속
+  parentId?: string;  // OrgTeam.parentId 대응. 루트 노드는 undefined
   children: DeptNode[];
 }
 

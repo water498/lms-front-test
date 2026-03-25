@@ -24,7 +24,12 @@ const SCOPE_LABELS: Record<UserAccessLog["scope"], string> = {
   ADMIN: "관리자단",
 };
 
-export default function UserAccessLogsFeature() {
+interface Props {
+  /** 특정 유저의 이력만 표시할 때 사용. 미지정 시 전체 이력. */
+  userId?: string;
+}
+
+export default function UserAccessLogsFeature({ userId }: Props = {}) {
   const [typeFilter, setTypeFilter] = useState<UserAccessLog["type"] | "ALL">("ALL");
   const [scopeFilter, setScopeFilter] = useState<UserAccessLog["scope"] | "ALL">("ALL");
   const [dateFrom, setDateFrom] = useState("");
@@ -33,14 +38,15 @@ export default function UserAccessLogsFeature() {
 
   const filtered = useMemo(() => {
     return ACCESS_LOGS.filter((log) => {
+      if (userId && log.userId !== userId) return false;
       if (typeFilter !== "ALL" && log.type !== typeFilter) return false;
       if (scopeFilter !== "ALL" && log.scope !== scopeFilter) return false;
       if (dateFrom && log.date < dateFrom) return false;
       if (dateTo && log.date > dateTo + " 99:99") return false;
-      if (nameSearch && !log.userName.includes(nameSearch)) return false;
+      if (!userId && nameSearch && !log.userName.includes(nameSearch)) return false;
       return true;
     }).sort((a, b) => b.date.localeCompare(a.date));
-  }, [typeFilter, scopeFilter, dateFrom, dateTo, nameSearch]);
+  }, [userId, typeFilter, scopeFilter, dateFrom, dateTo, nameSearch]);
 
   return (
     <div className="space-y-4">
@@ -96,17 +102,19 @@ export default function UserAccessLogsFeature() {
           </div>
         </div>
 
-        {/* Name search */}
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-500">회원명</label>
-          <input
-            type="text"
-            value={nameSearch}
-            onChange={(e) => setNameSearch(e.target.value)}
-            placeholder="이름 검색"
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-300 w-36"
-          />
-        </div>
+        {/* Name search — 전체 이력 뷰에서만 표시 */}
+        {!userId && (
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-slate-500">회원명</label>
+            <input
+              type="text"
+              value={nameSearch}
+              onChange={(e) => setNameSearch(e.target.value)}
+              placeholder="이름 검색"
+              className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-300 w-36"
+            />
+          </div>
+        )}
 
         {/* Reset */}
         {(typeFilter !== "ALL" || scopeFilter !== "ALL" || dateFrom || dateTo || nameSearch) && (
@@ -136,7 +144,7 @@ export default function UserAccessLogsFeature() {
             <thead>
               <tr className="bg-slate-50 text-left">
                 <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">날짜시간</th>
-                <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">회원명</th>
+                {!userId && <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">회원명</th>}
                 <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">이벤트 유형</th>
                 <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">접속단</th>
                 <th className="px-5 py-2.5 text-xs font-semibold text-slate-500 whitespace-nowrap">IP</th>
@@ -146,7 +154,7 @@ export default function UserAccessLogsFeature() {
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-10 text-center text-sm text-slate-400">
+                  <td colSpan={userId ? 5 : 6} className="px-5 py-10 text-center text-sm text-slate-400">
                     조건에 맞는 접속 이력이 없습니다.
                   </td>
                 </tr>
@@ -154,7 +162,7 @@ export default function UserAccessLogsFeature() {
                 filtered.map((log) => (
                   <tr key={log.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="px-5 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{log.date}</td>
-                    <td className="px-5 py-3 text-slate-800 font-medium whitespace-nowrap">{log.userName}</td>
+                    {!userId && <td className="px-5 py-3 text-slate-800 font-medium whitespace-nowrap">{log.userName}</td>}
                     <td className="px-5 py-3 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${EVENT_TYPE_COLORS[log.type]}`}>
                         {EVENT_TYPE_LABELS[log.type]}

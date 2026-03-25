@@ -208,6 +208,7 @@ export interface OrgSetting {
   brandColor: string;
   logoUrl?: string;
   faviconUrl?: string;
+  subdomain?: string;
 }
 
 // ── RBAC ───────────────────────────────────────────────────
