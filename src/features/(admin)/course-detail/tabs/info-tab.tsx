@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, AlertTriangle } from "lucide-react";
 import {
   type Course,
   type CourseStatus,
@@ -35,7 +35,9 @@ export default function InfoTab({ course }: { course: Course }) {
   const [tagInput, setTagInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const badge = STATUS_CONFIG[course.status as CourseStatus];
+  const [courseStatus, setCourseStatus] = useState<CourseStatus>(course.status as CourseStatus);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const badge = STATUS_CONFIG[courseStatus];
 
   const [description, setDescription] = useState(course.description ?? "");
   const [price, setPrice] = useState<string>(course.price !== undefined ? String(course.price) : "");
@@ -114,19 +116,26 @@ export default function InfoTab({ course }: { course: Course }) {
   }
 
   return (
+    <>
     <div className="max-w-2xl flex flex-col gap-5">
       <div className="flex items-center gap-3">
         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${badge.className}`}>
           {badge.label}
         </span>
-        {course.status === "DRAFT" && (
-          <button className="text-xs px-3 py-1 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors">
+        {courseStatus === "DRAFT" && (
+          <button
+            onClick={() => setCourseStatus("PUBLISHED")}
+            className="text-xs px-3 py-1 text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
+          >
             게시하기
           </button>
         )}
-        {course.status === "PUBLISHED" && (
-          <button className="text-xs px-3 py-1 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-            보관하기
+        {courseStatus === "PUBLISHED" && (
+          <button
+            onClick={() => setShowArchiveModal(true)}
+            className="text-xs px-3 py-1 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            폐강 처리
           </button>
         )}
       </div>
@@ -500,5 +509,39 @@ export default function InfoTab({ course }: { course: Course }) {
         </button>
       </div>
     </div>
+
+    {showArchiveModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-red-100 flex items-center justify-center">
+              <AlertTriangle size={18} className="text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-1">과정을 폐강 처리하시겠습니까?</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                폐강된 과정은 수강생에게 노출되지 않습니다.<br />
+                ONGOING 상태의 차수가 있다면 먼저 종료해 주세요.
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setShowArchiveModal(false)}
+              className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              취소
+            </button>
+            <button
+              onClick={() => { setCourseStatus("ARCHIVED"); setShowArchiveModal(false); }}
+              className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+            >
+              폐강 처리
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

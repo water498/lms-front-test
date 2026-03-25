@@ -308,6 +308,12 @@ export default function CurriculumTab({
 
   return (
     <div className="flex flex-col gap-3 max-w-2xl">
+      {hasOngoingSessions && (
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
+          <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />
+          <span>진행 중인 차수가 있습니다. 커리큘럼 변경 사항은 이미 수강 중인 학습자에게 즉시 반영됩니다.</span>
+        </div>
+      )}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
         <SortableContext items={localSubjects.map((s) => s.id)} strategy={verticalListSortingStrategy}>
           {localSubjects.map((subject, i) => (

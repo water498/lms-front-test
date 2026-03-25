@@ -481,6 +481,8 @@ export interface Course {
   sessions?: number; // 세션 수
   enrollees?: number; // 수강자 수
   createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
   certConfig?: CertConfig | null;
   description?: string;
   cancellationPolicy?: CancellationPolicy;
@@ -697,6 +699,8 @@ export interface CourseSession {
   postSurveyTemplateId?: string; // 수료 후 설문
   finalExamTemplateId?: string; // 수료 조건 시험
   postAssignmentTemplateId?: string; // 수료 후 과제
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CourseEnrollee {
