@@ -45,3 +45,4 @@ export const activityFeed: ActivityItem[] = [
   { id: "a4", message: "관리자가 홍길동을 초대했습니다",                time: "2시간 전",  type: "invite" },
   { id: "a5", message: "이서연이 TypeScript 심화에 수강 신청했습니다",  time: "3시간 전",  type: "enroll" },
 ];
+

@@ -492,6 +492,7 @@ export type EnrolledCourse = Course & {
   progress: number;
   lastAccessedAt: string;
   nextLessonTitle: string;
+  sessionId?: string; // 수강 중인 차수 ID (CourseSession.id)
 };
 
 export type Category = { id: string; label: string };
@@ -1094,6 +1095,8 @@ export interface MessageHistory {
   templateId?: string;
 }
 
+export type SessionNotifyContext = "SESSION_OPEN" | "SESSION_CLOSE" | "SESSION_ENCOURAGE";
+
 export interface MessageTemplate {
   id: string;
   name: string;
@@ -1106,6 +1109,8 @@ export interface MessageTemplate {
   kakaoApproval?: KakaoApprovalStatus;
   kakaoButtons?: { text: string; url: string }[];
   tags?: string[];
+  isSystemDefault?: boolean;           // 시스템 기본 템플릿 (삭제/채널변경 불가)
+  defaultFor?: SessionNotifyContext;   // 라이프사이클 단계별 자동 선택 컨텍스트
   createdAt: string;
 }
 

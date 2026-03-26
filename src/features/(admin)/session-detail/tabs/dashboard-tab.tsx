@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Users, TrendingUp, Award, AlertTriangle } from "lucide-react";
-import { type CourseSession, type CourseEnrollee } from "../../course-detail/mockData";
+import { Users, TrendingUp, Award, AlertTriangle, ChevronRight, Bell } from "lucide-react";
+import { type CourseSession, type CourseEnrollee, type SessionStatus } from "../../course-detail/mockData";
+import type { SessionNotifyContext } from "@/lib/models";
 import EncourageModal from "../modals/encourage-modal";
+import NotifyModal from "../modals/notify-modal";
 
 interface Props {
   session: CourseSession;
@@ -21,6 +23,8 @@ const BUCKETS = [
 export default function DashboardTab({ session, enrollees }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
+  const [showNotifyModal, setShowNotifyModal] = useState(false);
+  const [notifyContext, setNotifyContext] = useState<SessionNotifyContext | undefined>();
 
   const threshold = session.completionThreshold;
   const total = enrollees.length;
@@ -55,6 +59,13 @@ export default function DashboardTab({ session, enrollees }: Props) {
   return (
     <>
       <div className="flex flex-col gap-6 max-w-4xl">
+        {/* Lifecycle Timeline */}
+        <LifecycleTimeline
+          session={session}
+          enrollees={enrollees}
+          onNotify={(ctx) => { setNotifyContext(ctx); setShowNotifyModal(true); }}
+        />
+
         {/* Section A — KPI cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard
@@ -191,6 +202,15 @@ export default function DashboardTab({ session, enrollees }: Props) {
           onClose={() => setShowModal(false)}
         />
       )}
+      {showNotifyModal && (
+        <NotifyModal
+          session={session}
+          totalEnrolled={total}
+          belowThresholdCount={belowCount}
+          context={notifyContext}
+          onClose={() => setShowNotifyModal(false)}
+        />
+      )}
     </>
   );
 }
@@ -216,6 +236,168 @@ function KpiCard({
       </div>
       <p className={`text-2xl font-bold ${highlight ? "text-amber-600" : "text-slate-800"}`}>{value}</p>
       {sub && <p className="text-xs text-slate-400">{sub}</p>}
+    </div>
+  );
+}
+
+// ── Lifecycle Timeline ─────────────────────────────────────────────────────
+
+const STAGES: { id: SessionStatus; label: string }[] = [
+  { id: "DRAFT",   label: "모집 준비" },
+  { id: "OPEN",    label: "모집 중" },
+  { id: "ONGOING", label: "진행 중" },
+  { id: "CLOSED",  label: "종료" },
+];
+
+const STAGE_ORDER: Record<SessionStatus, number> = {
+  DRAFT: 0, OPEN: 1, ONGOING: 2, CLOSED: 3,
+};
+
+const TODAY = "2026-03-26";
+
+function daysUntil(dateStr?: string): number | null {
+  if (!dateStr) return null;
+  const today = new Date(TODAY);
+  const target = new Date(dateStr);
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
+function dDayLabel(days: number): string {
+  if (days === 0) return "D-Day";
+  return days > 0 ? `D-${days}` : `D+${Math.abs(days)}`;
+}
+
+function LifecycleTimeline({
+  session,
+  enrollees,
+  onNotify,
+}: {
+  session: CourseSession;
+  enrollees: CourseEnrollee[];
+  onNotify: (ctx: SessionNotifyContext | undefined) => void;
+}) {
+  const currentOrder = STAGE_ORDER[session.status];
+  const totalEnrolled = enrollees.length;
+
+  const enrollRatio = session.capacity === 0
+    ? null
+    : `${totalEnrolled} / ${session.capacity}명`;
+
+  const minEnrollWarning =
+    session.status === "OPEN" &&
+    session.minEnrollment != null &&
+    totalEnrolled < session.minEnrollment;
+
+  const startDays = daysUntil(session.startDate);
+  const endDays = daysUntil(session.endDate);
+
+  const dateInfo: string[] = [];
+  if (session.startDate) {
+    const label = startDays !== null ? dDayLabel(startDays) : "";
+    dateInfo.push(`개강 ${session.startDate}${label ? ` (${label})` : ""}`);
+  }
+  if (session.endDate) {
+    const label = endDays !== null ? dDayLabel(endDays) : "";
+    dateInfo.push(`종강 ${session.endDate}${label ? ` (${label})` : ""}`);
+  }
+
+  const nextStatus: SessionStatus | null =
+    session.status === "DRAFT"   ? "OPEN"    :
+    session.status === "OPEN"    ? "ONGOING" :
+    session.status === "ONGOING" ? "CLOSED"  : null;
+
+  const nextStatusLabel: Record<SessionStatus, string> = {
+    DRAFT: "모집 준비", OPEN: "모집 중", ONGOING: "진행 중", CLOSED: "종료",
+  };
+
+  // 현재 단계에 맞는 알림 컨텍스트 자동 계산
+  const notifyCtx: SessionNotifyContext | undefined =
+    session.status === "OPEN"    ? "SESSION_OPEN" :
+    session.status === "ONGOING" ? (endDays !== null && endDays <= 7 ? "SESSION_CLOSE" : "SESSION_ENCOURAGE") :
+    undefined;
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-slate-700">라이프사이클</h3>
+        <button
+          onClick={() => onNotify(notifyCtx)}
+          className="flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-800 px-3 py-1.5 border border-violet-200 hover:border-violet-400 rounded-lg transition-colors"
+        >
+          <Bell size={13} />
+          알림 발송
+        </button>
+      </div>
+
+      {/* Stage bar */}
+      <div className="flex items-center gap-0">
+        {STAGES.map((stage, idx) => {
+          const stageOrder = STAGE_ORDER[stage.id];
+          const isPast    = stageOrder < currentOrder;
+          const isCurrent = stageOrder === currentOrder;
+          const isFuture  = stageOrder > currentOrder;
+          return (
+            <div key={stage.id} className="flex items-center flex-1 min-w-0">
+              <div className="flex flex-col items-center gap-1.5 flex-1">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isCurrent
+                    ? "bg-violet-600 text-white ring-4 ring-violet-100"
+                    : isPast
+                    ? "bg-slate-300 text-white"
+                    : "bg-slate-100 text-slate-400 border border-slate-200"
+                }`}>
+                  {isPast ? "✓" : idx + 1}
+                </div>
+                <span className={`text-[11px] font-medium text-center leading-tight ${
+                  isCurrent ? "text-violet-700" : isPast ? "text-slate-400" : "text-slate-300"
+                }`}>
+                  {stage.label}
+                </span>
+              </div>
+              {idx < STAGES.length - 1 && (
+                <div className={`h-0.5 w-full mx-1 rounded-full ${stageOrder < currentOrder ? "bg-slate-300" : "bg-slate-100"}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Details */}
+      <div className="mt-5 flex flex-col gap-2">
+        {enrollRatio && (
+          <div className="flex items-center gap-2 text-sm">
+            <Users size={14} className="text-slate-400 shrink-0" />
+            <span className="text-slate-600">등록 {enrollRatio}</span>
+            {minEnrollWarning && session.minEnrollment != null && (
+              <span className="flex items-center gap-1 text-xs text-amber-600 font-medium">
+                <AlertTriangle size={12} />
+                최소 인원 미달 (최소 {session.minEnrollment}명)
+              </span>
+            )}
+          </div>
+        )}
+        {dateInfo.map((d, i) => (
+          <div key={i} className="flex items-center gap-2 text-sm">
+            <span className="text-slate-400 text-xs">📅</span>
+            <span className="text-slate-600">{d}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Actions */}
+      {nextStatus && (
+        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
+          <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors">
+            <ChevronRight size={13} />
+            {nextStatusLabel[nextStatus]}(으)로 전환
+          </button>
+          {session.status === "OPEN" && minEnrollWarning && (
+            <span className="text-xs text-rose-500 font-medium">
+              ⚠ 인원 미달 상태에서 전환 시 차수가 취소될 수 있습니다
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

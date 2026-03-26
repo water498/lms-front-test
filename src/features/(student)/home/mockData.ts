@@ -44,7 +44,7 @@ export const heroCourse: EnrolledCourse = {
 // ── In-progress courses ────────────────────────────────────────────────────
 
 export const inProgressCourses: EnrolledCourse[] = [
-  heroCourse,
+  { ...heroCourse, sessionId: "ss-1" },
   {
     id: "ip-2",
     title: "React + TypeScript 실전 프로젝트",
@@ -65,6 +65,7 @@ export const inProgressCourses: EnrolledCourse[] = [
     progress: 67,
     lastAccessedAt: "2026-03-09",
     nextLessonTitle: "11-2. Zustand 전역 상태 관리 패턴",
+    sessionId: "ss-2",
   },
   {
     id: "ip-3",
@@ -86,6 +87,7 @@ export const inProgressCourses: EnrolledCourse[] = [
     progress: 12,
     lastAccessedAt: "2026-03-05",
     nextLessonTitle: "3-1. JOIN 완전 이해",
+    sessionId: "ss-3",
   },
 ];
 

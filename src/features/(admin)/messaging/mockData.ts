@@ -174,10 +174,52 @@ export const messageTemplates: MessageTemplate[] = [
     tags: ["독려"],
     createdAt: "2025-03-10",
   },
+  {
+    id: "t12",
+    name: "개강 안내 (이메일)",
+    channel: "EMAIL",
+    subject: "[{{sessionName}}] 개강 안내",
+    content: "안녕하세요, {{name}}님.\n\n{{sessionName}} 과정이 {{daysLeft}}일 후 개강합니다.\n\n수강 준비를 미리 해두시면 더욱 원활하게 학습하실 수 있습니다.\n개강 전 커리큘럼을 확인하고 준비해 주세요.\n\n감사합니다.",
+    variables: ["name", "sessionName", "daysLeft"],
+    tags: ["세션알림"],
+    isSystemDefault: true,
+    defaultFor: "SESSION_OPEN",
+    createdAt: "2026-03-26",
+  },
+  {
+    id: "t13",
+    name: "종강 안내 (이메일)",
+    channel: "EMAIL",
+    subject: "[{{sessionName}}] 종강 안내",
+    content: "안녕하세요, {{name}}님.\n\n{{sessionName}} 과정이 {{daysLeft}}일 후 종료됩니다.\n\n수료 기준을 달성하지 못하신 경우, 남은 기간 동안 학습을 완료해 주세요.\n\n감사합니다.",
+    variables: ["name", "sessionName", "daysLeft"],
+    tags: ["세션알림"],
+    isSystemDefault: true,
+    defaultFor: "SESSION_CLOSE",
+    createdAt: "2026-03-26",
+  },
+  {
+    id: "t14",
+    name: "진도 독려 — 세션 (알림톡)",
+    channel: "KAKAO",
+    content: "안녕하세요, {{name}}님.\n\n{{sessionName}} 과정 수료 기준 달성을 위해 꾸준한 학습을 권장드립니다.\n지금 바로 학습을 이어가 보세요!",
+    variables: ["name", "sessionName"],
+    kakaoCode: "TMP_20260326_005",
+    kakaoApproval: "PENDING",
+    kakaoButtons: [{ text: "학습 이어하기", url: "https://acme.lms.io/learn" }],
+    tags: ["세션알림"],
+    isSystemDefault: true,
+    defaultFor: "SESSION_ENCOURAGE",
+    createdAt: "2026-03-26",
+  },
 ];
 
 export function getEncourageTemplates() {
   return messageTemplates.filter((t) => t.tags?.includes("독려"));
+}
+
+export function getSessionNotifyTemplates() {
+  return messageTemplates.filter((t) => t.tags?.includes("세션알림"));
 }
 
 // ── 변수 레지스트리 ───────────────────────────────────────

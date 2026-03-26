@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Play, CheckCircle, PenLine, Award } from "lucide-react";
+import { CheckCircle, PenLine, Award } from "lucide-react";
 import { inProgressCourses, type EnrolledCourse } from "../../home/mockData";
 import { courseDetails, defaultCourseDetail } from "../../courses/mockData";
 
@@ -88,7 +88,14 @@ export function LearningTab() {
         <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">수강 중</h3>
         <div className="flex flex-col gap-3">
           {inProgressCourses.map((course) => (
-            <div key={course.id} className="flex gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 items-center">
+            <Link
+              key={course.id}
+              href={course.sessionId
+                ? `/experiments/student/sessions/${course.sessionId}`
+                : `/experiments/student/learn/${course.id}/${firstActivityId(course.id)}`
+              }
+              className="flex gap-4 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-4 items-center cursor-pointer transition-colors"
+            >
               <div
                 className="w-20 h-14 rounded-xl shrink-0"
                 style={{ background: course.thumbnail }}
@@ -107,14 +114,7 @@ export function LearningTab() {
                 </div>
                 <p className="text-xs text-zinc-600 mt-1">다음: {course.nextLessonTitle}</p>
               </div>
-              <Link
-                href={`/experiments/student/learn/${course.id}/${firstActivityId(course.id)}`}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium rounded-lg transition-colors"
-              >
-                <Play className="w-3 h-3 fill-white" />
-                이어 학습
-              </Link>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

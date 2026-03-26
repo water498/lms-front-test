@@ -10,7 +10,6 @@ import { IntroTab } from "./sections/intro-tab";
 import { CurriculumTab } from "./sections/curriculum-tab";
 import { InstructorTab } from "./sections/instructor-tab";
 import { ReviewsTab } from "./sections/reviews-tab";
-import { QnaTab } from "./sections/qna-tab";
 import { DetailSidebar } from "./sections/detail-sidebar";
 import { allCourses, inProgressCourses } from "../home/mockData";
 import { completedCourseMock } from "../my/sections/learning-tab";
@@ -18,20 +17,19 @@ import { courseDetails, defaultCourseDetail } from "./mockData";
 import store from "../home/store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 
-type Tab = "intro" | "curriculum" | "instructor" | "reviews" | "qna";
+type Tab = "intro" | "curriculum" | "instructor" | "reviews";
 const TABS: { id: Tab; label: string }[] = [
   { id: "intro", label: "소개" },
   { id: "curriculum", label: "커리큘럼" },
   { id: "instructor", label: "강사" },
   { id: "reviews", label: "리뷰" },
-  { id: "qna", label: "Q&A" },
 ];
 
 interface Props {
   courseId: string;
 }
 
-const VALID_TABS: Tab[] = ["intro", "curriculum", "instructor", "reviews", "qna"];
+const VALID_TABS: Tab[] = ["intro", "curriculum", "instructor", "reviews"];
 
 export default function B2cCourseDetailFeature({ courseId }: Props) {
   const router = useRouter();
@@ -49,8 +47,8 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
 
   const isActive = inProgressCourses.some((c) => c.id === courseId);
   const isCompleted = completedCourseMock.some((c) => c.id === courseId);
-  const canPostQna = isActive || isCompleted;
   const isEnrolled = isActive;
+  const enrolledSessionId = inProgressCourses.find((c) => c.id === courseId)?.sessionId;
 
   const addToCart = (id: string) => {
     store.cart = new Set([...store.cart, id]);
@@ -137,7 +135,6 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
               courseId={courseId}
             />
           )}
-          {activeTab === "qna" && <QnaTab courseId={courseId} canPost={canPostQna} />}
         </div>
 
         {/* Right: sidebar */}
@@ -147,6 +144,7 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
           cart={cart}
           wishlist={wishlist}
           isEnrolled={isEnrolled}
+          enrolledSessionId={enrolledSessionId}
           onAddToCart={addToCart}
           onToggleWishlist={toggleWishlist}
         />

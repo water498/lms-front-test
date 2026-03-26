@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Bell } from "lucide-react";
 import { getCourse } from "../course-detail/mockData";
 import { getSessions, getEnrolleesBySession } from "../course-detail/mockData";
 import SessionInfoTab from "./tabs/info-tab";
@@ -12,6 +12,7 @@ import DashboardTab from "./tabs/dashboard-tab";
 import SessionAssessmentTab from "./tabs/assessment-tab";
 import LearningHistoryTab from "./tabs/learning-history-tab";
 import WaitlistTab from "./tabs/waitlist-tab";
+import NotifyModal from "./modals/notify-modal";
 
 type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "history" | "offline" | "waitlist";
 
@@ -22,6 +23,7 @@ interface Props {
 
 export default function SessionDetailFeature({ courseId, sessionId }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const [showNotifyModal, setShowNotifyModal] = useState(false);
 
   const course = getCourse(courseId);
   const sessions = getSessions(courseId);
@@ -45,24 +47,33 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link
-          href="/experiments/admin/courses"
-          className="hover:text-violet-600 flex items-center gap-1.5 transition-colors"
+      {/* Breadcrumb + header actions */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <Link
+            href="/experiments/admin/courses"
+            className="hover:text-violet-600 flex items-center gap-1.5 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            과정 관리
+          </Link>
+          <span>/</span>
+          <Link
+            href={`/experiments/admin/courses/${courseId}`}
+            className="hover:text-violet-600 transition-colors"
+          >
+            {course.title}
+          </Link>
+          <span>/</span>
+          <span className="text-slate-700 font-medium">{session.name}</span>
+        </div>
+        <button
+          onClick={() => setShowNotifyModal(true)}
+          className="flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:text-violet-800 px-3 py-2 border border-violet-200 hover:border-violet-400 rounded-lg transition-colors"
         >
-          <ArrowLeft size={14} />
-          과정 관리
-        </Link>
-        <span>/</span>
-        <Link
-          href={`/experiments/admin/courses/${courseId}`}
-          className="hover:text-violet-600 transition-colors"
-        >
-          {course.title}
-        </Link>
-        <span>/</span>
-        <span className="text-slate-700 font-medium">{session.name}</span>
+          <Bell size={14} />
+          알림 발송
+        </button>
       </div>
 
       {/* Tab bar */}
@@ -92,6 +103,15 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
         {activeTab === "offline"    && <SessionOfflineTab sessionId={session.id} />}
         {activeTab === "waitlist"   && <WaitlistTab sessionId={session.id} />}
       </div>
+
+      {showNotifyModal && (
+        <NotifyModal
+          session={session}
+          totalEnrolled={enrollees.length}
+          belowThresholdCount={enrollees.filter((e) => e.progress < session.completionThreshold).length}
+          onClose={() => setShowNotifyModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play, User
 import { type Course } from "../../home/mockData";
 import { type CourseSubject } from "@/lib/models";
 import { courseDetails, defaultCourseDetail, sessionsByCourse } from "../mockData";
+import { studentSessions } from "../../session-workspace/mockData";
 import { useTenantContextStore } from "../../shared/tenant-context-store";
 import { matchesOrgFilter } from "../../shared/org-filter";
 
@@ -15,13 +16,15 @@ interface Props {
   cart: Set<string>;
   wishlist: Set<string>;
   isEnrolled?: boolean;
+  enrolledSessionId?: string;
   onAddToCart: (id: string) => void;
   onToggleWishlist: (id: string) => void;
 }
 
-export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart }: Props) {
+export function DetailSidebar({ course, subjects, cart, isEnrolled, enrolledSessionId, onAddToCart }: Props) {
   const { features, currentLearner } = useTenantContextStore((s) => s.tenant);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const freeSessionId = studentSessions.find((s) => s.courseId === course.id)?.id;
   const firstActivityId = (() => {
     const detail = courseDetails[course.id] ?? defaultCourseDetail;
     return detail.subjects[0]?.activities[0]?.id ?? "";
@@ -52,7 +55,10 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart 
                     수강 중
                   </span>
                   <Link
-                    href={`/experiments/student/learn/${course.id}/${firstActivityId}`}
+                    href={enrolledSessionId
+                      ? `/experiments/student/sessions/${enrolledSessionId}`
+                      : `/experiments/student/learn/${course.id}/${firstActivityId}`
+                    }
                     className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2"
                   >
                     <Play className="w-4 h-4 fill-white" />
@@ -91,7 +97,10 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart 
                   )}
                   {(course.price ?? 0) === 0 && (
                     <Link
-                      href={`/experiments/student/learn/${course.id}/${firstActivityId}`}
+                      href={freeSessionId
+                        ? `/experiments/student/sessions/${freeSessionId}`
+                        : `/experiments/student/learn/${course.id}/${firstActivityId}`
+                      }
                       className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center justify-center gap-2"
                     >
                       <Play className="w-4 h-4 fill-white" />

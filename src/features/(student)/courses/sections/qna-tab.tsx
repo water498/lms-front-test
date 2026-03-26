@@ -117,8 +117,18 @@ function WriteForm({ onSubmit, onCancel }: WriteFormProps) {
   );
 }
 
-export function QnaTab({ courseId, canPost }: { courseId?: string; canPost?: boolean }) {
-  const [items, setItems] = useState<QnaItem[]>(MOCK_QNA);
+export function QnaTab({
+  courseId,
+  canPost,
+  sessionId,
+  posts,
+}: {
+  courseId?: string;
+  canPost?: boolean;
+  sessionId?: string;   // 세션 워크스페이스에서 사용 시 session-scoped Q&A
+  posts?: QnaItem[];    // 외부에서 주입 시 MOCK_QNA 대신 사용
+}) {
+  const [items, setItems] = useState<QnaItem[]>(posts ?? MOCK_QNA);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [writing, setWriting] = useState(false);
 
