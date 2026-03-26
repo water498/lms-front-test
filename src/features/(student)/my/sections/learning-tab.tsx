@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Play, CheckCircle } from "lucide-react";
+import { Play, CheckCircle, PenLine, Award } from "lucide-react";
 import { inProgressCourses, type EnrolledCourse } from "../../home/mockData";
 import { courseDetails, defaultCourseDetail } from "../../courses/mockData";
 
@@ -138,12 +138,28 @@ export function LearningTab() {
                 <p className="text-xs text-zinc-500">{course.instructor}</p>
                 <p className="text-xs text-emerald-500 mt-1">✓ 완료 · {course.lastAccessedAt}</p>
               </div>
-              <button
-                onClick={() => router.push(`/experiments/student/courses/${course.id}`)}
-                className="shrink-0 text-xs text-zinc-500 hover:text-zinc-300 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
-              >
-                다시 보기
-              </button>
+              <div className="shrink-0 flex flex-col gap-1.5">
+                <button
+                  onClick={() => router.push(`/experiments/student/courses/${course.id}`)}
+                  className="text-xs text-zinc-500 hover:text-zinc-300 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
+                >
+                  다시 보기
+                </button>
+                <Link
+                  href={`/experiments/student/courses/${course.id}?tab=reviews`}
+                  className="flex items-center justify-center gap-1 text-xs text-zinc-500 hover:text-violet-400 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
+                >
+                  <PenLine className="w-3 h-3" />
+                  리뷰 작성
+                </Link>
+                <Link
+                  href="/experiments/student/my/certificates"
+                  className="flex items-center justify-center gap-1 text-xs text-zinc-500 hover:text-amber-400 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
+                >
+                  <Award className="w-3 h-3" />
+                  수료증
+                </Link>
+              </div>
             </div>
           ))}
         </div>

@@ -9,6 +9,7 @@ import {
   X,
   CheckCircle2,
   Clock,
+  Lock,
 } from "lucide-react";
 
 interface QnaItem {
@@ -116,7 +117,7 @@ function WriteForm({ onSubmit, onCancel }: WriteFormProps) {
   );
 }
 
-export function QnaTab({ courseId }: { courseId?: string }) {
+export function QnaTab({ courseId, canPost }: { courseId?: string; canPost?: boolean }) {
   const [items, setItems] = useState<QnaItem[]>(MOCK_QNA);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [writing, setWriting] = useState(false);
@@ -165,13 +166,22 @@ export function QnaTab({ courseId }: { courseId?: string }) {
           </div>
         </div>
         {!writing && (
-          <button
-            onClick={() => setWriting(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-sm rounded-lg transition-colors"
-          >
-            <PenLine className="w-3.5 h-3.5" />
-            질문 작성
-          </button>
+          canPost
+            ? (
+              <button
+                onClick={() => setWriting(true)}
+                className="flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-sm rounded-lg transition-colors"
+              >
+                <PenLine className="w-3.5 h-3.5" />
+                질문 작성
+              </button>
+            )
+            : (
+              <p className="flex items-center gap-1 text-xs text-zinc-500">
+                <Lock className="w-3 h-3" />
+                등록된 수강생만 질문을 남길 수 있습니다
+              </p>
+            )
         )}
       </div>
 

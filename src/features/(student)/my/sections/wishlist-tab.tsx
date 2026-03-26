@@ -6,8 +6,14 @@ import { Heart, Star, MapPin, Calendar, Users } from "lucide-react";
 import { courseById } from "../../home/mockData";
 import store from "../../home/store";
 
-export function WishlistTab({ cart, onAddToCart }: { cart: Set<string>; onAddToCart: (id: string) => void }) {
+export function WishlistTab() {
   const [wishlist, setWishlistState] = useState<Set<string>>(store.wishlist);
+  const [cart, setCartState] = useState<Set<string>>(store.cart);
+
+  const addToCart = (id: string) => {
+    store.cart = new Set([...store.cart, id]);
+    setCartState(new Set(store.cart));
+  };
 
   const removeFromWishlist = (id: string) => {
     const next = new Set(store.wishlist);
@@ -95,7 +101,7 @@ export function WishlistTab({ cart, onAddToCart }: { cart: Set<string>; onAddToC
               <div className="flex gap-1.5 mt-1">
                 {(course.price ?? 0) > 0 && (
                   <button
-                    onClick={() => { if (!isInCart) onAddToCart(course.id); }}
+                    onClick={() => { if (!isInCart) addToCart(course.id); }}
                     className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       isInCart
                         ? "bg-zinc-700 text-zinc-500 cursor-default"

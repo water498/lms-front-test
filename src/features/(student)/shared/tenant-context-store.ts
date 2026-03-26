@@ -25,6 +25,11 @@ const B2B_MOCK: TenantContext = {
     sso: true,
     mandatoryCourses: true,
   },
+  currentLearner: {
+    orgTeamId:     "team-dev",
+    orgPositionId: "grade-senior",
+    orgSiteId:     "site-seoul",
+  },
 };
 
 interface TenantContextStore {

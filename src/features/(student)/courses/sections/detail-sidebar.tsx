@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play } from "lucide-react";
+import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play, Users } from "lucide-react";
 import { type Course } from "../../home/mockData";
 import { type CourseSubject } from "@/lib/models";
-import { courseDetails, defaultCourseDetail } from "../mockData";
+import { courseDetails, defaultCourseDetail, sessionsByCourse } from "../mockData";
 import { useTenantContextStore } from "../../shared/tenant-context-store";
+import { matchesOrgFilter } from "../../shared/org-filter";
 
 interface Props {
   course: Course;
@@ -18,7 +20,8 @@ interface Props {
 }
 
 export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart }: Props) {
-  const { features } = useTenantContextStore((s) => s.tenant);
+  const { features, currentLearner } = useTenantContextStore((s) => s.tenant);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const firstActivityId = (() => {
     const detail = courseDetails[course.id] ?? defaultCourseDetail;
     return detail.subjects[0]?.activities[0]?.id ?? "";
@@ -99,20 +102,62 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, onAddToCart 
               )}
             </div>
           ) : (
-            /* B2B: 수강 신청은 관리자 경유 */
+            /* B2B: 수강 가능 차수 선택 */
             <div className="flex flex-col gap-2">
               {course.isRequired && (
                 <span className="text-center text-xs font-semibold px-3 py-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
                   필수 수강 과정
                 </span>
               )}
-              <p className="text-xs text-zinc-500 text-center">
-                수강 신청은 관리자에게 문의하세요
-              </p>
-              <button className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2">
+              {features.orgStructure && (() => {
+                const allSessions = sessionsByCourse[course.id] ?? [];
+                const eligible = allSessions.filter((s) =>
+                  matchesOrgFilter(s.targetAudience, currentLearner ?? {})
+                );
+                if (allSessions.length === 0) return null;
+                if (eligible.length === 0) return (
+                  <p className="text-xs text-zinc-500 text-center py-1">
+                    현재 수강 가능한 차수가 없습니다
+                  </p>
+                );
+                return (
+                  <div className="flex flex-col gap-1.5">
+                    <p className="text-xs text-zinc-400 font-medium">수강 가능한 차수</p>
+                    {eligible.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => setSelectedSessionId(s.id === selectedSessionId ? null : s.id)}
+                        className={`w-full text-left px-3 py-2.5 rounded-xl border text-xs transition-colors ${
+                          selectedSessionId === s.id
+                            ? "border-violet-500 bg-violet-500/10 text-violet-300"
+                            : "border-zinc-700 bg-zinc-800/60 text-zinc-300 hover:border-zinc-600"
+                        }`}
+                      >
+                        <p className="font-medium text-sm mb-0.5">{s.name}</p>
+                        <div className="flex items-center gap-2 text-zinc-500">
+                          {s.startDate && (
+                            <span>{s.startDate} ~ {s.endDate ?? ""}</span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {s.enrolled}/{s.capacity === 0 ? "∞" : s.capacity}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
+              <button
+                disabled={features.orgStructure && (sessionsByCourse[course.id] ?? []).length > 0 && !selectedSessionId}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors flex items-center justify-center gap-2"
+              >
                 <BookOpen className="w-4 h-4" />
                 수강하기
               </button>
+              {features.orgStructure && (sessionsByCourse[course.id] ?? []).length > 0 && !selectedSessionId && (
+                <p className="text-xs text-zinc-500 text-center">차수를 먼저 선택해 주세요</p>
+              )}
             </div>
           )}
 

@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Users, CalendarCheck, ClipboardList } from "lucide-react";
-import { instructorCourses, CURRENT_INSTRUCTOR_ID } from "../shared/mockData";
+import { ArrowLeft, Users, CalendarCheck, ClipboardList, MessageCircle } from "lucide-react";
+import { instructorCourses, qnaPostsBySession, CURRENT_INSTRUCTOR_ID } from "../shared/mockData";
 import StudentsTab from "./tabs/students-tab";
 import AttendanceTab from "./tabs/attendance-tab";
 import GradingTab from "./tabs/grading-tab";
+import QnaTab from "./tabs/qna-tab";
 
-type Tab = "students" | "attendance" | "grading";
+type Tab = "students" | "attendance" | "grading" | "qna";
 
 const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "students",   label: "수강생",  icon: Users },
   { id: "attendance", label: "출결",    icon: CalendarCheck },
   { id: "grading",    label: "채점",    icon: ClipboardList },
+  { id: "qna",        label: "Q&A",     icon: MessageCircle },
 ];
 
 export default function InstructorSessionDetailFeature({ sessionId }: { sessionId: string }) {
@@ -76,6 +78,11 @@ export default function InstructorSessionDetailFeature({ sessionId }: { sessionI
         {activeTab === "students"   && <StudentsTab   sessionId={sessionId} />}
         {activeTab === "attendance" && <AttendanceTab sessionId={sessionId} />}
         {activeTab === "grading"    && <GradingTab    sessionId={sessionId} />}
+        {activeTab === "qna"        && (
+          <div className="p-5">
+            <QnaTab posts={qnaPostsBySession[sessionId] ?? []} />
+          </div>
+        )}
       </div>
     </div>
   );

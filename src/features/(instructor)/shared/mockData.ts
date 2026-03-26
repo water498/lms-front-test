@@ -117,6 +117,75 @@ export interface SubmissionMock {
   gradedAt?: string;
 }
 
+import type { QnaPost } from "@/lib/models";
+
+export const qnaPostsBySession: Record<string, QnaPost[]> = {
+  se2: [
+    {
+      id: "q1",
+      courseSessionId: "se2",
+      learnerId: "u-l1",
+      learnerName: "김지수",
+      title: "3주차 실습 환경 설정이 계속 실패합니다",
+      body: "Node 버전을 18로 올렸는데 pnpm install 중에 계속 에러가 납니다. 에러 메시지는 'EACCES: permission denied' 인데 어떻게 해결하면 될까요?",
+      isHidden: false,
+      createdAt: "2025-03-10T14:23",
+      replies: [],
+    },
+    {
+      id: "q2",
+      courseSessionId: "se2",
+      learnerId: "u-l2",
+      learnerName: "이민아",
+      title: "TypeScript 제네릭 개념이 헷갈려요",
+      body: "강의에서 `T extends object` 부분이 이해가 안 돼요. 왜 그냥 `T`가 아니라 `extends object`를 붙이는 건가요?",
+      isHidden: false,
+      createdAt: "2025-03-09T11:05",
+      replies: [
+        {
+          id: "r1",
+          postId: "q2",
+          instructorId: "u-inst-1",
+          instructorName: "박민준",
+          body: "`T extends object`는 T가 반드시 객체 타입이어야 함을 제약하는 거예요. 원시값(string, number 등)은 들어올 수 없게 막아줍니다. 예를 들어 `T`만 쓰면 `T = string`도 허용되는데, 그러면 `T['key']` 같은 객체 접근이 불가능해서 타입 에러가 생기죠.",
+          createdAt: "2025-03-09T16:30",
+        },
+      ],
+    },
+    {
+      id: "q3",
+      courseSessionId: "se2",
+      learnerId: "u-l3",
+      learnerName: "박현우",
+      title: "과제 제출 기한 연장 가능한가요?",
+      body: "이번 주 업무가 많아서 과제 제출을 이틀 정도 늦게 해도 될까요? 기능 구현은 거의 다 됐는데 테스트 코드 작성이 남아있어요.",
+      isHidden: false,
+      createdAt: "2025-03-07T22:50",
+      replies: [
+        {
+          id: "r2",
+          postId: "q3",
+          instructorId: "u-inst-1",
+          instructorName: "박민준",
+          body: "네, 이틀 연장 허용합니다. 3월 10일 자정까지 제출해 주세요. 테스트 코드는 최소 주요 기능 2개 이상 커버해주시면 됩니다.",
+          createdAt: "2025-03-08T09:15",
+        },
+      ],
+    },
+    {
+      id: "q4",
+      courseSessionId: "se2",
+      learnerId: "u-l5",
+      learnerName: "오서준",
+      title: "useEffect 의존성 배열 관련 질문",
+      body: "ESLint에서 계속 'React Hook useEffect has a missing dependency' 경고가 뜨는데, 의존성 배열에 함수를 넣으면 무한루프가 생겨요. useCallback으로 감싸야 하는 건가요?",
+      isHidden: false,
+      createdAt: "2025-03-11T10:40",
+      replies: [],
+    },
+  ],
+};
+
 export const submissionsBySession: Record<string, SubmissionMock[]> = {
   se2: [
     { id: "sub1", userId: "u-l1", name: "김지수", assignmentTitle: "Todo 앱 구현", submittedAt: "2025-03-08T22:10", fileUrl: "https://example.com/sub1.zip", grade: null,  feedback: null },

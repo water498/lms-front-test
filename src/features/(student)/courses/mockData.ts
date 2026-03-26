@@ -1,4 +1,4 @@
-import type { CourseSubject, InstructorProfile, CourseReview } from "@/lib/models";
+import type { CourseSubject, InstructorProfile, CourseReview, CourseSession } from "@/lib/models";
 
 export interface CourseDetail {
   description: string;
@@ -7,6 +7,7 @@ export interface CourseDetail {
   subjects: CourseSubject[];
   instructor: InstructorProfile;
   reviews: CourseReview[];
+  sessions?: CourseSession[];
 }
 
 // ── Instructors ─────────────────────────────────────────────────────────────
@@ -294,4 +295,72 @@ export const defaultCourseDetail: CourseDetail = {
   ],
   instructor: instructorKimMinjun,
   reviews: [],
+};
+
+// ── 과정별 차수 (B2B 수강 대상 필터 데모용) ──────────────────────────────────
+
+export const sessionsByCourse: Record<string, CourseSession[]> = {
+  "hero-1": [
+    {
+      id: "se-h1-1",
+      courseId: "hero-1",
+      name: "2025 2분기 — 개발팀 대상",
+      type: "COHORT",
+      cohortNumber: 3,
+      startDate: "2025-04-07",
+      endDate: "2025-05-30",
+      capacity: 30,
+      enrolled: 18,
+      status: "OPEN",
+      visible: true,
+      forSale: false,
+      instructors: [{ name: "김민준", role: "PRIMARY" }],
+      completionThreshold: 80,
+      targetAudience: {
+        departments: ["team-dev"],
+        jobGrades: [],
+        sites: ["site-seoul"],
+      },
+    },
+    {
+      id: "se-h1-2",
+      courseId: "hero-1",
+      name: "2025 2분기 — 전체 대상",
+      type: "COHORT",
+      cohortNumber: 4,
+      startDate: "2025-04-14",
+      endDate: "2025-06-06",
+      capacity: 50,
+      enrolled: 12,
+      status: "OPEN",
+      visible: true,
+      forSale: false,
+      instructors: [{ name: "김민준", role: "PRIMARY" }],
+      completionThreshold: 80,
+      targetAudience: undefined,
+    },
+  ],
+  "hero-2": [
+    {
+      id: "se-h2-1",
+      courseId: "hero-2",
+      name: "2025 2분기",
+      type: "COHORT",
+      cohortNumber: 2,
+      startDate: "2025-04-01",
+      endDate: "2025-05-16",
+      capacity: 40,
+      enrolled: 35,
+      status: "OPEN",
+      visible: true,
+      forSale: false,
+      instructors: [{ name: "이서연", role: "PRIMARY" }],
+      completionThreshold: 70,
+      targetAudience: {
+        departments: ["team-design", "team-pm"],
+        jobGrades: [],
+        sites: [],
+      },
+    },
+  ],
 };

@@ -306,6 +306,7 @@ const MOCK_INSTRUCTOR_PROFILE = {
   career: "2019–현재 스타트업 CTO\n2016–2019 네이버 소프트웨어 엔지니어",
   websiteUrl: "https://example.com",
   isPublic: true,
+  isExternal: false,
 };
 
 function InstructorProfileSection() {
@@ -336,6 +337,7 @@ function InstructorProfileSection() {
         {[
           { label: "한 줄 소개", value: p.headline },
           { label: "전문 분야",  value: p.specialty },
+          { label: "강사 유형",  value: p.isExternal ? "외부 강사" : "내부 강사" },
           { label: "웹사이트",   value: p.websiteUrl },
         ].map(({ label, value }) => (
           <div key={label} className="flex justify-between text-sm">

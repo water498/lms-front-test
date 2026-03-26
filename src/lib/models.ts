@@ -564,6 +564,7 @@ export interface InstructorProfile {
   affiliatedCompany?: string;
   websiteUrl?: string;
   isPublic?: boolean; // false이면 수강생에게 숨김
+  isExternal?: boolean; // 외부 강사 여부. false=내부 강사, true=외부 초빙 강사. default false
   updatedAt?: string;
   // ── UI 전용 (실험 단계, API 연동 시 별도 DTO로 분리) ──
   id?: string;
@@ -1265,6 +1266,12 @@ export interface TenantContext {
     sso: boolean;                 // [B2B only] SSO 설정
     mandatoryCourses: boolean;    // [B2B only] 필수 수강
   };
+  /** 현재 로그인한 학습자의 조직 속성 — B2B only. B2C에서는 undefined */
+  currentLearner?: {
+    orgTeamId?: string;
+    orgPositionId?: string;
+    orgSiteId?: string;
+  };
 }
 
 // ── 법적 문서 ─────────────────────────────────────────────
@@ -1281,4 +1288,27 @@ export interface LegalDocument {
   effectiveAt: string;
   isActive: boolean;
   createdAt: string;
+}
+
+// ─── Q&A ───────────────────────────────────────────────────────────────────────
+
+export interface QnaReply {
+  id: string;
+  postId: string;
+  instructorId: string;
+  instructorName: string; // UI 전용 스냅샷
+  body: string;
+  createdAt: string;
+}
+
+export interface QnaPost {
+  id: string;
+  courseSessionId: string;
+  learnerId: string;
+  learnerName: string; // UI 전용 스냅샷
+  title: string;
+  body: string;
+  isHidden: boolean;
+  createdAt: string;
+  replies: QnaReply[];
 }

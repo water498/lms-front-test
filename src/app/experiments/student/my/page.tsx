@@ -1,5 +1,5 @@
-import MyFeature from "@/features/(student)/my/feature";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return <MyFeature />;
+export default function MyPage() {
+  redirect("/experiments/student/my/learning");
 }

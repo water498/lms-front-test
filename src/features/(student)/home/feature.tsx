@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Star, TrendingUp, ClipboardList } from "lucide-react";
+import { Play, Star, TrendingUp, ClipboardList, Building2 } from "lucide-react";
 import { Navbar } from "./components/navbar";
 import { Footer } from "./components/footer";
 import { HeroBanner } from "./sections/hero-banner";
@@ -11,7 +11,7 @@ import { StatsWidget } from "./sections/stats-widget";
 import { AnnouncementGrid } from "./sections/announcement-grid";
 import { ContextPanel } from "./sections/context-panel";
 import { type CardActions } from "./components/course-card";
-import { inProgressCourses, recommendedCourses, popularCourses, requiredCourses } from "./mockData";
+import { inProgressCourses, recommendedCourses, popularCourses, requiredCourses, deptTargetedCourses } from "./mockData";
 import store from "./store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 import { useTenantContextStore } from "../shared/tenant-context-store";
@@ -50,6 +50,19 @@ export default function StudentFeature() {
               title="필수 수강 과정"
               icon={<ClipboardList className="w-5 h-5" />}
               courses={requiredCourses}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 내 부서 대상 과정 — [B2B + orgStructure only] */}
+      {features.orgStructure && deptTargetedCourses.length > 0 && (
+        <div className="bg-violet-950/10 border-b border-violet-900/20">
+          <div className="max-w-screen-xl mx-auto px-6 py-8">
+            <ScrollSection
+              title="내 부서 대상 과정"
+              icon={<Building2 className="w-5 h-5" />}
+              courses={deptTargetedCourses}
             />
           </div>
         </div>

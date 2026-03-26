@@ -462,6 +462,16 @@ export const userStats: UserStats = {
 
 export const requiredCourses: Course[] = allCourses.filter((c) => c.isRequired);
 
+// ── 내 부서 대상 과정 (B2B orgStructure) — 개발팀 mock ──────────────────────
+// 실제 구현에서는 서버가 learner.orgTeamId 기준으로 필터링한 결과를 반환.
+// 여기서는 개발팀(team-dev) 대상으로 지정된 과정을 수동 큐레이션.
+export const deptTargetedCourses: Course[] = [
+  allCourses.find((c) => c.id === "hero-1")!,
+  allCourses.find((c) => c.id === "r-1")!,
+  allCourses.find((c) => c.id === "r-4")!,
+  allCourses.find((c) => c.id === "r-6")!,
+].filter(Boolean);
+
 // ── Announcements ──────────────────────────────────────────────────────────
 
 export const announcements: OrgAnnouncement[] = [

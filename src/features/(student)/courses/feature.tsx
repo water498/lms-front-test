@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Navbar } from "../home/components/navbar";
 import { Footer } from "../home/components/footer";
@@ -13,6 +13,7 @@ import { ReviewsTab } from "./sections/reviews-tab";
 import { QnaTab } from "./sections/qna-tab";
 import { DetailSidebar } from "./sections/detail-sidebar";
 import { allCourses, inProgressCourses } from "../home/mockData";
+import { completedCourseMock } from "../my/sections/learning-tab";
 import { courseDetails, defaultCourseDetail } from "./mockData";
 import store from "../home/store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
@@ -30,16 +31,26 @@ interface Props {
   courseId: string;
 }
 
+const VALID_TABS: Tab[] = ["intro", "curriculum", "instructor", "reviews", "qna"];
+
 export default function B2cCourseDetailFeature({ courseId }: Props) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<Tab>("intro");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as Tab | null;
+  const [activeTab, setActiveTab] = useState<Tab>(
+    tabParam && VALID_TABS.includes(tabParam) ? tabParam : "intro"
+  );
   const [cart, setCartState] = useState<Set<string>>(store.cart);
   const [wishlist, setWishlistState] = useState<Set<string>>(store.wishlist);
 
-  const allCoursesList = [...allCourses, ...inProgressCourses];
+  const allCoursesList = [...allCourses, ...inProgressCourses, ...completedCourseMock];
   const course = allCoursesList.find((c) => c.id === courseId);
   const detail = courseDetails[courseId] ?? defaultCourseDetail;
-  const isEnrolled = inProgressCourses.some((c) => c.id === courseId);
+
+  const isActive = inProgressCourses.some((c) => c.id === courseId);
+  const isCompleted = completedCourseMock.some((c) => c.id === courseId);
+  const canPostQna = isActive || isCompleted;
+  const isEnrolled = isActive;
 
   const addToCart = (id: string) => {
     store.cart = new Set([...store.cart, id]);
@@ -122,11 +133,11 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
             <ReviewsTab
               reviews={detail.reviews}
               averageRating={averageRating}
-              isEnrolled={isEnrolled}
+              canWrite={isCompleted}
               courseId={courseId}
             />
           )}
-          {activeTab === "qna" && <QnaTab courseId={courseId} />}
+          {activeTab === "qna" && <QnaTab courseId={courseId} canPost={canPostQna} />}
         </div>
 
         {/* Right: sidebar */}

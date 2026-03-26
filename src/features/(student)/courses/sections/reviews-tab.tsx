@@ -7,7 +7,7 @@ import { type CourseReview } from "@/lib/models";
 interface Props {
   reviews: CourseReview[];
   averageRating: number;
-  isEnrolled?: boolean;
+  canWrite?: boolean;
   courseId?: string;
 }
 
@@ -43,7 +43,7 @@ function InteractiveStar({ value, hovered, filled, onHover, onClick }: {
   );
 }
 
-export function ReviewsTab({ reviews: initialReviews, averageRating: initialAvg, isEnrolled, courseId }: Props) {
+export function ReviewsTab({ reviews: initialReviews, averageRating: initialAvg, canWrite, courseId }: Props) {
   const [reviews, setReviews] = useState(initialReviews);
   const [showModal, setShowModal] = useState(false);
   const [hovered, setHovered] = useState(0);
@@ -83,15 +83,20 @@ export function ReviewsTab({ reviews: initialReviews, averageRating: initialAvg,
     <div>
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-base font-semibold text-white">수강생 리뷰</h2>
-        {(isEnrolled ?? true) && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-sm rounded-lg transition-colors"
-          >
-            <PenLine className="w-3.5 h-3.5" />
-            리뷰 작성
-          </button>
-        )}
+        {canWrite
+          ? (
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 text-sm rounded-lg transition-colors"
+            >
+              <PenLine className="w-3.5 h-3.5" />
+              리뷰 작성
+            </button>
+          )
+          : (
+            <p className="text-xs text-zinc-500">과정 완료 후 리뷰를 작성할 수 있습니다</p>
+          )
+        }
       </div>
 
       {/* Rating summary */}
