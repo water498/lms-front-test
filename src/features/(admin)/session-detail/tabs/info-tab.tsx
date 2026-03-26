@@ -63,6 +63,8 @@ interface DraftState {
   status: SessionStatus;
   startDate: string;
   endDate: string;
+  enrollmentStartDate: string;
+  enrollmentEndDate: string;
   capacity: string;
   instructors: CourseInstructor[];
   location: string;
@@ -81,6 +83,8 @@ function toDraft(s: CourseSession): DraftState {
     status: s.status,
     startDate: s.startDate ?? "",
     endDate: s.endDate ?? "",
+    enrollmentStartDate: s.enrollmentStartDate ?? "",
+    enrollmentEndDate: s.enrollmentEndDate ?? "",
     capacity: String(s.capacity),
     instructors: s.instructors,
     location: s.location ?? "",
@@ -131,6 +135,8 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       status: draft.status,
       startDate: draft.startDate || undefined,
       endDate: draft.endDate || undefined,
+      enrollmentStartDate: draft.enrollmentStartDate || undefined,
+      enrollmentEndDate: draft.enrollmentEndDate || undefined,
       capacity: Number(draft.capacity),
       instructors: draft.instructors,
       location: draft.location || undefined,
@@ -267,6 +273,28 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
                   type="date"
                   value={draft.endDate}
                   onChange={(e) => set("endDate", e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-500">
+                  수강신청 시작일 <span className="font-normal text-slate-400">(빈 값 = OPEN 즉시)</span>
+                </label>
+                <input
+                  type="date"
+                  value={draft.enrollmentStartDate}
+                  onChange={(e) => set("enrollmentStartDate", e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-500">
+                  수강신청 마감일 <span className="font-normal text-slate-400">(빈 값 = 시작일 전까지)</span>
+                </label>
+                <input
+                  type="date"
+                  value={draft.enrollmentEndDate}
+                  onChange={(e) => set("enrollmentEndDate", e.target.value)}
                   className={inputCls}
                 />
               </div>
@@ -446,6 +474,17 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
           <Field label="유형">{typeLabel}</Field>
           <Field label="기간">{periodLabel}</Field>
+          {session.type === "COHORT" && (
+            <Field label="수강신청 기간">
+              {session.enrollmentStartDate || session.enrollmentEndDate ? (
+                <span>
+                  {session.enrollmentStartDate ?? "—"} ~ {session.enrollmentEndDate ?? "시작일 전까지"}
+                </span>
+              ) : (
+                <span className="text-slate-400">OPEN 전환 시 즉시</span>
+              )}
+            </Field>
+          )}
           <Field label="정원 / 수강">{capacityLabel}</Field>
           <Field label="강사">
             {(() => {

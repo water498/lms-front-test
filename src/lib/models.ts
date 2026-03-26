@@ -681,6 +681,8 @@ export interface CourseSession {
   cohortNumber?: number;
   startDate?: string;
   endDate?: string;
+  enrollmentStartDate?: string; // 수강신청 시작일. 없으면 OPEN 즉시 허용
+  enrollmentEndDate?: string;   // 수강신청 마감일. 없으면 startDate 전까지 허용
   capacity: number; // 0 = 무제한
   enrolled: number;
   status: SessionStatus;
