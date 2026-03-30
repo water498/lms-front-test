@@ -1,7 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Bell } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, LogOut } from "lucide-react";
+import { usePlatformAdminAuthStore } from "../shared/auth-store";
 
 const PAGE_TITLE_MAP: { prefix: string; label: string }[] = [
   { prefix: "/experiments/platform-admin/tenants/", label: "기업 상세" },
@@ -12,8 +13,15 @@ const PAGE_TITLE_MAP: { prefix: string; label: string }[] = [
 
 export default function PlatformAdminTopbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = usePlatformAdminAuthStore();
   const title =
     PAGE_TITLE_MAP.find((m) => pathname.startsWith(m.prefix))?.label ?? "Platform Admin";
+
+  function handleLogout() {
+    logout();
+    router.push("/experiments/platform-admin/login");
+  }
 
   return (
     <header className="fixed top-0 left-60 right-0 h-14 bg-white border-b border-slate-200 flex items-center px-6 gap-4 z-20">
@@ -27,6 +35,9 @@ export default function PlatformAdminTopbar() {
           운
         </div>
         <span className="text-sm text-slate-700 font-medium">운영팀</span>
+        <button onClick={handleLogout} className="ml-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <LogOut size={15} />
+        </button>
       </div>
     </header>
   );

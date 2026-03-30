@@ -13,24 +13,17 @@ export function Footer() {
               LMS 플랫폼 개발 전 UI/UX 프로토타입 실험 페이지입니다.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
+          <div className="grid grid-cols-2 gap-8 text-sm">
             <div className="flex flex-col gap-2">
               <p className="text-zinc-400 font-medium mb-1">서비스</p>
-              {["강의 탐색", "로드맵", "수료증", "기업 교육"].map((t) => (
-                <button key={t} className="text-zinc-600 hover:text-zinc-400 text-left transition-colors">{t}</button>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-zinc-400 font-medium mb-1">지원</p>
-              {["고객센터", "FAQ", "공지사항", "이벤트"].map((t) => (
-                <button key={t} className="text-zinc-600 hover:text-zinc-400 text-left transition-colors">{t}</button>
-              ))}
+              <Link href="/experiments/student/search" className="text-zinc-600 hover:text-zinc-400 transition-colors">강의 탐색</Link>
+              <Link href="/experiments/student/announcements" className="text-zinc-600 hover:text-zinc-400 transition-colors">공지사항</Link>
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-zinc-400 font-medium mb-1">약관</p>
-              {["이용약관", "개인정보처리방침", "운영정책"].map((t) => (
-                <button key={t} className="text-zinc-600 hover:text-zinc-400 text-left transition-colors">{t}</button>
-              ))}
+              <Link href="/experiments/student/terms" className="text-zinc-600 hover:text-zinc-400 transition-colors">이용약관</Link>
+              <Link href="/experiments/student/terms?tab=privacy" className="text-zinc-600 hover:text-zinc-400 transition-colors">개인정보처리방침</Link>
+              <Link href="/experiments/student/terms?tab=policy" className="text-zinc-600 hover:text-zinc-400 transition-colors">운영정책</Link>
             </div>
           </div>
         </div>

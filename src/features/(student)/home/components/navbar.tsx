@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTenantContextStore } from "../../shared/tenant-context-store";
+import { useStudentAuthStore } from "../../shared/auth-store";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -18,6 +19,7 @@ import {
   Settings,
   CheckCheck,
   GraduationCap,
+  LogOut,
 } from "lucide-react";
 
 // Mock: 현재 사용자 역할
@@ -99,6 +101,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
   const router = useRouter();
   const { tenant, switchTenant } = useTenantContextStore();
   const { features } = tenant;
+  const { isLoggedIn, logout } = useStudentAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -182,9 +185,6 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             )}
           </div>
 
-          <button className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
-            로드맵
-          </button>
         </div>
 
         {/* Right side */}
@@ -336,18 +336,34 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             </Link>
           )}
 
-          {/* My page */}
-          <Link
-            href="/experiments/student/my"
-            className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
-          >
-            <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
-              <User className="w-4 h-4 text-white" />
+          {/* My page / Login */}
+          {isLoggedIn ? (
+            <div className="flex items-center gap-1">
+              <Link
+                href="/experiments/student/my"
+                className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+              >
+                <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm text-zinc-300 hidden md:block">홍길동</span>
+              </Link>
+              <button
+                onClick={() => logout()}
+                className="p-2 text-zinc-500 hover:text-zinc-300 rounded-lg hover:bg-zinc-800 transition-colors"
+                title="로그아웃"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <span className="text-sm text-zinc-300 hidden md:block">
-              홍길동
-            </span>
-          </Link>
+          ) : (
+            <Link
+              href="/experiments/student/login"
+              className="px-4 py-1.5 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition-colors"
+            >
+              로그인
+            </Link>
+          )}
 
           {/* DEV: Tenant Switcher */}
           <div className="hidden md:flex items-center gap-1 ml-2 px-2 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50">

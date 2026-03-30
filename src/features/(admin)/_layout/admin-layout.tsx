@@ -1,16 +1,27 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Sidebar from "./sidebar";
 import Topbar from "./topbar";
 import ImpersonationBanner from "./impersonation-banner";
+import { useAdminAuthStore } from "../shared/auth-store";
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { isLoggedIn } = useAdminAuthStore();
   const searchParams = useSearchParams();
   const tenantId = searchParams.get("impersonateTenantId");
   const tenantName = searchParams.get("impersonateTenantName") ?? "";
   const isImpersonating = !!tenantId;
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.replace("/experiments/admin/login");
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) return <div className="min-h-screen bg-slate-50" />;
 
   return (
     <div className="min-h-screen bg-slate-50">

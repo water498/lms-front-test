@@ -1,7 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Bell, Info } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, Info, LogOut } from "lucide-react";
+import { useAdminAuthStore } from "../shared/auth-store";
 
 const PAGE_TITLE_MAP: {
   prefix: string;
@@ -132,9 +133,16 @@ export default function Topbar({
   isImpersonating?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAdminAuthStore();
   const match = PAGE_TITLE_MAP.find((m) => pathname.startsWith(m.prefix));
   const title = match?.label ?? "관리자";
   const description = match?.description;
+
+  function handleLogout() {
+    logout();
+    router.push("/experiments/admin/login");
+  }
 
   return (
     <header
@@ -164,6 +172,9 @@ export default function Topbar({
           관
         </div>
         <span className="text-sm text-slate-700 font-medium">관리자</span>
+        <button onClick={handleLogout} className="ml-1 text-slate-400 hover:text-slate-600 transition-colors">
+          <LogOut size={15} />
+        </button>
       </div>
     </header>
   );

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useInstructorAuthStore } from "../shared/auth-store";
 import {
   LayoutDashboard,
   BookOpen,
@@ -28,6 +29,13 @@ const NAV_ITEMS = [
 
 export default function InstructorSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useInstructorAuthStore();
+
+  function handleLogout() {
+    logout();
+    router.push("/experiments/instructor/login");
+  }
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return pathname === href;
@@ -81,7 +89,7 @@ export default function InstructorSidebar() {
             ← 수강생 웹으로
           </Link>
         </div>
-        <button className="text-zinc-500 hover:text-zinc-300 transition-colors">
+        <button onClick={handleLogout} className="text-zinc-500 hover:text-zinc-300 transition-colors">
           <LogOut size={14} />
         </button>
       </div>

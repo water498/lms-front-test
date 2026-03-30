@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
   User,
@@ -16,7 +16,9 @@ import {
   Settings,
   X,
   Sparkles,
+  LogOut,
 } from "lucide-react";
+import { useStudentAuthStore } from "../shared/auth-store";
 import { inProgressCourses } from "../home/mockData";
 import { completedCourseMock } from "./sections/learning-tab";
 import store from "../home/store";
@@ -26,6 +28,7 @@ import { useTenantContextStore } from "../shared/tenant-context-store";
 
 function MyNavbar() {
   const { features } = useTenantContextStore((s) => s.tenant);
+  const { isLoggedIn, logout } = useStudentAuthStore();
   const [cartCount] = useState(store.cart.size);
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
@@ -60,14 +63,30 @@ function MyNavbar() {
               )}
             </Link>
           )}
-          <div className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-zinc-800">
-            <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
-              <User className="w-4 h-4 text-white" />
+          {isLoggedIn ? (
+            <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg bg-zinc-800">
+                <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-sm text-zinc-300 hidden md:block">홍길동</span>
+              </div>
+              <button
+                onClick={() => logout()}
+                className="p-2 text-zinc-500 hover:text-zinc-300 rounded-lg hover:bg-zinc-800 transition-colors"
+                title="로그아웃"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <span className="text-sm text-zinc-300 hidden md:block">
-              홍길동
-            </span>
-          </div>
+          ) : (
+            <Link
+              href="/experiments/student/login"
+              className="px-4 py-1.5 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition-colors"
+            >
+              로그인
+            </Link>
+          )}
         </div>
       </div>
     </nav>
@@ -228,8 +247,10 @@ function InstructorApplyModal({ onClose }: { onClose: () => void }) {
 
 export default function MyShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [showApplyModal, setShowApplyModal] = useState(false);
   const { features } = useTenantContextStore((s) => s.tenant);
+  const { isLoggedIn, logout } = useStudentAuthStore();
 
   const tabs = ALL_TABS.filter(
     (tab) => !tab.featureFlag || features[tab.featureFlag],
@@ -246,6 +267,44 @@ export default function MyShell({ children }: { children: React.ReactNode }) {
     <>
       <div className="bg-zinc-950 text-white min-h-screen">
         <MyNavbar />
+
+        {/* 비로그인 가드 모달 */}
+        {!isLoggedIn && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-8 text-center flex flex-col items-center gap-5">
+              <div className="w-14 h-14 rounded-full bg-violet-600/20 flex items-center justify-center">
+                <User className="w-7 h-7 text-violet-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white mb-2">로그인이 필요합니다</h2>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  학습 현황, 수료증, 마이페이지 이용을 위해<br />
+                  로그인해 주세요
+                </p>
+              </div>
+              <div className="flex flex-col gap-2.5 w-full">
+                <button
+                  onClick={() => router.push("/experiments/student/login")}
+                  className="w-full py-2.5 bg-violet-600 text-white rounded-xl text-sm font-semibold hover:bg-violet-500 transition-colors"
+                >
+                  로그인하기
+                </button>
+                <Link
+                  href="/experiments/student/register"
+                  className="w-full py-2.5 border border-zinc-700 text-zinc-300 rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors text-center"
+                >
+                  회원가입
+                </Link>
+                <button
+                  onClick={() => router.push("/experiments/student")}
+                  className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors mt-1"
+                >
+                  나중에 하기
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="max-w-screen-xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8 items-start">
           {/* Left sidebar */}
@@ -302,6 +361,16 @@ export default function MyShell({ children }: { children: React.ReactNode }) {
               >
                 <Sparkles className="w-4 h-4 shrink-0" />
                 강사로 활동하기
+              </button>
+            )}
+
+            {isLoggedIn && (
+              <button
+                onClick={() => { logout(); router.push("/experiments/student"); }}
+                className="mt-2 w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 transition-colors text-sm"
+              >
+                <LogOut className="w-4 h-4 shrink-0" />
+                로그아웃
               </button>
             )}
           </aside>

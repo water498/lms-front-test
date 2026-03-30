@@ -1,15 +1,21 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import InstructorSidebar from "./sidebar";
-
-// Mock: 현재 사용자 역할
-const CURRENT_USER_ROLES = ["STUDENT", "INSTRUCTOR"];
+import { useInstructorAuthStore } from "../shared/auth-store";
 
 export default function InstructorLayout({ children }: { children: React.ReactNode }) {
-  if (!CURRENT_USER_ROLES.includes("INSTRUCTOR")) {
-    redirect("/experiments/student");
-  }
+  const router = useRouter();
+  const { isLoggedIn } = useInstructorAuthStore();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.replace("/experiments/instructor/login");
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) return <div className="bg-zinc-900 min-h-screen" />;
 
   return (
     <div className="bg-zinc-900 min-h-screen text-white">
