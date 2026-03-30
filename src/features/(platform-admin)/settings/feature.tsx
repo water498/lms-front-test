@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import GeneralTab from "./tabs/general-tab";
-import SecurityTab from "./tabs/security-tab";
-import NotificationsTab from "./tabs/notifications-tab";
 import AuditLogTab from "./tabs/audit-log-tab";
 
 const TABS = [
-  { id: "general",       label: "일반" },
-  { id: "security",      label: "보안" },
-  { id: "notifications", label: "알림" },
-  { id: "auditlog",      label: "감사 로그" },
+  { id: "general",  label: "일반" },
+  { id: "auditlog", label: "감사 로그" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -39,10 +35,8 @@ export default function PlatformSettingsFeature() {
 
       {/* Tab content */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        {activeTab === "general"       && <GeneralTab />}
-        {activeTab === "security"      && <SecurityTab />}
-        {activeTab === "notifications" && <NotificationsTab />}
-        {activeTab === "auditlog"      && <AuditLogTab />}
+        {activeTab === "general"  && <GeneralTab />}
+        {activeTab === "auditlog" && <AuditLogTab />}
       </div>
     </div>
   );

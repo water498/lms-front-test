@@ -5,10 +5,12 @@ import { useTenantContextStore } from "../shared/tenant-context-store";
 import GeneralTab from "./sections/general-tab";
 import OrgStructureTab from "./sections/org-structure-tab";
 import AuditLogTab from "./sections/audit-log-tab";
+import AccessTab from "./sections/access-tab";
 
 const TABS = [
   { id: "general", label: "일반" },
   { id: "org",     label: "조직 구조" },
+  { id: "access",  label: "접근 관리" },
   { id: "audit",   label: "감사로그" },
 ] as const;
 
@@ -18,13 +20,18 @@ export default function SettingsFeature() {
   const { tenant } = useTenantContextStore();
   const { features } = tenant;
 
-  const visibleTabs = TABS.filter(
-    (tab) => tab.id !== "org" || features.orgStructure
-  );
+  const visibleTabs = TABS.filter((tab) => {
+    if (tab.id === "org")    return features.orgStructure;
+    if (tab.id === "access") return features.sso;
+    return true;
+  });
 
   const [activeTab, setActiveTab] = useState<TabId>("general");
   const resolvedTab =
-    activeTab === "org" && !features.orgStructure ? "general" : activeTab;
+    (activeTab === "org"    && !features.orgStructure) ||
+    (activeTab === "access" && !features.sso)
+      ? "general"
+      : activeTab;
 
   return (
     <div className="flex flex-col gap-5">
@@ -49,6 +56,7 @@ export default function SettingsFeature() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         {resolvedTab === "general" && <GeneralTab />}
         {resolvedTab === "org"     && <OrgStructureTab />}
+        {resolvedTab === "access"  && <AccessTab />}
         {resolvedTab === "audit"   && <AuditLogTab />}
       </div>
     </div>

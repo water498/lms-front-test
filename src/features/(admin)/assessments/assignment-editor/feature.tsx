@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Plus, Trash2 } from "lucide-react";
-import { type AssignmentTemplate, type SubmissionType, type RubricItem, assignmentTemplates } from "../mockData";
+import { type AssignmentTemplate, type SubmissionType, type AssignmentRubricItem, assignmentTemplates } from "../mockData";
 import RichEditor from "../../shared/rich-editor";
 
 const SUBMISSION_LABELS: Record<SubmissionType, string> = {
@@ -36,20 +36,20 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
   const [title, setTitle]                   = useState(src.title);
   const [submissionType, setSubmissionType] = useState<SubmissionType>(src.submissionType);
   const [instructions, setInstructions]     = useState(src.instructions);
-  const [rubric, setRubric]                 = useState<RubricItem[]>(src.rubric);
+  const [rubric, setRubric]                 = useState<AssignmentRubricItem[]>(src.rubric);
   const [section, setSection]               = useState<Section>("instructions");
 
   const totalPoints = rubric.reduce((sum, r) => sum + r.points, 0);
 
-  function addRubricItem() {
+  function addAssignmentRubricItem() {
     setRubric((r) => [...r, { id: makeId(), criteria: "", points: 0, order: r.length + 1 }]);
   }
 
-  function updateRubricItem(id: string, patch: Partial<RubricItem>) {
+  function updateAssignmentRubricItem(id: string, patch: Partial<AssignmentRubricItem>) {
     setRubric((r) => r.map((item) => item.id === id ? { ...item, ...patch } : item));
   }
 
-  function deleteRubricItem(id: string) {
+  function deleteAssignmentRubricItem(id: string) {
     setRubric((r) => r.filter((item) => item.id !== id));
   }
 
@@ -144,7 +144,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
                   <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
                     <p className="text-sm text-slate-400">루브릭 항목이 없습니다</p>
                     <button
-                      onClick={addRubricItem}
+                      onClick={addAssignmentRubricItem}
                       className="px-4 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors"
                     >
                       + 항목 추가
@@ -168,7 +168,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
                                 className="w-full text-sm text-slate-700 bg-transparent focus:outline-none placeholder:text-slate-300 border-b border-transparent focus:border-violet-300 pb-0.5"
                                 placeholder="평가 항목명"
                                 value={item.criteria}
-                                onChange={(e) => updateRubricItem(item.id, { criteria: e.target.value })}
+                                onChange={(e) => updateAssignmentRubricItem(item.id, { criteria: e.target.value })}
                               />
                             </td>
                             <td className="px-4 py-2.5">
@@ -177,12 +177,12 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
                                 className="w-full text-right text-sm text-slate-700 bg-transparent focus:outline-none border-b border-transparent focus:border-violet-300 pb-0.5"
                                 value={item.points}
                                 min={0}
-                                onChange={(e) => updateRubricItem(item.id, { points: Number(e.target.value) })}
+                                onChange={(e) => updateAssignmentRubricItem(item.id, { points: Number(e.target.value) })}
                               />
                             </td>
                             <td className="px-3 py-2.5 text-center">
                               <button
-                                onClick={() => deleteRubricItem(item.id)}
+                                onClick={() => deleteAssignmentRubricItem(item.id)}
                                 className="text-slate-300 hover:text-red-400 transition-colors"
                               >
                                 <Trash2 size={13} />
@@ -194,7 +194,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
                     </table>
                     <div className="px-6 py-3 border-t border-slate-100">
                       <button
-                        onClick={addRubricItem}
+                        onClick={addAssignmentRubricItem}
                         className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-700 transition-colors"
                       >
                         <Plus size={13} /> 항목 추가

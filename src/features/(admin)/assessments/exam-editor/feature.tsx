@@ -6,7 +6,7 @@ import { ChevronLeft, Plus, Trash2, X } from "lucide-react";
 import {
   type ExamTemplate,
   type ExamSubType,
-  type CompositionRule,
+  type QuestionCompositionRule,
   examTemplates,
   bankQuestions,
 } from "../mockData";
@@ -15,7 +15,7 @@ function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newRule(): CompositionRule {
+function newRule(): QuestionCompositionRule {
   return { id: makeId(), label: "", tagFilter: [], count: 5, shuffle: true };
 }
 
@@ -40,14 +40,14 @@ export default function ExamEditorFeature({ examId }: Props) {
   const [timeLimit, setTimeLimit]       = useState<string>(src.timeLimit?.toString() ?? "");
   const [maxAttempts, setMaxAttempts]   = useState<string>(src.maxAttempts?.toString() ?? "");
   const [unlimitedAttempts, setUnlimitedAttempts] = useState(src.maxAttempts === null);
-  const [rules, setRules]               = useState<CompositionRule[]>(src.rules);
+  const [rules, setRules]               = useState<QuestionCompositionRule[]>(src.rules);
   const [selectedId, setSelectedId]     = useState<string | null>(src.rules[0]?.id ?? null);
   const [tagInput, setTagInput]         = useState("");
 
   const selected = rules.find((r) => r.id === selectedId) ?? null;
   const totalQ   = rules.reduce((s, r) => s + r.count, 0);
 
-  function updateRule(id: string, patch: Partial<CompositionRule>) {
+  function updateRule(id: string, patch: Partial<QuestionCompositionRule>) {
     setRules((rs) => rs.map((r) => r.id === id ? { ...r, ...patch } : r));
   }
 
@@ -77,14 +77,14 @@ export default function ExamEditorFeature({ examId }: Props) {
 
   function removeTag(ruleId: string, tag: string) {
     setRules((rs) => rs.map((r) =>
-      r.id !== ruleId ? r : { ...r, tagFilter: r.tagFilter.filter((t) => t !== tag) }
+      r.id !== ruleId ? r : { ...r, tagFilter: r.tagFilter.filter((t: string) => t !== tag) }
     ));
   }
 
   // Matching bank questions for the selected rule
   const matchingQuestions = selected
     ? bankQuestions.filter(
-        (q) => q.kind === "EXAM" && selected.tagFilter.every((t) => q.tags.includes(t))
+        (q) => q.kind === "EXAM" && selected.tagFilter.every((t: string) => q.tags.includes(t))
       )
     : [];
 
@@ -155,7 +155,7 @@ export default function ExamEditorFeature({ examId }: Props) {
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
                     {r.tagFilter.length > 0
-                      ? r.tagFilter.map((t) => `#${t}`).join(" ") + ` · ${r.count}문항`
+                      ? r.tagFilter.map((t: string) => `#${t}`).join(" ") + ` · ${r.count}문항`
                       : `${r.count}문항`}
                   </p>
                 </div>
@@ -206,7 +206,7 @@ export default function ExamEditorFeature({ examId }: Props) {
                 <div>
                   <label className="text-xs font-semibold text-slate-400 block mb-2">태그 필터</label>
                   <div className="flex flex-wrap gap-1.5 mb-2">
-                    {selected.tagFilter.map((tag) => (
+                    {selected.tagFilter.map((tag: string) => (
                       <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full">
                         #{tag}
                         <button onClick={() => removeTag(selected.id, tag)} className="hover:text-red-500 transition-colors">

@@ -9,8 +9,6 @@ import CourseStatusOverview from "./sections/course-status-overview";
 import RecentEnrollments from "./sections/recent-enrollments";
 import ActivityFeed from "./sections/activity-feed";
 
-const TENANT_ID = "t-001";
-
 function PlatformBanners() {
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
@@ -18,7 +16,6 @@ function PlatformBanners() {
     (a) =>
       a.status === "PUBLISHED" &&
       (a.subtype === "URGENT" || a.subtype === "MAINTENANCE") &&
-      (a.targetType === "ALL_TENANTS" || (a.targetIds && a.targetIds.includes(TENANT_ID))) &&
       !dismissedIds.includes(a.id)
   );
 

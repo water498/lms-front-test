@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { OrgPositionRoleType } from '@/lib/models';
 
 export interface Site {
   id: string;
@@ -8,7 +9,7 @@ export interface Site {
 export interface JobGrade {
   id: string;
   name: string;
-  isLeader: boolean;
+  roleType: OrgPositionRoleType;
 }
 
 export interface DeptNode {
@@ -77,8 +78,8 @@ interface OrgStructureStore {
   removeDept: (id: string) => void;
 
   jobGrades: JobGrade[];
-  addJobGrade: (name: string, isLeader: boolean) => void;
-  updateJobGrade: (id: string, name: string, isLeader: boolean) => void;
+  addJobGrade: (name: string, roleType: OrgPositionRoleType) => void;
+  updateJobGrade: (id: string, name: string, roleType: OrgPositionRoleType) => void;
   removeJobGrade: (id: string) => void;
 
   sites: Site[];
@@ -110,10 +111,10 @@ const initialDepts: DeptNode[] = [
 ];
 
 const initialJobGrades: JobGrade[] = [
-  { id: 'grade-1', name: '사원', isLeader: false },
-  { id: 'grade-2', name: '대리', isLeader: false },
-  { id: 'grade-3', name: '과장', isLeader: false },
-  { id: 'grade-4', name: '부장', isLeader: true },
+  { id: 'grade-1', name: '사원', roleType: 'MEMBER' },
+  { id: 'grade-2', name: '대리', roleType: 'MEMBER' },
+  { id: 'grade-3', name: '과장', roleType: 'LEADER' },
+  { id: 'grade-4', name: '부장', roleType: 'EXECUTIVE' },
 ];
 
 const initialSites: Site[] = [
@@ -137,10 +138,10 @@ export const useOrgStructureStore = create<OrgStructureStore>((set) => ({
     set((s) => ({ departments: removeNode(s.departments, id) })),
 
   jobGrades: initialJobGrades,
-  addJobGrade: (name, isLeader) =>
-    set((s) => ({ jobGrades: [...s.jobGrades, { id: genGradeId(), name, isLeader }] })),
-  updateJobGrade: (id, name, isLeader) =>
-    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g.id === id ? { ...g, name, isLeader } : g)) })),
+  addJobGrade: (name, roleType) =>
+    set((s) => ({ jobGrades: [...s.jobGrades, { id: genGradeId(), name, roleType }] })),
+  updateJobGrade: (id, name, roleType) =>
+    set((s) => ({ jobGrades: s.jobGrades.map((g) => (g.id === id ? { ...g, name, roleType } : g)) })),
   removeJobGrade: (id) =>
     set((s) => ({ jobGrades: s.jobGrades.filter((g) => g.id !== id) })),
 

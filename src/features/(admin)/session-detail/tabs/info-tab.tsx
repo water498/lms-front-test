@@ -71,6 +71,7 @@ interface DraftState {
   visible: boolean;
   forSale: boolean;
   completionThreshold: string;
+  offlineAttendanceThreshold: string;
   minEnrollment: string;
   targetDepartments: string[];
   targetJobGrades: string[];
@@ -91,6 +92,7 @@ function toDraft(s: CourseSession): DraftState {
     visible: s.visible,
     forSale: s.forSale,
     completionThreshold: String(s.completionThreshold),
+    offlineAttendanceThreshold: s.offlineAttendanceThreshold != null ? String(s.offlineAttendanceThreshold) : "",
     minEnrollment: s.minEnrollment != null ? String(s.minEnrollment) : "",
     targetDepartments: s.targetAudience?.departments ?? [],
     targetJobGrades: s.targetAudience?.jobGrades ?? [],
@@ -143,6 +145,7 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
       visible: draft.visible,
       forSale: draft.forSale,
       completionThreshold: Number(draft.completionThreshold),
+      offlineAttendanceThreshold: draft.offlineAttendanceThreshold !== "" ? Number(draft.offlineAttendanceThreshold) : null,
       minEnrollment: draft.minEnrollment !== "" ? Number(draft.minEnrollment) : null,
       targetAudience: {
         departments: draft.targetDepartments,
@@ -388,6 +391,24 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
             />
           </div>
 
+          {/* 오프라인 출석 기준 — OFFLINE/BLENDED only */}
+          {session.location !== undefined && (
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-slate-500">
+                오프라인 출석 기준 (%) <span className="font-normal text-slate-400">(빈 값 = 미적용)</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={draft.offlineAttendanceThreshold}
+                onChange={(e) => set("offlineAttendanceThreshold", e.target.value)}
+                placeholder="예: 80"
+                className={inputCls}
+              />
+            </div>
+          )}
+
           {/* 최소 수강 인원 — COHORT only */}
           {session.type === "COHORT" && (
             <div className="flex flex-col gap-1">
@@ -512,7 +533,15 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
               {session.visible ? "공개" : "비공개"}
             </span>
           </Field>
-          <Field label="수료 기준">{session.completionThreshold}%</Field>
+          <Field label="수료 기준 진도율">{session.completionThreshold}%</Field>
+          {session.location !== undefined && (
+            <Field label="오프라인 출석 기준">
+              {session.offlineAttendanceThreshold != null
+                ? `${session.offlineAttendanceThreshold}%`
+                : <span className="text-slate-400">—</span>
+              }
+            </Field>
+          )}
           {session.type === "COHORT" && (
             <Field label="최소 수강 인원">
               {session.minEnrollment != null ? (

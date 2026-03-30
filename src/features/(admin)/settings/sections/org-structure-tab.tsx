@@ -4,7 +4,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { Pencil, Trash2, Check, X, Plus, ChevronRight, ChevronDown, Upload, Download, AlertCircle, Users, Search } from "lucide-react";
 import { useOrgStructureStore, type DeptNode, type JobGrade, type Site, flatDeptIds, findDeptNode } from "../../shared/org-structure-store";
 import { useUsersStore } from "../../shared/users-store";
-import type { User } from "@/lib/models";
+import type { User, OrgPositionRoleType } from "@/lib/models";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -602,37 +602,56 @@ function MemberPanel({ selectedNode, users, sites, departments, jobGrades, onUpd
 
 // ── JobGradeList ──────────────────────────────────────────────────────────────
 
+const ROLE_CFG: Record<OrgPositionRoleType, { label: string; active: string; inactive: string }> = {
+  EXECUTIVE: { label: "경영진", active: "bg-amber-100 text-amber-700 border-amber-200",   inactive: "bg-slate-50 text-slate-400 border-slate-200 hover:border-amber-200 hover:text-amber-500" },
+  LEADER:    { label: "리더",   active: "bg-violet-100 text-violet-700 border-violet-200", inactive: "bg-slate-50 text-slate-400 border-slate-200 hover:border-violet-200 hover:text-violet-500" },
+  MEMBER:    { label: "구성원", active: "bg-slate-200 text-slate-700 border-slate-300",    inactive: "bg-slate-50 text-slate-400 border-slate-200 hover:border-slate-300 hover:text-slate-600" },
+};
+
+function RolePills({ roleType, onChange }: { roleType: OrgPositionRoleType; onChange: (r: OrgPositionRoleType) => void }) {
+  return (
+    <div className="flex gap-1">
+      {(Object.keys(ROLE_CFG) as OrgPositionRoleType[]).map((r) => (
+        <button key={r} onClick={() => onChange(r)}
+          className={`px-2 py-0.5 text-xs font-medium rounded-full border transition-colors ${roleType === r ? ROLE_CFG[r].active : ROLE_CFG[r].inactive}`}>
+          {ROLE_CFG[r].label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function JobGradeList({ grades, positionCountMap, onAdd, onUpdate, onRemoveRequest }: {
   grades: JobGrade[];
   positionCountMap: Map<string, number>;
-  onAdd: (name: string, isLeader: boolean) => void;
-  onUpdate: (id: string, name: string, isLeader: boolean) => void;
+  onAdd: (name: string, roleType: OrgPositionRoleType) => void;
+  onUpdate: (id: string, name: string, roleType: OrgPositionRoleType) => void;
   onRemoveRequest: (id: string) => void;
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
-  const [newIsLeader, setNewIsLeader] = useState(false);
+  const [newRoleType, setNewRoleType] = useState<OrgPositionRoleType>("MEMBER");
 
   function confirmEdit() {
     if (!editingId) return;
     const t = editValue.trim();
     const cur = grades.find((g) => g.id === editingId);
-    if (t && cur) onUpdate(editingId, t, cur.isLeader);
+    if (t && cur) onUpdate(editingId, t, cur.roleType);
     setEditingId(null);
   }
   function confirmAdd() {
     const t = newName.trim();
-    if (t && !grades.some((g) => g.name === t)) onAdd(t, newIsLeader);
-    setIsAdding(false); setNewName(""); setNewIsLeader(false);
+    if (t && !grades.some((g) => g.name === t)) onAdd(t, newRoleType);
+    setIsAdding(false); setNewName(""); setNewRoleType("MEMBER");
   }
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-700">직급 목록 <span className="text-xs font-normal text-slate-400">전사 공통</span></h3>
-        <button onClick={() => { setIsAdding(true); setNewName(""); setNewIsLeader(false); }}
+        <button onClick={() => { setIsAdding(true); setNewName(""); setNewRoleType("MEMBER"); }}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50">
           <Plus size={13} />추가
         </button>
@@ -654,10 +673,7 @@ function JobGradeList({ grades, positionCountMap, onAdd, onUpdate, onRemoveReque
                 {(positionCountMap.get(g.id) ?? 0) > 0 && (
                   <span className="text-xs text-slate-400">{positionCountMap.get(g.id)}명</span>
                 )}
-                <button onClick={() => onUpdate(g.id, g.name, !g.isLeader)}
-                  className={`px-2 py-0.5 text-xs font-medium rounded-full border transition-colors ${g.isLeader ? "bg-violet-100 text-violet-700 border-violet-200" : "bg-slate-50 text-slate-400 border-slate-200 hover:border-violet-200 hover:text-violet-500"}`}>
-                  리더
-                </button>
+                <RolePills roleType={g.roleType} onChange={(r) => onUpdate(g.id, g.name, r)} />
                 <button onClick={() => { setEditingId(g.id); setEditValue(g.name); }} className="text-slate-400 hover:text-violet-600 p-0.5"><Pencil size={13} /></button>
                 <button onClick={() => onRemoveRequest(g.id)} className="text-slate-400 hover:text-red-500 p-0.5"><Trash2 size={13} /></button>
               </>
@@ -670,10 +686,7 @@ function JobGradeList({ grades, positionCountMap, onAdd, onUpdate, onRemoveReque
               className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
               value={newName} onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") confirmAdd(); if (e.key === "Escape") { setIsAdding(false); setNewName(""); } }} />
-            <button onClick={() => setNewIsLeader((v) => !v)}
-              className={`px-2 py-0.5 text-xs font-medium rounded-full border transition-colors ${newIsLeader ? "bg-violet-100 text-violet-700 border-violet-200" : "bg-slate-50 text-slate-400 border-slate-200"}`}>
-              리더
-            </button>
+            <RolePills roleType={newRoleType} onChange={setNewRoleType} />
             <button onClick={confirmAdd} className="text-emerald-600 p-0.5"><Check size={14} /></button>
             <button onClick={() => { setIsAdding(false); setNewName(""); }} className="text-slate-400 p-0.5"><X size={14} /></button>
           </div>

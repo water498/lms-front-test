@@ -32,7 +32,7 @@ const activityCompletions: Record<string, ActivityCompletion[]> = {
   ],
 };
 
-// se1은 finalExamTemplateId: "ex1" 설정됨
+// se1은 postExamTemplateId: "ex1" 설정됨
 const examAttempts: Record<string, ExamAttempt[]> = {
   se1: [
     { id: "ea1", learnerId: "u19", learnerName: "신재호", examTemplateId: "ex1", examTitle: "React 기초 수료 시험", courseSessionId: "se1", score: 92, passed: true,  submittedAt: "2025-02-25 14:30", durationSec: 1800 },

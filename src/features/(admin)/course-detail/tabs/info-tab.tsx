@@ -166,7 +166,7 @@ export default function InfoTab({ course }: { course: Course }) {
       </div>
 
       <div>
-        <label className="text-xs font-medium text-slate-600 mb-1 block">강사</label>
+        <label className="text-xs font-medium text-slate-600 mb-1 block">대표 강사</label>
         <select
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
           value={instructor}
@@ -174,6 +174,7 @@ export default function InfoTab({ course }: { course: Course }) {
         >
           {instructors.map((i) => <option key={i}>{i}</option>)}
         </select>
+        <p className="text-xs text-slate-400 mt-1">실제 운영 강사는 차수별로 설정합니다.</p>
       </div>
 
       <div>
@@ -349,7 +350,7 @@ export default function InfoTab({ course }: { course: Course }) {
               onChange={(e) => {
                 if (e.target.checked) {
                   const first = templates.find((t) => t.active);
-                  setCertConfig({ templateId: first?.id ?? "", completionRate: 80, requireExam: false, autoIssue: false });
+                  setCertConfig({ templateId: first?.id ?? "", completionRate: 80, autoIssue: false });
                 } else {
                   setCertConfig(null);
                 }
@@ -386,16 +387,6 @@ export default function InfoTab({ course }: { course: Course }) {
                 />
                 <span className="text-sm text-slate-500">% 이상 달성 시</span>
               </div>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={certConfig.requireExam}
-                  onChange={(e) => setCertConfig({ ...certConfig, requireExam: e.target.checked })}
-                  className="accent-violet-600"
-                />
-                <span className="text-sm text-slate-700">최종 시험 통과 필수</span>
-              </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
                 <input

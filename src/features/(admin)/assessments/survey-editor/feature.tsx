@@ -6,7 +6,7 @@ import { ChevronLeft, Plus, Trash2, X } from "lucide-react";
 import {
   type SurveyTemplate,
   type SurveyTriggerType,
-  type CompositionRule,
+  type QuestionCompositionRule,
   surveyTemplates,
   bankQuestions,
 } from "../mockData";
@@ -15,7 +15,7 @@ function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newRule(): CompositionRule {
+function newRule(): QuestionCompositionRule {
   return { id: makeId(), label: "", tagFilter: [], count: 3, shuffle: false };
 }
 
@@ -42,14 +42,14 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
   const [title, setTitle]         = useState(src.title);
   const [anonymous, setAnonymous] = useState(src.anonymous);
   const [triggerType, setTrigger] = useState<SurveyTriggerType>(src.triggerType);
-  const [rules, setRules]         = useState<CompositionRule[]>(src.rules);
+  const [rules, setRules]         = useState<QuestionCompositionRule[]>(src.rules);
   const [selectedId, setSelectedId] = useState<string | null>(src.rules[0]?.id ?? null);
   const [tagInput, setTagInput]   = useState("");
 
   const selected = rules.find((r) => r.id === selectedId) ?? null;
   const totalQ   = rules.reduce((s, r) => s + r.count, 0);
 
-  function updateRule(id: string, patch: Partial<CompositionRule>) {
+  function updateRule(id: string, patch: Partial<QuestionCompositionRule>) {
     setRules((rs) => rs.map((r) => r.id === id ? { ...r, ...patch } : r));
   }
 

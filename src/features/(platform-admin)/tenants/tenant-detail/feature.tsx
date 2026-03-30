@@ -13,6 +13,9 @@ import {
   XCircle,
   Check,
   X,
+  RefreshCw,
+  Trash2,
+  HeartPulse,
 } from "lucide-react";
 import {
   TENANTS,
@@ -21,7 +24,7 @@ import {
   type TenantStatus,
   type SubdomainStatus,
 } from "../mockData";
-import type { InfraServiceStatus } from "@/lib/models";
+import type { Tenant, InfraServiceStatus } from "@/lib/models";
 import SsoSection from "./sections/sso-section";
 import MessagingCreditSection from "./sections/messaging-credit-section";
 
@@ -429,7 +432,27 @@ export default function TenantDetailFeature({ tenantId }: Props) {
       {activeTab === "credits" && <MessagingCreditSection tenantId={tenant.id} />}
 
       {/* Infra Tab */}
-      {activeTab === "infra" && <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
+      {activeTab === "infra" && <InfraTab tenant={tenant} />}
+    </div>
+  );
+}
+
+function InfraTab({ tenant }: { tenant: Tenant }) {
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [syncedAt, setSyncedAt] = useState<string>("7분 전");
+
+  const handleAction = (action: string, label: string) => {
+    setLoadingAction(action);
+    setTimeout(() => {
+      setLoadingAction(null);
+      if (action === "sync") setSyncedAt("방금 전");
+      alert(`${label} 완료 (실험 환경)`);
+    }, 1800);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-slate-700">인프라 정보</h3>
           {tenant.infraStatus && (
@@ -446,27 +469,19 @@ export default function TenantDetailFeature({ tenantId }: Props) {
         <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">AWS 리전</dt>
-            <dd className="font-mono text-xs text-slate-700">
-              {tenant.infra.awsRegion}
-            </dd>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.awsRegion}</dd>
           </div>
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">EC2 인스턴스</dt>
-            <dd className="font-mono text-xs text-slate-700">
-              {tenant.infra.ec2InstanceType}
-            </dd>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.ec2InstanceType}</dd>
           </div>
           <div className="col-span-2">
             <dt className="text-xs text-slate-400 mb-0.5">DB 호스트</dt>
-            <dd className="font-mono text-xs text-slate-700 break-all">
-              {tenant.infra.dbHost}
-            </dd>
+            <dd className="font-mono text-xs text-slate-700 break-all">{tenant.infra.dbHost}</dd>
           </div>
           <div className="col-span-2">
             <dt className="text-xs text-slate-400 mb-0.5">S3 버킷</dt>
-            <dd className="font-mono text-xs text-slate-700">
-              {tenant.infra.s3Bucket}
-            </dd>
+            <dd className="font-mono text-xs text-slate-700">{tenant.infra.s3Bucket}</dd>
           </div>
           <div>
             <dt className="text-xs text-slate-400 mb-0.5">프로비저닝 일시</dt>
@@ -475,7 +490,35 @@ export default function TenantDetailFeature({ tenantId }: Props) {
             </dd>
           </div>
         </dl>
-      </div>}
+      </div>
+
+      {/* Control Plane 동기화 + On-demand 액션 */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-slate-700">Control Plane</h3>
+          <span className="text-xs text-slate-400">마지막 동기화: {syncedAt} (주기: 15분)</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { id: "sync",   label: "설정 재동기화", icon: RefreshCw },
+            { id: "cache",  label: "캐시 초기화",   icon: Trash2 },
+            { id: "health", label: "헬스체크 실행",  icon: HeartPulse },
+          ].map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => handleAction(id, label)}
+              disabled={loadingAction !== null}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Icon
+                size={12}
+                className={loadingAction === id ? "animate-spin" : ""}
+              />
+              {loadingAction === id ? "처리 중..." : label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

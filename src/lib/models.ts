@@ -121,27 +121,25 @@ export interface TenantBilling {
 
 // ── 공지 ──────────────────────────────────────────────────
 
-export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
+export type PlatformAnnouncementStatus = "PUBLISHED" | "UNPUBLISHED";
 
 /** PlatformAnnouncement — 플랫폼 어드민 → 테넌트 어드민 공지 */
-export type PlatformAnnouncementTargetType = "ALL_TENANTS" | "SPECIFIC_TENANTS";
-
 export interface PlatformAnnouncement {
   id: string;
   title: string;
   content?: string;
   /** MAINTENANCE / UPDATE / URGENT / GENERAL 등 */
   subtype?: string;
-  targetType: PlatformAnnouncementTargetType;
-  /** SPECIFIC_TENANTS일 때 대상 테넌트 ID 목록 */
-  targetIds?: string[];
-  status: AnnouncementStatus;
-  scheduledAt?: string;
+  /** 향후 확장용. 현재는 항상 ALL_TENANTS */
+  targetType: "ALL_TENANTS" | "SPECIFIC_TENANTS";
+  status: PlatformAnnouncementStatus;
   sentAt?: string;
   views: number;
   createdBy?: string;
   createdAt: string;
 }
+
+export type AnnouncementStatus = "DRAFT" | "SCHEDULED" | "PUBLISHED";
 
 /** OrgAnnouncement — 테넌트 어드민 → 수강생 공지 */
 export type OrgAnnouncementTargetType = "ALL_MEMBERS" | "SPECIFIC_COURSE";
@@ -181,12 +179,14 @@ export interface OrgTeam {
   order: number;
 }
 
+export type OrgPositionRoleType = "EXECUTIVE" | "LEADER" | "MEMBER";
+
 export interface OrgPosition {
   id: string;
   tenantId: string;
   name: string;
-  order: number;    // 낮은 값 = 하위 직급
-  isLeader: boolean; // 리더급 여부 (팀장/본부장 등)
+  order: number;       // 낮은 값 = 하위 직급
+  roleType: OrgPositionRoleType;
 }
 
 export interface OrgTransfer {
@@ -378,7 +378,7 @@ export interface UserEnrollment {
   courseTitle: string;
   session: string;
   progress: number;
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+  status: "ACTIVE" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED";
   hasCertificate: boolean;
 }
 
@@ -427,9 +427,9 @@ export type CourseMode = "ONLINE" | "OFFLINE" | "BLENDED";
 
 export interface CertConfig {
   templateId: string;
-  completionRate: number; // 0~100
-  requireExam: boolean;
+  completionRate: number; // 진도율 기준 기본값 (0~100). 차수에서 override 가능
   autoIssue: boolean;
+  // 시험/과제/설문 필수 여부는 CourseSession 레벨에서 관리 (postExamRequired 등)
 }
 
 export interface CancellationRule {
@@ -672,6 +672,7 @@ export interface CourseActivity {
   examTemplateId?: string; // QUIZ
   assignTemplateId?: string; // ASSIGNMENT
   surveyTemplateId?: string; // SURVEY
+  passRequired?: boolean; // [QUIZ] true이면 합격해야 ActivityCompletion 생성. 기본 false (제출=완료)
 }
 
 export interface CourseSubject {
@@ -702,18 +703,24 @@ export interface CourseSession {
   instructors: CourseInstructor[];
   location?: string;
   completionThreshold: number; // 수료 인정 최소 진도율 (%)
+  offlineAttendanceThreshold?: number | null; // 오프라인 출석 기준 (%). null = 미적용. OFFLINE/BLENDED 전용
   minEnrollment?: number | null; // 최소 수강 인원 (null = 이번 차수는 체크 없음)
   targetAudience?: {
     departments?: string[];
     jobGrades?: string[];
     sites?: string[];
   };
-  preExamTemplateId?: string; // 수강 전 시험 (진단)
-  preAssignmentTemplateId?: string; // 수강 전 과제
-  preSurveyTemplateId?: string; // 수강 시작 전 설문
-  postSurveyTemplateId?: string; // 수료 후 설문
-  finalExamTemplateId?: string; // 수료 조건 시험
-  postAssignmentTemplateId?: string; // 수료 후 과제
+  // 사전 평가 (수강 전, 진단 목적 — 수료 조건 아님)
+  preExamTemplateId?: string;
+  preAssignmentTemplateId?: string;
+  preSurveyTemplateId?: string;
+  // 사후 평가 (수료 관문 — *Required=true이면 해당 평가 통과 없이 수료 불가)
+  postExamTemplateId?: string;
+  postExamRequired?: boolean;
+  postAssignmentTemplateId?: string;
+  postAssignmentRequired?: boolean;
+  postSurveyTemplateId?: string;
+  postSurveyRequired?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -730,7 +737,7 @@ export interface CourseEnrollee {
 
 // ── 수강 ──────────────────────────────────────────────────
 
-export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED";
 export type EnrollmentSource = "SELF" | "ADMIN_ASSIGNED" | "PAYMENT";
 
 export interface Enrollment {
@@ -797,6 +804,7 @@ export interface AssignmentSubmission {
   fileUrl?: string;
   textContent?: string;
   grade?: number;
+  passed?: boolean | null; // null=미채점, true=통과, false=미통과
   feedback?: string;
   gradedBy?: string;
   gradedAt?: string;
@@ -850,7 +858,7 @@ export interface QuestionBankOption {
   order: number;
 }
 
-export interface CompositionRule {
+export interface QuestionCompositionRule {
   id: string;
   label: string;
   tagFilter: string[];
@@ -867,14 +875,14 @@ export interface ExamTemplate {
   passingScore: number;
   timeLimit: number | null;
   maxAttempts: number | null; // null = 무제한
-  rules: CompositionRule[];
+  rules: QuestionCompositionRule[];
   usageCount: number;
   createdAt: string;
 }
 
 export type SubmissionType = "FILE" | "TEXT" | "BOTH";
 
-export interface RubricItem {
+export interface AssignmentRubricItem {
   id: string;
   criteria: string;
   points: number;
@@ -886,7 +894,8 @@ export interface AssignmentTemplate {
   title: string;
   instructions: string;
   submissionType: SubmissionType;
-  rubric: RubricItem[];
+  passingScore?: number | null; // null이면 제출만으로 통과. 설정 시 grade >= passingScore 필요
+  rubric: AssignmentRubricItem[];
   usageCount: number;
   createdAt: string;
 }
@@ -898,7 +907,7 @@ export interface SurveyTemplate {
   title: string;
   anonymous: boolean;
   triggerType: SurveyTriggerType;
-  rules: CompositionRule[];
+  rules: QuestionCompositionRule[];
   responseCount: number;
   status: "ACTIVE" | "CLOSED";
   createdAt: string;
@@ -938,6 +947,7 @@ export interface IssuedCertificate {
   revokedAt: string | null;
   revokedReason: string | null;
   revokedBy: string | null;
+  completionContext?: string | null; // 수료 당시 조건·결과 스냅샷 JSON
 }
 
 // ── 미디어 ────────────────────────────────────────────────

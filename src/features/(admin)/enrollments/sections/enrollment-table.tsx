@@ -7,16 +7,18 @@ import { enrollments, learnerNames, courseTitlesMap, sessionNamesMap, type Enrol
 type ProgressFilter = "all" | "zero" | "partial" | "complete";
 
 const STATUS_CONFIG: Record<EnrollmentStatus, { label: string; className: string }> = {
-  ACTIVE:    { label: "활성",   className: "bg-emerald-100 text-emerald-700" },
-  COMPLETED: { label: "완료",   className: "bg-blue-100 text-blue-700" },
-  CANCELLED: { label: "취소됨", className: "bg-red-100 text-red-600" },
-  EXPIRED:   { label: "만료됨", className: "bg-slate-100 text-slate-500" },
+  ACTIVE:    { label: "활성",     className: "bg-emerald-100 text-emerald-700" },
+  COMPLETED: { label: "완료",     className: "bg-blue-100 text-blue-700" },
+  FAILED:    { label: "수료 불가", className: "bg-red-100 text-red-600" },
+  CANCELLED: { label: "취소됨",   className: "bg-slate-100 text-slate-500" },
+  EXPIRED:   { label: "만료됨",   className: "bg-slate-100 text-slate-500" },
 };
 
 const STATUS_FILTERS: { value: EnrollmentStatus | "ALL"; label: string }[] = [
   { value: "ALL",       label: "전체" },
   { value: "ACTIVE",    label: "활성" },
   { value: "COMPLETED", label: "완료" },
+  { value: "FAILED",    label: "수료 불가" },
   { value: "CANCELLED", label: "취소됨" },
   { value: "EXPIRED",   label: "만료됨" },
 ];

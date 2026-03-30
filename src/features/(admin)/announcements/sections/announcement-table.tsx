@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import { ANNOUNCEMENTS as PLATFORM_ANNOUNCEMENTS } from "@/features/(platform-admin)/announcements/mockData";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const TENANT_ID = "t-001";
-
 const PLATFORM_TYPE_CONFIG: Record<string, { label: string; className: string }> = {
   URGENT:      { label: "긴급",     className: "bg-red-100 text-red-700" },
   MAINTENANCE: { label: "점검",     className: "bg-amber-100 text-amber-700" },
@@ -18,8 +16,7 @@ export default function AnnouncementTable() {
 
   const items = PLATFORM_ANNOUNCEMENTS.filter(
     (a) =>
-      a.status === "PUBLISHED" &&
-      (a.targetType === "ALL_TENANTS" || (a.targetIds && a.targetIds.includes(TENANT_ID)))
+      a.status === "PUBLISHED"
   );
 
   return (
@@ -56,9 +53,7 @@ export default function AnnouncementTable() {
                     {a.title}
                     {isExpanded ? <ChevronUp size={13} className="text-slate-400" /> : <ChevronDown size={13} className="text-slate-400" />}
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {a.targetType === "ALL_TENANTS" ? "전체 테넌트" : (a.targetIds ?? []).join(", ")}
-                  </td>
+                  <td className="px-4 py-3 text-slate-500">전체 테넌트</td>
                   <td className="px-4 py-3 text-slate-400">
                     {a.sentAt ? new Date(a.sentAt).toLocaleDateString("ko-KR") : "-"}
                   </td>

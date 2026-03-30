@@ -1,39 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { Megaphone, Plus, X } from "lucide-react";
+import { Megaphone, Plus, X, Trash2 } from "lucide-react";
 import { ANNOUNCEMENTS } from "./mockData";
-import { TENANTS } from "../tenants/mockData";
-import type { PlatformAnnouncement, AnnouncementStatus } from "@/lib/models";
+import type { PlatformAnnouncement, PlatformAnnouncementStatus } from "@/lib/models";
 
 // ── 상수 ───────────────────────────────────────────────────
 
 type PlatformSubtype = "MAINTENANCE" | "UPDATE" | "URGENT" | "GENERAL";
 
 const TYPE_CFG: Record<PlatformSubtype, { label: string; cls: string }> = {
-  MAINTENANCE: { label: "점검",   cls: "bg-amber-100 text-amber-700" },
+  MAINTENANCE: { label: "점검",    cls: "bg-amber-100 text-amber-700" },
   UPDATE:      { label: "업데이트", cls: "bg-blue-100 text-blue-700" },
-  URGENT:      { label: "긴급",   cls: "bg-red-100 text-red-700" },
-  GENERAL:     { label: "일반",   cls: "bg-slate-100 text-slate-600" },
+  URGENT:      { label: "긴급",    cls: "bg-red-100 text-red-700" },
+  GENERAL:     { label: "일반",    cls: "bg-slate-100 text-slate-600" },
 };
 
-const STATUS_CFG: Record<"DRAFT" | "SCHEDULED" | "PUBLISHED", { label: string; cls: string }> = {
-  DRAFT:     { label: "초안",    cls: "text-slate-400" },
-  SCHEDULED: { label: "예약 게시", cls: "text-amber-600 font-medium" },
-  PUBLISHED: { label: "게시 중",  cls: "text-green-600 font-medium" },
+const STATUS_CFG: Record<PlatformAnnouncementStatus, { label: string; cls: string }> = {
+  PUBLISHED:   { label: "게시 중",  cls: "text-green-600 font-medium" },
+  UNPUBLISHED: { label: "비게시",   cls: "text-slate-400" },
 };
 
-function targetLabel(ann: PlatformAnnouncement): string {
-  if (ann.targetType === "ALL_TENANTS") return "전체 테넌트";
-  if (ann.targetIds) return `${ann.targetIds.length}개 테넌트`;
-  return "—";
-}
-
-function dateLabel(ann: PlatformAnnouncement, effectiveStatus: AnnouncementStatus): string {
-  if (effectiveStatus === "PUBLISHED" && ann.sentAt)
+function dateLabel(ann: PlatformAnnouncement): string {
+  if (ann.status === "PUBLISHED" && ann.sentAt)
     return new Date(ann.sentAt).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" });
-  if (effectiveStatus === "SCHEDULED" && ann.scheduledAt)
-    return `예약: ${new Date(ann.scheduledAt).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" })}`;
   return new Date(ann.createdAt).toLocaleDateString("ko-KR");
 }
 
@@ -49,18 +39,6 @@ function ComposeModal({
   const [type, setType] = useState<PlatformSubtype>((initialData?.subtype as PlatformSubtype) ?? "GENERAL");
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [body, setBody] = useState(initialData?.content ?? "");
-  const [targetAll, setTargetAll] = useState(initialData ? initialData.targetType === "ALL_TENANTS" : true);
-  const [selectedTenants, setSelectedTenants] = useState<string[]>(
-    initialData?.targetIds ?? [],
-  );
-  const [scheduleMode, setScheduleMode] = useState(false);
-  const [scheduledAt, setScheduledAt] = useState("");
-
-  function toggleTenant(id: string) {
-    setSelectedTenants((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
@@ -116,81 +94,6 @@ function ComposeModal({
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
             />
           </div>
-
-          {/* 게시 대상 */}
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-2">게시 대상</label>
-            <div className="flex gap-3 mb-2">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={targetAll}
-                  onChange={() => setTargetAll(true)}
-                  className="accent-blue-600"
-                />
-                전체 테넌트
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={!targetAll}
-                  onChange={() => setTargetAll(false)}
-                  className="accent-blue-600"
-                />
-                테넌트 선택
-              </label>
-            </div>
-            {!targetAll && (
-              <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-lg">
-                {TENANTS.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => toggleTenant(t.id)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors ${
-                      selectedTenants.includes(t.id)
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                    }`}
-                  >
-                    {t.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 게시 시점 */}
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-2">게시 시점</label>
-            <div className="flex gap-3 mb-2">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={!scheduleMode}
-                  onChange={() => setScheduleMode(false)}
-                  className="accent-blue-600"
-                />
-                즉시 게시
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={scheduleMode}
-                  onChange={() => setScheduleMode(true)}
-                  className="accent-blue-600"
-                />
-                예약 게시
-              </label>
-            </div>
-            {scheduleMode && (
-              <input
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            )}
-          </div>
         </div>
 
         {/* 푸터 */}
@@ -203,15 +106,9 @@ function ComposeModal({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-200 transition-colors"
-          >
-            초안 저장
-          </button>
-          <button
-            onClick={onClose}
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {scheduleMode ? "예약 게시" : "게시"}
+            저장
           </button>
         </div>
       </div>
@@ -227,7 +124,7 @@ function PlatformAnnouncementDetail({
   onClose,
 }: {
   ann: PlatformAnnouncement;
-  effectiveStatus: AnnouncementStatus;
+  effectiveStatus: PlatformAnnouncementStatus;
   onClose: () => void;
 }) {
   const typeCfg = TYPE_CFG[(ann.subtype as PlatformSubtype) ?? "GENERAL"];
@@ -248,10 +145,10 @@ function PlatformAnnouncementDetail({
       </div>
       <div className="flex gap-4 text-xs text-slate-500 mb-4 flex-wrap">
         <span>작성: {ann.createdBy}</span>
-        <span>대상: {targetLabel(ann)}</span>
         <span className={statusCfg.cls}>{statusCfg.label}</span>
-        {ann.sentAt && effectiveStatus === "PUBLISHED" && <span>{dateLabel(ann, effectiveStatus)}</span>}
-        {ann.scheduledAt && effectiveStatus === "SCHEDULED" && <span>{dateLabel(ann, effectiveStatus)}</span>}
+        {ann.sentAt && effectiveStatus === "PUBLISHED" && (
+          <span>{dateLabel(ann)}</span>
+        )}
       </div>
       <pre className="text-sm text-slate-700 whitespace-pre-wrap bg-slate-50 rounded-lg p-4 leading-relaxed">
         {ann.content}
@@ -266,22 +163,29 @@ export default function PlatformAnnouncementsFeature() {
   const [showCompose, setShowCompose] = useState(false);
   const [editTarget, setEditTarget] = useState<PlatformAnnouncement | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [statusOverrides, setStatusOverrides] = useState<Record<string, AnnouncementStatus>>({});
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, PlatformAnnouncementStatus>>({});
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
 
-  const effectiveStatus = (ann: PlatformAnnouncement): AnnouncementStatus =>
+  const effectiveStatus = (ann: PlatformAnnouncement): PlatformAnnouncementStatus =>
     statusOverrides[ann.id] ?? ann.status;
 
-  const publishedCount = ANNOUNCEMENTS.filter((a) => effectiveStatus(a) === "PUBLISHED").length;
-  const scheduledCount = ANNOUNCEMENTS.filter((a) => effectiveStatus(a) === "SCHEDULED").length;
-  const draftCount = ANNOUNCEMENTS.filter((a) => effectiveStatus(a) === "DRAFT").length;
+  const visibleAnnouncements = ANNOUNCEMENTS.filter((a) => !deletedIds.includes(a.id));
+
+  const publishedCount   = visibleAnnouncements.filter((a) => effectiveStatus(a) === "PUBLISHED").length;
+  const unpublishedCount = visibleAnnouncements.filter((a) => effectiveStatus(a) === "UNPUBLISHED").length;
 
   const selectedAnn = selectedId
-    ? ANNOUNCEMENTS.find((a) => a.id === selectedId) ?? null
+    ? visibleAnnouncements.find((a) => a.id === selectedId) ?? null
     : null;
+
+  function deleteAnn(id: string) {
+    setDeletedIds((prev) => [...prev, id]);
+    if (selectedId === id) setSelectedId(null);
+  }
 
   function togglePublish(ann: PlatformAnnouncement) {
     const current = effectiveStatus(ann);
-    const next: AnnouncementStatus = current === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
+    const next: PlatformAnnouncementStatus = current === "PUBLISHED" ? "UNPUBLISHED" : "PUBLISHED";
     setStatusOverrides((prev) => ({ ...prev, [ann.id]: next }));
   }
 
@@ -291,7 +195,7 @@ export default function PlatformAnnouncementsFeature() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-800 mb-1">플랫폼 공지</h2>
-          <p className="text-sm text-slate-500">전체 또는 특정 테넌트 어드민에게 공지 게시</p>
+          <p className="text-sm text-slate-500">전체 테넌트 어드민에게 공지 게시</p>
         </div>
         <button
           onClick={() => setShowCompose(true)}
@@ -304,10 +208,9 @@ export default function PlatformAnnouncementsFeature() {
 
       {/* 통계 칩 */}
       <div className="flex gap-3">
-        <StatChip label="전체" value={ANNOUNCEMENTS.length} cls="bg-slate-100 text-slate-700" />
-        <StatChip label="게시 중" value={publishedCount} cls="bg-green-100 text-green-700" />
-        <StatChip label="예약 게시" value={scheduledCount} cls="bg-amber-100 text-amber-700" />
-        <StatChip label="초안" value={draftCount} cls="bg-slate-100 text-slate-500" />
+        <StatChip label="전체"   value={visibleAnnouncements.length} cls="bg-slate-100 text-slate-700" />
+        <StatChip label="게시 중" value={publishedCount}       cls="bg-green-100 text-green-700" />
+        <StatChip label="비게시"  value={unpublishedCount}     cls="bg-slate-100 text-slate-500" />
       </div>
 
       {/* 상세 패널 */}
@@ -324,7 +227,7 @@ export default function PlatformAnnouncementsFeature() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              {["유형", "제목", "게시 대상", "상태", "일시", ""].map((h, i) => (
+              {["유형", "제목", "상태", "일시", ""].map((h, i) => (
                 <th key={i} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
                   {h}
                 </th>
@@ -332,7 +235,7 @@ export default function PlatformAnnouncementsFeature() {
             </tr>
           </thead>
           <tbody>
-            {ANNOUNCEMENTS.map((ann) => {
+            {visibleAnnouncements.map((ann) => {
               const typeCfg = TYPE_CFG[(ann.subtype as PlatformSubtype) ?? "GENERAL"];
               const es = effectiveStatus(ann);
               const statusCfg = STATUS_CFG[es];
@@ -353,37 +256,37 @@ export default function PlatformAnnouncementsFeature() {
                   <td className="px-4 py-3 font-medium text-slate-800 max-w-xs truncate">
                     {ann.title}
                   </td>
-                  <td className="px-4 py-3 text-xs text-slate-500">
-                    {targetLabel(ann)}
-                  </td>
                   <td className={`px-4 py-3 text-xs ${statusCfg.cls}`}>
                     {statusCfg.label}
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
-                    {dateLabel(ann, es)}
+                    {dateLabel(ann)}
                   </td>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-2 justify-end">
-                      {(es === "DRAFT" || es === "PUBLISHED") && (
-                        <button
-                          onClick={() => { setEditTarget(ann); setShowCompose(true); }}
-                          className="px-2.5 py-1 text-xs text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors"
-                        >
-                          편집
-                        </button>
-                      )}
-                      {(es === "DRAFT" || es === "PUBLISHED") && (
-                        <button
-                          onClick={() => togglePublish(ann)}
-                          className={`px-2.5 py-1 text-xs rounded-md border transition-colors ${
-                            es === "PUBLISHED"
-                              ? "text-slate-600 border-slate-200 hover:bg-slate-50"
-                              : "text-blue-600 border-blue-200 hover:bg-blue-50"
-                          }`}
-                        >
-                          {es === "PUBLISHED" ? "내리기" : "게시"}
-                        </button>
-                      )}
+                      <button
+                        onClick={() => { setEditTarget(ann); setShowCompose(true); }}
+                        className="px-2.5 py-1 text-xs text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors"
+                      >
+                        편집
+                      </button>
+                      <button
+                        onClick={() => deleteAnn(ann.id)}
+                        className="p-1 text-slate-400 hover:text-red-500 transition-colors"
+                        title="삭제"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                      <button
+                        onClick={() => togglePublish(ann)}
+                        className={`px-2.5 py-1 text-xs rounded-md border transition-colors ${
+                          es === "PUBLISHED"
+                            ? "text-slate-600 border-slate-200 hover:bg-slate-50"
+                            : "text-blue-600 border-blue-200 hover:bg-blue-50"
+                        }`}
+                      >
+                        {es === "PUBLISHED" ? "내리기" : "게시"}
+                      </button>
                     </div>
                   </td>
                 </tr>

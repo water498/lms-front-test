@@ -7,31 +7,42 @@ import { examTemplates, surveyTemplates, assignmentTemplates } from "../../asses
 
 interface DraftState {
   preExamTemplateId: string;
-  finalExamTemplateId: string;
+  postExamTemplateId: string;
+  postExamRequired: boolean;
   preSurveyTemplateId: string;
   postSurveyTemplateId: string;
+  postSurveyRequired: boolean;
   preAssignmentTemplateId: string;
   postAssignmentTemplateId: string;
+  postAssignmentRequired: boolean;
 }
 
 function toDraft(s: CourseSession): DraftState {
   return {
     preExamTemplateId:        s.preExamTemplateId ?? "",
-    finalExamTemplateId:      s.finalExamTemplateId ?? "",
+    postExamTemplateId:       s.postExamTemplateId ?? "",
+    postExamRequired:         s.postExamRequired ?? false,
     preSurveyTemplateId:      s.preSurveyTemplateId ?? "",
     postSurveyTemplateId:     s.postSurveyTemplateId ?? "",
+    postSurveyRequired:       s.postSurveyRequired ?? false,
     preAssignmentTemplateId:  s.preAssignmentTemplateId ?? "",
     postAssignmentTemplateId: s.postAssignmentTemplateId ?? "",
+    postAssignmentRequired:   s.postAssignmentRequired ?? false,
   };
 }
 
-function Row({ label, value }: { label: string; value: string | undefined }) {
+function Row({ label, value, required }: { label: string; value: string | undefined; required?: boolean }) {
   return (
     <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
       <span className="text-xs font-medium text-slate-500 w-24 shrink-0">{label}</span>
-      <span className={`text-sm flex-1 text-right ${value ? "text-slate-800" : "text-slate-400"}`}>
-        {value ?? "미설정"}
-      </span>
+      <div className="flex items-center gap-2">
+        {required && (
+          <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-600 rounded font-medium">수료 필수</span>
+        )}
+        <span className={`text-sm ${value ? "text-slate-800" : "text-slate-400"}`}>
+          {value ?? "미설정"}
+        </span>
+      </div>
     </div>
   );
 }
@@ -51,15 +62,19 @@ function SelectField({
   onChange,
   options,
   selectCls,
+  required,
+  onRequiredChange,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: { id: string; title: string }[];
   selectCls: string;
+  required?: boolean;
+  onRequiredChange?: (v: boolean) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1.5">
       <label className="text-xs font-medium text-slate-500">{label}</label>
       <select value={value} onChange={(e) => onChange(e.target.value)} className={selectCls}>
         <option value="">미설정</option>
@@ -67,6 +82,17 @@ function SelectField({
           <option key={o.id} value={o.id}>{o.title}</option>
         ))}
       </select>
+      {onRequiredChange && value && (
+        <label className="flex items-center gap-1.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={required ?? false}
+            onChange={(e) => onRequiredChange(e.target.checked)}
+            className="accent-violet-600"
+          />
+          <span className="text-xs text-slate-600">수료 조건 필수</span>
+        </label>
+      )}
     </div>
   );
 }
@@ -89,16 +115,19 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
     console.log("평가 설정 저장", {
       id: session.id,
       preExamTemplateId:        draft.preExamTemplateId || undefined,
-      finalExamTemplateId:      draft.finalExamTemplateId || undefined,
+      postExamTemplateId:       draft.postExamTemplateId || undefined,
+      postExamRequired:         draft.postExamTemplateId ? draft.postExamRequired : false,
       preSurveyTemplateId:      draft.preSurveyTemplateId || undefined,
       postSurveyTemplateId:     draft.postSurveyTemplateId || undefined,
+      postSurveyRequired:       draft.postSurveyTemplateId ? draft.postSurveyRequired : false,
       preAssignmentTemplateId:  draft.preAssignmentTemplateId || undefined,
       postAssignmentTemplateId: draft.postAssignmentTemplateId || undefined,
+      postAssignmentRequired:   draft.postAssignmentTemplateId ? draft.postAssignmentRequired : false,
     });
     setIsEditing(false);
   }
 
-  function set<K extends keyof DraftState>(key: K, value: string) {
+  function set<K extends keyof DraftState>(key: K, value: DraftState[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -106,7 +135,7 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
     "w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent";
 
   const preExamTitle        = examTemplates.find((e) => e.id === session.preExamTemplateId)?.title;
-  const finalExamTitle      = examTemplates.find((e) => e.id === session.finalExamTemplateId)?.title;
+  const postExamTitle       = examTemplates.find((e) => e.id === session.postExamTemplateId)?.title;
   const preSurveyTitle      = surveyTemplates.find((s) => s.id === session.preSurveyTemplateId)?.title;
   const postSurveyTitle     = surveyTemplates.find((s) => s.id === session.postSurveyTemplateId)?.title;
   const preAssignTitle      = assignmentTemplates.find((a) => a.id === session.preAssignmentTemplateId)?.title;
@@ -140,11 +169,16 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
                 selectCls={selectCls}
               />
               <SelectField
-                label="수료 조건"
-                value={draft.finalExamTemplateId}
-                onChange={(v) => set("finalExamTemplateId", v)}
+                label="수료 후"
+                value={draft.postExamTemplateId}
+                onChange={(v) => {
+                  set("postExamTemplateId", v);
+                  if (!v) set("postExamRequired", false);
+                }}
                 options={examTemplates}
                 selectCls={selectCls}
+                required={draft.postExamRequired}
+                onRequiredChange={(v) => set("postExamRequired", v)}
               />
             </div>
           </SectionCard>
@@ -161,9 +195,14 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
               <SelectField
                 label="수료 후"
                 value={draft.postSurveyTemplateId}
-                onChange={(v) => set("postSurveyTemplateId", v)}
+                onChange={(v) => {
+                  set("postSurveyTemplateId", v);
+                  if (!v) set("postSurveyRequired", false);
+                }}
                 options={surveyTemplates}
                 selectCls={selectCls}
+                required={draft.postSurveyRequired}
+                onRequiredChange={(v) => set("postSurveyRequired", v)}
               />
             </div>
           </SectionCard>
@@ -180,9 +219,14 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
               <SelectField
                 label="수료 후"
                 value={draft.postAssignmentTemplateId}
-                onChange={(v) => set("postAssignmentTemplateId", v)}
+                onChange={(v) => {
+                  set("postAssignmentTemplateId", v);
+                  if (!v) set("postAssignmentRequired", false);
+                }}
                 options={assignmentTemplates}
                 selectCls={selectCls}
+                required={draft.postAssignmentRequired}
+                onRequiredChange={(v) => set("postAssignmentRequired", v)}
               />
             </div>
           </SectionCard>
@@ -206,17 +250,17 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
         <>
           <SectionCard title="시험">
             <Row label="수강 전 (진단)" value={preExamTitle} />
-            <Row label="수료 조건"      value={finalExamTitle} />
+            <Row label="수료 후" value={postExamTitle} required={session.postExamRequired && !!postExamTitle} />
           </SectionCard>
 
           <SectionCard title="설문">
             <Row label="수강 전" value={preSurveyTitle} />
-            <Row label="수료 후" value={postSurveyTitle} />
+            <Row label="수료 후" value={postSurveyTitle} required={session.postSurveyRequired && !!postSurveyTitle} />
           </SectionCard>
 
           <SectionCard title="과제">
             <Row label="수강 전" value={preAssignTitle} />
-            <Row label="수료 후" value={postAssignTitle} />
+            <Row label="수료 후" value={postAssignTitle} required={session.postAssignmentRequired && !!postAssignTitle} />
           </SectionCard>
         </>
       )}

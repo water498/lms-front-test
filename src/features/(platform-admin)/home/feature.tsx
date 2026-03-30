@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, Users, HardDrive } from "lucide-react";
+import { Building2, Users, HardDrive, CheckCircle2, AlertCircle } from "lucide-react";
 import { TENANTS } from "../tenants/mockData";
 
 const TODAY = new Date("2026-03-18");
@@ -302,6 +302,12 @@ export default function PlatformAdminDashboard() {
     info:    { dot: "bg-slate-400", label: "text-slate-600",  chip: "bg-slate-100 text-slate-600 hover:bg-slate-200" },
   };
 
+  const cpServices = [
+    { label: "API 서버", ok: true },
+    { label: "DB Cluster", ok: true },
+    { label: "스토리지", ok: true },
+  ];
+
   return (
     <div className="space-y-5">
       <div>
@@ -309,6 +315,23 @@ export default function PlatformAdminDashboard() {
           플랫폼 현황
         </h2>
         <p className="text-sm text-slate-500">전체 기업 및 사용자 요약</p>
+      </div>
+
+      {/* Control Plane 헬스 위젯 */}
+      <div className="bg-white rounded-xl border border-slate-200 px-5 py-3.5 flex items-center gap-6">
+        <span className="text-xs font-semibold text-slate-500 shrink-0">Control Plane</span>
+        <div className="flex items-center gap-5">
+          {cpServices.map(({ label, ok }) => (
+            <div key={label} className="flex items-center gap-1.5">
+              {ok
+                ? <CheckCircle2 size={13} className="text-green-500" />
+                : <AlertCircle size={13} className="text-red-500" />
+              }
+              <span className="text-xs text-slate-600">{label}</span>
+            </div>
+          ))}
+        </div>
+        <span className="ml-auto text-xs text-slate-400">마지막 동기화: 2분 전</span>
       </div>
 
       {/* ── 핵심 지표 3장 ── */}

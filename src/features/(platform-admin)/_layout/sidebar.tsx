@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Building2,
-  CreditCard,
   Megaphone,
   Settings,
   LogOut,
@@ -31,8 +30,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "테넌트 관리",
     items: [
-      { href: `${BASE}/tenants`,  label: "테넌트 목록", icon: Building2 },
-      { href: `${BASE}/billing`,  label: "청구/결제",   icon: CreditCard },
+      { href: `${BASE}/tenants`, label: "테넌트 목록", icon: Building2 },
     ],
   },
   {
