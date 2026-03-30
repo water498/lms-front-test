@@ -75,47 +75,47 @@ const T3_HTML = `<div style="box-sizing:border-box;width:100%;height:100%;paddin
 </div>`;
 
 export const certTemplates: CertificateTemplate[] = [
-  { id: "t1", name: "기술 교육 수료증",  active: true,  validityYears: 2,    backgroundImageUrl: null, htmlTemplate: T1_HTML },
-  { id: "t2", name: "전문 자격 수료증",  active: true,  validityYears: null, backgroundImageUrl: null, htmlTemplate: T2_HTML },
-  { id: "t3", name: "기본 수강 확인증",  active: false, validityYears: 1,    backgroundImageUrl: null, htmlTemplate: T3_HTML },
+  { id: "t1", name: "안전 교육 수료증",  active: true,  validityYears: 2,    backgroundImageUrl: null, htmlTemplate: T1_HTML },
+  { id: "t2", name: "전문 안전 자격증",  active: true,  validityYears: null, backgroundImageUrl: null, htmlTemplate: T2_HTML },
+  { id: "t3", name: "안전 교육 이수확인증", active: false, validityYears: 1,  backgroundImageUrl: null, htmlTemplate: T3_HTML },
 ];
 
 export const initialIssuedCertificates: IssuedCertificate[] = [
   {
-    id: "ic1", certNumber: "CERT-2025-0042", publicToken: "a1b2c3d4-0042",
-    recipientId: "u7", recipient: "박지호",  course: "Next.js 마스터",    templateId: "t1",
+    id: "ic1", certNumber: "CERT-2026-0042", publicToken: "a1b2c3d4-0042",
+    recipientId: "u7", recipient: "박지호",  course: "안전문화 주도 및 경영 역량",          templateId: "t1",
     status: "VALID",
-    issuedAt: "2025-03-14", expiredAt: "2027-03-14", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
+    issuedAt: "2026-03-14", expiredAt: "2028-03-14", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
   },
   {
-    id: "ic2", certNumber: "CERT-2025-0041", publicToken: "b2c3d4e5-0041",
-    recipientId: "u6", recipient: "이서연",  course: "React 기초",        templateId: "t1",
+    id: "ic2", certNumber: "CERT-2026-0041", publicToken: "b2c3d4e5-0041",
+    recipientId: "u6", recipient: "이서연",  course: "핵심안전수칙 이해",                  templateId: "t1",
     status: "VALID",
-    issuedAt: "2025-03-12", expiredAt: "2027-03-12", reissuedAt: "2025-03-15", revokedAt: null, revokedReason: null, revokedBy: null,
+    issuedAt: "2026-03-12", expiredAt: "2028-03-12", reissuedAt: "2026-03-15", revokedAt: null, revokedReason: null, revokedBy: null,
   },
   {
-    id: "ic3", certNumber: "CERT-2025-0040", publicToken: "c3d4e5f6-0040",
-    recipientId: "u5", recipient: "김민준",  course: "AWS 클라우드 입문", templateId: "t2",
+    id: "ic3", certNumber: "CERT-2026-0040", publicToken: "c3d4e5f6-0040",
+    recipientId: "u5", recipient: "김민준",  course: "위험관리실무",                       templateId: "t2",
     status: "VALID",
-    issuedAt: "2025-03-10", expiredAt: null, reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
+    issuedAt: "2026-03-10", expiredAt: null, reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
   },
   {
-    id: "ic4", certNumber: "CERT-2025-0039", publicToken: "d4e5f6a7-0039",
-    recipientId: "u8", recipient: "최유진",  course: "React 기초",        templateId: "t1",
+    id: "ic4", certNumber: "CERT-2026-0039", publicToken: "d4e5f6a7-0039",
+    recipientId: "u8", recipient: "최유진",  course: "핵심안전수칙 이해",                  templateId: "t1",
     status: "REVOKED",
-    issuedAt: "2025-03-08", expiredAt: "2027-03-08", reissuedAt: null,
-    revokedAt: "2025-03-20", revokedReason: "부정 수강 확인", revokedBy: "관리자",
+    issuedAt: "2026-03-08", expiredAt: "2028-03-08", reissuedAt: null,
+    revokedAt: "2026-03-20", revokedReason: "부정 수강 확인", revokedBy: "관리자",
   },
   {
-    id: "ic5", certNumber: "CERT-2025-0038", publicToken: "e5f6a7b8-0038",
-    recipientId: "u9", recipient: "정하은",  course: "TypeScript 심화",   templateId: "t1",
+    id: "ic5", certNumber: "CERT-2026-0038", publicToken: "e5f6a7b8-0038",
+    recipientId: "u9", recipient: "정하은",  course: "안전보건관리체계와 10대 필수 안전수칙 이해", templateId: "t1",
     status: "VALID",
-    issuedAt: "2025-03-05", expiredAt: "2027-03-05", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
+    issuedAt: "2026-03-05", expiredAt: "2028-03-05", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
   },
   {
-    id: "ic6", certNumber: "CERT-2023-0007", publicToken: "f6a7b8c9-0007",
-    recipientId: "u2", recipient: "홍길동",  course: "기본 수강 확인증",  templateId: "t3",
+    id: "ic6", certNumber: "CERT-2024-0007", publicToken: "f6a7b8c9-0007",
+    recipientId: "u2", recipient: "홍길동",  course: "안전 교육 이수확인증",               templateId: "t3",
     status: "EXPIRED",
-    issuedAt: "2023-01-15", expiredAt: "2024-01-15", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
+    issuedAt: "2024-01-15", expiredAt: "2025-01-15", reissuedAt: null, revokedAt: null, revokedReason: null, revokedBy: null,
   },
 ];

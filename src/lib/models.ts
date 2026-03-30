@@ -647,6 +647,17 @@ export interface OfflineAttendance {
   checkedAt?: string;
 }
 
+export interface OfflineAttendanceLog {
+  id: string;
+  offlineSessionId: string;
+  userId: string;
+  beforeStatus: AttendanceStatus;
+  afterStatus: AttendanceStatus;
+  modifiedBy: string;
+  modifiedAt: string;
+  note?: string;
+}
+
 // ── 커리큘럼 ──────────────────────────────────────────────
 
 export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "SURVEY";
@@ -998,13 +1009,16 @@ export interface Payment {
   receiptUrl?: string;
 }
 
+export type RefundStatus = "REQUESTED" | "APPROVED" | "REJECTED";
+
 export interface PaymentRefund {
   id: string;
   paymentId: string;
   amount: number;
   reason: string;
-  refundedAt: string;
-  refundedBy: string; // actor name
+  status: RefundStatus;
+  refundedAt?: string;
+  refundedBy?: string;
 }
 
 export interface Coupon {

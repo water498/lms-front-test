@@ -3,8 +3,8 @@ export const CERT_H = 1123;
 
 export const SAMPLE: Record<string, string> = {
   recipientName: "홍길동",
-  courseName: "Next.js 마스터",
-  orgName: "ACME Corp",
+  courseName: "안전보건관리체계와 10대 필수 안전수칙 이해",
+  orgName: "롯데건설",
   certNumber: "CERT-2025-001",
   issuedDate: "2025-03-16",
   expiryDate: "2027-03-16",

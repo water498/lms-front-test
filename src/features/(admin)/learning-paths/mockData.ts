@@ -7,8 +7,8 @@ export const learningPaths: LearningPath[] = [
   {
     id: "lp1",
     tenantId: "tenant-1",
-    title: "프론트엔드 풀코스",
-    description: "React부터 Next.js까지 프론트엔드 개발의 전 과정을 한 번에 학습합니다.",
+    title: "현장 안전 기초 완성",
+    description: "핵심안전수칙부터 안전보건관리체계까지, 현장 작업자 필수 안전 교육을 한 번에 이수합니다.",
     price: 290000,
     status: "PUBLISHED",
     createdAt: "2025-01-15",
@@ -16,8 +16,8 @@ export const learningPaths: LearningPath[] = [
   {
     id: "lp2",
     tenantId: "tenant-1",
-    title: "클라우드 & DevOps 입문",
-    description: "AWS 클라우드와 컨테이너 기술을 단계적으로 배우는 실무 중심 학습 경로입니다.",
+    title: "위험관리 전문가 과정",
+    description: "위험성 평가부터 법규 이해까지, 안전관리 실무 전문가 양성을 위한 심화 학습 경로입니다.",
     price: 299000,
     status: "PUBLISHED",
     createdAt: "2025-02-10",
@@ -25,8 +25,8 @@ export const learningPaths: LearningPath[] = [
   {
     id: "lp3",
     tenantId: "tenant-1",
-    title: "데이터 분석 기초",
-    description: "SQL과 Python을 활용한 데이터 분석 입문 과정입니다.",
+    title: "안전문화 리더십 과정",
+    description: "경영진 및 중간관리자를 위한 안전문화 구축과 안전마인드 향상 통합 과정입니다.",
     status: "DRAFT",
     createdAt: "2025-03-05",
   },

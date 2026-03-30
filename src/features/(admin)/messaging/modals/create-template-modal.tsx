@@ -132,7 +132,7 @@ export default function CreateTemplateModal({ channel, initialTemplate, onClose 
                 </label>
                 <input
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  placeholder={channel === "EMAIL" ? "[ACME] {{courseName}} 수강 안내" : "TMP_20250101_001"}
+                  placeholder={channel === "EMAIL" ? "[롯데건설] {{courseName}} 수강 안내" : "TMP_20250101_001"}
                   value={channel === "EMAIL" ? subject : kakaoCode}
                   onChange={(e) => channel === "EMAIL" ? setSubject(e.target.value) : setKakaoCode(e.target.value)}
                 />
@@ -159,7 +159,7 @@ export default function CreateTemplateModal({ channel, initialTemplate, onClose 
                 rows={5}
                 placeholder={
                   channel === "SMS"
-                    ? "[ACME] {{name}}님, {{courseName}} 수강이 시작됩니다."
+                    ? "[롯데건설] {{name}}님, {{courseName}} 수강이 시작됩니다."
                     : "안녕하세요, {{name}}님.\n\n내용을 입력하세요."
                 }
                 value={content}

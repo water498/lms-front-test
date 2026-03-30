@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -17,12 +18,12 @@ import { CURRENT_INSTRUCTOR_NAME } from "../shared/mockData";
 const BASE = "/experiments/instructor";
 
 const NAV_ITEMS = [
-  { href: BASE,              label: "대시보드",   icon: LayoutDashboard, exact: true },
-  { href: `${BASE}/sessions`, label: "내 과정",    icon: BookOpen },
-  { href: `${BASE}/payouts`,  label: "정산 내역",  icon: Wallet },
-  { href: `${BASE}/bank`,     label: "계좌 정보",  icon: CreditCard },
-  { href: `${BASE}/reviews`,  label: "내 리뷰",    icon: Star },
-  { href: `${BASE}/profile`,  label: "프로필",     icon: User },
+  { href: BASE, label: "대시보드", icon: LayoutDashboard, exact: true },
+  { href: `${BASE}/sessions`, label: "내 과정", icon: BookOpen },
+  { href: `${BASE}/payouts`, label: "정산 내역", icon: Wallet },
+  { href: `${BASE}/bank`, label: "계좌 정보", icon: CreditCard },
+  { href: `${BASE}/reviews`, label: "내 리뷰", icon: Star },
+  { href: `${BASE}/profile`, label: "프로필", icon: User },
 ];
 
 export default function InstructorSidebar() {
@@ -36,14 +37,14 @@ export default function InstructorSidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-zinc-950 border-r border-zinc-800 flex flex-col z-30">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 h-14 border-b border-zinc-800 shrink-0">
-        <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center shrink-0">
-          <GraduationCap size={14} className="text-white" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs font-bold text-white truncate">강사 포털</p>
-          <p className="text-[10px] text-zinc-500 truncate">OpenKnock</p>
-        </div>
+      <div className="flex items-center px-5 h-14 border-b border-zinc-800 shrink-0">
+        <Image
+          src="/lotte.png"
+          alt="롯데건설"
+          width={100 * 1.3}
+          height={28 * 1.3}
+          className="object-contain"
+        />
       </div>
 
       {/* Nav */}
@@ -70,7 +71,9 @@ export default function InstructorSidebar() {
           {CURRENT_INSTRUCTOR_NAME[0]}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-white truncate">{CURRENT_INSTRUCTOR_NAME}</p>
+          <p className="text-xs font-medium text-white truncate">
+            {CURRENT_INSTRUCTOR_NAME}
+          </p>
           <Link
             href="/experiments/student"
             className="text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"

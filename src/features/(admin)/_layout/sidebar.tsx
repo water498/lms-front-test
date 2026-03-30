@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTenantContextStore } from "../shared/tenant-context-store";
@@ -71,7 +72,11 @@ const NAV_GROUPS: NavGroup[] = [
         kind: "accordion",
         label: "과정 관리",
         icon: BookOpen,
-        basePaths: [`${BASE}/courses`, `${BASE}/sessions`, `${BASE}/learning-paths`],
+        basePaths: [
+          `${BASE}/courses`,
+          `${BASE}/sessions`,
+          `${BASE}/learning-paths`,
+        ],
         children: [
           { href: `${BASE}/courses`, label: "과정 목록" },
           { href: `${BASE}/sessions`, label: "과정 운영(차수)" },
@@ -294,12 +299,15 @@ export default function Sidebar({
     <aside
       className={`fixed left-0 h-screen w-60 bg-white border-r border-slate-200 flex flex-col z-30 overflow-y-auto ${isImpersonating ? "top-9" : "top-0"}`}
     >
-      {/* Org logo + name */}
-      <div className="flex items-center gap-3 px-5 h-14 border-b border-slate-200 flex-shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
-          <Building2 size={16} className="text-white" />
-        </div>
-        <span className="font-semibold text-slate-800 text-sm">ACME Corp</span>
+      {/* Org logo */}
+      <div className="flex items-center px-5 h-14 border-b border-slate-200 flex-shrink-0">
+        <Image
+          src="/lotte.png"
+          alt="롯데건설"
+          width={100 * 1.3}
+          height={28 * 1.3}
+          className="object-contain"
+        />
       </div>
 
       {/* Navigation */}
@@ -313,7 +321,11 @@ export default function Sidebar({
             )}
             <div className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                if (item.kind === "link" && item.featureFlag && !features[item.featureFlag]) {
+                if (
+                  item.kind === "link" &&
+                  item.featureFlag &&
+                  !features[item.featureFlag]
+                ) {
                   return null;
                 }
                 return item.kind === "accordion" ? (

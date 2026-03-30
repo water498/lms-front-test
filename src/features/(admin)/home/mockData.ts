@@ -39,10 +39,10 @@ export interface ActivityItem {
 }
 
 export const activityFeed: ActivityItem[] = [
-  { id: "a1", message: "관리자가 TypeScript 심화를 게시했습니다",      time: "10분 전",   type: "publish" },
-  { id: "a2", message: "정하은이 React 기초 수강을 취소했습니다",       time: "34분 전",   type: "cancel" },
-  { id: "a3", message: "최유진이 AWS 클라우드 입문에 수강 신청했습니다", time: "1시간 전",  type: "enroll" },
-  { id: "a4", message: "관리자가 홍길동을 초대했습니다",                time: "2시간 전",  type: "invite" },
-  { id: "a5", message: "이서연이 TypeScript 심화에 수강 신청했습니다",  time: "3시간 전",  type: "enroll" },
+  { id: "a1", message: "관리자가 안전보건관리체계와 10대 필수 안전수칙 이해를 게시했습니다", time: "10분 전",   type: "publish" },
+  { id: "a2", message: "정하은이 핵심안전수칙 이해 수강을 취소했습니다",                    time: "34분 전",   type: "cancel" },
+  { id: "a3", message: "최유진이 위험관리실무에 수강 신청했습니다",                         time: "1시간 전",  type: "enroll" },
+  { id: "a4", message: "관리자가 홍길동을 초대했습니다",                                   time: "2시간 전",  type: "invite" },
+  { id: "a5", message: "이서연이 안전보건관리체계와 10대 필수 안전수칙 이해에 수강 신청했습니다", time: "3시간 전", type: "enroll" },
 ];
 

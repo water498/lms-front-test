@@ -36,26 +36,26 @@ export type {
 const curricula: Record<string, CourseSubject[]> = {
   c1: [
     {
-      id: "s1", title: "React 기초 개념", order: 1,
+      id: "s1", title: "안전수칙의 이해", order: 1,
       activities: [
-        { id: "a1", title: "React란 무엇인가",    type: "VIDEO",      duration: 12,  mediaAssetId: "ma1" },
-        { id: "a2", title: "컴포넌트 개념",        type: "SCORM",                     mediaAssetId: "ma6" },
-        { id: "a3", title: "개념 확인 퀴즈",       type: "QUIZ",       questionCount: 5 },
+        { id: "a1", title: "안전수칙이란 무엇인가",          type: "VIDEO",      duration: 12,  mediaAssetId: "ma1" },
+        { id: "a2", title: "개인보호장구 착용 방법",          type: "SCORM",                     mediaAssetId: "ma6" },
+        { id: "a3", title: "개념 확인 퀴즈",                 type: "QUIZ",       questionCount: 5 },
       ],
     },
     {
-      id: "s2", title: "State와 Props", order: 2,
+      id: "s2", title: "위험구역 식별 및 대응", order: 2,
       activities: [
-        { id: "a4", title: "useState 사용법",      type: "VIDEO",      duration: 18,  mediaAssetId: "ma2" },
-        { id: "a5", title: "Props 전달과 타입",    type: "VIDEO",      duration: 14 },
-        { id: "a6", title: "실습 과제",             type: "ASSIGNMENT", questionCount: 1 },
+        { id: "a4", title: "위험구역 표시 및 통제 방법",      type: "VIDEO",      duration: 18,  mediaAssetId: "ma2" },
+        { id: "a5", title: "위험 유형별 대응 절차",           type: "VIDEO",      duration: 14 },
+        { id: "a6", title: "현장 적용 실습 과제",             type: "ASSIGNMENT", questionCount: 1 },
       ],
     },
     {
-      id: "s3", title: "이벤트와 폼 처리", order: 3,
+      id: "s3", title: "비상대응 절차", order: 3,
       activities: [
-        { id: "a7", title: "이벤트 핸들링",        type: "VIDEO",      duration: 10,  mediaAssetId: "ma2" },
-        { id: "a8", title: "폼 제출 실습 과제",    type: "ASSIGNMENT", questionCount: 1 },
+        { id: "a7", title: "비상상황 유형과 초기 대응",        type: "VIDEO",      duration: 10,  mediaAssetId: "ma2" },
+        { id: "a8", title: "비상대응 시뮬레이션 과제",         type: "ASSIGNMENT", questionCount: 1 },
       ],
     },
   ],
@@ -63,14 +63,14 @@ const curricula: Record<string, CourseSubject[]> = {
 
 const sessions: Record<string, CourseSession[]> = {
   c1: [
-    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }, { name: "박소연", role: "ASSISTANT" }], completionThreshold: 80, targetAudience: { departments: ["개발팀", "기획팀"], jobGrades: ["사원", "대리"] }, finalExamTemplateId: "ex1", postSurveyTemplateId: "sv1", postAssignmentTemplateId: "as1" },
-    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }, { name: "박소연", role: "ASSISTANT" }], completionThreshold: 80, preSurveyTemplateId: "sv2", postSurveyTemplateId: "sv1", preAssignmentTemplateId: "as2" },
-    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }], completionThreshold: 80, minEnrollment: 20, enrollmentStartDate: "2025-03-10", enrollmentEndDate: "2025-03-28", targetAudience: { departments: ["개발팀"] } },
-    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이준혁", role: "PRIMARY" }], completionThreshold: 80 },
+    { id: "se1", courseId: "c1", name: "1기 (2025 1분기)", type: "COHORT",     cohortNumber: 1, startDate: "2025-01-06", endDate: "2025-02-28", capacity: 50, enrolled: 48, status: "CLOSED",  visible: true,  forSale: true,  instructors: [{ name: "이정민", role: "PRIMARY" }, { name: "김현수", role: "ASSISTANT" }], completionThreshold: 80, targetAudience: { departments: ["현장관리팀", "안전팀"], jobGrades: ["사원", "대리"] }, finalExamTemplateId: "ex1", postSurveyTemplateId: "sv1", postAssignmentTemplateId: "as1" },
+    { id: "se2", courseId: "c1", name: "2기 (2025 2분기)", type: "COHORT",     cohortNumber: 2, startDate: "2025-02-03", endDate: "2025-03-28", capacity: 50, enrolled: 50, status: "ONGOING", visible: true,  forSale: true,  instructors: [{ name: "이정민", role: "PRIMARY" }, { name: "김현수", role: "ASSISTANT" }], completionThreshold: 80, preSurveyTemplateId: "sv2", postSurveyTemplateId: "sv1", preAssignmentTemplateId: "as2" },
+    { id: "se3", courseId: "c1", name: "3기 (2025 3분기)", type: "COHORT",     cohortNumber: 3, startDate: "2025-03-31", endDate: "2025-05-23", capacity: 60, enrolled: 12, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이정민", role: "PRIMARY" }], completionThreshold: 80, minEnrollment: 20, enrollmentStartDate: "2025-03-10", enrollmentEndDate: "2025-03-28", targetAudience: { departments: ["현장관리팀"] } },
+    { id: "se6", courseId: "c1", name: "자유수강",          type: "SELF_PACED",                                                                  capacity: 0,  enrolled: 87, status: "OPEN",    visible: true,  forSale: true,  instructors: [{ name: "이정민", role: "PRIMARY" }], completionThreshold: 80 },
   ],
   c4: [
-    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: [{ name: "김태호", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
-    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: [{ name: "김태호", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
+    { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: [{ name: "박성훈", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
+    { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: [{ name: "박성훈", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80 },
   ],
 };
 

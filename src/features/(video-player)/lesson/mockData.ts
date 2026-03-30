@@ -6,20 +6,20 @@ type Section = { id: number; title: string; lessons: Lesson[] };
 export const CURRICULUM: Section[] = [
   {
     id: 1,
-    title: "섹션 1: LMS 개요",
+    title: "섹션 1: 안전보건관리체계 기초",
     lessons: [
-      { id: "1-1", title: "LMS란 무엇인가", duration: 15 },
-      { id: "1-2", title: "학습 관리 시스템 구조", duration: 20 },
-      { id: "1-3", title: "SCORM 표준 이해", duration: 18 },
+      { id: "1-1", title: "안전보건관리체계란 무엇인가", duration: 15 },
+      { id: "1-2", title: "10대 필수 안전수칙 개요", duration: 20 },
+      { id: "1-3", title: "조직 내 안전 역할과 책임", duration: 18 },
     ],
   },
   {
     id: 2,
-    title: "섹션 2: 콘텐츠 유형",
+    title: "섹션 2: 현장 안전수칙 실천",
     lessons: [
-      { id: "2-1", title: "비디오 콘텐츠", duration: 12 },
-      { id: "2-2", title: "SCORM 패키지", duration: 25 },
-      { id: "2-3", title: "퀴즈와 평가", duration: 10 },
+      { id: "2-1", title: "개인보호장구 착용 및 관리", duration: 14 },
+      { id: "2-2", title: "위험구역 식별과 통제 방법", duration: 22 },
+      { id: "2-3", title: "작업 전 안전점검(TBM) 운영법", duration: 12 },
     ],
   },
 ];

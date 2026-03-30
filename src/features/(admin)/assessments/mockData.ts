@@ -16,99 +16,99 @@ import type { QuestionBank, ExamTemplate, AssignmentTemplate, SurveyTemplate } f
 
 // ── Mock: 문항 뱅크 ──────────────────────────
 export const bankQuestions: QuestionBank[] = [
-  // EXAM — 직장내괴롭힘
+  // EXAM — 안전수칙
   {
     id: "bq1", kind: "EXAM", type: "SINGLE",
-    text: "직장 내 괴롭힘의 법적 정의에 해당하지 않는 것은?",
+    text: "산업안전보건법상 개인보호장구 착용 의무자에 해당하지 않는 것은?",
     options: [
-      { id: "o1", text: "신체적 폭행", correct: false, order: 1 },
-      { id: "o2", text: "업무 외 강요",  correct: false, order: 2 },
-      { id: "o3", text: "정당한 업무 지시", correct: true, order: 3 },
-      { id: "o4", text: "지속적 욕설", correct: false, order: 4 },
+      { id: "o1", text: "유해·위험작업 종사 근로자", correct: false, order: 1 },
+      { id: "o2", text: "현장 방문 외부 방문객", correct: false, order: 2 },
+      { id: "o3", text: "사무실 내 일반 사무 업무 직원", correct: true, order: 3 },
+      { id: "o4", text: "작업지휘자", correct: false, order: 4 },
     ],
-    tags: ["직장내괴롭힘", "법정의무"],
+    tags: ["안전수칙", "보호구"],
     createdAt: "2025-01-05",
   },
   {
     id: "bq2", kind: "EXAM", type: "TRUE_FALSE",
-    text: "직장 내 괴롭힘은 사용자도 가해자가 될 수 있다.",
-    options: [
-      { id: "tf_t", text: "True", correct: true, order: 1 },
-      { id: "tf_f", text: "False", correct: false, order: 2 },
-    ],
-    tags: ["직장내괴롭힘", "법정의무"],
-    createdAt: "2025-01-06",
-  },
-  {
-    id: "bq3", kind: "EXAM", type: "SHORT",
-    text: "직장 내 괴롭힘 피해 발생 시 사용자의 의무 2가지를 서술하시오.",
-    answer: "조사 실시 의무, 피해자 보호 조치 의무",
-    tags: ["직장내괴롭힘", "법정의무", "사용자의무"],
-    createdAt: "2025-01-07",
-  },
-  {
-    id: "bq4", kind: "EXAM", type: "MULTIPLE",
-    text: "직장 내 괴롭힘에 해당할 수 있는 행위를 모두 고르시오.",
-    options: [
-      { id: "o1", text: "반복적인 모욕적 발언", correct: true, order: 1 },
-      { id: "o2", text: "업무 배제·고립", correct: true, order: 2 },
-      { id: "o3", text: "성과 개선 피드백", correct: false, order: 3 },
-      { id: "o4", text: "사적 심부름 강요", correct: true, order: 4 },
-    ],
-    tags: ["직장내괴롭힘", "법정의무"],
-    createdAt: "2025-01-08",
-  },
-  // EXAM — 성희롱예방
-  {
-    id: "bq5", kind: "EXAM", type: "SINGLE",
-    text: "직장 내 성희롱 예방교육의 법정 실시 주기는?",
-    options: [
-      { id: "o1", text: "6개월 1회 이상", correct: false, order: 1 },
-      { id: "o2", text: "연 1회 이상", correct: true, order: 2 },
-      { id: "o3", text: "2년 1회 이상", correct: false, order: 3 },
-      { id: "o4", text: "입사 시 1회", correct: false, order: 4 },
-    ],
-    tags: ["성희롱예방", "법정의무"],
-    createdAt: "2025-01-10",
-  },
-  {
-    id: "bq6", kind: "EXAM", type: "TRUE_FALSE",
-    text: "성희롱은 신체 접촉이 없어도 성립할 수 있다.",
-    options: [
-      { id: "tf_t", text: "True", correct: true, order: 1 },
-      { id: "tf_f", text: "False", correct: false, order: 2 },
-    ],
-    tags: ["성희롱예방", "법정의무"],
-    createdAt: "2025-01-11",
-  },
-  {
-    id: "bq7", kind: "EXAM", type: "SHORT",
-    text: "성희롱 피해자가 신고를 꺼리는 대표적인 이유를 2가지 이상 서술하시오.",
-    answer: "2차 피해 우려, 직장 내 불이익 걱정",
-    tags: ["성희롱예방", "법정의무"],
-    createdAt: "2025-01-12",
-  },
-  // EXAM — 개인정보보호
-  {
-    id: "bq8", kind: "EXAM", type: "SINGLE",
-    text: "개인정보 보호법에서 '민감정보'에 해당하지 않는 것은?",
-    options: [
-      { id: "o1", text: "건강정보", correct: false, order: 1 },
-      { id: "o2", text: "종교", correct: false, order: 2 },
-      { id: "o3", text: "직장 이메일 주소", correct: true, order: 3 },
-      { id: "o4", text: "생체인식 정보", correct: false, order: 4 },
-    ],
-    tags: ["개인정보보호", "법정의무"],
-    createdAt: "2025-01-15",
-  },
-  {
-    id: "bq9", kind: "EXAM", type: "TRUE_FALSE",
-    text: "개인정보 처리 목적이 달성된 후에도 보관할 수 있다.",
+    text: "작업 전 TBM(Tool Box Meeting)은 법적 의무 사항이다.",
     options: [
       { id: "tf_t", text: "True", correct: false, order: 1 },
       { id: "tf_f", text: "False", correct: true, order: 2 },
     ],
-    tags: ["개인정보보호", "법정의무"],
+    tags: ["안전수칙", "TBM"],
+    createdAt: "2025-01-06",
+  },
+  {
+    id: "bq3", kind: "EXAM", type: "SHORT",
+    text: "개인보호장구를 착용하기 전 반드시 확인해야 할 사항 2가지를 서술하시오.",
+    answer: "파손·결함 여부 확인, 작업 유형에 맞는 보호구 선정",
+    tags: ["안전수칙", "보호구", "착용법"],
+    createdAt: "2025-01-07",
+  },
+  {
+    id: "bq4", kind: "EXAM", type: "MULTIPLE",
+    text: "추락 재해 예방을 위한 조치로 올바른 것을 모두 고르시오.",
+    options: [
+      { id: "o1", text: "안전난간 설치", correct: true, order: 1 },
+      { id: "o2", text: "안전대(안전벨트) 착용", correct: true, order: 2 },
+      { id: "o3", text: "작업발판 폭 10cm 이상 확보", correct: false, order: 3 },
+      { id: "o4", text: "개구부 덮개 설치 및 고정", correct: true, order: 4 },
+    ],
+    tags: ["안전수칙", "추락예방"],
+    createdAt: "2025-01-08",
+  },
+  // EXAM — 위험성평가
+  {
+    id: "bq5", kind: "EXAM", type: "SINGLE",
+    text: "위험성 평가에서 '위험성'을 구성하는 두 가지 요소는?",
+    options: [
+      { id: "o1", text: "빈도와 강도", correct: false, order: 1 },
+      { id: "o2", text: "가능성(발생확률)과 중대성(피해정도)", correct: true, order: 2 },
+      { id: "o3", text: "원인과 결과", correct: false, order: 3 },
+      { id: "o4", text: "위험요인과 노출시간", correct: false, order: 4 },
+    ],
+    tags: ["위험성평가", "리스크관리"],
+    createdAt: "2025-01-10",
+  },
+  {
+    id: "bq6", kind: "EXAM", type: "TRUE_FALSE",
+    text: "위험성 평가는 사업주의 의무이며, 근로자 참여 없이 진행할 수 있다.",
+    options: [
+      { id: "tf_t", text: "True", correct: false, order: 1 },
+      { id: "tf_f", text: "False", correct: true, order: 2 },
+    ],
+    tags: ["위험성평가", "법규"],
+    createdAt: "2025-01-11",
+  },
+  {
+    id: "bq7", kind: "EXAM", type: "SHORT",
+    text: "위험성 평가 절차 5단계를 순서대로 서술하시오.",
+    answer: "사전준비 → 유해·위험요인 파악 → 위험성 결정 → 위험성 감소대책 수립·실행 → 기록 및 공유",
+    tags: ["위험성평가", "절차"],
+    createdAt: "2025-01-12",
+  },
+  // EXAM — 중대재해처벌법
+  {
+    id: "bq8", kind: "EXAM", type: "SINGLE",
+    text: "중대재해처벌법에서 '중대산업재해'에 해당하지 않는 것은?",
+    options: [
+      { id: "o1", text: "사망자 1명 이상 발생", correct: false, order: 1 },
+      { id: "o2", text: "6개월 이상 치료 필요 부상자 2명 이상", correct: false, order: 2 },
+      { id: "o3", text: "경상자 5명 이상 동시 발생", correct: true, order: 3 },
+      { id: "o4", text: "직업성 질병자 1년 내 3명 이상", correct: false, order: 4 },
+    ],
+    tags: ["중대재해처벌법", "법규"],
+    createdAt: "2025-01-15",
+  },
+  {
+    id: "bq9", kind: "EXAM", type: "TRUE_FALSE",
+    text: "중대재해처벌법은 상시 근로자 5인 미만 사업장에도 동일하게 적용된다.",
+    options: [
+      { id: "tf_t", text: "True", correct: false, order: 1 },
+      { id: "tf_f", text: "False", correct: true, order: 2 },
+    ],
+    tags: ["중대재해처벌법", "적용범위"],
     createdAt: "2025-01-16",
   },
   // SURVEY — 만족도
@@ -121,9 +121,9 @@ export const bankQuestions: QuestionBank[] = [
   },
   {
     id: "bq11", kind: "SURVEY", type: "LIKERT",
-    text: "강의 난이도가 적절했나요?",
+    text: "강의 내용이 현장 업무에 실질적으로 도움이 됐나요?",
     scale: 5,
-    tags: ["만족도", "강의평가"],
+    tags: ["만족도", "현장적용"],
     createdAt: "2025-02-01",
   },
   {
@@ -148,7 +148,7 @@ export const bankQuestions: QuestionBank[] = [
     id: "bq14", kind: "SURVEY", type: "MULTIPLE",
     text: "본 교육에서 가장 유익했던 부분을 모두 선택해 주세요.",
     options: [
-      { id: "o1", text: "사례 중심 설명", order: 1 },
+      { id: "o1", text: "현장 사례 중심 설명", order: 1 },
       { id: "o2", text: "실습 과제", order: 2 },
       { id: "o3", text: "퀴즈 및 자가점검", order: 3 },
       { id: "o4", text: "강사 Q&A", order: 4 },
@@ -162,7 +162,7 @@ export const bankQuestions: QuestionBank[] = [
 export const examTemplates: ExamTemplate[] = [
   {
     id: "ex1",
-    title: "법정의무교육 종합 평가",
+    title: "안전보건 종합 평가",
     subType: "FINAL",
     passingScore: 70,
     timeLimit: 30,
@@ -170,17 +170,17 @@ export const examTemplates: ExamTemplate[] = [
     usageCount: 3,
     createdAt: "2025-01-10",
     rules: [
-      { id: "r1", label: "직장내괴롭힘 섹션", tagFilter: ["직장내괴롭힘"], count: 5, shuffle: true },
-      { id: "r2", label: "성희롱예방 섹션",   tagFilter: ["성희롱예방"],   count: 3, shuffle: true },
-      { id: "r3", label: "개인정보보호 섹션", tagFilter: ["개인정보보호"], count: 2, shuffle: false },
+      { id: "r1", label: "안전수칙 섹션",     tagFilter: ["안전수칙"],      count: 5, shuffle: true },
+      { id: "r2", label: "위험성평가 섹션",   tagFilter: ["위험성평가"],    count: 3, shuffle: true },
+      { id: "r3", label: "중대재해처벌법 섹션", tagFilter: ["중대재해처벌법"], count: 2, shuffle: false },
     ],
   },
   {
     id: "ex2",
-    title: "TypeScript 타입 시험",
+    title: "위험성 평가 실무 시험",
     subType: "SHORT",
     passingScore: 75,
-    timeLimit: 15,
+    timeLimit: 20,
     maxAttempts: null,
     usageCount: 2,
     createdAt: "2025-01-15",
@@ -188,7 +188,7 @@ export const examTemplates: ExamTemplate[] = [
   },
   {
     id: "ex3",
-    title: "AWS 최종 평가",
+    title: "안전관리체계 최종 평가",
     subType: "FINAL",
     passingScore: 80,
     timeLimit: 60,
@@ -203,27 +203,27 @@ export const examTemplates: ExamTemplate[] = [
 export const assignmentTemplates: AssignmentTemplate[] = [
   {
     id: "as1",
-    title: "React Todo 앱 구현",
-    instructions: "useState, useEffect를 활용하여 Todo 앱을 구현하세요.\n항목 추가, 삭제, 완료 처리 기능이 포함되어야 합니다.",
+    title: "자사 안전보건관리체계 진단 보고서",
+    instructions: "현재 재직 중인 사업장의 안전보건관리체계를 진단하고 개선 방안을 보고서로 작성하세요.\n① 현황 분석 ② 위험요인 도출 ③ 개선 과제 3가지 이상 포함.",
     submissionType: "FILE",
     usageCount: 4,
     createdAt: "2025-01-12",
     rubric: [
-      { id: "r1", criteria: "기능 구현 완성도", points: 50, order: 1 },
-      { id: "r2", criteria: "코드 품질 및 가독성", points: 30, order: 2 },
-      { id: "r3", criteria: "README 작성", points: 20, order: 3 },
+      { id: "r1", criteria: "현황 분석 완성도", points: 40, order: 1 },
+      { id: "r2", criteria: "위험요인 식별 정확성", points: 30, order: 2 },
+      { id: "r3", criteria: "개선 과제 실현 가능성", points: 30, order: 3 },
     ],
   },
   {
     id: "as2",
-    title: "폼 제출 실습",
-    instructions: "React Hook Form을 활용하여 회원가입 폼을 구현하세요.",
+    title: "현장 위험성 평가 실습",
+    instructions: "제시된 현장 사진 및 작업 시나리오를 바탕으로 위험성 평가 5단계를 수행하고 결과를 제출하세요.",
     submissionType: "BOTH",
     usageCount: 2,
     createdAt: "2025-02-05",
     rubric: [
-      { id: "r4", criteria: "유효성 검사 구현", points: 60, order: 1 },
-      { id: "r5", criteria: "에러 메시지 UX", points: 40, order: 2 },
+      { id: "r4", criteria: "유해·위험요인 파악 완성도", points: 50, order: 1 },
+      { id: "r5", criteria: "위험 감소 대책 적절성", points: 50, order: 2 },
     ],
   },
 ];
@@ -232,7 +232,7 @@ export const assignmentTemplates: AssignmentTemplate[] = [
 export const surveyTemplates: SurveyTemplate[] = [
   {
     id: "sv1",
-    title: "React 기초 만족도 조사",
+    title: "안전교육 사후 만족도 조사",
     anonymous: true,
     triggerType: "COURSE_COMPLETE",
     responseCount: 98,
@@ -244,7 +244,7 @@ export const surveyTemplates: SurveyTemplate[] = [
   },
   {
     id: "sv2",
-    title: "TypeScript 강의 피드백",
+    title: "위험성 평가 과정 사전 수요 조사",
     anonymous: false,
     triggerType: "MANUAL",
     responseCount: 67,
@@ -254,7 +254,7 @@ export const surveyTemplates: SurveyTemplate[] = [
   },
   {
     id: "sv3",
-    title: "AWS 과정 사후 평가",
+    title: "안전보건관리체계 과정 사후 평가",
     anonymous: true,
     triggerType: "COURSE_COMPLETE",
     responseCount: 210,

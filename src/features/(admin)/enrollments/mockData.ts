@@ -21,10 +21,10 @@ export const learnerNames: Record<string, string> = {
 };
 
 export const courseTitlesMap: Record<string, string> = {
-  c1: "React 기초", c2: "TypeScript 심화", c3: "Next.js 마스터", c4: "AWS 클라우드 입문",
+  c1: "핵심안전수칙 이해", c2: "안전보건관리체계와 10대 필수 안전수칙 이해", c3: "안전문화 주도 및 경영 역량", c4: "위험관리실무",
 };
 
 export const sessionNamesMap: Record<string, string> = {
-  se2: "React 기초 2기", se3: "React 기초 3기", se4: "AWS 클라우드 2기", se5: "AWS 클라우드 4기",
-  se7: "TypeScript 심화 1기", se8: "Next.js 마스터 1기",
+  se2: "핵심안전수칙 이해 2기", se3: "핵심안전수칙 이해 3기", se4: "위험관리실무 2기", se5: "위험관리실무 4기",
+  se7: "안전보건관리체계 1기", se8: "안전문화 경영 역량 1기",
 };

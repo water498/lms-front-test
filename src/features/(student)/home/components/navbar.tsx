@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTenantContextStore } from "../../shared/tenant-context-store";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Bell,
   ChevronDown,
@@ -24,7 +25,12 @@ const CURRENT_USER_ROLES = ["STUDENT", "INSTRUCTOR"];
 
 interface NotifItem {
   id: string;
-  type: "ENROLLMENT" | "CERT_ISSUED" | "QNA_ANSWERED" | "ANNOUNCEMENT" | "SYSTEM";
+  type:
+    | "ENROLLMENT"
+    | "CERT_ISSUED"
+    | "QNA_ANSWERED"
+    | "ANNOUNCEMENT"
+    | "SYSTEM";
   title: string;
   body: string;
   time: string;
@@ -32,11 +38,46 @@ interface NotifItem {
 }
 
 const MOCK_NOTIFS: NotifItem[] = [
-  { id: "n1", type: "QNA_ANSWERED", title: "Q&A 답변 도착", body: "\"랜덤 포레스트 n_estimators 파라미터\" 질문에 강사님이 답변했습니다.", time: "2분 전", read: false },
-  { id: "n2", type: "CERT_ISSUED", title: "수료증 발급 완료", body: "JavaScript 핵심 개념 과정의 수료증이 발급되었습니다.", time: "1시간 전", read: false },
-  { id: "n3", type: "ANNOUNCEMENT", title: "봄맞이 전 강의 30% 할인", body: "3월 31일까지 모든 강의를 30% 할인된 가격으로 수강하세요.", time: "2일 전", read: true },
-  { id: "n4", type: "ENROLLMENT", title: "수강 등록 완료", body: "React + TypeScript 실전 프로젝트 강의 수강 등록이 완료되었습니다.", time: "3일 전", read: true },
-  { id: "n5", type: "SYSTEM", title: "프로필 정보 업데이트 안내", body: "2026년 4월 1일부터 프로필 사진 형식 정책이 변경됩니다.", time: "1주 전", read: true },
+  {
+    id: "n1",
+    type: "QNA_ANSWERED",
+    title: "Q&A 답변 도착",
+    body: '"랜덤 포레스트 n_estimators 파라미터" 질문에 강사님이 답변했습니다.',
+    time: "2분 전",
+    read: false,
+  },
+  {
+    id: "n2",
+    type: "CERT_ISSUED",
+    title: "수료증 발급 완료",
+    body: "JavaScript 핵심 개념 과정의 수료증이 발급되었습니다.",
+    time: "1시간 전",
+    read: false,
+  },
+  {
+    id: "n3",
+    type: "ANNOUNCEMENT",
+    title: "봄맞이 전 강의 30% 할인",
+    body: "3월 31일까지 모든 강의를 30% 할인된 가격으로 수강하세요.",
+    time: "2일 전",
+    read: true,
+  },
+  {
+    id: "n4",
+    type: "ENROLLMENT",
+    title: "수강 등록 완료",
+    body: "React + TypeScript 실전 프로젝트 강의 수강 등록이 완료되었습니다.",
+    time: "3일 전",
+    read: true,
+  },
+  {
+    id: "n5",
+    type: "SYSTEM",
+    title: "프로필 정보 업데이트 안내",
+    body: "2026년 4월 1일부터 프로필 사진 형식 정책이 변경됩니다.",
+    time: "1주 전",
+    read: true,
+  },
 ];
 
 const NOTIF_ICON: Record<NotifItem["type"], React.ReactNode> = {
@@ -78,22 +119,43 @@ export function Navbar({ cartCount }: { cartCount: number }) {
     return () => document.removeEventListener("mousedown", handler);
   }, [notifOpen]);
 
-  const markAllRead = () => setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
-  const markRead = (id: string) => setNotifs((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
+  const markAllRead = () =>
+    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+  const markRead = (id: string) =>
+    setNotifs((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
 
-  const navCategories = ["프론트엔드", "백엔드", "데이터", "AI/ML", "모바일", "디자인", "DevOps"];
+  const navCategories = [
+    "프론트엔드",
+    "백엔드",
+    "데이터",
+    "AI/ML",
+    "모바일",
+    "디자인",
+    "DevOps",
+  ];
 
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
         {/* Logo */}
-        <Link href="/experiments/student" className="text-xl font-bold text-white shrink-0">
-          Open<span className="text-violet-400">Knock</span>
+        <Link href="/experiments/student" className="shrink-0">
+          <Image
+            src="/lotte.png"
+            alt="롯데건설"
+            width={100 * 1.3}
+            height={28 * 1.3}
+            className="object-contain"
+          />
         </Link>
 
         {/* Nav links */}
         <div className="hidden md:flex items-center gap-1">
-          <Link href="/experiments/student/search" className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+          <Link
+            href="/experiments/student/search"
+            className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+          >
             강의 탐색
           </Link>
 
@@ -134,7 +196,9 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (searchValue.trim()) {
-                    router.push(`/experiments/student/search?q=${encodeURIComponent(searchValue.trim())}`);
+                    router.push(
+                      `/experiments/student/search?q=${encodeURIComponent(searchValue.trim())}`,
+                    );
                     setSearchOpen(false);
                     setSearchValue("");
                   }
@@ -147,7 +211,9 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                   type="text"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
-                  onBlur={() => { if (!searchValue) setSearchOpen(false); }}
+                  onBlur={() => {
+                    if (!searchValue) setSearchOpen(false);
+                  }}
                   placeholder="강의 검색..."
                   className="bg-transparent px-2 py-2 text-sm text-white placeholder-zinc-600 w-48 focus:outline-none"
                 />
@@ -182,7 +248,9 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                 <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
                   <div className="flex items-center gap-2">
                     <Bell className="w-4 h-4 text-zinc-400" />
-                    <span className="text-sm font-semibold text-white">알림</span>
+                    <span className="text-sm font-semibold text-white">
+                      알림
+                    </span>
                     {unreadCount > 0 && (
                       <span className="text-xs px-1.5 py-0.5 bg-violet-500/20 text-violet-400 rounded-full font-medium">
                         {unreadCount}개
@@ -210,22 +278,30 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                         !notif.read ? "bg-violet-500/5" : ""
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                        !notif.read ? "bg-zinc-800" : "bg-zinc-800/50"
-                      }`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                          !notif.read ? "bg-zinc-800" : "bg-zinc-800/50"
+                        }`}
+                      >
                         {NOTIF_ICON[notif.type]}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className={`text-xs font-semibold leading-none mb-1 ${!notif.read ? "text-white" : "text-zinc-400"}`}>
+                          <p
+                            className={`text-xs font-semibold leading-none mb-1 ${!notif.read ? "text-white" : "text-zinc-400"}`}
+                          >
                             {notif.title}
                           </p>
                           {!notif.read && (
                             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0 mb-1" />
                           )}
                         </div>
-                        <p className="text-xs text-zinc-500 leading-snug line-clamp-2">{notif.body}</p>
-                        <p className="text-[10px] text-zinc-600 mt-1">{notif.time}</p>
+                        <p className="text-xs text-zinc-500 leading-snug line-clamp-2">
+                          {notif.body}
+                        </p>
+                        <p className="text-[10px] text-zinc-600 mt-1">
+                          {notif.time}
+                        </p>
                       </div>
                     </button>
                   ))}
@@ -268,7 +344,9 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
               <User className="w-4 h-4 text-white" />
             </div>
-            <span className="text-sm text-zinc-300 hidden md:block">홍길동</span>
+            <span className="text-sm text-zinc-300 hidden md:block">
+              홍길동
+            </span>
           </Link>
 
           {/* DEV: Tenant Switcher */}

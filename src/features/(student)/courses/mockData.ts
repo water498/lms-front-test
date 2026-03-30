@@ -12,34 +12,34 @@ export interface CourseDetail {
 
 // ── Instructors ─────────────────────────────────────────────────────────────
 
-const instructorKimMinjun: InstructorProfile = {
+const instructorKimHyunsu: InstructorProfile = {
   id: "inst-1",
   userId: "user-inst-1",
-  headline: "AI/ML 전문 강사 · 전 네이버 AI Lab",
-  bio: "10년 이상의 머신러닝·딥러닝 실무 경험을 보유한 AI 전문가입니다. 네이버 AI Lab에서 추천 시스템과 자연어 처리 프로젝트를 리드했으며, 현재는 국내외 기업 대상 AI 교육과 컨설팅을 진행하고 있습니다. TensorFlow, PyTorch 공인 강사로 활동 중입니다.",
+  headline: "안전보건 전문가 · 前 한국산업안전보건공단",
+  bio: "20년 이상의 산업안전 실무 경험을 바탕으로 현장에 바로 적용 가능한 안전 교육을 제공합니다. 한국산업안전보건공단 재직 시 중소기업 안전컨설팅 100여 건을 수행했으며, 안전보건관리체계 구축 및 법규 해석 분야의 최고 전문가입니다.",
   profileImageUrl: undefined,
-  expertise: ["Python", "TensorFlow", "PyTorch", "자연어 처리", "컴퓨터 비전", "MLOps"],
-  affiliatedCompany: undefined,
+  expertise: ["안전보건관리체계", "법규해석", "안전문화", "중대재해처벌법", "안전경영"],
+  affiliatedCompany: "안전경영연구소",
 };
 
-const instructorLeeSeoyeon: InstructorProfile = {
+const instructorLeeJeongmin: InstructorProfile = {
   id: "inst-2",
   userId: "user-inst-2",
-  headline: "프론트엔드 아키텍트 · React 코어 컨트리뷰터",
-  bio: "카카오, 토스를 거친 시니어 프론트엔드 개발자입니다. React 생태계와 TypeScript 기반 대규모 앱 아키텍처 설계 경험을 강의로 공유합니다. GitHub Star 프로젝트 다수 보유, 오픈소스 기여 활동 중입니다.",
+  headline: "건설안전기사 · 現장 안전관리 15년",
+  bio: "건설 현장에서 15년간 안전관리자로 근무하며 실질적인 사고 예방 노하우를 전달합니다. 수강생이 현장에서 바로 활용할 수 있는 실습 중심 교육을 지향합니다. 롯데건설·GS건설 안전관리 수석 경력 보유.",
   profileImageUrl: undefined,
-  expertise: ["React", "TypeScript", "Next.js", "Zustand", "성능 최적화"],
+  expertise: ["현장안전", "핵심안전수칙", "사고예방", "보호구관리", "행동기반안전"],
   affiliatedCompany: undefined,
 };
 
-const instructorParkJiho: InstructorProfile = {
+const instructorParkSunghun: InstructorProfile = {
   id: "inst-3",
   userId: "user-inst-3",
-  headline: "데이터 엔지니어 · 전 삼성 SDS 빅데이터팀",
-  bio: "삼성 SDS 빅데이터팀에서 대용량 데이터 파이프라인 설계·운영을 담당했습니다. 현재는 스타트업 CTO로 재직하며 데이터 분석 교육 콘텐츠를 제작하고 있습니다. SQL, Python, Spark를 활용한 실무 중심 강의로 누적 수강생 2만 명 이상을 배출했습니다.",
+  headline: "산업안전지도사 · 위험성평가 전문",
+  bio: "위험성 평가와 재해 통계 분석 전문가로서 데이터 기반의 안전관리 방법론을 가르칩니다. 중대재해처벌법 대응 컨설팅 경험 다수 보유. 리스크매니지먼트 컨설팅 대표로 현업 활동 중입니다.",
   profileImageUrl: undefined,
-  expertise: ["SQL", "Python", "Spark", "데이터 엔지니어링", "PostgreSQL"],
-  affiliatedCompany: undefined,
+  expertise: ["위험관리", "재해통계", "리스크평가", "위험성평가", "안전지표분석"],
+  affiliatedCompany: "리스크매니지먼트 컨설팅",
 };
 
 // ── Reviews ─────────────────────────────────────────────────────────────────
@@ -47,22 +47,22 @@ const instructorParkJiho: InstructorProfile = {
 const reviewsHero1: CourseReview[] = [
   {
     id: "rv-1-1", courseId: "hero-1", userId: "u1", userName: "김태현",
-    rating: 5, body: "실무에 바로 적용할 수 있는 내용들로 가득합니다. 특히 MLOps 파트가 압도적으로 좋았어요. 강사님이 현업 경험을 녹여 설명해주셔서 이해가 쏙쏙 됩니다.",
+    rating: 5, body: "법규 내용을 현장 사례와 연결해 설명해주셔서 이해하기 쉬웠습니다. 안전보건관리체계 구축에 실질적인 도움이 됐어요.",
     createdAt: "2026-03-01", visible: true,
   },
   {
     id: "rv-1-2", courseId: "hero-1", userId: "u2", userName: "박수민",
-    rating: 5, body: "파이썬 기초 정도만 알고 들었는데 커리큘럼이 단계적으로 잘 구성돼 있어 따라가기 수월했습니다. 프로젝트 실습이 특히 도움됐어요.",
+    rating: 5, body: "중대재해처벌법 관련 내용을 이렇게 체계적으로 정리한 강의는 처음입니다. 관리자로서 꼭 들어야 할 과정입니다.",
     createdAt: "2026-02-18", visible: true,
   },
   {
     id: "rv-1-3", courseId: "hero-1", userId: "u3", userName: "이재원",
-    rating: 4, body: "전반적으로 훌륭합니다. 다만 후반부 딥러닝 파트는 속도가 좀 빠른 편이라 복습이 필요했어요. 전체적으로 만족스럽습니다.",
+    rating: 4, body: "전반적으로 훌륭합니다. 다만 후반부 법규 파트는 내용이 방대해서 여러 번 복습이 필요했어요. 전체적으로 만족스럽습니다.",
     createdAt: "2026-02-05", visible: true,
   },
   {
     id: "rv-1-4", courseId: "hero-1", userId: "u4", userName: "최지은",
-    rating: 5, body: "이 가격에 이 퀄리티면 무조건 들어야 합니다. 데이터 전처리부터 모델 배포까지 전 과정을 커버하는 강의는 드물어요.",
+    rating: 5, body: "이 가격에 이 퀄리티면 무조건 들어야 합니다. 현장 사례부터 법적 의무까지 전 과정을 커버하는 강의는 드뭅니다.",
     createdAt: "2026-01-20", visible: true,
   },
 ];
@@ -70,17 +70,17 @@ const reviewsHero1: CourseReview[] = [
 const reviewsIp2: CourseReview[] = [
   {
     id: "rv-2-1", courseId: "ip-2", userId: "u5", userName: "정민서",
-    rating: 5, body: "TypeScript와 React를 함께 다루는 강의 중 단연 최고입니다. 제네릭 타입 활용법을 이렇게 실용적으로 가르쳐주는 강의를 처음 봤어요.",
+    rating: 5, body: "현장에서 바로 쓸 수 있는 안전수칙을 체계적으로 정리해준 최고의 강의입니다. 강사님 현장 경험이 느껴져요.",
     createdAt: "2026-03-10", visible: true,
   },
   {
     id: "rv-2-2", courseId: "ip-2", userId: "u6", userName: "한유빈",
-    rating: 5, body: "커스텀 훅 패턴, Zustand 상태 관리, 성능 최적화까지 실무에서 쓰는 모든 것을 배울 수 있었습니다. 강력 추천합니다.",
+    rating: 5, body: "사고 예방 원리부터 실제 적용까지 실습 위주로 배울 수 있어서 좋았어요. 현장관리자에게 강력 추천합니다.",
     createdAt: "2026-02-25", visible: true,
   },
   {
     id: "rv-2-3", courseId: "ip-2", userId: "u7", userName: "오승준",
-    rating: 4, body: "코드 예제가 잘 구성되어 있고 강사님 설명이 명확합니다. 중급자에게 딱 맞는 난이도예요.",
+    rating: 4, body: "사례가 풍부하고 강사님 설명이 명확합니다. 현장 신입 직원에게 딱 맞는 난이도예요.",
     createdAt: "2026-02-12", visible: true,
   },
 ];
@@ -88,17 +88,17 @@ const reviewsIp2: CourseReview[] = [
 const reviewsIp3: CourseReview[] = [
   {
     id: "rv-3-1", courseId: "ip-3", userId: "u8", userName: "윤채원",
-    rating: 5, body: "SQL을 처음 배우는 분들에게 최고의 입문 강의입니다. 복잡한 JOIN이나 서브쿼리도 쉽게 설명해주세요.",
+    rating: 5, body: "위험성 평가 방법을 단계적으로 설명해줘서 도움이 됐습니다. 실습 과제가 현장 상황과 유사해서 실질적으로 유용했어요.",
     createdAt: "2026-03-05", visible: true,
   },
   {
     id: "rv-3-2", courseId: "ip-3", userId: "u9", userName: "신동현",
-    rating: 5, body: "실무 데이터 분석에 바로 쓸 수 있는 예제들로 가득합니다. 윈도우 함수 파트가 특히 훌륭해요.",
+    rating: 5, body: "재해 통계 분석 방법을 체계적으로 배울 수 있었습니다. 데이터 기반 안전관리에 관심 있는 분께 추천합니다.",
     createdAt: "2026-02-20", visible: true,
   },
   {
     id: "rv-3-3", courseId: "ip-3", userId: "u10", userName: "임소연",
-    rating: 4, body: "개념 설명이 명확하고 실습이 충실합니다. 약간 기초적인 부분이 많지만 탄탄히 다질 수 있어서 좋았습니다.",
+    rating: 4, body: "개념 설명이 명확하고 실습이 충실합니다. 위험관리 이론을 탄탄히 다질 수 있어서 좋았습니다.",
     createdAt: "2026-01-30", visible: true,
   },
 ];
@@ -107,113 +107,109 @@ const reviewsIp3: CourseReview[] = [
 
 const subjectsHero1: CourseSubject[] = [
   {
-    id: "s1-1", title: "강의 소개 및 환경 설정", order: 1,
+    id: "s1-1", title: "강의 소개 및 학습 방향", order: 1,
     activities: [
       { id: "a1-1-1", title: "강의 소개 및 학습 로드맵", type: "VIDEO", duration: 12 },
-      { id: "a1-1-2", title: "개발 환경 설정 (Python, Jupyter, VS Code)", type: "VIDEO", duration: 18 },
+      { id: "a1-1-2", title: "산업안전보건법 체계 개요", type: "VIDEO", duration: 18 },
     ],
   },
   {
-    id: "s1-2", title: "머신러닝 기초", order: 2,
+    id: "s1-2", title: "안전보건관리체계 기초", order: 2,
     activities: [
-      { id: "a1-2-1", title: "머신러닝이란? 지도·비지도·강화학습 개요", type: "VIDEO", duration: 20 },
-      { id: "a1-2-2", title: "데이터 전처리와 피처 엔지니어링", type: "VIDEO", duration: 35 },
-      { id: "a1-2-3", title: "사이킷런으로 첫 분류 모델 만들기", type: "VIDEO", duration: 28 },
+      { id: "a1-2-1", title: "안전보건관리체계란? 핵심 개념과 구조", type: "VIDEO", duration: 20 },
+      { id: "a1-2-2", title: "10대 필수 안전수칙 전체 개요", type: "VIDEO", duration: 28 },
+      { id: "a1-2-3", title: "조직 내 안전 역할과 책임 분담", type: "VIDEO", duration: 22 },
       { id: "a1-2-4", title: "섹션 2 개념 확인 퀴즈", type: "QUIZ", questionCount: 10 },
     ],
   },
   {
-    id: "s1-3", title: "핵심 알고리즘 마스터", order: 3,
+    id: "s1-3", title: "핵심 안전수칙 실천", order: 3,
     activities: [
-      { id: "a1-3-1", title: "선형·로지스틱 회귀 완전 정복", type: "VIDEO", duration: 32 },
-      { id: "a1-3-2", title: "의사결정나무와 랜덤 포레스트", type: "VIDEO", duration: 30 },
-      { id: "a1-3-3", title: "SVM과 앙상블 기법", type: "VIDEO", duration: 25 },
-      { id: "a1-3-4", title: "모델 성능 평가 지표 완전 정복", type: "VIDEO", duration: 22 },
-      { id: "a1-3-5", title: "알고리즘 선택 과제", type: "ASSIGNMENT", questionCount: 3 },
+      { id: "a1-3-1", title: "개인보호장구 착용 및 관리", type: "VIDEO", duration: 25 },
+      { id: "a1-3-2", title: "위험구역 식별 및 통제 방법", type: "VIDEO", duration: 30 },
+      { id: "a1-3-3", title: "작업 전 안전 점검(TBM) 운영법", type: "VIDEO", duration: 20 },
+      { id: "a1-3-4", title: "안전수칙 현장 적용 과제", type: "ASSIGNMENT", questionCount: 2 },
     ],
   },
   {
-    id: "s1-4", title: "딥러닝 입문", order: 4,
+    id: "s1-4", title: "중대재해처벌법 이해", order: 4,
     activities: [
-      { id: "a1-4-1", title: "신경망 기초와 역전파 이해", type: "VIDEO", duration: 38 },
-      { id: "a1-4-2", title: "TensorFlow/Keras로 첫 딥러닝 모델", type: "VIDEO", duration: 42 },
-      { id: "a1-4-3", title: "CNN으로 이미지 분류하기", type: "VIDEO", duration: 45 },
-      { id: "a1-4-4", title: "딥러닝 구현 과제", type: "ASSIGNMENT", questionCount: 2 },
+      { id: "a1-4-1", title: "중대재해처벌법 주요 의무사항", type: "VIDEO", duration: 35 },
+      { id: "a1-4-2", title: "경영책임자 의무와 처벌 사례", type: "VIDEO", duration: 30 },
+      { id: "a1-4-3", title: "법규 준수 체크리스트 활용", type: "SCORM", mediaAssetId: "ma7" },
+      { id: "a1-4-4", title: "법규 이해 평가", type: "QUIZ", questionCount: 8 },
     ],
   },
   {
-    id: "s1-5", title: "자연어 처리 (NLP)", order: 5,
+    id: "s1-5", title: "안전문화 구축", order: 5,
     activities: [
-      { id: "a1-5-1", title: "텍스트 전처리와 임베딩", type: "VIDEO", duration: 28 },
-      { id: "a1-5-2", title: "RNN, LSTM으로 시퀀스 모델링", type: "VIDEO", duration: 35 },
-      { id: "a1-5-3", title: "트랜스포머와 BERT 활용", type: "VIDEO", duration: 40 },
-      { id: "a1-5-4", title: "NLP 퀴즈", type: "QUIZ", questionCount: 8 },
+      { id: "a1-5-1", title: "안전문화 성숙도 진단", type: "VIDEO", duration: 22 },
+      { id: "a1-5-2", title: "안전 리더십과 의사소통", type: "VIDEO", duration: 28 },
+      { id: "a1-5-3", title: "안전문화 퀴즈", type: "QUIZ", questionCount: 6 },
     ],
   },
   {
-    id: "s1-6", title: "MLOps & 모델 배포", order: 6,
+    id: "s1-6", title: "안전보건관리체계 구축 실전", order: 6,
     activities: [
-      { id: "a1-6-1", title: "MLflow로 실험 관리하기", type: "VIDEO", duration: 30 },
-      { id: "a1-6-2", title: "Docker & FastAPI로 모델 서빙", type: "VIDEO", duration: 38 },
-      { id: "a1-6-3", title: "CI/CD 파이프라인 구축", type: "VIDEO", duration: 32 },
-      { id: "a1-6-4", title: "최종 프로젝트 과제", type: "ASSIGNMENT", questionCount: 1 },
+      { id: "a1-6-1", title: "안전보건관리체계 구축 실전 사례", type: "VIDEO", duration: 38 },
+      { id: "a1-6-2", title: "자사 안전보건관리체계 진단 및 개선", type: "VIDEO", duration: 32 },
+      { id: "a1-6-3", title: "최종 체계 구축 과제", type: "ASSIGNMENT", questionCount: 1 },
     ],
   },
 ];
 
 const subjectsIp2: CourseSubject[] = [
   {
-    id: "s2-1", title: "TypeScript 핵심 개념", order: 1,
+    id: "s2-1", title: "안전수칙 기초 이해", order: 1,
     activities: [
-      { id: "a2-1-1", title: "타입 시스템 완전 이해", type: "VIDEO", duration: 25 },
-      { id: "a2-1-2", title: "제네릭과 유틸리티 타입 실전 활용", type: "VIDEO", duration: 30 },
-      { id: "a2-1-3", title: "TypeScript 퀴즈", type: "QUIZ", questionCount: 8 },
+      { id: "a2-1-1", title: "핵심안전수칙이란 무엇인가", type: "VIDEO", duration: 15 },
+      { id: "a2-1-2", title: "개인보호장구(PPE) 종류와 착용법", type: "VIDEO", duration: 22 },
+      { id: "a2-1-3", title: "기초 안전수칙 퀴즈", type: "QUIZ", questionCount: 8 },
     ],
   },
   {
-    id: "s2-2", title: "React 심화", order: 2,
+    id: "s2-2", title: "위험 유형별 수칙 적용", order: 2,
     activities: [
-      { id: "a2-2-1", title: "커스텀 훅 설계 패턴", type: "VIDEO", duration: 28 },
-      { id: "a2-2-2", title: "Context API vs Zustand 비교", type: "VIDEO", duration: 22 },
-      { id: "a2-2-3", title: "Zustand 전역 상태 관리 패턴", type: "VIDEO", duration: 35 },
+      { id: "a2-2-1", title: "추락·전도 사고 예방 수칙", type: "VIDEO", duration: 28 },
+      { id: "a2-2-2", title: "끼임·충돌 위험 통제 방법", type: "VIDEO", duration: 24 },
+      { id: "a2-2-3", title: "위험 유형별 핵심 수칙 적용", type: "VIDEO", duration: 30 },
     ],
   },
   {
-    id: "s2-3", title: "실전 프로젝트 구축", order: 3,
+    id: "s2-3", title: "현장 안전 실습 및 종합", order: 3,
     activities: [
-      { id: "a2-3-1", title: "프로젝트 아키텍처 설계", type: "VIDEO", duration: 20 },
-      { id: "a2-3-2", title: "API 연동 및 에러 처리", type: "VIDEO", duration: 32 },
-      { id: "a2-3-3", title: "성능 최적화 실전 (메모이제이션, 코드 스플리팅)", type: "VIDEO", duration: 40 },
-      { id: "a2-3-4", title: "테스트 코드 작성 (Jest + RTL)", type: "VIDEO", duration: 35 },
-      { id: "a2-3-5", title: "프로젝트 제출 과제", type: "ASSIGNMENT", questionCount: 1 },
+      { id: "a2-3-1", title: "작업 전 위험요인 발굴 실습", type: "VIDEO", duration: 20 },
+      { id: "a2-3-2", title: "TBM(작업 전 회의) 운영 실습", type: "VIDEO", duration: 25 },
+      { id: "a2-3-3", title: "현장 안전 점검 시뮬레이션", type: "SCORM", mediaAssetId: "ma8" },
+      { id: "a2-3-4", title: "현장 안전계획 수립 과제", type: "ASSIGNMENT", questionCount: 1 },
     ],
   },
 ];
 
 const subjectsIp3: CourseSubject[] = [
   {
-    id: "s3-1", title: "SQL 기초", order: 1,
+    id: "s3-1", title: "위험관리 기초", order: 1,
     activities: [
-      { id: "a3-1-1", title: "데이터베이스와 SQL 소개", type: "VIDEO", duration: 15 },
-      { id: "a3-1-2", title: "SELECT, WHERE, ORDER BY 완전 정복", type: "VIDEO", duration: 25 },
-      { id: "a3-1-3", title: "기초 퀴즈", type: "QUIZ", questionCount: 10 },
+      { id: "a3-1-1", title: "위험관리란? 핵심 개념과 용어", type: "VIDEO", duration: 15 },
+      { id: "a3-1-2", title: "위험성 평가 5단계 프로세스", type: "VIDEO", duration: 28 },
+      { id: "a3-1-3", title: "위험관리 기초 퀴즈", type: "QUIZ", questionCount: 10 },
     ],
   },
   {
-    id: "s3-2", title: "JOIN & 집계 함수", order: 2,
+    id: "s3-2", title: "위험성 평가 실무", order: 2,
     activities: [
-      { id: "a3-2-1", title: "JOIN 완전 이해 (INNER, LEFT, RIGHT, FULL)", type: "VIDEO", duration: 35 },
-      { id: "a3-2-2", title: "GROUP BY와 집계 함수 실전", type: "VIDEO", duration: 28 },
-      { id: "a3-2-3", title: "서브쿼리와 CTE", type: "VIDEO", duration: 30 },
-      { id: "a3-2-4", title: "JOIN 실습 과제", type: "ASSIGNMENT", questionCount: 3 },
+      { id: "a3-2-1", title: "체크리스트법·HAZOP 활용", type: "VIDEO", duration: 32 },
+      { id: "a3-2-2", title: "위험도 산정 및 우선순위 결정", type: "VIDEO", duration: 26 },
+      { id: "a3-2-3", title: "위험 감소 대책 수립", type: "VIDEO", duration: 28 },
+      { id: "a3-2-4", title: "위험성 평가 실습 과제", type: "ASSIGNMENT", questionCount: 2 },
     ],
   },
   {
-    id: "s3-3", title: "고급 SQL & 분석 함수", order: 3,
+    id: "s3-3", title: "재해 통계 분석 & 사후 관리", order: 3,
     activities: [
-      { id: "a3-3-1", title: "윈도우 함수 실전 (ROW_NUMBER, RANK, LAG/LEAD)", type: "VIDEO", duration: 38 },
-      { id: "a3-3-2", title: "인덱스와 쿼리 최적화", type: "VIDEO", duration: 30 },
-      { id: "a3-3-3", title: "실무 분석 프로젝트", type: "ASSIGNMENT", questionCount: 2 },
+      { id: "a3-3-1", title: "재해 통계 지표 이해 (도수율, 강도율)", type: "VIDEO", duration: 30 },
+      { id: "a3-3-2", title: "사고 원인 분석 기법 (FTA, 4M)", type: "VIDEO", duration: 28 },
+      { id: "a3-3-3", title: "위험관리 종합 프로젝트", type: "ASSIGNMENT", questionCount: 1 },
     ],
   },
 ];
@@ -222,59 +218,58 @@ const subjectsIp3: CourseSubject[] = [
 
 export const courseDetails: Record<string, CourseDetail> = {
   "hero-1": {
-    description: "머신러닝과 딥러닝의 핵심 이론부터 MLOps를 통한 실제 배포까지, 현업 AI 엔지니어가 되기 위한 모든 것을 다룹니다. Python 기초 지식만 있다면 누구나 시작할 수 있도록 커리큘럼이 설계되었습니다.",
+    description: "산업안전보건법의 핵심 요구사항부터 중대재해처벌법 대응까지, 안전보건관리체계 구축에 필요한 모든 것을 다룹니다. 10대 필수 안전수칙을 현장에 바로 적용할 수 있도록 실전 사례 중심으로 설계되었습니다.",
     whatYouLearn: [
-      "머신러닝 핵심 알고리즘 (회귀, 분류, 클러스터링) 완전 정복",
-      "TensorFlow/Keras를 활용한 딥러닝 모델 구현",
-      "CNN, RNN, Transformer 기반 자연어 처리",
-      "MLflow를 이용한 실험 관리 및 모델 버전 관리",
-      "Docker & FastAPI를 활용한 모델 서빙",
-      "실무 수준의 AI 프로젝트 포트폴리오 완성",
+      "안전보건관리체계 핵심 구성요소 이해 및 실무 적용",
+      "10대 필수 안전수칙 체계적 습득 및 현장 실천",
+      "중대재해처벌법 의무사항과 경영책임자 역할 이해",
+      "안전보건 조직 체계 및 역할·책임 명확화",
+      "작업 전 안전 점검(TBM) 운영법 습득",
+      "자사 안전보건관리체계 진단 및 개선 계획 수립",
     ],
     requirements: [
-      "Python 기초 문법 (변수, 함수, 리스트, 딕셔너리)",
-      "고등학교 수준의 통계·수학 (평균, 분산, 행렬 기초)",
-      "개발 환경 설정 가능한 PC (Windows/Mac/Linux 모두 가능)",
+      "현장 안전에 대한 기본적인 관심",
+      "산업안전보건법에 대한 기초 지식 (선택)",
+      "업무에서 안전관리 역할을 담당하고 있거나 담당 예정인 분",
     ],
     subjects: subjectsHero1,
-    instructor: instructorKimMinjun,
+    instructor: instructorKimHyunsu,
     reviews: reviewsHero1,
   },
   "ip-2": {
-    description: "React와 TypeScript를 함께 사용하는 실전 프로젝트 중심 강의입니다. 단순한 문법 설명을 넘어, 실제 서비스를 만들 때 마주치는 아키텍처 설계, 상태 관리, 성능 최적화 문제를 함께 해결합니다.",
+    description: "현장에서 매일 마주치는 위험에 대응하는 핵심 안전수칙을 실습 중심으로 학습합니다. 단순한 이론이 아닌 실제 현장 사례를 통해, 수강 즉시 적용 가능한 안전 역량을 키웁니다.",
     whatYouLearn: [
-      "TypeScript 제네릭, 유틸리티 타입을 활용한 안전한 코드 작성",
-      "커스텀 훅으로 비즈니스 로직 분리 및 재사용",
-      "Zustand로 확장 가능한 전역 상태 설계",
-      "코드 스플리팅·메모이제이션을 활용한 성능 최적화",
-      "Jest + React Testing Library로 테스트 작성",
-      "실무 수준의 React 프로젝트 아키텍처 설계",
+      "개인보호장구(PPE) 종류별 올바른 착용법과 관리 방법",
+      "추락·전도·끼임 등 주요 재해 유형별 예방 수칙",
+      "작업 전 위험요인 발굴 및 TBM 운영 방법",
+      "위험 유형별 핵심 수칙의 현장 적용 실습",
+      "현장 안전 점검 체크리스트 작성 및 활용",
+      "동료와 함께하는 안전 행동 실천 방법",
     ],
     requirements: [
-      "JavaScript 기초 (ES6+ 문법)",
-      "React 기본 개념 (useState, useEffect, props)",
-      "npm/yarn 패키지 매니저 사용 경험",
+      "현장 근무 경험 또는 현장 출입 경험",
+      "별도의 사전 지식 불필요 — 입문자 환영",
     ],
     subjects: subjectsIp2,
-    instructor: instructorLeeSeoyeon,
+    instructor: instructorLeeJeongmin,
     reviews: reviewsIp2,
   },
   "ip-3": {
-    description: "데이터 분석 실무에서 매일 사용하는 SQL을 기초부터 고급까지 완전 정복하는 강의입니다. 이론 위주가 아닌 실제 비즈니스 데이터셋을 활용한 실습 중심으로 구성되어 있습니다.",
+    description: "데이터 기반의 과학적 안전관리를 위한 위험성 평가 실무와 재해 통계 분석 방법론을 학습합니다. 현장 위험요인 도출부터 통계 지표 산출, 사고 원인 분석까지 종합적인 위험관리 역량을 갖출 수 있습니다.",
     whatYouLearn: [
-      "SELECT, JOIN, GROUP BY 등 핵심 SQL 문법 완전 이해",
-      "복잡한 다중 테이블 JOIN과 서브쿼리 작성",
-      "CTE(Common Table Expression)로 가독성 높은 쿼리 작성",
-      "ROW_NUMBER, RANK, LAG/LEAD 등 윈도우 함수 활용",
-      "인덱스 원리를 이해하고 쿼리 성능 최적화",
-      "실무 비즈니스 인사이트 추출 프로젝트",
+      "위험성 평가 5단계 프로세스 이해 및 실전 적용",
+      "체크리스트법, HAZOP 등 위험성 평가 기법 활용",
+      "재해 통계 주요 지표(도수율, 강도율) 산출 및 해석",
+      "FTA, 4M 등 사고 원인 분석 기법 습득",
+      "위험 감소 대책 수립 및 우선순위 결정",
+      "자사 위험관리 체계 진단 및 개선 방안 도출",
     ],
     requirements: [
-      "컴퓨터 기본 조작 능력",
-      "엑셀 또는 스프레드시트 기본 사용 경험 (선택)",
+      "현장 안전관리 업무 경험 또는 관련 업무 담당자",
+      "기초 안전 이론 이해 (안전보건관리체계 과정 이수 권장)",
     ],
     subjects: subjectsIp3,
-    instructor: instructorParkJiho,
+    instructor: instructorParkSunghun,
     reviews: reviewsIp3,
   },
 };
@@ -293,7 +288,7 @@ export const defaultCourseDetail: CourseDetail = {
       ],
     },
   ],
-  instructor: instructorKimMinjun,
+  instructor: instructorKimHyunsu,
   reviews: [],
 };
 
@@ -304,20 +299,20 @@ export const sessionsByCourse: Record<string, CourseSession[]> = {
     {
       id: "se-h1-1",
       courseId: "hero-1",
-      name: "2025 2분기 — 개발팀 대상",
+      name: "2026 2분기 — 현장관리팀 대상",
       type: "COHORT",
       cohortNumber: 3,
-      startDate: "2025-04-07",
-      endDate: "2025-05-30",
+      startDate: "2026-04-07",
+      endDate: "2026-05-30",
       capacity: 30,
       enrolled: 18,
       status: "OPEN",
       visible: true,
       forSale: false,
-      instructors: [{ name: "김민준", role: "PRIMARY" }],
+      instructors: [{ name: "김현수", role: "PRIMARY" }],
       completionThreshold: 80,
       targetAudience: {
-        departments: ["team-dev"],
+        departments: ["team-field"],
         jobGrades: [],
         sites: ["site-seoul"],
       },
@@ -325,17 +320,17 @@ export const sessionsByCourse: Record<string, CourseSession[]> = {
     {
       id: "se-h1-2",
       courseId: "hero-1",
-      name: "2025 2분기 — 전체 대상",
+      name: "2026 2분기 — 전체 대상",
       type: "COHORT",
       cohortNumber: 4,
-      startDate: "2025-04-14",
-      endDate: "2025-06-06",
+      startDate: "2026-04-14",
+      endDate: "2026-06-06",
       capacity: 50,
       enrolled: 12,
       status: "OPEN",
       visible: true,
       forSale: false,
-      instructors: [{ name: "김민준", role: "PRIMARY" }],
+      instructors: [{ name: "김현수", role: "PRIMARY" }],
       completionThreshold: 80,
       targetAudience: undefined,
     },
@@ -344,20 +339,20 @@ export const sessionsByCourse: Record<string, CourseSession[]> = {
     {
       id: "se-h2-1",
       courseId: "hero-2",
-      name: "2025 2분기",
+      name: "2026 2분기",
       type: "COHORT",
       cohortNumber: 2,
-      startDate: "2025-04-01",
-      endDate: "2025-05-16",
+      startDate: "2026-04-01",
+      endDate: "2026-05-16",
       capacity: 40,
       enrolled: 35,
       status: "OPEN",
       visible: true,
       forSale: false,
-      instructors: [{ name: "이서연", role: "PRIMARY" }],
+      instructors: [{ name: "이정민", role: "PRIMARY" }],
       completionThreshold: 70,
       targetAudience: {
-        departments: ["team-design", "team-pm"],
+        departments: ["team-safety", "team-mgmt"],
         jobGrades: [],
         sites: [],
       },
