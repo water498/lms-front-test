@@ -55,7 +55,7 @@ function CertificateModal({ cert, onClose }: { cert: Certificate; onClose: () =>
               <div className="w-14 h-14 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center">
                 <Award className="w-7 h-7 text-violet-400" />
               </div>
-              <p className="text-xs font-bold tracking-[0.25em] text-violet-400 uppercase">OpenKnock</p>
+              <p className="text-xs font-bold tracking-[0.25em] text-violet-400 uppercase">롯데건설</p>
             </div>
 
             {/* Certificate of completion */}

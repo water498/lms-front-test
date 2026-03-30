@@ -82,7 +82,7 @@ export default function StudentLoginFeature() {
               <span className="text-white font-bold text-sm">OK</span>
             </div>
             <h1 className="text-xl font-bold text-slate-900">로그인</h1>
-            <p className="text-sm text-slate-500 mt-1">OpenKnock에 오신 걸 환영합니다</p>
+            <p className="text-sm text-slate-500 mt-1">롯데건설 LMS에 오신 걸 환영합니다</p>
           </div>
 
           {/* Social login */}

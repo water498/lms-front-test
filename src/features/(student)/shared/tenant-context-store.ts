@@ -4,7 +4,7 @@ import { type TenantContext, type TenantType } from "@/lib/models";
 const B2C_MOCK: TenantContext = {
   tenantId: "platform",
   tenantType: "B2C",
-  tenantName: "OpenKnock",
+  tenantName: "롯데건설",
   features: {
     payments: true,
     cart: true,

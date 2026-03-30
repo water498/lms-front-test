@@ -21,7 +21,7 @@ export default function InstructorForgotPasswordFeature() {
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-xl font-bold text-white">강사 포털</h1>
-          <p className="text-sm text-zinc-400 mt-1">OpenKnock Instructor</p>
+          <p className="text-sm text-zinc-400 mt-1">롯데건설 LMS 강사</p>
         </div>
 
         <div className="bg-zinc-800 rounded-2xl border border-zinc-700 p-8">

@@ -34,7 +34,7 @@ export default function StudentRegisterFeature() {
               <span className="text-white font-bold text-sm">OK</span>
             </div>
             <h1 className="text-xl font-bold text-slate-900">회원가입</h1>
-            <p className="text-sm text-slate-500 mt-1">OpenKnock 계정 만들기</p>
+            <p className="text-sm text-slate-500 mt-1">롯데건설 LMS 계정 만들기</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">

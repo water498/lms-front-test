@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row md:items-start gap-8 justify-between">
           <div>
             <p className="text-lg font-bold text-white mb-2">
-              Open<span className="text-violet-400">Knock</span>
+              롯데건설
             </p>
             <p className="text-xs text-zinc-600 max-w-xs leading-relaxed">
               LMS 플랫폼 개발 전 UI/UX 프로토타입 실험 페이지입니다.
@@ -28,7 +28,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-zinc-800/50 mt-8 pt-6 flex items-center justify-between">
-          <p className="text-xs text-zinc-700">© 2026 OpenKnock. LMS Front Test Prototype.</p>
+          <p className="text-xs text-zinc-700">© 2026 롯데건설. LMS Front Test Prototype.</p>
           <Link href="/" className="text-xs text-zinc-700 hover:text-zinc-500 transition-colors">
             ← 실험 목록으로
           </Link>
