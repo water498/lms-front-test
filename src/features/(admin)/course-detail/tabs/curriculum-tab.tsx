@@ -116,7 +116,12 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
         style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
         className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 group rounded-lg"
       >
-        <GripVertical size={14} className="text-slate-300 cursor-grab flex-shrink-0" {...attributes} {...listeners} />
+        <GripVertical
+          size={14}
+          className={`flex-shrink-0 ${hasOngoingSessions ? "text-slate-200 cursor-default" : "text-slate-300 cursor-grab"}`}
+          {...attributes}
+          {...(hasOngoingSessions ? {} : listeners)}
+        />
         <span className="text-base flex-shrink-0">{ACTIVITY_ICON[activity.type]}</span>
         <div className="flex-1 min-w-0">
           <span className="text-sm text-slate-700">{activity.title}</span>
@@ -132,15 +137,16 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
             <Pencil size={13} />
           </button>
           <button
-            onClick={handleDeleteClick}
-            className="p-1 text-slate-400 hover:text-red-500 rounded"
+            onClick={hasOngoingSessions ? undefined : handleDeleteClick}
+            disabled={hasOngoingSessions}
+            className={`p-1 rounded ${hasOngoingSessions ? "text-slate-200 cursor-not-allowed" : "text-slate-400 hover:text-red-500"}`}
           >
             <Trash2 size={13} />
           </button>
         </div>
       </div>
 
-      {showWarning && (
+      {showWarning && !hasOngoingSessions && (
         <DeleteWarningDialog
           enrolleeCount={enrolleeCount}
           onConfirm={() => { setShowWarning(false); onDelete(); }}
@@ -200,7 +206,12 @@ function SubjectAccordion({
         className="flex items-center gap-3 px-4 py-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition-colors"
         onClick={() => setOpen((v) => !v)}
       >
-        <GripVertical size={15} className="text-slate-300 cursor-grab flex-shrink-0" {...attributes} {...listeners} />
+        <GripVertical
+          size={15}
+          className={`flex-shrink-0 ${hasOngoingSessions ? "text-slate-200 cursor-default" : "text-slate-300 cursor-grab"}`}
+          {...attributes}
+          {...(hasOngoingSessions ? {} : listeners)}
+        />
         {open ? (
           <ChevronDown size={15} className="text-slate-500 flex-shrink-0" />
         ) : (
@@ -215,8 +226,9 @@ function SubjectAccordion({
             <Pencil size={13} />
           </button>
           <button
-            onClick={onDelete}
-            className="p-1 text-slate-400 hover:text-red-500 rounded"
+            onClick={hasOngoingSessions ? undefined : onDelete}
+            disabled={hasOngoingSessions}
+            className={`p-1 rounded ${hasOngoingSessions ? "text-slate-200 cursor-not-allowed" : "text-slate-400 hover:text-red-500"}`}
           >
             <Trash2 size={13} />
           </button>
@@ -239,8 +251,13 @@ function SubjectAccordion({
             </SortableContext>
           </DndContext>
           <button
-            onClick={() => setShowAddActivity(true)}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors mt-1"
+            onClick={hasOngoingSessions ? undefined : () => setShowAddActivity(true)}
+            disabled={hasOngoingSessions}
+            className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors mt-1 ${
+              hasOngoingSessions
+                ? "text-slate-300 cursor-not-allowed"
+                : "text-slate-400 hover:text-violet-600 hover:bg-violet-50"
+            }`}
           >
             <Plus size={14} />
             활동 추가
@@ -311,7 +328,7 @@ export default function CurriculumTab({
       {hasOngoingSessions && (
         <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
           <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />
-          <span>진행 중인 차수가 있습니다. 커리큘럼 변경 사항은 이미 수강 중인 학습자에게 즉시 반영됩니다.</span>
+          <span>진행 중인 차수가 있어 커리큘럼을 수정할 수 없습니다. 수정하려면 과정을 복제하거나 새 차수를 여세요.</span>
         </div>
       )}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
@@ -331,7 +348,7 @@ export default function CurriculumTab({
         </SortableContext>
       </DndContext>
 
-      {addingSubject ? (
+      {!hasOngoingSessions && addingSubject ? (
         <div className="flex items-center gap-2 px-4 py-3 border-2 border-violet-300 rounded-xl bg-violet-50">
           <Plus size={15} className="text-violet-400 flex-shrink-0" />
           <input
@@ -350,8 +367,13 @@ export default function CurriculumTab({
         </div>
       ) : (
         <button
-          onClick={() => setAddingSubject(true)}
-          className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500 hover:text-violet-600 border-2 border-dashed border-slate-200 hover:border-violet-300 rounded-xl transition-colors"
+          onClick={hasOngoingSessions ? undefined : () => setAddingSubject(true)}
+          disabled={hasOngoingSessions}
+          className={`flex items-center gap-2 px-4 py-3 text-sm border-2 border-dashed rounded-xl transition-colors ${
+            hasOngoingSessions
+              ? "text-slate-300 border-slate-100 cursor-not-allowed"
+              : "text-slate-500 hover:text-violet-600 border-slate-200 hover:border-violet-300"
+          }`}
         >
           <Plus size={15} />
           과목 추가

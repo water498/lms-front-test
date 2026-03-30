@@ -197,6 +197,18 @@ export const examTemplates: ExamTemplate[] = [
     createdAt: "2025-02-01",
     rules: [],
   },
+  {
+    id: "ex4",
+    title: "구 버전 안전교육 시험 (보관됨)",
+    subType: "SHORT",
+    passingScore: 60,
+    timeLimit: 15,
+    maxAttempts: null,
+    usageCount: 0,
+    isArchived: true,
+    createdAt: "2024-08-10",
+    rules: [],
+  },
 ];
 
 // ── Mock: 과제 템플릿 ─────────────────────────
@@ -224,6 +236,19 @@ export const assignmentTemplates: AssignmentTemplate[] = [
     rubric: [
       { id: "r4", criteria: "유해·위험요인 파악 완성도", points: 50, order: 1 },
       { id: "r5", criteria: "위험 감소 대책 적절성", points: 50, order: 2 },
+    ],
+  },
+  {
+    id: "as3",
+    title: "구 버전 현장 보고서 과제 (보관됨)",
+    instructions: "이전 양식의 현장 보고서 과제입니다. 현재 사용하지 않습니다.",
+    submissionType: "FILE",
+    usageCount: 0,
+    isArchived: true,
+    createdAt: "2024-06-01",
+    rubric: [
+      { id: "r6", criteria: "보고서 형식 준수", points: 50, order: 1 },
+      { id: "r7", criteria: "내용 완성도", points: 50, order: 2 },
     ],
   },
 ];

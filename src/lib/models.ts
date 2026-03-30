@@ -877,6 +877,7 @@ export interface ExamTemplate {
   maxAttempts: number | null; // null = 무제한
   rules: QuestionCompositionRule[];
   usageCount: number;
+  isArchived?: boolean;
   createdAt: string;
 }
 
@@ -897,6 +898,7 @@ export interface AssignmentTemplate {
   passingScore?: number | null; // null이면 제출만으로 통과. 설정 시 grade >= passingScore 필요
   rubric: AssignmentRubricItem[];
   usageCount: number;
+  isArchived?: boolean;
   createdAt: string;
 }
 

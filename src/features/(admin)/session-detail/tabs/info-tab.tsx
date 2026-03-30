@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Lock } from "lucide-react";
 import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../../course-detail/mockData";
 import { instructors as instructorNames } from "../../courses/mockData";
 import { useOrgStructureStore, type DeptNode } from "../../shared/org-structure-store";
@@ -186,6 +186,8 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
   function set<K extends keyof DraftState>(key: K, value: DraftState[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
+
+  const isEnrolled = session.enrolled > 0;
 
   const inputCls = "w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent";
   const selectCls = inputCls + " bg-white";
@@ -380,32 +382,52 @@ export default function SessionInfoTab({ session }: { session: CourseSession }) 
 
           {/* 수료 기준 진도율 */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium text-slate-500">수료 기준 진도율 (%)</label>
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={draft.completionThreshold}
-              onChange={(e) => set("completionThreshold", e.target.value)}
-              className={inputCls}
-            />
+            <label className={`text-xs font-medium flex items-center gap-1 ${isEnrolled ? "text-slate-400" : "text-slate-500"}`}>
+              수료 기준 진도율 (%)
+              {isEnrolled && <Lock size={11} className="text-slate-400" />}
+            </label>
+            {isEnrolled ? (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <span className="text-sm text-slate-600">{draft.completionThreshold}%</span>
+                <span className="text-xs text-slate-400 ml-1">수강 중인 학습자가 있어 수정할 수 없습니다</span>
+              </div>
+            ) : (
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={draft.completionThreshold}
+                onChange={(e) => set("completionThreshold", e.target.value)}
+                className={inputCls}
+              />
+            )}
           </div>
 
           {/* 오프라인 출석 기준 — OFFLINE/BLENDED only */}
           {session.location !== undefined && (
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-slate-500">
+              <label className={`text-xs font-medium flex items-center gap-1 ${isEnrolled ? "text-slate-400" : "text-slate-500"}`}>
                 오프라인 출석 기준 (%) <span className="font-normal text-slate-400">(빈 값 = 미적용)</span>
+                {isEnrolled && <Lock size={11} className="text-slate-400" />}
               </label>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={draft.offlineAttendanceThreshold}
-                onChange={(e) => set("offlineAttendanceThreshold", e.target.value)}
-                placeholder="예: 80"
-                className={inputCls}
-              />
+              {isEnrolled ? (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
+                  <span className="text-sm text-slate-600">
+                    {draft.offlineAttendanceThreshold !== "" ? `${draft.offlineAttendanceThreshold}%` : "미적용"}
+                  </span>
+                  <span className="text-xs text-slate-400 ml-1">수강 중인 학습자가 있어 수정할 수 없습니다</span>
+                </div>
+              ) : (
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={draft.offlineAttendanceThreshold}
+                  onChange={(e) => set("offlineAttendanceThreshold", e.target.value)}
+                  placeholder="예: 80"
+                  className={inputCls}
+                />
+              )}
             </div>
           )}
 

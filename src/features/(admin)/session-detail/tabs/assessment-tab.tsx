@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Lock, AlertTriangle } from "lucide-react";
 import type { CourseSession } from "../../course-detail/mockData";
 import { examTemplates, surveyTemplates, assignmentTemplates } from "../../assessments/mockData";
 
@@ -64,6 +64,7 @@ function SelectField({
   selectCls,
   required,
   onRequiredChange,
+  disabled,
 }: {
   label: string;
   value: string;
@@ -72,22 +73,32 @@ function SelectField({
   selectCls: string;
   required?: boolean;
   onRequiredChange?: (v: boolean) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-slate-500">{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className={selectCls}>
+      <label className={`text-xs font-medium flex items-center gap-1 ${disabled ? "text-slate-400" : "text-slate-500"}`}>
+        {label}
+        {disabled && <Lock size={11} className="text-slate-400" />}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className={`${selectCls} ${disabled ? "opacity-60 cursor-not-allowed bg-slate-50" : ""}`}
+      >
         <option value="">미설정</option>
         {options.map((o) => (
           <option key={o.id} value={o.id}>{o.title}</option>
         ))}
       </select>
       {onRequiredChange && value && (
-        <label className="flex items-center gap-1.5 cursor-pointer">
+        <label className={`flex items-center gap-1.5 ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
           <input
             type="checkbox"
             checked={required ?? false}
-            onChange={(e) => onRequiredChange(e.target.checked)}
+            onChange={(e) => !disabled && onRequiredChange(e.target.checked)}
+            disabled={disabled}
             className="accent-violet-600"
           />
           <span className="text-xs text-slate-600">수료 조건 필수</span>
@@ -100,6 +111,8 @@ function SelectField({
 export default function SessionAssessmentTab({ session }: { session: CourseSession }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<DraftState>(() => toDraft(session));
+
+  const isLocked = session.enrolled > 0;
 
   function handleEdit() {
     setDraft(toDraft(session));
@@ -157,6 +170,13 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
         )}
       </div>
 
+      {isEditing && isLocked && (
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
+          <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />
+          <span>수강 중인 학습자가 있어 수료 조건을 변경할 수 없습니다.</span>
+        </div>
+      )}
+
       {isEditing ? (
         <>
           <SectionCard title="시험">
@@ -179,6 +199,7 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
                 selectCls={selectCls}
                 required={draft.postExamRequired}
                 onRequiredChange={(v) => set("postExamRequired", v)}
+                disabled={isLocked}
               />
             </div>
           </SectionCard>
@@ -203,6 +224,7 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
                 selectCls={selectCls}
                 required={draft.postSurveyRequired}
                 onRequiredChange={(v) => set("postSurveyRequired", v)}
+                disabled={isLocked}
               />
             </div>
           </SectionCard>
@@ -227,6 +249,7 @@ export default function SessionAssessmentTab({ session }: { session: CourseSessi
                 selectCls={selectCls}
                 required={draft.postAssignmentRequired}
                 onRequiredChange={(v) => set("postAssignmentRequired", v)}
+                disabled={isLocked}
               />
             </div>
           </SectionCard>
