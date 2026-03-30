@@ -57,13 +57,30 @@ export interface OfflineSessionMock {
   location: string;
   startsAt: string;
   endsAt: string;
+  instructors?: { name: string; role: "PRIMARY" | "ASSISTANT" }[];
 }
 
 export const offlineSessionsBySession: Record<string, OfflineSessionMock[]> = {
   se2: [
-    { id: "os1", title: "1일차 오리엔테이션",       dayNum: 1, status: "COMPLETED", location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-03T09:00", endsAt: "2025-03-03T18:00" },
-    { id: "os2", title: "2일차 React 기초",         dayNum: 2, status: "COMPLETED", location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-10T09:00", endsAt: "2025-03-10T18:00" },
-    { id: "os3", title: "3일차 실습 프로젝트",       dayNum: 3, status: "SCHEDULED", location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-17T09:00", endsAt: "2025-03-17T18:00" },
+    {
+      id: "os1", title: "1일차 오리엔테이션", dayNum: 1, status: "COMPLETED",
+      location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-03T09:00", endsAt: "2025-03-03T18:00",
+      instructors: [{ name: "김민준", role: "PRIMARY" }],
+    },
+    {
+      id: "os2", title: "2일차 TypeScript 심화", dayNum: 2, status: "COMPLETED",
+      location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-10T09:00", endsAt: "2025-03-10T18:00",
+      // 외부 초빙 강사가 담당하는 차시 — 차시별 강사가 다른 케이스
+      instructors: [
+        { name: "이수진 (외부)", role: "PRIMARY" },
+        { name: "김민준", role: "ASSISTANT" },
+      ],
+    },
+    {
+      id: "os3", title: "3일차 실습 프로젝트", dayNum: 3, status: "SCHEDULED",
+      location: "서울 강남 교육센터 3층 A강의실", startsAt: "2025-03-17T09:00", endsAt: "2025-03-17T18:00",
+      instructors: [{ name: "김민준", role: "PRIMARY" }],
+    },
   ],
 };
 

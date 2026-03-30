@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { instructors } from "../../courses/mockData";
+import type { CourseInstructor } from "@/lib/models";
 
 interface Props {
   onClose: () => void;
@@ -14,13 +15,33 @@ export default function CreateOfflineSessionModal({ onClose }: Props) {
   const [endTime, setEndTime] = useState("18:00");
   const [location, setLocation] = useState("");
   const [capacity, setCapacity] = useState("30");
-  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([instructors[0]]);
+  const [selectedInstructors, setSelectedInstructors] = useState<CourseInstructor[]>(
+    [{ name: instructors[0], role: "PRIMARY" }]
+  );
 
-  function toggleInstructor(name: string) {
+  function addInstructor(name: string) {
+    const role: "PRIMARY" | "ASSISTANT" =
+      selectedInstructors.some((i) => i.role === "PRIMARY") ? "ASSISTANT" : "PRIMARY";
+    setSelectedInstructors((prev) => [...prev, { name, role }]);
+  }
+
+  function removeInstructor(name: string) {
+    setSelectedInstructors((prev) => prev.filter((i) => i.name !== name));
+  }
+
+  function toggleRole(name: string) {
     setSelectedInstructors((prev) =>
-      prev.includes(name) ? prev.filter((i) => i !== name) : [...prev, name]
+      prev.map((i) =>
+        i.name === name
+          ? { ...i, role: i.role === "PRIMARY" ? "ASSISTANT" : "PRIMARY" }
+          : i
+      )
     );
   }
+
+  const unassigned = instructors.filter(
+    (name) => !selectedInstructors.some((i) => i.name === name)
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -80,26 +101,51 @@ export default function CreateOfflineSessionModal({ onClose }: Props) {
           {/* 강사 */}
           <div>
             <label className="text-xs font-medium text-slate-600 mb-2 block">강사 배정</label>
-            <div className="flex flex-wrap gap-2">
-              {instructors.map((i) => (
-                <label
-                  key={i}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs cursor-pointer border transition-colors ${
-                    selectedInstructors.includes(i)
-                      ? "bg-violet-100 border-violet-300 text-violet-700"
-                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedInstructors.includes(i)}
-                    onChange={() => toggleInstructor(i)}
-                    className="sr-only"
-                  />
-                  {i}
-                </label>
-              ))}
-            </div>
+
+            {/* 배정된 강사 목록 */}
+            {selectedInstructors.length > 0 && (
+              <div className="flex flex-col gap-1.5 mb-2">
+                {selectedInstructors.map((inst) => (
+                  <div key={inst.name} className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg border border-slate-200">
+                    <span className="text-sm text-slate-800 flex-1">{inst.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleRole(inst.name)}
+                      className={`text-xs px-2 py-0.5 rounded border transition-colors ${
+                        inst.role === "PRIMARY"
+                          ? "bg-violet-100 border-violet-300 text-violet-700"
+                          : "bg-slate-100 border-slate-300 text-slate-600 hover:border-violet-300 hover:text-violet-600"
+                      }`}
+                    >
+                      {inst.role === "PRIMARY" ? "주강사" : "보조강사"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeInstructor(inst.name)}
+                      className="text-slate-400 hover:text-red-400 transition-colors text-sm leading-none"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 추가 가능한 강사 */}
+            {unassigned.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {unassigned.map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => addInstructor(name)}
+                    className="text-xs px-2.5 py-1 border border-dashed border-slate-300 text-slate-500 rounded-lg hover:border-violet-400 hover:text-violet-600 transition-colors"
+                  >
+                    + {name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* 정원 */}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { X, ExternalLink, Search } from "lucide-react";
+import { X, ExternalLink, Search, Ban } from "lucide-react";
 import { type CourseActivity, type ActivityType } from "../mockData";
 import { mediaAssets } from "../../media/mockData";
 import { examTemplates, assignmentTemplates } from "../../assessments/mockData";
@@ -28,12 +28,14 @@ const SUBMISSION_LABELS: Record<string, string> = {
 
 interface Props {
   subjectTitle: string;
+  hasInstructor: boolean;
   onAdd: (activity: CourseActivity) => void;
   onClose: () => void;
 }
 
 export default function AddActivityModal({
   subjectTitle,
+  hasInstructor,
   onAdd,
   onClose,
 }: Props) {
@@ -148,20 +150,28 @@ export default function AddActivityModal({
 
         {/* Tab switcher */}
         <div className="flex gap-1 border-b border-slate-200 mb-4">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-colors -mb-px ${
-                activeTab === tab.id
-                  ? "border-violet-600 text-violet-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              <span>{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const isDisabled = tab.id === "ASSIGNMENT" && !hasInstructor;
+            return (
+              <button
+                key={tab.id}
+                onClick={isDisabled ? undefined : () => setActiveTab(tab.id)}
+                disabled={isDisabled}
+                title={isDisabled ? "강사가 없는 과정에는 과제를 추가할 수 없습니다" : undefined}
+                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 transition-colors -mb-px ${
+                  isDisabled
+                    ? "border-transparent text-slate-300 cursor-not-allowed"
+                    : activeTab === tab.id
+                    ? "border-violet-600 text-violet-600"
+                    : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <span>{tab.icon}</span>
+                {tab.label}
+                {isDisabled && <Ban size={11} className="text-slate-300" />}
+              </button>
+            );
+          })}
         </div>
 
         {/* MEDIA tab */}

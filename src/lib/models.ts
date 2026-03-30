@@ -486,6 +486,8 @@ export interface Course {
   certConfig?: CertConfig | null;
   description?: string;
   cancellationPolicy?: CancellationPolicy;
+  instructorId?: string;   // FK → user.id. undefined/null = 강사 없는 자기주도형 과정
+  qnaEnabled?: boolean;    // Q&A 기능 활성화 여부. 강사 없는 과정은 false 권장
 }
 
 export type EnrolledCourse = Course & {
@@ -620,6 +622,15 @@ export interface InstructorRevenue {
 // ── 오프라인 수업 & 출결 ──────────────────────────────────
 
 export type OfflineSessionStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED";
+
+// OfflineSessionInstructor — 차시-강사 N:M pivot (backend: offline_session_instructor)
+export interface OfflineSessionInstructor {
+  offlineSessionId: string;
+  instructorId: string;  // FK → User
+  role: "PRIMARY" | "ASSISTANT";
+  order: number;
+  addedAt: string;
+}
 
 export interface OfflineSession {
   id: string;

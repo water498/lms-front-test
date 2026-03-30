@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Clock, User } from "lucide-react";
 import {
   offlineSessionsBySession,
   attendanceByOfflineSession,
@@ -104,6 +104,16 @@ export default function AttendanceTab({ sessionId }: { sessionId: string }) {
             <MapPin size={12} />
             <span>{selectedOs.location}</span>
           </div>
+          {selectedOs.instructors && selectedOs.instructors.length > 0 && (
+            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <User size={12} />
+              <span>
+                {selectedOs.instructors.map((i) =>
+                  i.role === "PRIMARY" ? i.name : `${i.name} (보조)`
+                ).join(", ")}
+              </span>
+            </div>
+          )}
           <span className={`ml-auto inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
             selectedOs.status === "COMPLETED"
               ? "bg-emerald-500/15 text-emerald-400"

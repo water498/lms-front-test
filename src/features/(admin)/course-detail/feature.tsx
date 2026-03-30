@@ -95,6 +95,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
           <CurriculumTab
             subjects={subjects}
             hasOngoingSessions={hasOngoingSessions}
+            hasInstructor={!!course.instructorId}
             enrolleeCount={enrollees.length}
             onAddSubject={handleAddSubject}
             onDeleteSubject={handleDeleteSubject}

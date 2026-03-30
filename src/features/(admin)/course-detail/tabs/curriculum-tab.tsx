@@ -161,6 +161,7 @@ interface SubjectAccordionProps {
   subject: CourseSubject;
   index: number;
   hasOngoingSessions: boolean;
+  hasInstructor: boolean;
   enrolleeCount: number;
   onDelete: () => void;
   onAddActivity: (activity: CourseActivity) => void;
@@ -171,6 +172,7 @@ function SubjectAccordion({
   subject,
   index,
   hasOngoingSessions,
+  hasInstructor,
   enrolleeCount,
   onDelete,
   onAddActivity,
@@ -268,6 +270,7 @@ function SubjectAccordion({
       {showAddActivity && (
         <AddActivityModal
           subjectTitle={subject.title}
+          hasInstructor={hasInstructor}
           onAdd={(activity) => {
             onAddActivity(activity);
             setShowAddActivity(false);
@@ -282,6 +285,7 @@ function SubjectAccordion({
 interface CurriculumTabProps {
   subjects: CourseSubject[];
   hasOngoingSessions: boolean;
+  hasInstructor: boolean;
   enrolleeCount: number;
   onAddSubject: (title: string) => void;
   onDeleteSubject: (subjectId: string) => void;
@@ -292,6 +296,7 @@ interface CurriculumTabProps {
 export default function CurriculumTab({
   subjects,
   hasOngoingSessions,
+  hasInstructor,
   enrolleeCount,
   onAddSubject,
   onDeleteSubject,
@@ -339,6 +344,7 @@ export default function CurriculumTab({
               subject={subject}
               index={i}
               hasOngoingSessions={hasOngoingSessions}
+              hasInstructor={hasInstructor}
               enrolleeCount={enrolleeCount}
               onDelete={() => onDeleteSubject(subject.id)}
               onAddActivity={(activity) => onAddActivity(subject.id, activity)}
