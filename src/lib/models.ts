@@ -850,15 +850,27 @@ export type QuestionBankKind = "EXAM" | "SURVEY";
 export type QuestionType = "SINGLE" | "MULTIPLE" | "TRUE_FALSE" | "SHORT";
 export type SurveyQuestionType = "LIKERT" | "SINGLE" | "MULTIPLE" | "TEXT";
 
+export interface QuestionPool {
+  id: string;
+  title: string;
+  kind: QuestionBankKind;
+  type: QuestionType | SurveyQuestionType; // 그룹 고정 타입. 소속 문항은 반드시 이 타입이어야 함
+  description?: string;
+  isArchived: boolean;
+  questionCount?: number; // 소속 문항 수 (캐시)
+  createdAt: string;
+}
+
 export interface QuestionBank {
   id: string;
   kind: QuestionBankKind;
   type: QuestionType | SurveyQuestionType;
+  poolId?: string;         // 소속 문항 그룹. undefined = 미배정
   text: string;
   options?: QuestionBankOption[];
   answer?: string; // SHORT 모범답안
   scale?: number; // LIKERT 척도
-  tags: string[];
+  tags: string[];  // 검색 보조용. 출제 기준은 poolId 사용
   createdAt: string;
 }
 
@@ -872,7 +884,7 @@ export interface QuestionBankOption {
 export interface QuestionCompositionRule {
   id: string;
   label: string;
-  tagFilter: string[];
+  poolId: string; // 출제에 사용할 문항 그룹 ID
   count: number;
   shuffle: boolean;
 }

@@ -5,21 +5,24 @@ import Link from "next/link";
 import { ChevronLeft, Plus, Trash2, X, Check } from "lucide-react";
 import {
   type QuestionBank,
+  type QuestionPool,
   type QuestionBankKind,
   type QuestionType,
   type SurveyQuestionType,
   bankQuestions as initialBank,
+  questionPools,
 } from "../mockData";
 
 function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newQuestion(kind: QuestionBankKind): QuestionBank {
+function newQuestion(kind: QuestionBankKind, poolId?: string): QuestionBank {
   return {
     id: makeId(),
     kind,
     type: kind === "EXAM" ? "SINGLE" : "LIKERT",
+    poolId,
     text: "",
     options: kind === "EXAM"
       ? [{ id: makeId(), text: "", correct: true, order: 1 }, { id: makeId(), text: "", correct: false, order: 2 }]
@@ -48,17 +51,16 @@ export default function QuestionBankFeature() {
   const [kind, setKind]           = useState<QuestionBankKind>("EXAM");
   const [questions, setQuestions] = useState<QuestionBank[]>(initialBank);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [poolFilter, setPoolFilter] = useState<string | null>(null);
   const [tagInput, setTagInput]   = useState("");
 
+  const kindPools      = questionPools.filter((p) => p.kind === kind && !p.isArchived);
   const kindQuestions  = questions.filter((q) => q.kind === kind);
-  const filteredQ      = tagFilter ? kindQuestions.filter((q) => q.tags.includes(tagFilter)) : kindQuestions;
+  const filteredQ      = poolFilter ? kindQuestions.filter((q) => q.poolId === poolFilter) : kindQuestions;
   const selected       = questions.find((q) => q.id === selectedId) ?? null;
 
-  // All tags for this kind
-  const allTags = Array.from(new Set(kindQuestions.flatMap((q) => q.tags))).sort();
-
   // Tag autocomplete for the selected question
+  const allTags = Array.from(new Set(kindQuestions.flatMap((q) => q.tags))).sort();
   const tagSuggestions = tagInput
     ? allTags.filter(
         (t) => t.toLowerCase().includes(tagInput.toLowerCase()) &&
@@ -71,7 +73,7 @@ export default function QuestionBankFeature() {
   }
 
   function addQuestion() {
-    const q = newQuestion(kind);
+    const q = newQuestion(kind, poolFilter ?? undefined);
     setQuestions((qs) => [...qs, q]);
     setSelectedId(q.id);
   }
@@ -152,6 +154,7 @@ export default function QuestionBankFeature() {
   }
 
   const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
+  const selectedPool = selected?.poolId ? questionPools.find((p) => p.id === selected.poolId) : undefined;
 
   return (
     <div className="-m-6 h-[calc(100vh-56px)] flex flex-col overflow-hidden bg-white">
@@ -173,7 +176,7 @@ export default function QuestionBankFeature() {
           {(["EXAM", "SURVEY"] as QuestionBankKind[]).map((k) => (
             <button
               key={k}
-              onClick={() => { setKind(k); setSelectedId(null); setTagFilter(null); }}
+              onClick={() => { setKind(k); setSelectedId(null); setPoolFilter(null); }}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
                 kind === k ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
               }`}
@@ -195,32 +198,43 @@ export default function QuestionBankFeature() {
       {/* ── 3-panel body ── */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* Left — tag filter + question list */}
+        {/* Left — pool filter + question list */}
         <aside className="w-64 border-r border-slate-200 flex flex-col overflow-hidden bg-white">
 
-          {/* Tag filter */}
+          {/* Pool filter */}
           <div className="px-3 py-3 border-b border-slate-100">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2">태그 필터</p>
-            <div className="flex flex-wrap gap-1">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2">문항 그룹</p>
+            <div className="flex flex-col gap-1">
               <button
-                onClick={() => setTagFilter(null)}
-                className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
-                  tagFilter === null ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                onClick={() => setPoolFilter(null)}
+                className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
+                  poolFilter === null
+                    ? "bg-violet-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
                 }`}
               >
                 전체
+                <span className="ml-1 text-[10px] opacity-60">({kindQuestions.length})</span>
               </button>
-              {allTags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
-                  className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
-                    tagFilter === tag ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  #{tag}
-                </button>
-              ))}
+              {kindPools.map((pool) => {
+                const count = kindQuestions.filter((q) => q.poolId === pool.id).length;
+                return (
+                  <button
+                    key={pool.id}
+                    onClick={() => setPoolFilter(poolFilter === pool.id ? null : pool.id)}
+                    className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
+                      poolFilter === pool.id
+                        ? "bg-violet-600 text-white"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="truncate block">{pool.title}</span>
+                    <span className={`text-[10px] ${poolFilter === pool.id ? "opacity-70" : "text-slate-400"}`}>
+                      {typeLabels[pool.type as keyof typeof typeLabels]} · {count}문항
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -247,9 +261,9 @@ export default function QuestionBankFeature() {
                     <span className="text-[10px] text-slate-400">
                       {typeLabels[q.type as keyof typeof typeLabels]}
                     </span>
-                    {q.tags.slice(0, 2).map((t) => (
-                      <span key={t} className="text-[10px] text-violet-500">#{t}</span>
-                    ))}
+                    {!q.poolId && (
+                      <span className="text-[10px] text-amber-500">미배정</span>
+                    )}
                   </div>
                 </div>
               </button>
@@ -346,7 +360,10 @@ export default function QuestionBankFeature() {
               {/* EXAM SHORT */}
               {selected.kind === "EXAM" && selected.type === "SHORT" && (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                  <p className="text-xs font-semibold text-slate-400 mb-2">모범 답안 (선택)</p>
+                  <p className="text-xs font-semibold text-slate-400 mb-2">
+                    모범 답안 (선택)
+                    <span className="ml-2 font-normal text-amber-500">주관식은 점수 산정에서 제외됩니다</span>
+                  </p>
                   <textarea
                     className="w-full text-sm text-slate-700 bg-slate-50 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300 border border-slate-200 placeholder:text-slate-300"
                     rows={3}
@@ -432,6 +449,26 @@ export default function QuestionBankFeature() {
 
           {selected ? (
             <div className="p-4 flex flex-col gap-4">
+              {/* Pool selector */}
+              <div>
+                <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 그룹</label>
+                <select
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  value={selected.poolId ?? ""}
+                  onChange={(e) => updateQ(selected.id, { poolId: e.target.value || undefined })}
+                >
+                  <option value="">— 미배정 —</option>
+                  {kindPools.map((p) => (
+                    <option key={p.id} value={p.id}>{p.title}</option>
+                  ))}
+                </select>
+                {selectedPool && selectedPool.type !== selected.type && (
+                  <p className="text-[11px] text-amber-500 mt-1">
+                    그룹 타입({typeLabels[selectedPool.type as keyof typeof typeLabels]})과 문항 유형이 다릅니다
+                  </p>
+                )}
+              </div>
+
               {/* Type selector */}
               <div>
                 <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형</label>
@@ -463,7 +500,7 @@ export default function QuestionBankFeature() {
 
               {/* Tags */}
               <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1.5">태그</label>
+                <label className="text-xs font-medium text-slate-500 block mb-1.5">태그 (검색 보조)</label>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {selected.tags.map((tag) => (
                     <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full">

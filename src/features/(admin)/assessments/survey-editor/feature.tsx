@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Plus, Trash2, X } from "lucide-react";
+import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import {
   type SurveyTemplate,
   type SurveyTriggerType,
   type QuestionCompositionRule,
   surveyTemplates,
   bankQuestions,
+  questionPools,
 } from "../mockData";
 
 function makeId() {
@@ -16,7 +17,7 @@ function makeId() {
 }
 
 function newRule(): QuestionCompositionRule {
-  return { id: makeId(), label: "", tagFilter: [], count: 3, shuffle: false };
+  return { id: makeId(), label: "", poolId: "", count: 3, shuffle: false };
 }
 
 function defaultSurvey(): Omit<SurveyTemplate, "id" | "responseCount" | "status" | "createdAt"> {
@@ -28,10 +29,13 @@ const TRIGGER_LABELS: Record<SurveyTriggerType, string> = {
   COURSE_COMPLETE: "과정 완료 시 자동",
 };
 
-// All unique tags in the bank (SURVEY only)
-const allSurveyTags = Array.from(
-  new Set(bankQuestions.filter((q) => q.kind === "SURVEY").flatMap((q) => q.tags))
-).sort();
+const TYPE_LABELS: Record<string, string> = {
+  LIKERT: "리커트", SINGLE: "단일 선택", MULTIPLE: "복수 선택", TEXT: "자유 서술",
+};
+
+// SURVEY 그룹만 필터
+const surveyPools = questionPools.filter((p) => p.kind === "SURVEY" && !p.isArchived);
+const poolMap = Object.fromEntries(surveyPools.map((p) => [p.id, p]));
 
 interface Props { surveyId: string }
 
@@ -44,10 +48,14 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
   const [triggerType, setTrigger] = useState<SurveyTriggerType>(src.triggerType);
   const [rules, setRules]         = useState<QuestionCompositionRule[]>(src.rules);
   const [selectedId, setSelectedId] = useState<string | null>(src.rules[0]?.id ?? null);
-  const [tagInput, setTagInput]   = useState("");
 
-  const selected = rules.find((r) => r.id === selectedId) ?? null;
-  const totalQ   = rules.reduce((s, r) => s + r.count, 0);
+  const selected    = rules.find((r) => r.id === selectedId) ?? null;
+  const totalQ      = rules.reduce((s, r) => s + r.count, 0);
+  const selectedPool = selected?.poolId ? poolMap[selected.poolId] : undefined;
+
+  const matchingQuestions = selected?.poolId
+    ? bankQuestions.filter((q) => q.kind === "SURVEY" && q.poolId === selected.poolId)
+    : [];
 
   function updateRule(id: string, patch: Partial<QuestionCompositionRule>) {
     setRules((rs) => rs.map((r) => r.id === id ? { ...r, ...patch } : r));
@@ -66,35 +74,6 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
       return next;
     });
   }
-
-  function addTag(ruleId: string, tag: string) {
-    const t = tag.trim();
-    if (!t) return;
-    setRules((rs) => rs.map((r) => {
-      if (r.id !== ruleId || r.tagFilter.includes(t)) return r;
-      return { ...r, tagFilter: [...r.tagFilter, t] };
-    }));
-    setTagInput("");
-  }
-
-  function removeTag(ruleId: string, tag: string) {
-    setRules((rs) => rs.map((r) =>
-      r.id !== ruleId ? r : { ...r, tagFilter: r.tagFilter.filter((t) => t !== tag) }
-    ));
-  }
-
-  const matchingQuestions = selected
-    ? bankQuestions.filter(
-        (q) => q.kind === "SURVEY" && selected.tagFilter.every((t) => q.tags.includes(t))
-      )
-    : [];
-
-  const tagSuggestions = tagInput
-    ? allSurveyTags.filter(
-        (t) => t.toLowerCase().includes(tagInput.toLowerCase()) &&
-               !(selected?.tagFilter.includes(t))
-      )
-    : [];
 
   return (
     <div className="-m-6 h-[calc(100vh-56px)] flex flex-col overflow-hidden bg-white">
@@ -134,33 +113,34 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
             {rules.length === 0 && (
               <p className="px-4 py-8 text-xs text-center text-slate-300">규칙이 없습니다</p>
             )}
-            {rules.map((r, idx) => (
-              <button
-                key={r.id}
-                onClick={() => setSelectedId(r.id)}
-                className={`w-full text-left px-4 py-2.5 flex items-start gap-2.5 transition-colors ${
-                  selectedId === r.id ? "bg-violet-50" : "hover:bg-slate-50"
-                }`}
-              >
-                <span className={`text-xs font-bold mt-0.5 w-4 flex-shrink-0 ${
-                  selectedId === r.id ? "text-violet-500" : "text-slate-300"
-                }`}>
-                  {idx + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-medium truncate ${
-                    selectedId === r.id ? "text-violet-700" : "text-slate-700"
+            {rules.map((r, idx) => {
+              const pool = r.poolId ? poolMap[r.poolId] : undefined;
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => setSelectedId(r.id)}
+                  className={`w-full text-left px-4 py-2.5 flex items-start gap-2.5 transition-colors ${
+                    selectedId === r.id ? "bg-violet-50" : "hover:bg-slate-50"
+                  }`}
+                >
+                  <span className={`text-xs font-bold mt-0.5 w-4 flex-shrink-0 ${
+                    selectedId === r.id ? "text-violet-500" : "text-slate-300"
                   }`}>
-                    {r.label || "(이름 없음)"}
-                  </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {r.tagFilter.length > 0
-                      ? r.tagFilter.map((t) => `#${t}`).join(" ") + ` · ${r.count}문항`
-                      : `${r.count}문항`}
-                  </p>
-                </div>
-              </button>
-            ))}
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs font-medium truncate ${
+                      selectedId === r.id ? "text-violet-700" : "text-slate-700"
+                    }`}>
+                      {r.label || "(이름 없음)"}
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                      {pool ? `${pool.title} · ${r.count}문항` : `${r.count}문항`}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
           <div className="p-3 border-t border-slate-100">
@@ -191,54 +171,44 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
             <div className="max-w-2xl mx-auto flex flex-col gap-4">
 
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col gap-4">
+                {/* Rule label */}
                 <div>
                   <label className="text-xs font-semibold text-slate-400 block mb-2">라벨</label>
                   <input
                     className="w-full text-sm text-slate-800 bg-transparent border-b border-slate-200 focus:border-violet-400 focus:outline-none pb-1 placeholder:text-slate-300"
-                    placeholder="예: 만족도 문항"
+                    placeholder="예: 만족도 리커트 섹션"
                     value={selected.label}
                     onChange={(e) => updateRule(selected.id, { label: e.target.value })}
                   />
                 </div>
 
+                {/* Pool selector */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 block mb-2">태그 필터</label>
-                  <div className="flex flex-wrap gap-1.5 mb-2">
-                    {selected.tagFilter.map((tag) => (
-                      <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full">
-                        #{tag}
-                        <button onClick={() => removeTag(selected.id, tag)} className="hover:text-red-500 transition-colors">
-                          <X size={11} />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="relative">
-                    <input
-                      className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300 placeholder:text-slate-300"
-                      placeholder="태그 입력 후 Enter"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") { addTag(selected.id, tagInput); e.preventDefault(); }
-                      }}
-                    />
-                    {tagSuggestions.length > 0 && (
-                      <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
-                        {tagSuggestions.map((t) => (
-                          <button
-                            key={t}
-                            onMouseDown={(e) => { e.preventDefault(); addTag(selected.id, t); }}
-                            className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-violet-50 transition-colors"
-                          >
-                            #{t}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-2">문항 그룹</label>
+                  <select
+                    className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    value={selected.poolId}
+                    onChange={(e) => updateRule(selected.id, { poolId: e.target.value })}
+                  >
+                    <option value="">— 그룹 선택 —</option>
+                    {surveyPools.map((p) => {
+                      const cnt = bankQuestions.filter((q) => q.poolId === p.id).length;
+                      return (
+                        <option key={p.id} value={p.id}>
+                          {p.title} ({TYPE_LABELS[p.type] ?? p.type} · {cnt}문항)
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {selectedPool && (
+                    <p className="text-[11px] text-slate-400 mt-1.5">
+                      타입: <span className="text-violet-600 font-medium">{TYPE_LABELS[selectedPool.type] ?? selectedPool.type}</span>
+                      {" · "}뱅크 내 {matchingQuestions.length}문항
+                    </p>
+                  )}
                 </div>
 
+                {/* Count & shuffle */}
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <label className="text-xs font-semibold text-slate-400 block mb-2">출제 수</label>
@@ -272,11 +242,11 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
               {/* Matching preview */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <p className="text-xs font-semibold text-slate-400 mb-3">
-                  매칭 문항 미리보기 — {matchingQuestions.length}개
+                  그룹 내 문항 미리보기 — {matchingQuestions.length}개
                 </p>
                 {matchingQuestions.length === 0 ? (
                   <p className="text-xs text-slate-300 text-center py-4">
-                    {selected.tagFilter.length === 0 ? "태그 필터를 추가하면 매칭 문항이 표시됩니다" : "해당 태그를 가진 문항이 없습니다"}
+                    {!selected.poolId ? "문항 그룹을 선택하면 소속 문항이 표시됩니다" : "해당 그룹에 문항이 없습니다"}
                   </p>
                 ) : (
                   <div className="flex flex-col gap-2">
