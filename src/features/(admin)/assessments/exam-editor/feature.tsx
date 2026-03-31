@@ -341,14 +341,17 @@ export default function ExamEditorFeature({ examId }: Props) {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-500 block mb-1.5">통과 기준 (%)</label>
-              <input
-                type="number"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-                value={passingScore}
-                min={0} max={100}
-                onChange={(e) => setPassingScore(Number(e.target.value))}
-              />
+              <label className="text-xs font-medium text-slate-500 block mb-1.5">통과 기준</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  value={passingScore}
+                  min={0} max={100}
+                  onChange={(e) => setPassingScore(Number(e.target.value))}
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">%</span>
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-slate-500 block mb-1.5">시간 제한 (분)</label>

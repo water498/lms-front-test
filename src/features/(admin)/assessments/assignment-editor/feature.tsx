@@ -24,7 +24,7 @@ function makeId() {
 }
 
 function defaultAssignment(): Omit<AssignmentTemplate, "id" | "usageCount" | "createdAt"> {
-  return { title: "", instructions: "", submissionType: "FILE", rubric: [] };
+  return { title: "", instructions: "", submissionType: "FILE", passingScore: null, rubric: [] };
 }
 
 interface Props { assignmentId: string }
@@ -38,8 +38,17 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
   const [instructions, setInstructions]     = useState(src.instructions);
   const [rubric, setRubric]                 = useState<AssignmentRubricItem[]>(src.rubric);
   const [section, setSection]               = useState<Section>("instructions");
+  const [gradingEnabled, setGradingEnabled] = useState<boolean>(src.passingScore != null);
+  const [passingScore, setPassingScore]     = useState<number>(src.passingScore ?? 60);
 
   const totalPoints = rubric.reduce((sum, r) => sum + r.points, 0);
+
+  function toggleGrading(enabled: boolean) {
+    setGradingEnabled(enabled);
+    if (!enabled && section === "rubric") setSection("instructions");
+  }
+
+  const visibleSections = gradingEnabled ? SECTIONS : SECTIONS.filter((s) => s.id !== "rubric");
 
   function addAssignmentRubricItem() {
     setRubric((r) => [...r, { id: makeId(), criteria: "", points: 0, order: r.length + 1 }]);
@@ -72,7 +81,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="과제 제목"
         />
-        <span className="ml-auto text-xs text-slate-400">총 {totalPoints}점</span>
+        {gradingEnabled && <span className="ml-auto text-xs text-slate-400">총 {totalPoints}점</span>}
         <button className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors">
           저장
         </button>
@@ -87,7 +96,7 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
             <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">섹션</p>
           </div>
           <div className="flex-1 overflow-y-auto py-1">
-            {SECTIONS.map((s) => (
+            {visibleSections.map((s) => (
               <button
                 key={s.id}
                 onClick={() => setSection(s.id)}
@@ -228,13 +237,46 @@ export default function AssignmentEditorFeature({ assignmentId }: Props) {
             </div>
 
             <div className="pt-3 border-t border-slate-100">
-              <p className="text-xs font-medium text-slate-500 mb-1">루브릭 총점</p>
-              <p className="text-3xl font-bold text-slate-800">
-                {totalPoints}
-                <span className="text-sm font-normal text-slate-400 ml-1">점</span>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-medium text-slate-500">채점 여부</label>
+                <button
+                  onClick={() => toggleGrading(!gradingEnabled)}
+                  className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors ${gradingEnabled ? "bg-violet-600" : "bg-slate-200"}`}
+                >
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${gradingEnabled ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                {gradingEnabled ? "점수 기준 합격 여부 결정" : "제출만으로 완료 처리"}
               </p>
-              <p className="text-xs text-slate-400 mt-1">{rubric.length}개 항목</p>
             </div>
+
+            {gradingEnabled && (
+              <div>
+                <label className="text-xs font-medium text-slate-500 block mb-1.5">합격 기준</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    value={passingScore}
+                    min={0} max={100}
+                    onChange={(e) => setPassingScore(Number(e.target.value))}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">%</span>
+                </div>
+              </div>
+            )}
+
+            {gradingEnabled && (
+              <div className="pt-3 border-t border-slate-100">
+                <p className="text-xs font-medium text-slate-500 mb-1">루브릭 총점</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  {totalPoints}
+                  <span className="text-sm font-normal text-slate-400 ml-1">점</span>
+                </p>
+                <p className="text-xs text-slate-400 mt-1">{rubric.length}개 항목</p>
+              </div>
+            )}
           </div>
         </aside>
 

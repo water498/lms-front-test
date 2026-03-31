@@ -244,6 +244,7 @@ export const assignmentTemplates: AssignmentTemplate[] = [
     title: "자사 안전보건관리체계 진단 보고서",
     instructions: "현재 재직 중인 사업장의 안전보건관리체계를 진단하고 개선 방안을 보고서로 작성하세요.\n① 현황 분석 ② 위험요인 도출 ③ 개선 과제 3가지 이상 포함.",
     submissionType: "FILE",
+    passingScore: 60,
     usageCount: 4,
     createdAt: "2025-01-12",
     rubric: [
@@ -257,6 +258,7 @@ export const assignmentTemplates: AssignmentTemplate[] = [
     title: "현장 위험성 평가 실습",
     instructions: "제시된 현장 사진 및 작업 시나리오를 바탕으로 위험성 평가 5단계를 수행하고 결과를 제출하세요.",
     submissionType: "BOTH",
+    passingScore: null,
     usageCount: 2,
     createdAt: "2025-02-05",
     rubric: [
