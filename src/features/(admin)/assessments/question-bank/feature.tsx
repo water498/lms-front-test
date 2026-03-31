@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Plus, Trash2, X, Check } from "lucide-react";
+import { Archive, ChevronLeft, MoreHorizontal, Plus, Trash2, X, Check } from "lucide-react";
 import {
   type QuestionBank,
   type QuestionPool,
@@ -10,7 +10,7 @@ import {
   type QuestionType,
   type SurveyQuestionType,
   bankQuestions as initialBank,
-  questionPools,
+  questionPools as initialPools,
 } from "../mockData";
 
 function makeId() {
@@ -24,9 +24,13 @@ function newQuestion(kind: QuestionBankKind, poolId?: string): QuestionBank {
     type: kind === "EXAM" ? "SINGLE" : "LIKERT",
     poolId,
     text: "",
-    options: kind === "EXAM"
-      ? [{ id: makeId(), text: "", correct: true, order: 1 }, { id: makeId(), text: "", correct: false, order: 2 }]
-      : undefined,
+    options:
+      kind === "EXAM"
+        ? [
+            { id: makeId(), text: "", correct: true, order: 1 },
+            { id: makeId(), text: "", correct: false, order: 2 },
+          ]
+        : undefined,
     scale: kind === "SURVEY" ? 5 : undefined,
     tags: [],
     createdAt: new Date().toISOString().slice(0, 10),
@@ -47,29 +51,143 @@ const SURVEY_TYPE_LABELS: Record<SurveyQuestionType, string> = {
   TEXT:     "자유 서술",
 };
 
+const EXAM_TYPES: QuestionType[] = ["SINGLE", "MULTIPLE", "TRUE_FALSE", "SHORT"];
+const SURVEY_TYPES: SurveyQuestionType[] = ["LIKERT", "SINGLE", "MULTIPLE", "TEXT"];
+
+/* ── Pool Modal ─────────────────────────────────────── */
+
+interface PoolModalProps {
+  kind: QuestionBankKind;
+  pool?: QuestionPool;
+  onSave: (pool: QuestionPool) => void;
+  onClose: () => void;
+}
+
+function PoolModal({ kind, pool, onSave, onClose }: PoolModalProps) {
+  const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
+  const typeOptions = (kind === "EXAM" ? EXAM_TYPES : SURVEY_TYPES) as string[];
+
+  const [title, setTitle] = useState(pool?.title ?? "");
+  const [type, setType]   = useState<string>(pool?.type ?? typeOptions[0]);
+  const [desc, setDesc]   = useState(pool?.description ?? "");
+
+  function handleSave() {
+    if (!title.trim()) return;
+    onSave({
+      id:          pool?.id ?? makeId(),
+      kind,
+      title:       title.trim(),
+      type:        type as QuestionType | SurveyQuestionType,
+      description: desc.trim() || undefined,
+      isArchived:  pool?.isArchived ?? false,
+      createdAt:   pool?.createdAt ?? new Date().toISOString().slice(0, 10),
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-base font-semibold text-slate-800">
+            {pool ? "문항 그룹 편집" : "새 문항 그룹"}
+          </h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="text-xs font-medium text-slate-500 block mb-1.5">그룹 이름 *</label>
+            <input
+              autoFocus
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder:text-slate-300"
+              placeholder="예: 산업안전 기초 — 단일 선택"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형 (고정)</label>
+            <select
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              disabled={!!pool}
+            >
+              {typeOptions.map((t) => (
+                <option key={t} value={t}>{typeLabels[t as keyof typeof typeLabels]}</option>
+              ))}
+            </select>
+            {pool && (
+              <p className="text-[11px] text-slate-400 mt-1">
+                그룹 생성 후 유형은 변경할 수 없습니다
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-slate-500 block mb-1.5">설명 (선택)</label>
+            <input
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder:text-slate-300"
+              placeholder="그룹에 대한 간단한 설명"
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 mt-6">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!title.trim()}
+            className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 disabled:opacity-40 transition-colors"
+          >
+            {pool ? "저장" : "생성"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main Feature ────────────────────────────────────── */
+
 export default function QuestionBankFeature() {
-  const [kind, setKind]           = useState<QuestionBankKind>("EXAM");
-  const [questions, setQuestions] = useState<QuestionBank[]>(initialBank);
+  const [kind, setKind]             = useState<QuestionBankKind>("EXAM");
+  const [questions, setQuestions]   = useState<QuestionBank[]>(initialBank);
+  const [pools, setPools]           = useState<QuestionPool[]>(initialPools);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [poolFilter, setPoolFilter] = useState<string | null>(null);
-  const [tagInput, setTagInput]   = useState("");
+  const [tagInput, setTagInput]     = useState("");
+  const [poolModal, setPoolModal]   = useState<{ open: boolean; pool?: QuestionPool }>({ open: false });
+  const [openPoolMenu, setOpenPoolMenu] = useState<string | null>(null);
 
-  const kindPools      = questionPools.filter((p) => p.kind === kind && !p.isArchived);
-  const kindQuestions  = questions.filter((q) => q.kind === kind);
-  const filteredQ      = poolFilter ? kindQuestions.filter((q) => q.poolId === poolFilter) : kindQuestions;
-  const selected       = questions.find((q) => q.id === selectedId) ?? null;
+  const kindPools     = pools.filter((p) => p.kind === kind && !p.isArchived);
+  const kindQuestions = questions.filter((q) => q.kind === kind);
+  const filteredQ     = poolFilter ? kindQuestions.filter((q) => q.poolId === poolFilter) : kindQuestions;
+  const selected      = questions.find((q) => q.id === selectedId) ?? null;
 
-  // Tag autocomplete for the selected question
   const allTags = Array.from(new Set(kindQuestions.flatMap((q) => q.tags))).sort();
   const tagSuggestions = tagInput
     ? allTags.filter(
-        (t) => t.toLowerCase().includes(tagInput.toLowerCase()) &&
-               !(selected?.tags.includes(t))
+        (t) => t.toLowerCase().includes(tagInput.toLowerCase()) && !selected?.tags.includes(t)
       )
     : [];
 
+  const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
+  const selectedPool = selected?.poolId ? pools.find((p) => p.id === selected.poolId) : undefined;
+
   function updateQ(id: string, patch: Partial<QuestionBank>) {
-    setQuestions((qs) => qs.map((q) => q.id === id ? { ...q, ...patch } : q));
+    setQuestions((qs) => qs.map((q) => (q.id === id ? { ...q, ...patch } : q)));
   }
 
   function addQuestion() {
@@ -81,83 +199,127 @@ export default function QuestionBankFeature() {
   function deleteQuestion(id: string) {
     setQuestions((qs) => {
       const next = qs.filter((q) => q.id !== id);
-      if (selectedId === id) setSelectedId(next.filter((q) => q.kind === kind)[0]?.id ?? null);
+      if (selectedId === id)
+        setSelectedId(next.filter((q) => q.kind === kind)[0]?.id ?? null);
       return next;
     });
   }
 
   function changeType(id: string, type: QuestionType | SurveyQuestionType) {
-    setQuestions((qs) => qs.map((q) => {
-      if (q.id !== id) return q;
-      if (q.kind === "EXAM") {
-        const t = type as QuestionType;
-        if (t === "TRUE_FALSE") return { ...q, type: t, options: [
-          { id: "tf_t", text: "True", correct: true, order: 1 },
-          { id: "tf_f", text: "False", correct: false, order: 2 },
-        ]};
-        if (t === "SHORT") return { ...q, type: t, options: undefined };
-        return { ...q, type: t, options: q.options?.length ? q.options : [
-          { id: makeId(), text: "", correct: true, order: 1 },
-          { id: makeId(), text: "", correct: false, order: 2 },
-        ]};
-      } else {
-        const t = type as SurveyQuestionType;
-        if (t === "LIKERT") return { ...q, type: t, scale: 5, options: undefined };
-        if (t === "TEXT")   return { ...q, type: t, scale: undefined, options: undefined };
-        return { ...q, type: t, scale: undefined, options: q.options?.length ? q.options : [
-          { id: makeId(), text: "", order: 1 },
-          { id: makeId(), text: "", order: 2 },
-        ]};
-      }
-    }));
+    setQuestions((qs) =>
+      qs.map((q) => {
+        if (q.id !== id) return q;
+        if (q.kind === "EXAM") {
+          const t = type as QuestionType;
+          if (t === "TRUE_FALSE")
+            return {
+              ...q, type: t,
+              options: [
+                { id: "tf_t", text: "True",  correct: true,  order: 1 },
+                { id: "tf_f", text: "False", correct: false, order: 2 },
+              ],
+            };
+          if (t === "SHORT") return { ...q, type: t, options: undefined };
+          return {
+            ...q, type: t,
+            options: q.options?.length
+              ? q.options
+              : [
+                  { id: makeId(), text: "", correct: true,  order: 1 },
+                  { id: makeId(), text: "", correct: false, order: 2 },
+                ],
+          };
+        } else {
+          const t = type as SurveyQuestionType;
+          if (t === "LIKERT") return { ...q, type: t, scale: 5, options: undefined };
+          if (t === "TEXT")   return { ...q, type: t, scale: undefined, options: undefined };
+          return {
+            ...q, type: t, scale: undefined,
+            options: q.options?.length
+              ? q.options
+              : [
+                  { id: makeId(), text: "", order: 1 },
+                  { id: makeId(), text: "", order: 2 },
+                ],
+          };
+        }
+      })
+    );
   }
 
   function addOption(id: string) {
-    setQuestions((qs) => qs.map((q) => q.id !== id ? q : {
-      ...q,
-      options: [...(q.options ?? []), { id: makeId(), text: "", correct: false, order: (q.options?.length ?? 0) + 1 }],
-    }));
+    setQuestions((qs) =>
+      qs.map((q) =>
+        q.id !== id
+          ? q
+          : {
+              ...q,
+              options: [
+                ...(q.options ?? []),
+                { id: makeId(), text: "", correct: false, order: (q.options?.length ?? 0) + 1 },
+              ],
+            }
+      )
+    );
   }
 
   function updateOption(qId: string, oId: string, patch: { text?: string; correct?: boolean }) {
-    setQuestions((qs) => qs.map((q) => {
-      if (q.id !== qId) return q;
-      let options = q.options?.map((o) => o.id === oId ? { ...o, ...patch } : o) ?? [];
-      if (patch.correct && (q.type === "SINGLE")) {
-        options = options.map((o) => ({ ...o, correct: o.id === oId }));
-      }
-      return { ...q, options };
-    }));
+    setQuestions((qs) =>
+      qs.map((q) => {
+        if (q.id !== qId) return q;
+        let options = q.options?.map((o) => (o.id === oId ? { ...o, ...patch } : o)) ?? [];
+        if (patch.correct && q.type === "SINGLE") {
+          options = options.map((o) => ({ ...o, correct: o.id === oId }));
+        }
+        return { ...q, options };
+      })
+    );
   }
 
   function deleteOption(qId: string, oId: string) {
-    setQuestions((qs) => qs.map((q) => q.id !== qId ? q : {
-      ...q,
-      options: q.options?.filter((o) => o.id !== oId) ?? [],
-    }));
+    setQuestions((qs) =>
+      qs.map((q) =>
+        q.id !== qId
+          ? q
+          : { ...q, options: q.options?.filter((o) => o.id !== oId) ?? [] }
+      )
+    );
   }
 
   function addTag(qId: string, tag: string) {
     const t = tag.trim();
     if (!t) return;
-    setQuestions((qs) => qs.map((q) => {
-      if (q.id !== qId || q.tags.includes(t)) return q;
-      return { ...q, tags: [...q.tags, t] };
-    }));
+    setQuestions((qs) =>
+      qs.map((q) => {
+        if (q.id !== qId || q.tags.includes(t)) return q;
+        return { ...q, tags: [...q.tags, t] };
+      })
+    );
     setTagInput("");
   }
 
   function removeTag(qId: string, tag: string) {
-    setQuestions((qs) => qs.map((q) =>
-      q.id !== qId ? q : { ...q, tags: q.tags.filter((t) => t !== tag) }
-    ));
+    setQuestions((qs) =>
+      qs.map((q) => (q.id !== qId ? q : { ...q, tags: q.tags.filter((t) => t !== tag) }))
+    );
   }
 
-  const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
-  const selectedPool = selected?.poolId ? questionPools.find((p) => p.id === selected.poolId) : undefined;
+  function savePool(pool: QuestionPool) {
+    setPools((ps) => {
+      const idx = ps.findIndex((p) => p.id === pool.id);
+      return idx >= 0 ? ps.map((p) => (p.id === pool.id ? pool : p)) : [...ps, pool];
+    });
+    setPoolModal({ open: false });
+  }
+
+  function archivePool(id: string) {
+    setPools((ps) => ps.map((p) => (p.id === id ? { ...p, isArchived: true } : p)));
+    if (poolFilter === id) setPoolFilter(null);
+    setOpenPoolMenu(null);
+  }
 
   return (
-    <div className="-m-6 h-[calc(100vh-56px)] flex flex-col overflow-hidden bg-white">
+    <div className="h-screen flex flex-col overflow-hidden bg-white">
 
       {/* ── Top bar ── */}
       <div className="h-14 border-b border-slate-200 flex items-center gap-4 px-5 flex-shrink-0">
@@ -171,7 +333,6 @@ export default function QuestionBankFeature() {
         <div className="w-px h-4 bg-slate-200" />
         <span className="text-sm font-semibold text-slate-800">문항 뱅크</span>
 
-        {/* Kind switcher */}
         <div className="ml-4 flex bg-slate-100 rounded-lg p-0.5 gap-0.5">
           {(["EXAM", "SURVEY"] as QuestionBankKind[]).map((k) => (
             <button
@@ -198,47 +359,99 @@ export default function QuestionBankFeature() {
       {/* ── 3-panel body ── */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* Left — pool filter + question list */}
-        <aside className="w-64 border-r border-slate-200 flex flex-col overflow-hidden bg-white">
-
-          {/* Pool filter */}
-          <div className="px-3 py-3 border-b border-slate-100">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-2">문항 그룹</p>
-            <div className="flex flex-col gap-1">
-              <button
-                onClick={() => setPoolFilter(null)}
-                className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
-                  poolFilter === null
-                    ? "bg-violet-600 text-white"
-                    : "text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                전체
-                <span className="ml-1 text-[10px] opacity-60">({kindQuestions.length})</span>
-              </button>
-              {kindPools.map((pool) => {
-                const count = kindQuestions.filter((q) => q.poolId === pool.id).length;
-                return (
-                  <button
-                    key={pool.id}
-                    onClick={() => setPoolFilter(poolFilter === pool.id ? null : pool.id)}
-                    className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors ${
-                      poolFilter === pool.id
-                        ? "bg-violet-600 text-white"
-                        : "text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    <span className="truncate block">{pool.title}</span>
-                    <span className={`text-[10px] ${poolFilter === pool.id ? "opacity-70" : "text-slate-400"}`}>
-                      {typeLabels[pool.type as keyof typeof typeLabels]} · {count}문항
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+        {/* Left — pool list */}
+        <aside className="w-56 border-r border-slate-200 flex flex-col overflow-hidden bg-white">
+          <div className="px-3 pt-3 pb-2 border-b border-slate-100">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">문항 그룹</p>
           </div>
 
-          {/* Question list */}
+          <div className="flex-1 overflow-y-auto py-1">
+            {/* All */}
+            <button
+              onClick={() => setPoolFilter(null)}
+              className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                poolFilter === null
+                  ? "bg-violet-50 text-violet-700 font-medium"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              전체
+              <span className="ml-1 text-[10px] opacity-60">({kindQuestions.length})</span>
+            </button>
+
+            {/* Pool items */}
+            {kindPools.map((pool) => {
+              const count = kindQuestions.filter((q) => q.poolId === pool.id).length;
+              const isActive = poolFilter === pool.id;
+              return (
+                <div
+                  key={pool.id}
+                  className={`relative group flex items-start px-3 py-2 transition-colors cursor-pointer ${
+                    isActive ? "bg-violet-50" : "hover:bg-slate-50"
+                  }`}
+                  onClick={() => { setPoolFilter(isActive ? null : pool.id); setOpenPoolMenu(null); }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs font-medium truncate ${isActive ? "text-violet-700" : "text-slate-700"}`}>
+                      {pool.title}
+                    </p>
+                    <p className={`text-[10px] mt-0.5 ${isActive ? "text-violet-400" : "text-slate-400"}`}>
+                      {typeLabels[pool.type as keyof typeof typeLabels]} · {count}문항
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenPoolMenu(openPoolMenu === pool.id ? null : pool.id);
+                    }}
+                    className="flex-shrink-0 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 mt-0.5 transition-all"
+                  >
+                    <MoreHorizontal size={13} />
+                  </button>
+
+                  {/* Pool context menu */}
+                  {openPoolMenu === pool.id && (
+                    <div className="absolute right-2 top-7 z-20 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden w-32">
+                      <button
+                        onMouseDown={(e) => { e.stopPropagation(); setPoolModal({ open: true, pool }); setOpenPoolMenu(null); }}
+                        className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-violet-50 transition-colors"
+                      >
+                        편집
+                      </button>
+                      <button
+                        onMouseDown={(e) => { e.stopPropagation(); archivePool(pool.id); }}
+                        className="w-full text-left px-3 py-2 text-xs text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-1.5"
+                      >
+                        <Archive size={11} />
+                        보관
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="p-3 border-t border-slate-100">
+            <button
+              onClick={() => setPoolModal({ open: true })}
+              className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-violet-600 border border-dashed border-violet-300 rounded-lg hover:bg-violet-50 transition-colors"
+            >
+              <Plus size={12} />
+              그룹 추가
+            </button>
+          </div>
+        </aside>
+
+        {/* Center — question list */}
+        <aside className="w-72 border-r border-slate-200 flex flex-col overflow-hidden bg-white">
+          <div className="px-3 pt-3 pb-2 border-b border-slate-100">
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">
+              문항 목록
+              <span className="ml-1.5 font-normal normal-case text-slate-300">({filteredQ.length})</span>
+            </p>
+          </div>
+
           <div className="flex-1 overflow-y-auto py-1">
             {filteredQ.length === 0 && (
               <p className="px-4 py-8 text-xs text-center text-slate-300">문항이 없습니다</p>
@@ -252,17 +465,15 @@ export default function QuestionBankFeature() {
                 }`}
               >
                 <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-medium truncate ${
-                    selectedId === q.id ? "text-violet-700" : "text-slate-700"
-                  }`}>
+                  <p className={`text-xs font-medium truncate ${selectedId === q.id ? "text-violet-700" : "text-slate-700"}`}>
                     {q.text || "(내용 없음)"}
                   </p>
-                  <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                     <span className="text-[10px] text-slate-400">
                       {typeLabels[q.type as keyof typeof typeLabels]}
                     </span>
                     {!q.poolId && (
-                      <span className="text-[10px] text-amber-500">미배정</span>
+                      <span className="text-[10px] bg-amber-100 text-amber-600 px-1 rounded">미배정</span>
                     )}
                   </div>
                 </div>
@@ -281,12 +492,12 @@ export default function QuestionBankFeature() {
           </div>
         </aside>
 
-        {/* Center — question editor */}
+        {/* Right — question editor */}
         <div className="flex-1 overflow-y-auto bg-slate-50/70 p-10">
           {!selected ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
               <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-violet-400 text-2xl mb-1">📝</div>
-              <p className="text-sm text-slate-500">왼쪽에서 문항을 선택하거나 추가하세요</p>
+              <p className="text-sm text-slate-500">가운데 패널에서 문항을 선택하거나 추가하세요</p>
               <button
                 onClick={addQuestion}
                 className="mt-1 px-5 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
@@ -437,121 +648,128 @@ export default function QuestionBankFeature() {
                 </div>
               )}
 
+              {/* Settings card */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
+                <p className="text-xs font-semibold text-slate-400">문항 설정</p>
+
+                {/* Pool selector */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 그룹</label>
+                  <select
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    value={selected.poolId ?? ""}
+                    onChange={(e) => updateQ(selected.id, { poolId: e.target.value || undefined })}
+                  >
+                    <option value="">— 미배정 —</option>
+                    {kindPools.map((p) => (
+                      <option key={p.id} value={p.id}>{p.title}</option>
+                    ))}
+                  </select>
+                  {selectedPool && selectedPool.type !== selected.type && (
+                    <p className="text-[11px] text-amber-500 mt-1">
+                      그룹 타입({typeLabels[selectedPool.type as keyof typeof typeLabels]})과 문항 유형이 다릅니다
+                    </p>
+                  )}
+                </div>
+
+                {/* Type selector */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형</label>
+                  <select
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+                    value={selected.type}
+                    onChange={(e) => changeType(selected.id, e.target.value as QuestionType | SurveyQuestionType)}
+                  >
+                    {(Object.entries(typeLabels) as [string, string][]).map(([v, l]) => (
+                      <option key={v} value={v}>{l}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* LIKERT scale */}
+                {selected.kind === "SURVEY" && selected.type === "LIKERT" && (
+                  <div>
+                    <label className="text-xs font-medium text-slate-500 block mb-1.5">척도</label>
+                    <select
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+                      value={selected.scale ?? 5}
+                      onChange={(e) => updateQ(selected.id, { scale: Number(e.target.value) })}
+                    >
+                      <option value={5}>5점 척도</option>
+                      <option value={7}>7점 척도</option>
+                    </select>
+                  </div>
+                )}
+
+                {/* Tags */}
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">태그 (검색 보조)</label>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {selected.tags.map((tag) => (
+                      <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full">
+                        #{tag}
+                        <button onClick={() => removeTag(selected.id, tag)} className="hover:text-red-500 transition-colors">
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="relative">
+                    <input
+                      className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300 placeholder:text-slate-300"
+                      placeholder="태그 입력 후 Enter"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { addTag(selected.id, tagInput); e.preventDefault(); }
+                      }}
+                    />
+                    {tagSuggestions.length > 0 && (
+                      <div className="absolute bottom-full mb-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
+                        {tagSuggestions.map((t) => (
+                          <button
+                            key={t}
+                            onMouseDown={(e) => { e.preventDefault(); addTag(selected.id, t); }}
+                            className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-violet-50 transition-colors"
+                          >
+                            #{t}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Delete */}
+                <button
+                  onClick={() => deleteQuestion(selected.id)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors w-fit"
+                >
+                  <Trash2 size={13} />
+                  문항 삭제
+                </button>
+              </div>
+
             </div>
           )}
         </div>
 
-        {/* Right — question settings */}
-        <aside className="w-64 border-l border-slate-200 overflow-y-auto bg-white flex flex-col">
-          <div className="px-4 py-3 border-b border-slate-100">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">문항 설정</p>
-          </div>
-
-          {selected ? (
-            <div className="p-4 flex flex-col gap-4">
-              {/* Pool selector */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 그룹</label>
-                <select
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  value={selected.poolId ?? ""}
-                  onChange={(e) => updateQ(selected.id, { poolId: e.target.value || undefined })}
-                >
-                  <option value="">— 미배정 —</option>
-                  {kindPools.map((p) => (
-                    <option key={p.id} value={p.id}>{p.title}</option>
-                  ))}
-                </select>
-                {selectedPool && selectedPool.type !== selected.type && (
-                  <p className="text-[11px] text-amber-500 mt-1">
-                    그룹 타입({typeLabels[selectedPool.type as keyof typeof typeLabels]})과 문항 유형이 다릅니다
-                  </p>
-                )}
-              </div>
-
-              {/* Type selector */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형</label>
-                <select
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  value={selected.type}
-                  onChange={(e) => changeType(selected.id, e.target.value as QuestionType | SurveyQuestionType)}
-                >
-                  {(Object.entries(typeLabels) as [string, string][]).map(([v, l]) => (
-                    <option key={v} value={v}>{l}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* LIKERT scale */}
-              {selected.kind === "SURVEY" && selected.type === "LIKERT" && (
-                <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1.5">척도</label>
-                  <select
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                    value={selected.scale ?? 5}
-                    onChange={(e) => updateQ(selected.id, { scale: Number(e.target.value) })}
-                  >
-                    <option value={5}>5점 척도</option>
-                    <option value={7}>7점 척도</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Tags */}
-              <div>
-                <label className="text-xs font-medium text-slate-500 block mb-1.5">태그 (검색 보조)</label>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {selected.tags.map((tag) => (
-                    <span key={tag} className="flex items-center gap-1 px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full">
-                      #{tag}
-                      <button onClick={() => removeTag(selected.id, tag)} className="hover:text-red-500 transition-colors">
-                        <X size={10} />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="relative">
-                  <input
-                    className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300 placeholder:text-slate-300"
-                    placeholder="태그 입력 후 Enter"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") { addTag(selected.id, tagInput); e.preventDefault(); }
-                    }}
-                  />
-                  {tagSuggestions.length > 0 && (
-                    <div className="absolute bottom-full mb-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden">
-                      {tagSuggestions.map((t) => (
-                        <button
-                          key={t}
-                          onMouseDown={(e) => { e.preventDefault(); addTag(selected.id, t); }}
-                          className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-violet-50 transition-colors"
-                        >
-                          #{t}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Delete */}
-              <button
-                onClick={() => deleteQuestion(selected.id)}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
-              >
-                <Trash2 size={13} />
-                문항 삭제
-              </button>
-            </div>
-          ) : (
-            <p className="px-4 py-8 text-xs text-center text-slate-300">문항을 선택하세요</p>
-          )}
-        </aside>
-
       </div>
+
+      {/* Pool Modal */}
+      {poolModal.open && (
+        <PoolModal
+          kind={kind}
+          pool={poolModal.pool}
+          onSave={savePool}
+          onClose={() => setPoolModal({ open: false })}
+        />
+      )}
+
+      {/* Close pool menu on outside click */}
+      {openPoolMenu && (
+        <div className="fixed inset-0 z-10" onClick={() => setOpenPoolMenu(null)} />
+      )}
     </div>
   );
 }

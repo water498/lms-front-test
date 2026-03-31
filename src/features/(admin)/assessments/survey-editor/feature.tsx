@@ -76,7 +76,7 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
   }
 
   return (
-    <div className="-m-6 h-[calc(100vh-56px)] flex flex-col overflow-hidden bg-white">
+    <div className="h-screen flex flex-col overflow-hidden bg-white">
 
       {/* ── Top bar ── */}
       <div className="h-14 border-b border-slate-200 flex items-center gap-4 px-5 flex-shrink-0">
