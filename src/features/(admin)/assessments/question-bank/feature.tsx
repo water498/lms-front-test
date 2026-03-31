@@ -4,25 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { Archive, ChevronLeft, MoreHorizontal, Plus, Trash2, X, Check } from "lucide-react";
 import {
-  type QuestionBank,
-  type QuestionPool,
-  type QuestionBankKind,
+  type Question,
+  type QuestionGroup,
+  type QuestionKind,
   type QuestionType,
   type SurveyQuestionType,
-  bankQuestions as initialBank,
-  questionPools as initialPools,
+  allQuestions as initialBank,
+  questionGroups as initialPools,
 } from "../mockData";
 
 function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newQuestion(kind: QuestionBankKind, poolId?: string): QuestionBank {
+function newQuestion(kind: QuestionKind, groupId?: string): Question {
   return {
     id: makeId(),
     kind,
     type: kind === "EXAM" ? "SINGLE" : "LIKERT",
-    poolId,
+    groupId,
     text: "",
     options:
       kind === "EXAM"
@@ -57,9 +57,9 @@ const SURVEY_TYPES: SurveyQuestionType[] = ["LIKERT", "SINGLE", "MULTIPLE", "TEX
 /* ── Pool Modal ─────────────────────────────────────── */
 
 interface PoolModalProps {
-  kind: QuestionBankKind;
-  pool?: QuestionPool;
-  onSave: (pool: QuestionPool) => void;
+  kind: QuestionKind;
+  pool?: QuestionGroup;
+  onSave: (pool: QuestionGroup) => void;
   onClose: () => void;
 }
 
@@ -162,18 +162,18 @@ function PoolModal({ kind, pool, onSave, onClose }: PoolModalProps) {
 /* ── Main Feature ────────────────────────────────────── */
 
 export default function QuestionBankFeature() {
-  const [kind, setKind]             = useState<QuestionBankKind>("EXAM");
-  const [questions, setQuestions]   = useState<QuestionBank[]>(initialBank);
-  const [pools, setPools]           = useState<QuestionPool[]>(initialPools);
+  const [kind, setKind]             = useState<QuestionKind>("EXAM");
+  const [questions, setQuestions]   = useState<Question[]>(initialBank);
+  const [pools, setPools]           = useState<QuestionGroup[]>(initialPools);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [poolFilter, setPoolFilter] = useState<string | null>(null);
   const [tagInput, setTagInput]     = useState("");
-  const [poolModal, setPoolModal]   = useState<{ open: boolean; pool?: QuestionPool }>({ open: false });
+  const [poolModal, setPoolModal]   = useState<{ open: boolean; pool?: QuestionGroup }>({ open: false });
   const [openPoolMenu, setOpenPoolMenu] = useState<string | null>(null);
 
   const kindPools     = pools.filter((p) => p.kind === kind && !p.isArchived);
   const kindQuestions = questions.filter((q) => q.kind === kind);
-  const filteredQ     = poolFilter ? kindQuestions.filter((q) => q.poolId === poolFilter) : kindQuestions;
+  const filteredQ     = poolFilter ? kindQuestions.filter((q) => q.groupId === poolFilter) : kindQuestions;
   const selected      = questions.find((q) => q.id === selectedId) ?? null;
 
   const allTags = Array.from(new Set(kindQuestions.flatMap((q) => q.tags))).sort();
@@ -184,9 +184,9 @@ export default function QuestionBankFeature() {
     : [];
 
   const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
-  const selectedPool = selected?.poolId ? pools.find((p) => p.id === selected.poolId) : undefined;
+  const selectedPool = selected?.groupId ? pools.find((p) => p.id === selected.groupId) : undefined;
 
-  function updateQ(id: string, patch: Partial<QuestionBank>) {
+  function updateQ(id: string, patch: Partial<Question>) {
     setQuestions((qs) => qs.map((q) => (q.id === id ? { ...q, ...patch } : q)));
   }
 
@@ -304,7 +304,7 @@ export default function QuestionBankFeature() {
     );
   }
 
-  function savePool(pool: QuestionPool) {
+  function savePool(pool: QuestionGroup) {
     setPools((ps) => {
       const idx = ps.findIndex((p) => p.id === pool.id);
       return idx >= 0 ? ps.map((p) => (p.id === pool.id ? pool : p)) : [...ps, pool];
@@ -334,7 +334,7 @@ export default function QuestionBankFeature() {
         <span className="text-sm font-semibold text-slate-800">문항 뱅크</span>
 
         <div className="ml-4 flex bg-slate-100 rounded-lg p-0.5 gap-0.5">
-          {(["EXAM", "SURVEY"] as QuestionBankKind[]).map((k) => (
+          {(["EXAM", "SURVEY"] as QuestionKind[]).map((k) => (
             <button
               key={k}
               onClick={() => { setKind(k); setSelectedId(null); setPoolFilter(null); }}
@@ -381,7 +381,7 @@ export default function QuestionBankFeature() {
 
             {/* Pool items */}
             {kindPools.map((pool) => {
-              const count = kindQuestions.filter((q) => q.poolId === pool.id).length;
+              const count = kindQuestions.filter((q) => q.groupId === pool.id).length;
               const isActive = poolFilter === pool.id;
               return (
                 <div
@@ -472,7 +472,7 @@ export default function QuestionBankFeature() {
                     <span className="text-[10px] text-slate-400">
                       {typeLabels[q.type as keyof typeof typeLabels]}
                     </span>
-                    {!q.poolId && (
+                    {!q.groupId && (
                       <span className="text-[10px] bg-amber-100 text-amber-600 px-1 rounded">미배정</span>
                     )}
                   </div>
@@ -657,8 +657,8 @@ export default function QuestionBankFeature() {
                   <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 그룹</label>
                   <select
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                    value={selected.poolId ?? ""}
-                    onChange={(e) => updateQ(selected.id, { poolId: e.target.value || undefined })}
+                    value={selected.groupId ?? ""}
+                    onChange={(e) => updateQ(selected.id, { groupId: e.target.value || undefined })}
                   >
                     <option value="">— 미배정 —</option>
                     {kindPools.map((p) => (

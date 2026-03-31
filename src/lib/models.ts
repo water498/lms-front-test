@@ -846,14 +846,14 @@ export interface VideoProgress {
 
 // ── 평가 ──────────────────────────────────────────────────
 
-export type QuestionBankKind = "EXAM" | "SURVEY";
+export type QuestionKind = "EXAM" | "SURVEY";
 export type QuestionType = "SINGLE" | "MULTIPLE" | "TRUE_FALSE" | "SHORT";
 export type SurveyQuestionType = "LIKERT" | "SINGLE" | "MULTIPLE" | "TEXT";
 
-export interface QuestionPool {
+export interface QuestionGroup {
   id: string;
   title: string;
-  kind: QuestionBankKind;
+  kind: QuestionKind;
   type: QuestionType | SurveyQuestionType; // 그룹 고정 타입. 소속 문항은 반드시 이 타입이어야 함
   description?: string;
   isArchived: boolean;
@@ -861,30 +861,30 @@ export interface QuestionPool {
   createdAt: string;
 }
 
-export interface QuestionBank {
+export interface Question {
   id: string;
-  kind: QuestionBankKind;
+  kind: QuestionKind;
   type: QuestionType | SurveyQuestionType;
-  poolId?: string;         // 소속 문항 그룹. undefined = 미배정
+  groupId?: string;        // 소속 문항 그룹. undefined = 미배정
   text: string;
-  options?: QuestionBankOption[];
+  options?: QuestionOption[];
   answer?: string; // SHORT 모범답안
   scale?: number; // LIKERT 척도
-  tags: string[];  // 검색 보조용. 출제 기준은 poolId 사용
+  tags: string[];  // 검색 보조용. 출제 기준은 groupId 사용
   createdAt: string;
 }
 
-export interface QuestionBankOption {
+export interface QuestionOption {
   id: string;
   text: string;
   correct?: boolean; // EXAM 전용. SURVEY는 undefined
   order: number;
 }
 
-export interface QuestionCompositionRule {
+export interface AssessmentSection {
   id: string;
   label: string;
-  poolId: string; // 출제에 사용할 문항 그룹 ID
+  groupId: string; // 출제에 사용할 문항 그룹 ID
   count: number;
   shuffle: boolean;
 }
@@ -898,7 +898,7 @@ export interface ExamTemplate {
   passingScore: number;
   timeLimit: number | null;
   maxAttempts: number | null; // null = 무제한
-  rules: QuestionCompositionRule[];
+  rules: AssessmentSection[];
   usageCount: number;
   isArchived?: boolean;
   createdAt: string;
@@ -932,7 +932,7 @@ export interface SurveyTemplate {
   title: string;
   anonymous: boolean;
   triggerType: SurveyTriggerType;
-  rules: QuestionCompositionRule[];
+  rules: AssessmentSection[];
   responseCount: number;
   status: "ACTIVE" | "CLOSED";
   createdAt: string;

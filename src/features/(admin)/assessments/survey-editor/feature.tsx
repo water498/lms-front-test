@@ -2,22 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronUp, ChevronDown, Plus, Trash2 } from "lucide-react";
 import {
   type SurveyTemplate,
   type SurveyTriggerType,
-  type QuestionCompositionRule,
+  type AssessmentSection,
   surveyTemplates,
-  bankQuestions,
-  questionPools,
+  allQuestions,
+  questionGroups,
 } from "../mockData";
 
 function makeId() {
   return `_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function newRule(): QuestionCompositionRule {
-  return { id: makeId(), label: "", poolId: "", count: 3, shuffle: false };
+function newSection(): AssessmentSection {
+  return { id: makeId(), label: "", groupId: "", count: 3, shuffle: false };
 }
 
 function defaultSurvey(): Omit<SurveyTemplate, "id" | "responseCount" | "status" | "createdAt"> {
@@ -34,8 +34,8 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 // SURVEY 그룹만 필터
-const surveyPools = questionPools.filter((p) => p.kind === "SURVEY" && !p.isArchived);
-const poolMap = Object.fromEntries(surveyPools.map((p) => [p.id, p]));
+const surveyGroups = questionGroups.filter((g) => g.kind === "SURVEY" && !g.isArchived);
+const groupMap = Object.fromEntries(surveyGroups.map((g) => [g.id, g]));
 
 interface Props { surveyId: string }
 
@@ -46,31 +46,49 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
   const [title, setTitle]         = useState(src.title);
   const [anonymous, setAnonymous] = useState(src.anonymous);
   const [triggerType, setTrigger] = useState<SurveyTriggerType>(src.triggerType);
-  const [rules, setRules]         = useState<QuestionCompositionRule[]>(src.rules);
+  const [sections, setSections]   = useState<AssessmentSection[]>(src.rules);
   const [selectedId, setSelectedId] = useState<string | null>(src.rules[0]?.id ?? null);
 
-  const selected    = rules.find((r) => r.id === selectedId) ?? null;
-  const totalQ      = rules.reduce((s, r) => s + r.count, 0);
-  const selectedPool = selected?.poolId ? poolMap[selected.poolId] : undefined;
+  const selected      = sections.find((s) => s.id === selectedId) ?? null;
+  const totalQ        = sections.reduce((sum, s) => sum + s.count, 0);
+  const selectedGroup = selected?.groupId ? groupMap[selected.groupId] : undefined;
 
-  const matchingQuestions = selected?.poolId
-    ? bankQuestions.filter((q) => q.kind === "SURVEY" && q.poolId === selected.poolId)
+  const matchingQuestions = selected?.groupId
+    ? allQuestions.filter((q) => q.kind === "SURVEY" && q.groupId === selected.groupId)
     : [];
 
-  function updateRule(id: string, patch: Partial<QuestionCompositionRule>) {
-    setRules((rs) => rs.map((r) => r.id === id ? { ...r, ...patch } : r));
+  const countExceedsPool =
+    selected !== null &&
+    matchingQuestions.length > 0 &&
+    selected.count > matchingQuestions.length;
+
+  const canSave = !countExceedsPool;
+
+  function updateSection(id: string, patch: Partial<AssessmentSection>) {
+    setSections((ss) => ss.map((s) => s.id === id ? { ...s, ...patch } : s));
   }
 
-  function addRule() {
-    const r = newRule();
-    setRules((rs) => [...rs, r]);
-    setSelectedId(r.id);
+  function addSection() {
+    const s = newSection();
+    setSections((ss) => [...ss, s]);
+    setSelectedId(s.id);
   }
 
-  function deleteRule(id: string) {
-    setRules((rs) => {
-      const next = rs.filter((r) => r.id !== id);
+  function deleteSection(id: string) {
+    setSections((ss) => {
+      const next = ss.filter((s) => s.id !== id);
       if (selectedId === id) setSelectedId(next[0]?.id ?? null);
+      return next;
+    });
+  }
+
+  function moveSection(id: string, dir: -1 | 1) {
+    setSections((ss) => {
+      const idx = ss.findIndex((s) => s.id === id);
+      const target = idx + dir;
+      if (target < 0 || target >= ss.length) return ss;
+      const next = [...ss];
+      [next[idx], next[target]] = [next[target], next[idx]];
       return next;
     });
   }
@@ -95,7 +113,10 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
           placeholder="설문 제목"
         />
         <span className="ml-auto text-xs text-slate-400">총 {totalQ}문항 예상</span>
-        <button className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors">
+        <button
+          disabled={!canSave}
+          className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
           저장
         </button>
       </div>
@@ -103,107 +124,130 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
       {/* ── 3-panel body ── */}
       <div className="flex-1 flex overflow-hidden">
 
-        {/* Left — rule list */}
+        {/* Left — section list */}
         <aside className="w-60 border-r border-slate-200 flex flex-col overflow-hidden bg-white">
           <div className="px-4 py-3 border-b border-slate-100">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">규칙 목록</p>
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">섹션 목록</p>
           </div>
 
           <div className="flex-1 overflow-y-auto py-1">
-            {rules.length === 0 && (
-              <p className="px-4 py-8 text-xs text-center text-slate-300">규칙이 없습니다</p>
+            {sections.length === 0 && (
+              <p className="px-4 py-8 text-xs text-center text-slate-300">섹션이 없습니다</p>
             )}
-            {rules.map((r, idx) => {
-              const pool = r.poolId ? poolMap[r.poolId] : undefined;
+            {sections.map((s, idx) => {
+              const group = s.groupId ? groupMap[s.groupId] : undefined;
+              const isActive = selectedId === s.id;
               return (
-                <button
-                  key={r.id}
-                  onClick={() => setSelectedId(r.id)}
-                  className={`w-full text-left px-4 py-2.5 flex items-start gap-2.5 transition-colors ${
-                    selectedId === r.id ? "bg-violet-50" : "hover:bg-slate-50"
+                <div
+                  key={s.id}
+                  className={`flex items-start gap-1 pr-2 transition-colors ${
+                    isActive ? "bg-violet-50" : "hover:bg-slate-50"
                   }`}
                 >
-                  <span className={`text-xs font-bold mt-0.5 w-4 flex-shrink-0 ${
-                    selectedId === r.id ? "text-violet-500" : "text-slate-300"
-                  }`}>
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-medium truncate ${
-                      selectedId === r.id ? "text-violet-700" : "text-slate-700"
-                    }`}>
-                      {r.label || "(이름 없음)"}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                      {pool ? `${pool.title} · ${r.count}문항` : `${r.count}문항`}
-                    </p>
+                  {/* Order buttons */}
+                  <div className="flex flex-col pt-2 pl-1 gap-0">
+                    <button
+                      onClick={() => moveSection(s.id, -1)}
+                      disabled={idx === 0}
+                      className="p-0.5 text-slate-300 hover:text-slate-500 disabled:opacity-20 transition-colors"
+                    >
+                      <ChevronUp size={12} />
+                    </button>
+                    <button
+                      onClick={() => moveSection(s.id, 1)}
+                      disabled={idx === sections.length - 1}
+                      className="p-0.5 text-slate-300 hover:text-slate-500 disabled:opacity-20 transition-colors"
+                    >
+                      <ChevronDown size={12} />
+                    </button>
                   </div>
-                </button>
+
+                  <button
+                    onClick={() => setSelectedId(s.id)}
+                    className="flex-1 text-left px-2 py-2.5 flex items-start gap-2"
+                  >
+                    <span className={`text-xs font-bold mt-0.5 w-4 flex-shrink-0 ${
+                      isActive ? "text-violet-500" : "text-slate-300"
+                    }`}>
+                      {idx + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-medium truncate ${
+                        isActive ? "text-violet-700" : "text-slate-700"
+                      }`}>
+                        {s.label || "(이름 없음)"}
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                        {group ? `${group.title} · ${s.count}문항` : `${s.count}문항`}
+                      </p>
+                    </div>
+                  </button>
+                </div>
               );
             })}
           </div>
 
           <div className="p-3 border-t border-slate-100">
             <button
-              onClick={addRule}
+              onClick={addSection}
               className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-violet-600 border border-dashed border-violet-300 rounded-lg hover:bg-violet-50 transition-colors"
             >
               <Plus size={13} />
-              규칙 추가
+              섹션 추가
             </button>
           </div>
         </aside>
 
-        {/* Center — rule editor */}
+        {/* Center — section editor */}
         <div className="flex-1 overflow-y-auto bg-slate-50/70 p-10">
           {!selected ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
               <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center text-2xl mb-1">📋</div>
-              <p className="text-sm text-slate-500">왼쪽에서 규칙을 선택하거나 추가하세요</p>
+              <p className="text-sm text-slate-500">왼쪽에서 섹션을 선택하거나 추가하세요</p>
               <button
-                onClick={addRule}
+                onClick={addSection}
                 className="mt-1 px-5 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
               >
-                + 첫 번째 규칙 추가
+                + 첫 번째 섹션 추가
               </button>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto flex flex-col gap-4">
 
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col gap-4">
-                {/* Rule label */}
+                {/* Section label */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 block mb-2">라벨</label>
+                  <label className="text-xs font-semibold text-slate-400 block mb-2">섹션 이름</label>
                   <input
                     className="w-full text-sm text-slate-800 bg-transparent border-b border-slate-200 focus:border-violet-400 focus:outline-none pb-1 placeholder:text-slate-300"
                     placeholder="예: 만족도 리커트 섹션"
                     value={selected.label}
-                    onChange={(e) => updateRule(selected.id, { label: e.target.value })}
+                    onChange={(e) => updateSection(selected.id, { label: e.target.value })}
                   />
                 </div>
 
-                {/* Pool selector */}
+                {/* Group selector */}
                 <div>
                   <label className="text-xs font-semibold text-slate-400 block mb-2">문항 그룹</label>
                   <select
                     className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300"
-                    value={selected.poolId}
-                    onChange={(e) => updateRule(selected.id, { poolId: e.target.value })}
+                    value={selected.groupId}
+                    onChange={(e) => updateSection(selected.id, { groupId: e.target.value })}
                   >
                     <option value="">— 그룹 선택 —</option>
-                    {surveyPools.map((p) => {
-                      const cnt = bankQuestions.filter((q) => q.poolId === p.id).length;
+                    {surveyGroups.map((g) => {
+                      const cnt = allQuestions.filter((q) => q.groupId === g.id).length;
                       return (
-                        <option key={p.id} value={p.id}>
-                          {p.title} ({TYPE_LABELS[p.type] ?? p.type} · {cnt}문항)
+                        <option key={g.id} value={g.id}>
+                          {g.title} ({TYPE_LABELS[g.type] ?? g.type} · {cnt}문항)
                         </option>
                       );
                     })}
                   </select>
-                  {selectedPool && (
+                  {selectedGroup && (
                     <p className="text-[11px] text-slate-400 mt-1.5">
-                      타입: <span className="text-violet-600 font-medium">{TYPE_LABELS[selectedPool.type] ?? selectedPool.type}</span>
-                      {" · "}뱅크 내 {matchingQuestions.length}문항
+                      타입: <span className="text-violet-600 font-medium">{TYPE_LABELS[selectedGroup.type] ?? selectedGroup.type}</span>
+                      {" · "}그룹 내 {matchingQuestions.length}문항
                     </p>
                   )}
                 </div>
@@ -216,17 +260,27 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
                       <input
                         type="number"
                         min={1}
-                        className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
+                        max={matchingQuestions.length || undefined}
+                        className={`w-20 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                          countExceedsPool
+                            ? "border-red-300 focus:ring-red-300"
+                            : "border-slate-200 focus:ring-violet-300"
+                        }`}
                         value={selected.count}
-                        onChange={(e) => updateRule(selected.id, { count: Math.max(1, Number(e.target.value)) })}
+                        onChange={(e) => updateSection(selected.id, { count: Math.max(1, Number(e.target.value)) })}
                       />
                       <span className="text-sm text-slate-500">문항</span>
                     </div>
+                    {countExceedsPool && (
+                      <p className="text-[11px] text-red-500 mt-1">
+                        그룹 보유 문항({matchingQuestions.length})을 초과합니다 — 저장 불가
+                      </p>
+                    )}
                   </div>
                   <div className="flex-1">
                     <label className="text-xs font-semibold text-slate-400 block mb-2">셔플</label>
                     <button
-                      onClick={() => updateRule(selected.id, { shuffle: !selected.shuffle })}
+                      onClick={() => updateSection(selected.id, { shuffle: !selected.shuffle })}
                       className={`relative inline-flex h-6 w-10 items-center rounded-full transition-colors ${
                         selected.shuffle ? "bg-violet-600" : "bg-slate-200"
                       }`}
@@ -246,7 +300,7 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
                 </p>
                 {matchingQuestions.length === 0 ? (
                   <p className="text-xs text-slate-300 text-center py-4">
-                    {!selected.poolId ? "문항 그룹을 선택하면 소속 문항이 표시됩니다" : "해당 그룹에 문항이 없습니다"}
+                    {!selected.groupId ? "문항 그룹을 선택하면 소속 문항이 표시됩니다" : "해당 그룹에 문항이 없습니다"}
                   </p>
                 ) : (
                   <div className="flex flex-col gap-2">
@@ -307,7 +361,7 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
           {selected && (
             <>
               <div className="px-4 py-3 border-b border-slate-100">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">규칙 설정</p>
+                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">섹션 설정</p>
               </div>
               <div className="p-4 flex flex-col gap-3">
                 <div>
@@ -317,13 +371,13 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
                     min={1}
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
                     value={selected.count}
-                    onChange={(e) => updateRule(selected.id, { count: Math.max(1, Number(e.target.value)) })}
+                    onChange={(e) => updateSection(selected.id, { count: Math.max(1, Number(e.target.value)) })}
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-slate-500">셔플</span>
                   <button
-                    onClick={() => updateRule(selected.id, { shuffle: !selected.shuffle })}
+                    onClick={() => updateSection(selected.id, { shuffle: !selected.shuffle })}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                       selected.shuffle ? "bg-violet-600" : "bg-slate-200"
                     }`}
@@ -334,11 +388,11 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
                   </button>
                 </div>
                 <button
-                  onClick={() => deleteRule(selected.id)}
+                  onClick={() => deleteSection(selected.id)}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
                 >
                   <Trash2 size={13} />
-                  규칙 삭제
+                  섹션 삭제
                 </button>
               </div>
             </>
