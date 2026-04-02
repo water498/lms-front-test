@@ -26,6 +26,17 @@ export interface ExamAttempt {
   durationSec?: number;
 }
 
+// 시험 문항별 개별 답안 (오답노트)
+export interface ExamAnswer {
+  id: string;
+  attemptId: string;
+  questionId: string;
+  selectedOptionIds?: string; // 콤마 구분 옵션 ID (선택형)
+  textAnswer?: string;        // 주관식 답안 (SHORT)
+  correct: boolean;
+  score: number;
+}
+
 // 과제 제출 기록
 export interface AssignmentSubmission {
   id: string;
