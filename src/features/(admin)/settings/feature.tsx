@@ -20,18 +20,10 @@ export default function SettingsFeature() {
   const { tenant } = useTenantContextStore();
   const { features } = tenant;
 
-  const visibleTabs = TABS.filter((tab) => {
-    if (tab.id === "org")    return features.orgStructure;
-    if (tab.id === "access") return features.sso;
-    return true;
-  });
+  const visibleTabs = TABS;
 
   const [activeTab, setActiveTab] = useState<TabId>("general");
-  const resolvedTab =
-    (activeTab === "org"    && !features.orgStructure) ||
-    (activeTab === "access" && !features.sso)
-      ? "general"
-      : activeTab;
+  const resolvedTab = activeTab;
 
   return (
     <div className="flex flex-col gap-5">

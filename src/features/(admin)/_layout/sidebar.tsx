@@ -185,16 +185,14 @@ const NAV_GROUPS: NavGroup[] = [
       {
         kind: "link",
         href: `${BASE}/payments`,
-        label: "결제 내역", // [B2C only]
+        label: "결제 내역",
         icon: CreditCard,
-        featureFlag: "payments" as const,
       },
       {
         kind: "link",
         href: `${BASE}/payouts`,
-        label: "강사 정산", // [B2C only]
+        label: "강사 정산",
         icon: Wallet,
-        featureFlag: "payments" as const,
       },
       {
         kind: "accordion",
