@@ -303,7 +303,7 @@ export default function SearchFeature() {
       const q = query.trim().toLowerCase();
       items = items.filter((c) =>
         c.title.toLowerCase().includes(q) ||
-        c.instructor.toLowerCase().includes(q) ||
+        (c.instructor ?? "").toLowerCase().includes(q) ||
         (c.tags ?? []).some((t) => t.toLowerCase().includes(q)) ||
         (c.categoryLabel ?? "").toLowerCase().includes(q)
       );

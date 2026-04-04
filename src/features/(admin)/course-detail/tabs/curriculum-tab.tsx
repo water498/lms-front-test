@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { ChevronDown, ChevronRight, GripVertical, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { type CourseSubject, type CourseActivity, type ActivityType } from "../mockData";
+import { type SubjectPhase } from "@/lib/models";
 import { mediaAssets } from "../../media/mockData";
 import AddActivityModal from "../modals/add-activity-modal";
 import {
@@ -36,6 +37,14 @@ const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
   ASSIGNMENT: "과제",
   SURVEY:     "설문",
 };
+
+const PHASE_CONFIG: Record<SubjectPhase, { label: string; badgeClass: string; bgClass: string }> = {
+  PRE:      { label: "사전 평가 (PRE)",     badgeClass: "bg-amber-100 text-amber-700",   bgClass: "bg-amber-50/40" },
+  LEARNING: { label: "학습 (LEARNING)",     badgeClass: "bg-violet-100 text-violet-700", bgClass: "bg-white" },
+  POST:     { label: "사후 평가 (POST)",    badgeClass: "bg-emerald-100 text-emerald-700", bgClass: "bg-emerald-50/40" },
+};
+
+const PHASE_ORDER: SubjectPhase[] = ["PRE", "LEARNING", "POST"];
 
 interface DeleteWarningDialogProps {
   enrolleeCount: number;
@@ -95,8 +104,8 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
     : null;
 
   const meta =
-    activity.duration
-      ? `${activity.duration}분`
+    activity.videoDurationMin
+      ? `${activity.videoDurationMin}분`
       : activity.questionCount
       ? `${activity.questionCount}문항`
       : "";
@@ -186,6 +195,8 @@ function SubjectAccordion({
 
   const activitySensors = useSensors(useSensor(PointerSensor));
 
+  const phaseConfig = PHASE_CONFIG[subject.phase];
+
   function handleActivityDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -221,6 +232,9 @@ function SubjectAccordion({
         )}
         <span className="text-sm font-semibold text-slate-700">
           {index + 1}. {subject.title}
+        </span>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${phaseConfig.badgeClass}`}>
+          {subject.phase}
         </span>
         <span className="text-xs text-slate-400 ml-1">{subject.activities.length}개 활동</span>
         <div className="ml-auto flex gap-1" onClick={(e) => e.stopPropagation()}>
@@ -282,37 +296,40 @@ function SubjectAccordion({
   );
 }
 
-interface CurriculumTabProps {
+interface PhraseSectionProps {
+  phase: SubjectPhase;
   subjects: CourseSubject[];
   hasOngoingSessions: boolean;
   hasInstructor: boolean;
   enrolleeCount: number;
-  onAddSubject: (title: string) => void;
   onDeleteSubject: (subjectId: string) => void;
   onAddActivity: (subjectId: string, activity: CourseActivity) => void;
   onDeleteActivity: (subjectId: string, activityId: string) => void;
+  onAddSubject: (title: string, phase: SubjectPhase) => void;
 }
 
-export default function CurriculumTab({
+function PhaseSection({
+  phase,
   subjects,
   hasOngoingSessions,
   hasInstructor,
   enrolleeCount,
-  onAddSubject,
   onDeleteSubject,
   onAddActivity,
   onDeleteActivity,
-}: CurriculumTabProps) {
+  onAddSubject,
+}: PhraseSectionProps) {
+  const [collapsed, setCollapsed] = useState(false);
   const [addingSubject, setAddingSubject] = useState(false);
   const [newSubjectTitle, setNewSubjectTitle] = useState("");
   const [localSubjects, setLocalSubjects] = useState(subjects);
-  const inputRef = useRef<HTMLInputElement>(null);
 
+  const config = PHASE_CONFIG[phase];
   const sensors = useSensors(useSensor(PointerSensor));
 
   function commitNewSubject() {
     const trimmed = newSubjectTitle.trim();
-    if (trimmed) onAddSubject(trimmed);
+    if (trimmed) onAddSubject(trimmed, phase);
     setNewSubjectTitle("");
     setAddingSubject(false);
   }
@@ -328,63 +345,142 @@ export default function CurriculumTab({
     }
   }
 
+  // Sync local subjects when prop changes
+  const prevSubjectsRef = useRef(subjects);
+  if (prevSubjectsRef.current !== subjects) {
+    prevSubjectsRef.current = subjects;
+    setLocalSubjects(subjects);
+  }
+
   return (
-    <div className="flex flex-col gap-3 max-w-2xl">
+    <div className={`rounded-xl border border-slate-200 overflow-hidden ${config.bgClass}`}>
+      {/* Phase header */}
+      <button
+        onClick={() => setCollapsed((v) => !v)}
+        className="w-full flex items-center gap-2.5 px-4 py-3 hover:bg-slate-50/50 transition-colors"
+      >
+        {collapsed ? (
+          <ChevronRight size={16} className="text-slate-400 flex-shrink-0" />
+        ) : (
+          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+        )}
+        <span className="text-sm font-bold text-slate-700">{config.label}</span>
+        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${config.badgeClass}`}>
+          {localSubjects.length}개 과목
+        </span>
+      </button>
+
+      {!collapsed && (
+        <div className="px-3 pb-3 flex flex-col gap-3">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
+            <SortableContext items={localSubjects.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+              {localSubjects.map((subject, i) => (
+                <SubjectAccordion
+                  key={subject.id}
+                  subject={subject}
+                  index={i}
+                  hasOngoingSessions={hasOngoingSessions}
+                  hasInstructor={hasInstructor}
+                  enrolleeCount={enrolleeCount}
+                  onDelete={() => onDeleteSubject(subject.id)}
+                  onAddActivity={(activity) => onAddActivity(subject.id, activity)}
+                  onDeleteActivity={(activityId) => onDeleteActivity(subject.id, activityId)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+
+          {localSubjects.length === 0 && !addingSubject && (
+            <p className="text-xs text-slate-400 px-4 py-2">이 단계에 아직 과목이 없습니다.</p>
+          )}
+
+          {!hasOngoingSessions && addingSubject ? (
+            <div className="flex items-center gap-2 px-4 py-3 border-2 border-violet-300 rounded-xl bg-violet-50">
+              <Plus size={15} className="text-violet-400 flex-shrink-0" />
+              <input
+                autoFocus
+                className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 outline-none"
+                placeholder="과목 이름을 입력하세요"
+                value={newSubjectTitle}
+                onChange={(e) => setNewSubjectTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commitNewSubject();
+                  if (e.key === "Escape") { setAddingSubject(false); setNewSubjectTitle(""); }
+                }}
+                onBlur={commitNewSubject}
+              />
+            </div>
+          ) : (
+            <button
+              onClick={hasOngoingSessions ? undefined : () => setAddingSubject(true)}
+              disabled={hasOngoingSessions}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm border-2 border-dashed rounded-xl transition-colors ${
+                hasOngoingSessions
+                  ? "text-slate-300 border-slate-100 cursor-not-allowed"
+                  : "text-slate-400 hover:text-violet-600 border-slate-200 hover:border-violet-300"
+              }`}
+            >
+              <Plus size={14} />
+              과목 추가
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface CurriculumTabProps {
+  subjects: CourseSubject[];
+  hasOngoingSessions: boolean;
+  hasInstructor: boolean;
+  enrolleeCount: number;
+  onAddSubject: (title: string, phase?: SubjectPhase) => void;
+  onDeleteSubject: (subjectId: string) => void;
+  onAddActivity: (subjectId: string, activity: CourseActivity) => void;
+  onDeleteActivity: (subjectId: string, activityId: string) => void;
+}
+
+export default function CurriculumTab({
+  subjects,
+  hasOngoingSessions,
+  hasInstructor,
+  enrolleeCount,
+  onAddSubject,
+  onDeleteSubject,
+  onAddActivity,
+  onDeleteActivity,
+}: CurriculumTabProps) {
+  // Group subjects by phase
+  const subjectsByPhase: Record<SubjectPhase, CourseSubject[]> = {
+    PRE: subjects.filter((s) => s.phase === "PRE"),
+    LEARNING: subjects.filter((s) => s.phase === "LEARNING"),
+    POST: subjects.filter((s) => s.phase === "POST"),
+  };
+
+  return (
+    <div className="flex flex-col gap-4 max-w-2xl">
       {hasOngoingSessions && (
         <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
           <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />
           <span>진행 중인 차수가 있어 커리큘럼을 수정할 수 없습니다. 수정하려면 과정을 복제하거나 새 차수를 여세요.</span>
         </div>
       )}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
-        <SortableContext items={localSubjects.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-          {localSubjects.map((subject, i) => (
-            <SubjectAccordion
-              key={subject.id}
-              subject={subject}
-              index={i}
-              hasOngoingSessions={hasOngoingSessions}
-              hasInstructor={hasInstructor}
-              enrolleeCount={enrolleeCount}
-              onDelete={() => onDeleteSubject(subject.id)}
-              onAddActivity={(activity) => onAddActivity(subject.id, activity)}
-              onDeleteActivity={(activityId) => onDeleteActivity(subject.id, activityId)}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
 
-      {!hasOngoingSessions && addingSubject ? (
-        <div className="flex items-center gap-2 px-4 py-3 border-2 border-violet-300 rounded-xl bg-violet-50">
-          <Plus size={15} className="text-violet-400 flex-shrink-0" />
-          <input
-            ref={inputRef}
-            autoFocus
-            className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 outline-none"
-            placeholder="과목 이름을 입력하세요"
-            value={newSubjectTitle}
-            onChange={(e) => setNewSubjectTitle(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") commitNewSubject();
-              if (e.key === "Escape") { setAddingSubject(false); setNewSubjectTitle(""); }
-            }}
-            onBlur={commitNewSubject}
-          />
-        </div>
-      ) : (
-        <button
-          onClick={hasOngoingSessions ? undefined : () => setAddingSubject(true)}
-          disabled={hasOngoingSessions}
-          className={`flex items-center gap-2 px-4 py-3 text-sm border-2 border-dashed rounded-xl transition-colors ${
-            hasOngoingSessions
-              ? "text-slate-300 border-slate-100 cursor-not-allowed"
-              : "text-slate-500 hover:text-violet-600 border-slate-200 hover:border-violet-300"
-          }`}
-        >
-          <Plus size={15} />
-          과목 추가
-        </button>
-      )}
+      {PHASE_ORDER.map((phase) => (
+        <PhaseSection
+          key={phase}
+          phase={phase}
+          subjects={subjectsByPhase[phase]}
+          hasOngoingSessions={hasOngoingSessions}
+          hasInstructor={hasInstructor}
+          enrolleeCount={enrolleeCount}
+          onDeleteSubject={onDeleteSubject}
+          onAddActivity={onAddActivity}
+          onDeleteActivity={onDeleteActivity}
+          onAddSubject={onAddSubject}
+        />
+      ))}
     </div>
   );
 }

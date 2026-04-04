@@ -45,7 +45,7 @@ export default function SendMessageModal({ channel, onClose }: Props) {
     setTemplateId(id);
     const t = messageTemplates.find((tmpl) => tmpl.id === id);
     if (t) {
-      if (t.subject) setSubject(t.subject);
+      if (t.emailSubject) setSubject(t.emailSubject);
       setContent(t.content);
     }
   };
@@ -116,8 +116,8 @@ export default function SendMessageModal({ channel, onClose }: Props) {
                 {selectedTemplate && (
                   <div className="mt-2 bg-slate-50 rounded-xl px-4 py-3">
                     <p className="text-xs text-slate-400 mb-1">미리보기</p>
-                    {selectedTemplate.subject && (
-                      <p className="text-xs font-medium text-slate-700 mb-1">{selectedTemplate.subject}</p>
+                    {selectedTemplate.emailSubject && (
+                      <p className="text-xs font-medium text-slate-700 mb-1">{selectedTemplate.emailSubject}</p>
                     )}
                     <p className="text-xs text-slate-600 whitespace-pre-line leading-relaxed">
                       {selectedTemplate.content}

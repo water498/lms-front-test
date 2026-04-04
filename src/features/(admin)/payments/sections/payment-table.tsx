@@ -4,7 +4,6 @@ import { useState } from "react";
 import { payments, orders, orderItems, learnerNames, courseTitles, type PaymentStatus } from "../mockData";
 
 const STATUS_CONFIG: Record<PaymentStatus, { label: string; className: string }> = {
-  PENDING:   { label: "결제 대기", className: "bg-amber-100 text-amber-700" },
   PAID:      { label: "결제 완료", className: "bg-emerald-100 text-emerald-700" },
   REFUNDED:  { label: "환불",     className: "bg-blue-100 text-blue-700" },
   CANCELLED: { label: "취소",     className: "bg-slate-100 text-slate-500" },
@@ -80,7 +79,7 @@ export default function PaymentTable() {
                   <td className="px-5 py-3 font-mono text-xs text-slate-600">{order?.orderNumber ?? p.orderId}</td>
                   <td className="px-4 py-3 font-medium text-slate-800">{order ? (learnerNames[order.userId] ?? order.userId) : "—"}</td>
                   <td className="px-4 py-3 text-slate-600 max-w-[180px] truncate">{courseLabel}</td>
-                  <td className="px-4 py-3 text-right text-slate-500">{order ? `${order.subtotalAmount.toLocaleString()}원` : "—"}</td>
+                  <td className="px-4 py-3 text-right text-slate-500">{order ? `${order.originalPrice.toLocaleString()}원` : "—"}</td>
                   <td className="px-4 py-3 text-right text-rose-500">
                     {order?.discountAmount ? `−${order.discountAmount.toLocaleString()}원` : "—"}
                   </td>

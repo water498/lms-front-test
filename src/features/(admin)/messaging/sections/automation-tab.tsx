@@ -93,8 +93,8 @@ export default function AutomationTab({ channel, onEditRule, onAddRule }: Props)
                   }`}
                 >
                   <td className="px-5 py-3.5">
-                    <p className="font-medium text-slate-800">{rule.triggerLabel}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{rule.triggerDesc}</p>
+                    <p className="font-medium text-slate-800">{rule.triggerLabel ?? ""}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{rule.triggerDesc ?? ""}</p>
                   </td>
                   <td className="px-4 py-3.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${ch.className}`}>
@@ -102,7 +102,7 @@ export default function AutomationTab({ channel, onEditRule, onAddRule }: Props)
                     </span>
                   </td>
                   <td className="px-4 py-3.5 text-slate-600 text-xs">
-                    {getTemplateName(rule.templateId)}
+                    {getTemplateName(rule.templateId ?? "")}
                   </td>
                   <td className="px-4 py-3.5">
                     <Toggle active={rule.active} onChange={(v) => toggleRule(rule.id, v)} />

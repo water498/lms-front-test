@@ -18,7 +18,7 @@ const CHANNEL_BADGE: Record<MessageChannel, { label: string; className: string }
 
 export default function MessageEventRuleModal({ channel, initialRule, onClose }: Props) {
   const isCreate = !initialRule;
-  const [templateId, setTemplateId] = useState(initialRule?.templateId ?? "");
+  const [templateId, setTemplateId] = useState(initialRule?.templateId ?? "" as string);
   const [selectedTrigger, setSelectedTrigger] = useState<AutomationTrigger | "">(
     initialRule?.trigger ?? ""
   );
@@ -72,8 +72,8 @@ export default function MessageEventRuleModal({ channel, initialRule, onClose }:
         ) : (
           <div className="bg-slate-50 rounded-xl px-4 py-3 mb-4">
             <p className="text-xs text-slate-500 mb-0.5">트리거 이벤트</p>
-            <p className="text-sm font-medium text-slate-700">{initialRule.triggerLabel}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{initialRule.triggerDesc}</p>
+            <p className="text-sm font-medium text-slate-700">{initialRule.triggerLabel ?? ""}</p>
+            <p className="text-xs text-slate-400 mt-0.5">{initialRule.triggerDesc ?? ""}</p>
           </div>
         )}
 
@@ -97,17 +97,17 @@ export default function MessageEventRuleModal({ channel, initialRule, onClose }:
           {selectedTemplate && (
             <div className="bg-slate-50 rounded-xl px-4 py-3">
               <p className="text-xs text-slate-400 mb-1.5">템플릿 미리보기</p>
-              {selectedTemplate.subject && (
-                <p className="text-xs font-medium text-slate-700 mb-1">{selectedTemplate.subject}</p>
+              {selectedTemplate.emailSubject && (
+                <p className="text-xs font-medium text-slate-700 mb-1">{selectedTemplate.emailSubject}</p>
               )}
               <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
                 {selectedTemplate.content}
               </p>
-              {selectedTemplate.variables.length > 0 && (
+              {selectedTemplate.variables && selectedTemplate.variables.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {selectedTemplate.variables.map((v) => (
+                  {selectedTemplate.variables.split(",").map((v) => (
                     <span key={v} className="text-xs bg-white border border-slate-200 text-slate-500 px-1.5 py-0.5 rounded font-mono">
-                      {`{{${v}}}`}
+                      {`{{${v.trim()}}}`}
                     </span>
                   ))}
                 </div>

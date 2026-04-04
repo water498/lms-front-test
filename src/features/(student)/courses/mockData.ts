@@ -107,109 +107,109 @@ const reviewsIp3: CourseReview[] = [
 
 const subjectsHero1: CourseSubject[] = [
   {
-    id: "s1-1", title: "강의 소개 및 학습 방향", order: 1,
+    id: "s1-1", courseId: "hero-1", title: "강의 소개 및 학습 방향", phase: "LEARNING", order: 1,
     activities: [
-      { id: "a1-1-1", title: "강의 소개 및 학습 로드맵", type: "VIDEO", duration: 12 },
-      { id: "a1-1-2", title: "산업안전보건법 체계 개요", type: "VIDEO", duration: 18 },
+      { id: "a1-1-1", subjectId: "s1-1", title: "강의 소개 및 학습 로드맵", type: "VIDEO", videoDurationMin: 12, order: 1, isDeleted: false },
+      { id: "a1-1-2", subjectId: "s1-1", title: "산업안전보건법 체계 개요", type: "VIDEO", videoDurationMin: 18, order: 2, isDeleted: false },
     ],
   },
   {
-    id: "s1-2", title: "안전보건관리체계 기초", order: 2,
+    id: "s1-2", courseId: "hero-1", title: "안전보건관리체계 기초", phase: "LEARNING", order: 2,
     activities: [
-      { id: "a1-2-1", title: "안전보건관리체계란? 핵심 개념과 구조", type: "VIDEO", duration: 20 },
-      { id: "a1-2-2", title: "10대 필수 안전수칙 전체 개요", type: "VIDEO", duration: 28 },
-      { id: "a1-2-3", title: "조직 내 안전 역할과 책임 분담", type: "VIDEO", duration: 22 },
-      { id: "a1-2-4", title: "섹션 2 개념 확인 퀴즈", type: "QUIZ", questionCount: 10 },
+      { id: "a1-2-1", subjectId: "s1-2", title: "안전보건관리체계란? 핵심 개념과 구조", type: "VIDEO", videoDurationMin: 20, order: 1, isDeleted: false },
+      { id: "a1-2-2", subjectId: "s1-2", title: "10대 필수 안전수칙 전체 개요", type: "VIDEO", videoDurationMin: 28, order: 2, isDeleted: false },
+      { id: "a1-2-3", subjectId: "s1-2", title: "조직 내 안전 역할과 책임 분담", type: "VIDEO", videoDurationMin: 22, order: 3, isDeleted: false },
+      { id: "a1-2-4", subjectId: "s1-2", title: "섹션 2 개념 확인 퀴즈", type: "QUIZ", questionCount: 10, order: 4, isDeleted: false },
     ],
   },
   {
-    id: "s1-3", title: "핵심 안전수칙 실천", order: 3,
+    id: "s1-3", courseId: "hero-1", title: "핵심 안전수칙 실천", phase: "LEARNING", order: 3,
     activities: [
-      { id: "a1-3-1", title: "개인보호장구 착용 및 관리", type: "VIDEO", duration: 25 },
-      { id: "a1-3-2", title: "위험구역 식별 및 통제 방법", type: "VIDEO", duration: 30 },
-      { id: "a1-3-3", title: "작업 전 안전 점검(TBM) 운영법", type: "VIDEO", duration: 20 },
-      { id: "a1-3-4", title: "안전수칙 현장 적용 과제", type: "ASSIGNMENT", questionCount: 2 },
+      { id: "a1-3-1", subjectId: "s1-3", title: "개인보호장구 착용 및 관리", type: "VIDEO", videoDurationMin: 25, order: 1, isDeleted: false },
+      { id: "a1-3-2", subjectId: "s1-3", title: "위험구역 식별 및 통제 방법", type: "VIDEO", videoDurationMin: 30, order: 2, isDeleted: false },
+      { id: "a1-3-3", subjectId: "s1-3", title: "작업 전 안전 점검(TBM) 운영법", type: "VIDEO", videoDurationMin: 20, order: 3, isDeleted: false },
+      { id: "a1-3-4", subjectId: "s1-3", title: "안전수칙 현장 적용 과제", type: "ASSIGNMENT", questionCount: 2, order: 4, isDeleted: false },
     ],
   },
   {
-    id: "s1-4", title: "중대재해처벌법 이해", order: 4,
+    id: "s1-4", courseId: "hero-1", title: "중대재해처벌법 이해", phase: "LEARNING", order: 4,
     activities: [
-      { id: "a1-4-1", title: "중대재해처벌법 주요 의무사항", type: "VIDEO", duration: 35 },
-      { id: "a1-4-2", title: "경영책임자 의무와 처벌 사례", type: "VIDEO", duration: 30 },
-      { id: "a1-4-3", title: "법규 준수 체크리스트 활용", type: "SCORM", mediaAssetId: "ma7" },
-      { id: "a1-4-4", title: "법규 이해 평가", type: "QUIZ", questionCount: 8 },
+      { id: "a1-4-1", subjectId: "s1-4", title: "중대재해처벌법 주요 의무사항", type: "VIDEO", videoDurationMin: 35, order: 1, isDeleted: false },
+      { id: "a1-4-2", subjectId: "s1-4", title: "경영책임자 의무와 처벌 사례", type: "VIDEO", videoDurationMin: 30, order: 2, isDeleted: false },
+      { id: "a1-4-3", subjectId: "s1-4", title: "법규 준수 체크리스트 활용", type: "SCORM", mediaAssetId: "ma7", order: 3, isDeleted: false },
+      { id: "a1-4-4", subjectId: "s1-4", title: "법규 이해 평가", type: "QUIZ", questionCount: 8, order: 4, isDeleted: false },
     ],
   },
   {
-    id: "s1-5", title: "안전문화 구축", order: 5,
+    id: "s1-5", courseId: "hero-1", title: "안전문화 구축", phase: "LEARNING", order: 5,
     activities: [
-      { id: "a1-5-1", title: "안전문화 성숙도 진단", type: "VIDEO", duration: 22 },
-      { id: "a1-5-2", title: "안전 리더십과 의사소통", type: "VIDEO", duration: 28 },
-      { id: "a1-5-3", title: "안전문화 퀴즈", type: "QUIZ", questionCount: 6 },
+      { id: "a1-5-1", subjectId: "s1-5", title: "안전문화 성숙도 진단", type: "VIDEO", videoDurationMin: 22, order: 1, isDeleted: false },
+      { id: "a1-5-2", subjectId: "s1-5", title: "안전 리더십과 의사소통", type: "VIDEO", videoDurationMin: 28, order: 2, isDeleted: false },
+      { id: "a1-5-3", subjectId: "s1-5", title: "안전문화 퀴즈", type: "QUIZ", questionCount: 6, order: 3, isDeleted: false },
     ],
   },
   {
-    id: "s1-6", title: "안전보건관리체계 구축 실전", order: 6,
+    id: "s1-6", courseId: "hero-1", title: "안전보건관리체계 구축 실전", phase: "LEARNING", order: 6,
     activities: [
-      { id: "a1-6-1", title: "안전보건관리체계 구축 실전 사례", type: "VIDEO", duration: 38 },
-      { id: "a1-6-2", title: "자사 안전보건관리체계 진단 및 개선", type: "VIDEO", duration: 32 },
-      { id: "a1-6-3", title: "최종 체계 구축 과제", type: "ASSIGNMENT", questionCount: 1 },
+      { id: "a1-6-1", subjectId: "s1-6", title: "안전보건관리체계 구축 실전 사례", type: "VIDEO", videoDurationMin: 38, order: 1, isDeleted: false },
+      { id: "a1-6-2", subjectId: "s1-6", title: "자사 안전보건관리체계 진단 및 개선", type: "VIDEO", videoDurationMin: 32, order: 2, isDeleted: false },
+      { id: "a1-6-3", subjectId: "s1-6", title: "최종 체계 구축 과제", type: "ASSIGNMENT", questionCount: 1, order: 3, isDeleted: false },
     ],
   },
 ];
 
 const subjectsIp2: CourseSubject[] = [
   {
-    id: "s2-1", title: "안전수칙 기초 이해", order: 1,
+    id: "s2-1", courseId: "ip-2", title: "안전수칙 기초 이해", phase: "LEARNING", order: 1,
     activities: [
-      { id: "a2-1-1", title: "핵심안전수칙이란 무엇인가", type: "VIDEO", duration: 15 },
-      { id: "a2-1-2", title: "개인보호장구(PPE) 종류와 착용법", type: "VIDEO", duration: 22 },
-      { id: "a2-1-3", title: "기초 안전수칙 퀴즈", type: "QUIZ", questionCount: 8 },
+      { id: "a2-1-1", subjectId: "s2-1", title: "핵심안전수칙이란 무엇인가", type: "VIDEO", videoDurationMin: 15, order: 1, isDeleted: false },
+      { id: "a2-1-2", subjectId: "s2-1", title: "개인보호장구(PPE) 종류와 착용법", type: "VIDEO", videoDurationMin: 22, order: 2, isDeleted: false },
+      { id: "a2-1-3", subjectId: "s2-1", title: "기초 안전수칙 퀴즈", type: "QUIZ", questionCount: 8, order: 3, isDeleted: false },
     ],
   },
   {
-    id: "s2-2", title: "위험 유형별 수칙 적용", order: 2,
+    id: "s2-2", courseId: "ip-2", title: "위험 유형별 수칙 적용", phase: "LEARNING", order: 2,
     activities: [
-      { id: "a2-2-1", title: "추락·전도 사고 예방 수칙", type: "VIDEO", duration: 28 },
-      { id: "a2-2-2", title: "끼임·충돌 위험 통제 방법", type: "VIDEO", duration: 24 },
-      { id: "a2-2-3", title: "위험 유형별 핵심 수칙 적용", type: "VIDEO", duration: 30 },
+      { id: "a2-2-1", subjectId: "s2-2", title: "추락·전도 사고 예방 수칙", type: "VIDEO", videoDurationMin: 28, order: 1, isDeleted: false },
+      { id: "a2-2-2", subjectId: "s2-2", title: "끼임·충돌 위험 통제 방법", type: "VIDEO", videoDurationMin: 24, order: 2, isDeleted: false },
+      { id: "a2-2-3", subjectId: "s2-2", title: "위험 유형별 핵심 수칙 적용", type: "VIDEO", videoDurationMin: 30, order: 3, isDeleted: false },
     ],
   },
   {
-    id: "s2-3", title: "현장 안전 실습 및 종합", order: 3,
+    id: "s2-3", courseId: "ip-2", title: "현장 안전 실습 및 종합", phase: "LEARNING", order: 3,
     activities: [
-      { id: "a2-3-1", title: "작업 전 위험요인 발굴 실습", type: "VIDEO", duration: 20 },
-      { id: "a2-3-2", title: "TBM(작업 전 회의) 운영 실습", type: "VIDEO", duration: 25 },
-      { id: "a2-3-3", title: "현장 안전 점검 시뮬레이션", type: "SCORM", mediaAssetId: "ma8" },
-      { id: "a2-3-4", title: "현장 안전계획 수립 과제", type: "ASSIGNMENT", questionCount: 1 },
+      { id: "a2-3-1", subjectId: "s2-3", title: "작업 전 위험요인 발굴 실습", type: "VIDEO", videoDurationMin: 20, order: 1, isDeleted: false },
+      { id: "a2-3-2", subjectId: "s2-3", title: "TBM(작업 전 회의) 운영 실습", type: "VIDEO", videoDurationMin: 25, order: 2, isDeleted: false },
+      { id: "a2-3-3", subjectId: "s2-3", title: "현장 안전 점검 시뮬레이션", type: "SCORM", mediaAssetId: "ma8", order: 3, isDeleted: false },
+      { id: "a2-3-4", subjectId: "s2-3", title: "현장 안전계획 수립 과제", type: "ASSIGNMENT", questionCount: 1, order: 4, isDeleted: false },
     ],
   },
 ];
 
 const subjectsIp3: CourseSubject[] = [
   {
-    id: "s3-1", title: "위험관리 기초", order: 1,
+    id: "s3-1", courseId: "ip-3", title: "위험관리 기초", phase: "LEARNING", order: 1,
     activities: [
-      { id: "a3-1-1", title: "위험관리란? 핵심 개념과 용어", type: "VIDEO", duration: 15 },
-      { id: "a3-1-2", title: "위험성 평가 5단계 프로세스", type: "VIDEO", duration: 28 },
-      { id: "a3-1-3", title: "위험관리 기초 퀴즈", type: "QUIZ", questionCount: 10 },
+      { id: "a3-1-1", subjectId: "s3-1", title: "위험관리란? 핵심 개념과 용어", type: "VIDEO", videoDurationMin: 15, order: 1, isDeleted: false },
+      { id: "a3-1-2", subjectId: "s3-1", title: "위험성 평가 5단계 프로세스", type: "VIDEO", videoDurationMin: 28, order: 2, isDeleted: false },
+      { id: "a3-1-3", subjectId: "s3-1", title: "위험관리 기초 퀴즈", type: "QUIZ", questionCount: 10, order: 3, isDeleted: false },
     ],
   },
   {
-    id: "s3-2", title: "위험성 평가 실무", order: 2,
+    id: "s3-2", courseId: "ip-3", title: "위험성 평가 실무", phase: "LEARNING", order: 2,
     activities: [
-      { id: "a3-2-1", title: "체크리스트법·HAZOP 활용", type: "VIDEO", duration: 32 },
-      { id: "a3-2-2", title: "위험도 산정 및 우선순위 결정", type: "VIDEO", duration: 26 },
-      { id: "a3-2-3", title: "위험 감소 대책 수립", type: "VIDEO", duration: 28 },
-      { id: "a3-2-4", title: "위험성 평가 실습 과제", type: "ASSIGNMENT", questionCount: 2 },
+      { id: "a3-2-1", subjectId: "s3-2", title: "체크리스트법·HAZOP 활용", type: "VIDEO", videoDurationMin: 32, order: 1, isDeleted: false },
+      { id: "a3-2-2", subjectId: "s3-2", title: "위험도 산정 및 우선순위 결정", type: "VIDEO", videoDurationMin: 26, order: 2, isDeleted: false },
+      { id: "a3-2-3", subjectId: "s3-2", title: "위험 감소 대책 수립", type: "VIDEO", videoDurationMin: 28, order: 3, isDeleted: false },
+      { id: "a3-2-4", subjectId: "s3-2", title: "위험성 평가 실습 과제", type: "ASSIGNMENT", questionCount: 2, order: 4, isDeleted: false },
     ],
   },
   {
-    id: "s3-3", title: "재해 통계 분석 & 사후 관리", order: 3,
+    id: "s3-3", courseId: "ip-3", title: "재해 통계 분석 & 사후 관리", phase: "LEARNING", order: 3,
     activities: [
-      { id: "a3-3-1", title: "재해 통계 지표 이해 (도수율, 강도율)", type: "VIDEO", duration: 30 },
-      { id: "a3-3-2", title: "사고 원인 분석 기법 (FTA, 4M)", type: "VIDEO", duration: 28 },
-      { id: "a3-3-3", title: "위험관리 종합 프로젝트", type: "ASSIGNMENT", questionCount: 1 },
+      { id: "a3-3-1", subjectId: "s3-3", title: "재해 통계 지표 이해 (도수율, 강도율)", type: "VIDEO", videoDurationMin: 30, order: 1, isDeleted: false },
+      { id: "a3-3-2", subjectId: "s3-3", title: "사고 원인 분석 기법 (FTA, 4M)", type: "VIDEO", videoDurationMin: 28, order: 2, isDeleted: false },
+      { id: "a3-3-3", subjectId: "s3-3", title: "위험관리 종합 프로젝트", type: "ASSIGNMENT", questionCount: 1, order: 3, isDeleted: false },
     ],
   },
 ];
@@ -282,9 +282,9 @@ export const defaultCourseDetail: CourseDetail = {
   requirements: ["기본 학습 의지"],
   subjects: [
     {
-      id: "s-default-1", title: "강의 소개", order: 1,
+      id: "s-default-1", courseId: "default", title: "강의 소개", phase: "LEARNING", order: 1,
       activities: [
-        { id: "a-default-1-1", title: "강의 오리엔테이션", type: "VIDEO", duration: 10 },
+        { id: "a-default-1-1", subjectId: "s-default-1", title: "강의 오리엔테이션", type: "VIDEO", videoDurationMin: 10, order: 1, isDeleted: false },
       ],
     },
   ],

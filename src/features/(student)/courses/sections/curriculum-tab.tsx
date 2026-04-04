@@ -30,7 +30,7 @@ export function CurriculumTab({ subjects }: Props) {
 
   const totalActivities = subjects.reduce((sum, s) => sum + s.activities.length, 0);
   const totalMinutes = subjects.reduce(
-    (sum, s) => sum + s.activities.reduce((acc, a) => acc + (a.duration ?? 0), 0),
+    (sum, s) => sum + s.activities.reduce((acc, a) => acc + (a.videoDurationMin ?? 0), 0),
     0
   );
 
@@ -48,7 +48,7 @@ export function CurriculumTab({ subjects }: Props) {
       <div className="flex flex-col gap-2">
         {subjects.map((subject) => {
           const isOpen = open.has(subject.id);
-          const sectionMinutes = subject.activities.reduce((acc, a) => acc + (a.duration ?? 0), 0);
+          const sectionMinutes = subject.activities.reduce((acc, a) => acc + (a.videoDurationMin ?? 0), 0);
 
           return (
             <div key={subject.id} className="border border-zinc-800 rounded-xl overflow-hidden">
@@ -79,10 +79,10 @@ export function CurriculumTab({ subjects }: Props) {
                       <span className="shrink-0">{ACTIVITY_ICON[activity.type]}</span>
                       <span className="flex-1 text-sm text-zinc-300">{activity.title}</span>
                       <span className="shrink-0 text-xs text-zinc-600 flex items-center gap-1">
-                        {activity.type === "VIDEO" && activity.duration !== undefined && (
+                        {activity.type === "VIDEO" && activity.videoDurationMin !== undefined && (
                           <>
                             <Clock className="w-3 h-3" />
-                            {activity.duration}분
+                            {activity.videoDurationMin}분
                           </>
                         )}
                         {(activity.type === "QUIZ" || activity.type === "ASSIGNMENT") &&

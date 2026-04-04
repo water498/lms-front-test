@@ -60,8 +60,8 @@ function SmsCard({ t, selected, onClick, onEditClick, onDeleteClick }: {
         <div className="flex flex-wrap gap-1">
           {vars.map((v) => <VariableBadge key={v} v={v} channel="SMS" />)}
         </div>
-        <span className={`text-xs tabular-nums ${(t.charCount ?? 0) > 80 ? "text-amber-600" : "text-slate-400"}`}>
-          {t.charCount ?? 0}자 / 90자
+        <span className={`text-xs tabular-nums ${(t.smsCharCount ?? 0) > 80 ? "text-amber-600" : "text-slate-400"}`}>
+          {t.smsCharCount ?? 0}자 / 90자
         </span>
       </div>
     </div>
@@ -72,7 +72,7 @@ function EmailCard({ t, selected, onClick, onEditClick, onDeleteClick }: {
   t: MessageTemplate; selected: boolean;
   onClick: () => void; onEditClick: () => void; onDeleteClick: () => void;
 }) {
-  const vars = extractVariables(t.content + (t.subject ?? ""));
+  const vars = extractVariables(t.content + (t.emailSubject ?? ""));
   return (
     <div
       onClick={onClick}
@@ -95,7 +95,7 @@ function EmailCard({ t, selected, onClick, onEditClick, onDeleteClick }: {
       </div>
       <div className="bg-slate-50 rounded-lg px-3 py-2">
         <p className="text-xs text-slate-500 mb-0.5">제목</p>
-        <p className="text-xs font-medium text-slate-700 truncate">{t.subject}</p>
+        <p className="text-xs font-medium text-slate-700 truncate">{t.emailSubject}</p>
       </div>
       <div className="flex flex-wrap gap-1">
         {vars.map((v) => <VariableBadge key={v} v={v} channel="EMAIL" />)}
@@ -159,7 +159,7 @@ function SmsPreview({ t }: { t: MessageTemplate }) {
       <div className="bg-slate-200 rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs">
         <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">{t.content}</p>
       </div>
-      <p className="text-xs text-slate-400 tabular-nums">{t.charCount ?? 0}자</p>
+      <p className="text-xs text-slate-400 tabular-nums">{t.smsCharCount ?? 0}자</p>
     </div>
   );
 }
@@ -173,15 +173,6 @@ function KakaoPreview({ t }: { t: MessageTemplate }) {
           <p className="text-xs font-semibold text-slate-600">알림톡</p>
           <div className="bg-white rounded-xl rounded-tl-sm px-4 py-3 shadow-sm border border-slate-100">
             <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">{t.content}</p>
-            {t.kakaoButtons && t.kakaoButtons.length > 0 && (
-              <div className="mt-3 border-t border-slate-100 pt-2 flex flex-col gap-1">
-                {t.kakaoButtons.map((btn, i) => (
-                  <div key={i} className="text-center text-xs text-blue-500 font-medium py-1 border border-blue-200 rounded-lg bg-blue-50">
-                    {btn.text}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -194,7 +185,7 @@ function EmailPreview({ t }: { t: MessageTemplate }) {
     <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
       <div className="bg-slate-100 px-4 py-2.5 border-b border-slate-200">
         <p className="text-slate-500">제목</p>
-        <p className="font-semibold text-slate-700 mt-0.5">{t.subject}</p>
+        <p className="font-semibold text-slate-700 mt-0.5">{t.emailSubject}</p>
       </div>
       <div className="bg-white px-4 py-4 flex flex-col gap-2">
         <div className="h-2.5 bg-slate-200 rounded w-3/4" />
@@ -211,7 +202,7 @@ function EmailPreview({ t }: { t: MessageTemplate }) {
 }
 
 function PreviewPanel({ template, channel }: { template: MessageTemplate; channel: MessageChannel }) {
-  const vars = extractVariables(template.content + (template.subject ?? ""));
+  const vars = extractVariables(template.content + (template.emailSubject ?? ""));
   return (
     <div className="flex flex-col gap-3">
       <div>

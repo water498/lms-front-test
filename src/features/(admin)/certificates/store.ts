@@ -69,8 +69,12 @@ export const useCertStore = create<CertStore>((set, get) => ({
 
     const newCert: IssuedCertificate = {
       id: `ic${Date.now()}`,
+      tenantId: "t1",
       certNumber,
       publicToken,
+      userId: "u0",
+      courseId: "c0",
+      sessionId: "se0",
       recipient,
       course,
       templateId,

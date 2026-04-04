@@ -26,10 +26,10 @@ interface Props {
 export default function AttendanceModal({ session, onClose }: Props) {
   const [records, setRecords] = useState<OfflineAttendance[]>(() => getOfflineAttendances(session.id));
 
-  function changeStatus(id: string, status: AttendanceStatus) {
+  function changeStatus(key: string, status: AttendanceStatus) {
     setRecords((prev) =>
       prev.map((r) =>
-        r.id === id ? { ...r, status, method: "MANUAL" as const, checkedAt: undefined } : r
+        `${r.offlineSessionId}_${r.userId}` === key ? { ...r, status, checkInMethod: "MANUAL" as const, checkedAt: undefined } : r
       )
     );
   }
@@ -45,7 +45,7 @@ export default function AttendanceModal({ session, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-base font-semibold text-slate-800">
-            {session.dayNum}회차 ({session.date}) 출결 관리
+            {session.dayNum}회차 ({session.startsAt.split("T")[0] ?? session.startsAt.split(" ")[0]}) 출결 관리
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X size={18} />
@@ -73,21 +73,23 @@ export default function AttendanceModal({ session, onClose }: Props) {
               </tr>
             </thead>
             <tbody>
-              {records.map((r) => (
-                <tr key={r.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+              {records.map((r) => {
+                const key = `${r.offlineSessionId}_${r.userId}`;
+                return (
+                <tr key={key} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="px-5 py-3 font-medium text-slate-800">{r.learnerName}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${BADGE_CLASS[r.status]}`}>
                       {STATUS_CONFIG[r.status].label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-400 text-xs">{r.method === "QR" ? "QR" : "수동"}</td>
+                  <td className="px-4 py-3 text-slate-400 text-xs">{r.checkInMethod === "QR" ? "QR" : "수동"}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       {(["PRESENT", "LATE", "ABSENT", "EXCUSED"] as AttendanceStatus[]).map((s) => (
                         <button
                           key={s}
-                          onClick={() => changeStatus(r.id, s)}
+                          onClick={() => changeStatus(key, s)}
                           className={`text-xs px-2 py-1 rounded transition-colors ${
                             r.status === s
                               ? STATUS_CONFIG[s].activeClassName
@@ -100,7 +102,8 @@ export default function AttendanceModal({ session, onClose }: Props) {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>

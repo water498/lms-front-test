@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getCourse, getCurriculum, getSessions, getEnrollees, type CourseSubject, type CourseActivity } from "./mockData";
+import { getCourse, getCurriculum, getSessions, getEnrollees, getReviews, type CourseSubject, type CourseActivity } from "./mockData";
 import InfoTab from "./tabs/info-tab";
 import CurriculumTab from "./tabs/curriculum-tab";
 import SessionsTab from "./tabs/sessions-tab";
+import ReviewsTab from "./tabs/reviews-tab";
 
-type TabId = "info" | "curriculum" | "sessions";
+type TabId = "info" | "curriculum" | "sessions" | "reviews";
 
 export default function CourseDetailFeature({ courseId }: { courseId: string }) {
   const [activeTab, setActiveTab] = useState<TabId>("info");
@@ -16,6 +17,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const course = getCourse(courseId);
   const sessions = getSessions(courseId);
   const enrollees = getEnrollees(courseId);
+  const reviews = getReviews(courseId);
 
   const [subjects, setSubjects] = useState<CourseSubject[]>(() => getCurriculum(courseId));
 
@@ -27,13 +29,14 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
     { id: "info",       label: "과정 정보" },
     { id: "curriculum", label: "커리큘럼" },
     { id: "sessions",   label: "차수 관리" },
+    { id: "reviews",    label: "리뷰" },
   ];
 
-  function handleAddSubject(title: string) {
+  function handleAddSubject(title: string, phase: "PRE" | "LEARNING" | "POST" = "LEARNING") {
     const id = `s${Date.now()}`;
     setSubjects((prev) => [
       ...prev,
-      { id, title, order: prev.length + 1, activities: [] },
+      { id, courseId, title, phase, order: prev.length + 1, activities: [] },
     ]);
   }
 
@@ -103,7 +106,8 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
             onDeleteActivity={handleDeleteActivity}
           />
         )}
-        {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} defaultMinEnrollment={course.defaultMinEnrollment} />}
+        {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} defaultMinEnrollment={course.defaultMinLearners} />}
+        {activeTab === "reviews"    && <ReviewsTab reviews={reviews} />}
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export default function InfoTab({ course }: { course: Course }) {
   const [description, setDescription] = useState(course.description ?? "");
   const [price, setPrice] = useState<string>(course.price !== undefined ? String(course.price) : "");
   const [defaultMinEnrollment, setDefaultMinEnrollment] = useState<string>(
-    course.defaultMinEnrollment != null ? String(course.defaultMinEnrollment) : ""
+    course.defaultMinLearners != null ? String(course.defaultMinLearners) : ""
   );
   const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
   const { templates } = useCertStore();
@@ -103,7 +103,7 @@ export default function InfoTab({ course }: { course: Course }) {
   }
 
   function addRule() {
-    setPolicy({ ...policy, rules: [...policy.rules, { daysBeforeStart: 0, refundPct: 0 }] });
+    setPolicy({ ...policy, rules: [...policy.rules, { id: `cr-${Date.now()}`, courseId: course.id, daysBeforeStart: 0, refundPct: 0 }] });
   }
 
   function removeRule(index: number) {

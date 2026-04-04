@@ -7,6 +7,13 @@ import { type CourseActivity, type ActivityType } from "../mockData";
 import { mediaAssets } from "../../media/mockData";
 import { examTemplates, assignmentTemplates } from "../../assessments/mockData";
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(1)} MB`;
+  return `${(bytes / 1073741824).toFixed(1)} GB`;
+}
+
 type ActivityTab = "MEDIA" | "QUIZ" | "ASSIGNMENT";
 
 const TABS: { id: ActivityTab; icon: string; label: string }[] = [
@@ -79,7 +86,7 @@ export default function AddActivityModal({
       const asset = mediaAssets.find((a) => a.id === selectedMediaId)!;
       const type: ActivityType =
         asset.assetType === "SCORM" ? "SCORM" : "VIDEO";
-      return { id, title, type, mediaAssetId: selectedMediaId };
+      return { id, title, type, subjectId: "", order: 0, isDeleted: false, mediaAssetId: selectedMediaId };
     }
     if (activeTab === "QUIZ") {
       const template = examTemplates.find((e) => e.id === selectedExamId);
@@ -87,6 +94,9 @@ export default function AddActivityModal({
         id,
         title,
         type: "QUIZ",
+        subjectId: "",
+        order: 0,
+        isDeleted: false,
         examTemplateId: selectedExamId ?? undefined,
         questionCount: template?.rules.reduce((s, r) => s + r.count, 0),
       };
@@ -96,6 +106,9 @@ export default function AddActivityModal({
       id,
       title,
       type: "ASSIGNMENT",
+      subjectId: "",
+      order: 0,
+      isDeleted: false,
       assignTemplateId: selectedAssignId ?? undefined,
     };
   }
@@ -245,7 +258,7 @@ export default function AddActivityModal({
                         {asset.displayName}
                       </p>
                       <p className="text-xs text-slate-400">
-                        {asset.size} · {asset.assetType}
+                        {formatBytes(asset.sizeBytes)} · {asset.assetType}
                       </p>
                     </div>
                   </label>

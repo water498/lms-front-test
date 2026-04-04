@@ -83,13 +83,13 @@ export default function SessionOfflineTab({ sessionId }: { sessionId: string }) 
                     <tr key={os.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                       <td className="px-5 py-3 font-medium text-slate-800">{os.dayNum}회차</td>
                       <td className="px-4 py-3 text-slate-500 text-xs">
-                        <span className="font-medium text-slate-700">{os.date}</span>
+                        <span className="font-medium text-slate-700">{os.startsAt.split("T")[0] ?? os.startsAt.split(" ")[0]}</span>
                         <br />
-                        {os.startTime} – {os.endTime}
+                        {os.startsAt} – {os.endsAt}
                       </td>
                       <td className="px-4 py-3 text-slate-600">{os.location}</td>
                       <td className="px-4 py-3 text-slate-600"><InstructorCell instructors={os.instructors} /></td>
-                      <td className="px-4 py-3 text-slate-600">{os.maxCapacity}명</td>
+                      <td className="px-4 py-3 text-slate-600">{os.maxAttendees ?? "—"}명</td>
                       <td className="px-4 py-3 text-slate-600 font-medium">{rate}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusCfg.className}`}>

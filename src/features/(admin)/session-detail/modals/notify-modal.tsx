@@ -4,13 +4,13 @@ import { useState } from "react";
 import { X, Lock } from "lucide-react";
 import { type CourseSession } from "../../course-detail/mockData";
 import { getSessionNotifyTemplates, type MessageChannel } from "../../messaging/mockData";
-import type { MessageTemplate, SessionNotifyContext } from "@/lib/models";
+import type { MessageTemplate } from "@/lib/models";
 
 interface Props {
   session: CourseSession;
   totalEnrolled: number;
   belowThresholdCount: number;
-  context?: SessionNotifyContext; // 자동 선택 컨텍스트
+  context?: string; // 자동 선택 컨텍스트
   onClose: () => void;
 }
 
@@ -28,16 +28,14 @@ const CHANNEL_BADGE: Record<MessageChannel, { label: string; className: string }
 export default function NotifyModal({ session, totalEnrolled, belowThresholdCount, context, onClose }: Props) {
   const sessionTemplates = getSessionNotifyTemplates();
 
-  // context가 있으면 매칭 defaultFor 템플릿, 없으면 첫 번째 템플릿
-  const autoTemplate = context
-    ? (sessionTemplates.find((t) => t.defaultFor === context) ?? sessionTemplates[0])
-    : sessionTemplates[0];
+  // context가 있으면 첫 번째 매칭 템플릿, 없으면 첫 번째 템플릿
+  const autoTemplate = sessionTemplates[0];
   const defaultId = autoTemplate?.id ?? CUSTOM_ID;
 
   const [recipient, setRecipient] = useState<RecipientType>("ALL");
   const [selectedId, setSelectedId] = useState<string>(defaultId);
   const [subject, setSubject] = useState(() => {
-    return autoTemplate?.channel === "EMAIL" && autoTemplate.subject ? autoTemplate.subject : "";
+    return autoTemplate?.channel === "EMAIL" && autoTemplate.emailSubject ? autoTemplate.emailSubject : "";
   });
   const [body, setBody] = useState(() => autoTemplate?.content ?? "");
   const [schedule, setSchedule] = useState<ScheduleType>("NOW");
@@ -51,7 +49,7 @@ export default function NotifyModal({ session, totalEnrolled, belowThresholdCoun
       setBody("");
     } else {
       setSelectedId(tpl.id);
-      setSubject(tpl.channel === "EMAIL" && tpl.subject ? tpl.subject : "");
+      setSubject(tpl.channel === "EMAIL" && tpl.emailSubject ? tpl.emailSubject : "");
       setBody(tpl.content);
     }
   }

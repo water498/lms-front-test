@@ -31,7 +31,7 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, enrolledSess
   })();
   const totalActivities = subjects.reduce((sum, s) => sum + s.activities.length, 0);
   const totalMinutes = subjects.reduce(
-    (sum, s) => sum + s.activities.reduce((acc, a) => acc + (a.duration ?? 0), 0),
+    (sum, s) => sum + s.activities.reduce((acc, a) => acc + (a.videoDurationMin ?? 0), 0),
     0
   );
   const isInCart = cart.has(course.id);

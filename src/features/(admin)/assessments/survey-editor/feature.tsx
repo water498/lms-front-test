@@ -17,7 +17,7 @@ function makeId() {
 }
 
 function newSection(): AssessmentSection {
-  return { id: makeId(), label: "", groupId: "", count: 3, shuffle: false };
+  return { id: makeId(), templateId: "", templateKind: "SURVEY", label: "", groupId: "", count: 3, shuffle: false, order: 0 };
 }
 
 function defaultSurvey(): Omit<SurveyTemplate, "id" | "responseCount" | "status" | "createdAt"> {

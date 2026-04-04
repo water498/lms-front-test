@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { messageHistory, type MessageChannel, type MessageStatus } from "../mockData";
+import { messageHistory, getDeliveriesForHistory, type MessageChannel, type MessageStatus, type MessageHistory } from "../mockData";
+import DeliveryDetailModal from "../modals/delivery-detail-modal";
 
 const CHANNEL_CONFIG: Record<MessageChannel, { label: string; className: string }> = {
   SMS:   { label: "SMS",    className: "bg-blue-100 text-blue-700" },
@@ -32,6 +33,7 @@ interface Props {
 export default function HistoryTab({ channel, onSendClick }: Props) {
   const [history, setHistory] = useState(messageHistory);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [selectedHistory, setSelectedHistory] = useState<MessageHistory | null>(null);
 
   const channelHistory = history.filter((m) => m.channel === channel);
   const filtered = channelHistory.filter(
@@ -40,6 +42,10 @@ export default function HistoryTab({ channel, onSendClick }: Props) {
 
   const cancelScheduled = (id: string) => {
     setHistory((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const handleRowClick = (m: MessageHistory) => {
+    setSelectedHistory(m);
   };
 
   return (
@@ -85,7 +91,8 @@ export default function HistoryTab({ channel, onSendClick }: Props) {
             return (
               <tr
                 key={m.id}
-                className={`border-b border-slate-50 last:border-0 transition-colors ${
+                onClick={() => handleRowClick(m)}
+                className={`border-b border-slate-50 last:border-0 transition-colors cursor-pointer ${
                   isScheduled ? "bg-amber-50/40 hover:bg-amber-50/60" : "hover:bg-slate-50/50"
                 }`}
               >
@@ -96,11 +103,10 @@ export default function HistoryTab({ channel, onSendClick }: Props) {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <p className="text-slate-700 font-medium">{m.recipient}</p>
                   <p className="text-xs text-slate-400">{m.recipientCount}명</p>
                 </td>
                 <td className="px-4 py-3 max-w-xs">
-                  {m.subject && <p className="text-xs font-medium text-slate-700 mb-0.5">{m.subject}</p>}
+                  {m.emailSubject && <p className="text-xs font-medium text-slate-700 mb-0.5">{m.emailSubject}</p>}
                   <p className="text-xs text-slate-400 truncate">{m.preview}</p>
                 </td>
                 <td className="px-4 py-3">
@@ -111,7 +117,7 @@ export default function HistoryTab({ channel, onSendClick }: Props) {
                 <td className="px-4 py-3">
                   {isScheduled && (
                     <button
-                      onClick={() => cancelScheduled(m.id)}
+                      onClick={(e) => { e.stopPropagation(); cancelScheduled(m.id); }}
                       className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded transition-colors"
                     >
                       예약 취소
@@ -130,6 +136,14 @@ export default function HistoryTab({ channel, onSendClick }: Props) {
           )}
         </tbody>
       </table>
+
+      {selectedHistory && (
+        <DeliveryDetailModal
+          history={selectedHistory}
+          deliveries={getDeliveriesForHistory(selectedHistory.id)}
+          onClose={() => setSelectedHistory(null)}
+        />
+      )}
     </div>
   );
 }

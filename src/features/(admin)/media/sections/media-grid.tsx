@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban, Eye } from "lucide-react";
-import { mediaAssets, type MediaAsset, type AssetType, type UploadStatus } from "../mockData";
+import { useState, useRef, useEffect } from "react";
+import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban, Eye, ChevronRight, ChevronDown, FolderIcon, FolderOpen, Plus, MoreHorizontal, FolderX } from "lucide-react";
+import { mediaAssets, mediaFolders as initialFolders, type MediaAsset, type AssetType, type UploadStatus, type MediaFolder } from "../mockData";
 import { getAllSessions } from "../../course-detail/mockData";
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(1)} MB`;
+  return `${(bytes / 1073741824).toFixed(1)} GB`;
+}
 
 const TYPE_ICON: Record<AssetType, React.ElementType> = {
   VIDEO: FileVideo,
@@ -31,6 +38,321 @@ const ROW_BG: Partial<Record<UploadStatus, string>> = {
   PROCESSING: "bg-blue-50/40",
   ERROR:      "bg-red-50/40",
 };
+
+type FolderFilter = "ALL" | "UNCATEGORIZED" | string; // string = folder id
+
+/* ─── Folder tree helpers ─── */
+
+function buildTree(folders: MediaFolder[]): Map<string | undefined, MediaFolder[]> {
+  const map = new Map<string | undefined, MediaFolder[]>();
+  for (const f of folders) {
+    const key = f.parentId ?? undefined;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(f);
+  }
+  // sort children by order
+  for (const children of map.values()) {
+    children.sort((a, b) => a.order - b.order);
+  }
+  return map;
+}
+
+function getDescendantIds(folderId: string, tree: Map<string | undefined, MediaFolder[]>): string[] {
+  const ids: string[] = [folderId];
+  const children = tree.get(folderId) ?? [];
+  for (const child of children) {
+    ids.push(...getDescendantIds(child.id, tree));
+  }
+  return ids;
+}
+
+/* ─── Folder context menu ─── */
+
+interface FolderMenuProps {
+  folder: MediaFolder;
+  position: { x: number; y: number };
+  onRename: () => void;
+  onDelete: () => void;
+  onClose: () => void;
+}
+
+function FolderContextMenu({ position, onRename, onDelete, onClose }: FolderMenuProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [onClose]);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed z-50 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[120px]"
+      style={{ top: position.y, left: position.x }}
+    >
+      <button
+        onClick={onRename}
+        className="w-full text-left px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+      >
+        <Pencil size={13} /> 이름 변경
+      </button>
+      <button
+        onClick={onDelete}
+        className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+      >
+        <Trash2 size={13} /> 삭제
+      </button>
+    </div>
+  );
+}
+
+/* ─── Folder tree node ─── */
+
+interface FolderNodeProps {
+  folder: MediaFolder;
+  tree: Map<string | undefined, MediaFolder[]>;
+  depth: number;
+  selectedFolder: FolderFilter;
+  onSelect: (id: string) => void;
+  onMenuOpen: (folder: MediaFolder, pos: { x: number; y: number }) => void;
+  expandedSet: Set<string>;
+  toggleExpand: (id: string) => void;
+}
+
+function FolderNode({ folder, tree, depth, selectedFolder, onSelect, onMenuOpen, expandedSet, toggleExpand }: FolderNodeProps) {
+  const children = tree.get(folder.id) ?? [];
+  const hasChildren = children.length > 0;
+  const isExpanded = expandedSet.has(folder.id);
+  const isSelected = selectedFolder === folder.id;
+
+  return (
+    <div>
+      <div
+        className={`group flex items-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors ${
+          isSelected ? "bg-violet-50 text-violet-700 font-medium" : "text-slate-600 hover:bg-slate-50"
+        }`}
+        style={{ paddingLeft: `${8 + depth * 16}px` }}
+        onClick={() => onSelect(folder.id)}
+      >
+        {hasChildren ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); toggleExpand(folder.id); }}
+            className="p-0.5 text-slate-400 hover:text-slate-600"
+          >
+            {isExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+          </button>
+        ) : (
+          <span className="w-[18px]" />
+        )}
+        {isExpanded ? (
+          <FolderOpen size={15} className={isSelected ? "text-violet-500" : "text-slate-400"} />
+        ) : (
+          <FolderIcon size={15} className={isSelected ? "text-violet-500" : "text-slate-400"} />
+        )}
+        <span className="truncate flex-1">{folder.name}</span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const rect = (e.target as HTMLElement).getBoundingClientRect();
+            onMenuOpen(folder, { x: rect.right, y: rect.bottom });
+          }}
+          className="p-0.5 text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <MoreHorizontal size={13} />
+        </button>
+      </div>
+      {isExpanded && children.map((child) => (
+        <FolderNode
+          key={child.id}
+          folder={child}
+          tree={tree}
+          depth={depth + 1}
+          selectedFolder={selectedFolder}
+          onSelect={onSelect}
+          onMenuOpen={onMenuOpen}
+          expandedSet={expandedSet}
+          toggleExpand={toggleExpand}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Folder sidebar ─── */
+
+interface FolderSidebarProps {
+  folders: MediaFolder[];
+  selectedFolder: FolderFilter;
+  onSelect: (filter: FolderFilter) => void;
+  onCreateFolder: (name: string, parentId?: string) => void;
+  onRenameFolder: (id: string, name: string) => void;
+  onDeleteFolder: (id: string) => void;
+}
+
+function FolderSidebar({ folders, selectedFolder, onSelect, onCreateFolder, onRenameFolder, onDeleteFolder }: FolderSidebarProps) {
+  const tree = buildTree(folders);
+  const rootFolders = tree.get(undefined) ?? [];
+
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(() => {
+    // expand top-level by default
+    return new Set(rootFolders.map((f) => f.id));
+  });
+  const [contextMenu, setContextMenu] = useState<{ folder: MediaFolder; pos: { x: number; y: number } } | null>(null);
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const newFolderRef = useRef<HTMLInputElement>(null);
+  const renameRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (creatingFolder && newFolderRef.current) newFolderRef.current.focus();
+  }, [creatingFolder]);
+
+  useEffect(() => {
+    if (renamingId && renameRef.current) renameRef.current.focus();
+  }, [renamingId]);
+
+  function toggleExpand(id: string) {
+    setExpandedSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function handleCreateSubmit() {
+    const name = newFolderName.trim();
+    if (name) onCreateFolder(name);
+    setCreatingFolder(false);
+    setNewFolderName("");
+  }
+
+  function handleRenameSubmit() {
+    if (renamingId && renameValue.trim()) {
+      onRenameFolder(renamingId, renameValue.trim());
+    }
+    setRenamingId(null);
+    setRenameValue("");
+  }
+
+  function handleMenuOpen(folder: MediaFolder, pos: { x: number; y: number }) {
+    setContextMenu({ folder, pos });
+  }
+
+  return (
+    <div className="w-60 shrink-0 bg-white rounded-xl border border-slate-200 p-3 flex flex-col gap-1 h-fit max-h-[calc(100vh-180px)] overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">폴더</span>
+        <button
+          onClick={() => setCreatingFolder(true)}
+          className="p-1 text-slate-400 hover:text-violet-600 hover:bg-violet-50 rounded transition-colors"
+          title="새 폴더"
+        >
+          <Plus size={14} />
+        </button>
+      </div>
+
+      {/* All media */}
+      <button
+        onClick={() => onSelect("ALL")}
+        className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors text-left ${
+          selectedFolder === "ALL" ? "bg-violet-50 text-violet-700 font-medium" : "text-slate-600 hover:bg-slate-50"
+        }`}
+      >
+        <FolderIcon size={15} className={selectedFolder === "ALL" ? "text-violet-500" : "text-slate-400"} />
+        전체 미디어
+      </button>
+
+      {/* Folder tree */}
+      {rootFolders.map((folder) =>
+        renamingId === folder.id ? (
+          <div key={folder.id} className="flex items-center gap-1 px-2 py-1">
+            <FolderIcon size={15} className="text-slate-400 shrink-0" />
+            <input
+              ref={renameRef}
+              className="flex-1 text-sm border border-violet-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400"
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleRenameSubmit();
+                if (e.key === "Escape") { setRenamingId(null); setRenameValue(""); }
+              }}
+              onBlur={handleRenameSubmit}
+            />
+          </div>
+        ) : (
+          <FolderNode
+            key={folder.id}
+            folder={folder}
+            tree={tree}
+            depth={0}
+            selectedFolder={selectedFolder}
+            onSelect={onSelect}
+            onMenuOpen={handleMenuOpen}
+            expandedSet={expandedSet}
+            toggleExpand={toggleExpand}
+          />
+        )
+      )}
+
+      {/* Inline new folder input */}
+      {creatingFolder && (
+        <div className="flex items-center gap-1 px-2 py-1">
+          <FolderIcon size={15} className="text-slate-400 shrink-0" />
+          <input
+            ref={newFolderRef}
+            className="flex-1 text-sm border border-violet-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400"
+            placeholder="폴더 이름..."
+            value={newFolderName}
+            onChange={(e) => setNewFolderName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleCreateSubmit();
+              if (e.key === "Escape") { setCreatingFolder(false); setNewFolderName(""); }
+            }}
+            onBlur={handleCreateSubmit}
+          />
+        </div>
+      )}
+
+      {/* Divider */}
+      <div className="border-t border-slate-100 my-1" />
+
+      {/* Uncategorized */}
+      <button
+        onClick={() => onSelect("UNCATEGORIZED")}
+        className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors text-left ${
+          selectedFolder === "UNCATEGORIZED" ? "bg-violet-50 text-violet-700 font-medium" : "text-slate-500 hover:bg-slate-50"
+        }`}
+      >
+        <FolderX size={15} className={selectedFolder === "UNCATEGORIZED" ? "text-violet-500" : "text-slate-400"} />
+        미분류
+      </button>
+
+      {/* Context menu */}
+      {contextMenu && (
+        <FolderContextMenu
+          folder={contextMenu.folder}
+          position={contextMenu.pos}
+          onRename={() => {
+            setRenamingId(contextMenu.folder.id);
+            setRenameValue(contextMenu.folder.name);
+            setContextMenu(null);
+          }}
+          onDelete={() => {
+            onDeleteFolder(contextMenu.folder.id);
+            setContextMenu(null);
+          }}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </div>
+  );
+}
 
 type ViewMode = "grid" | "list";
 
@@ -149,6 +471,8 @@ interface Props {
 
 export default function MediaGrid({ onUploadClick }: Props) {
   const [assets, setAssets] = useState<MediaAsset[]>(mediaAssets);
+  const [folders, setFolders] = useState<MediaFolder[]>(initialFolders);
+  const [folderFilter, setFolderFilter] = useState<FolderFilter>("ALL");
   const [typeFilter, setTypeFilter] = useState<AssetType | "ALL">("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -160,13 +484,47 @@ export default function MediaGrid({ onUploadClick }: Props) {
   // Derive unique tags from all assets (sorted)
   const allTags = Array.from(new Set(assets.flatMap((a) => a.tags))).sort();
 
+  // Folder tree for descendant lookup
+  const folderTree = buildTree(folders);
+
   const filtered = assets.filter((a) => {
+    // Folder filter
+    if (folderFilter === "UNCATEGORIZED" && a.folderId) return false;
+    if (folderFilter !== "ALL" && folderFilter !== "UNCATEGORIZED") {
+      const visibleIds = new Set(getDescendantIds(folderFilter, folderTree));
+      if (!a.folderId || !visibleIds.has(a.folderId)) return false;
+    }
     const matchType = typeFilter === "ALL" || a.assetType === typeFilter;
     const q = search.toLowerCase();
     const matchSearch = a.displayName.toLowerCase().includes(q) || a.originalName.toLowerCase().includes(q);
     const matchTag = selectedTags.length === 0 || selectedTags.some((t) => a.tags.includes(t));
     return matchType && matchSearch && matchTag;
   });
+
+  /* ─── Folder CRUD ─── */
+  function handleCreateFolder(name: string) {
+    const newFolder: MediaFolder = {
+      id: `f${Date.now()}`,
+      tenantId: "t1",
+      name,
+      parentId: undefined,
+      order: folders.filter((f) => !f.parentId).length,
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+    setFolders((prev) => [...prev, newFolder]);
+  }
+
+  function handleRenameFolder(id: string, name: string) {
+    setFolders((prev) => prev.map((f) => f.id === id ? { ...f, name } : f));
+  }
+
+  function handleDeleteFolder(id: string) {
+    // Remove folder and all descendants, uncategorize their assets
+    const descendantIds = new Set(getDescendantIds(id, folderTree));
+    setFolders((prev) => prev.filter((f) => !descendantIds.has(f.id)));
+    setAssets((prev) => prev.map((a) => a.folderId && descendantIds.has(a.folderId) ? { ...a, folderId: undefined } : a));
+    if (descendantIds.has(folderFilter)) setFolderFilter("ALL");
+  }
 
   function handleRename(id: string, displayName: string) {
     setAssets((prev) => prev.map((a) => a.id === id ? { ...a, displayName } : a));
@@ -213,7 +571,19 @@ export default function MediaGrid({ onUploadClick }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex gap-4">
+      {/* Folder sidebar */}
+      <FolderSidebar
+        folders={folders}
+        selectedFolder={folderFilter}
+        onSelect={setFolderFilter}
+        onCreateFolder={handleCreateFolder}
+        onRenameFolder={handleRenameFolder}
+        onDeleteFolder={handleDeleteFolder}
+      />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col gap-4 min-w-0">
       {/* Toolbar */}
       <div className="flex items-center gap-2 flex-wrap">
         <input
@@ -338,7 +708,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                         {statusCfg.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 tabular-nums">{a.size}</td>
+                    <td className="px-4 py-3 text-slate-500 tabular-nums">{formatBytes(a.sizeBytes)}</td>
                     <td className="px-4 py-3 text-slate-400">{a.uploadedAt}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -447,7 +817,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
                 <div>
                   <p className="text-sm font-medium text-slate-800 truncate">{a.displayName}</p>
                   <p className="text-xs text-slate-400 font-mono truncate">{a.originalName}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{a.size} · {a.uploadedAt}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{formatBytes(a.sizeBytes)} · {a.uploadedAt}</p>
                   {a.status === "ERROR" && a.errorMessage && (
                     <p className="text-xs text-red-400 mt-0.5">{a.errorMessage}</p>
                   )}
@@ -587,6 +957,7 @@ export default function MediaGrid({ onUploadClick }: Props) {
           </div>
         </div>
       )}
+      </div>{/* end main content */}
     </div>
   );
 }

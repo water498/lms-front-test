@@ -16,32 +16,32 @@ const STATUS_CLASS: Record<OrderStatus, string> = {
 
 const ordersMock: (Order & { items: (OrderItem & { courseTitle: string })[] })[] = [
   {
-    id: "ord1", orderNumber: "OK-20260228-A1B2", userId: "u1",
-    subtotalAmount: 89000, discountAmount: 0, totalAmount: 89000,
+    id: "ord1", tenantId: "t-b2c", orderNumber: "OK-20260228-A1B2", userId: "u1",
+    originalPrice: 89000, discountAmount: 0, finalPrice: 89000,
     status: "PAID", createdAt: "2026-02-28", paidAt: "2026-02-28",
     items: [{ id: "oi1", orderId: "ord1", courseId: "c1", courseTitle: "실무 중심 AI·머신러닝 완성 과정", unitPrice: 89000, discountAmount: 0, finalPrice: 89000 }],
   },
   {
-    id: "ord2", orderNumber: "OK-20260110-C3D4", userId: "u1",
-    subtotalAmount: 69000, discountAmount: 0, totalAmount: 69000,
+    id: "ord2", tenantId: "t-b2c", orderNumber: "OK-20260110-C3D4", userId: "u1",
+    originalPrice: 69000, discountAmount: 0, finalPrice: 69000,
     status: "PAID", createdAt: "2026-01-10", paidAt: "2026-01-10",
     items: [{ id: "oi2", orderId: "ord2", courseId: "c2", courseTitle: "React + TypeScript 실전 프로젝트", unitPrice: 69000, discountAmount: 0, finalPrice: 69000 }],
   },
   {
-    id: "ord3", orderNumber: "OK-20251205-E5F6", userId: "u1",
-    subtotalAmount: 49000, discountAmount: 0, totalAmount: 49000,
+    id: "ord3", tenantId: "t-b2c", orderNumber: "OK-20251205-E5F6", userId: "u1",
+    originalPrice: 49000, discountAmount: 0, finalPrice: 49000,
     status: "PAID", createdAt: "2025-12-05", paidAt: "2025-12-05",
     items: [{ id: "oi3", orderId: "ord3", courseId: "c3", courseTitle: "SQL 마스터: 데이터 분석 실무", unitPrice: 49000, discountAmount: 0, finalPrice: 49000 }],
   },
   {
-    id: "ord4", orderNumber: "OK-20251101-G7H8", userId: "u1",
-    subtotalAmount: 29000, discountAmount: 0, totalAmount: 29000,
+    id: "ord4", tenantId: "t-b2c", orderNumber: "OK-20251101-G7H8", userId: "u1",
+    originalPrice: 29000, discountAmount: 0, finalPrice: 29000,
     status: "PAID", createdAt: "2025-11-01", paidAt: "2025-11-01",
     items: [{ id: "oi4", orderId: "ord4", courseId: "c4", courseTitle: "JavaScript 핵심 개념", unitPrice: 29000, discountAmount: 0, finalPrice: 29000 }],
   },
   {
-    id: "ord5", orderNumber: "OK-20250915-I9J0", userId: "u1",
-    subtotalAmount: 89000, discountAmount: 0, totalAmount: 89000,
+    id: "ord5", tenantId: "t-b2c", orderNumber: "OK-20250915-I9J0", userId: "u1",
+    originalPrice: 89000, discountAmount: 0, finalPrice: 89000,
     status: "REFUNDED", createdAt: "2025-09-15", paidAt: "2025-09-15",
     items: [{ id: "oi5", orderId: "ord5", courseId: "c5", courseTitle: "Docker & Kubernetes 실전", unitPrice: 89000, discountAmount: 0, finalPrice: 89000 }],
   },
@@ -89,7 +89,7 @@ export function OrdersTab() {
                 </span>
               )}
               <span className="text-sm font-bold text-white">
-                합계 ₩{order.totalAmount.toLocaleString()}
+                합계 ₩{order.finalPrice.toLocaleString()}
               </span>
             </div>
           )}

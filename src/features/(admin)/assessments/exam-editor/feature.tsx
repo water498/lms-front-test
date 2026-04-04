@@ -17,7 +17,7 @@ function makeId() {
 }
 
 function newSection(): AssessmentSection {
-  return { id: makeId(), label: "", groupId: "", count: 5, shuffle: true };
+  return { id: makeId(), templateId: "", templateKind: "EXAM", label: "", groupId: "", count: 5, shuffle: true, order: 0 };
 }
 
 function defaultExam(): Omit<ExamTemplate, "id" | "usageCount" | "createdAt"> {

@@ -138,14 +138,14 @@ export const allQuestions: Question[] = [
   {
     id: "bq10", kind: "SURVEY", type: "LIKERT", groupId: "sp1",
     text: "전반적인 강의 만족도는 어떠셨나요?",
-    scale: 5,
+    likertScale: 5,
     tags: ["만족도", "강의평가"],
     createdAt: "2025-02-01",
   },
   {
     id: "bq11", kind: "SURVEY", type: "LIKERT", groupId: "sp1",
     text: "강의 내용이 현장 업무에 실질적으로 도움이 됐나요?",
-    scale: 5,
+    likertScale: 5,
     tags: ["만족도", "현장적용"],
     createdAt: "2025-02-01",
   },
@@ -196,9 +196,9 @@ export const examTemplates: ExamTemplate[] = [
     usageCount: 3,
     createdAt: "2025-01-10",
     rules: [
-      { id: "r1", label: "단일 선택 섹션",  groupId: "ep1", count: 5, shuffle: true  },
-      { id: "r2", label: "O/X 판별 섹션",   groupId: "ep2", count: 3, shuffle: true  },
-      { id: "r3", label: "주관식 서술 섹션", groupId: "ep4", count: 2, shuffle: false },
+      { id: "r1", templateId: "ex1", templateKind: "EXAM", label: "단일 선택 섹션",  groupId: "ep1", count: 5, shuffle: true,  order: 1 },
+      { id: "r2", templateId: "ex1", templateKind: "EXAM", label: "O/X 판별 섹션",   groupId: "ep2", count: 3, shuffle: true,  order: 2 },
+      { id: "r3", templateId: "ex1", templateKind: "EXAM", label: "주관식 서술 섹션", groupId: "ep4", count: 2, shuffle: false, order: 3 },
     ],
   },
   {
@@ -292,7 +292,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     status: "ACTIVE",
     createdAt: "2025-01-20",
     rules: [
-      { id: "sr1", label: "만족도 리커트 문항", groupId: "sp1", count: 2, shuffle: false },
+      { id: "sr1", templateId: "sv1", templateKind: "SURVEY", label: "만족도 리커트 문항", groupId: "sp1", count: 2, shuffle: false, order: 1 },
     ],
   },
   {

@@ -31,7 +31,7 @@ interface FlatActivity {
   id: string;
   title: string;
   type: string;
-  duration?: number;
+  videoDurationMin?: number;
   questionCount?: number;
   subjectTitle: string;
   subjectId: string;
@@ -53,7 +53,7 @@ function flattenActivities(subjects: CourseSubject[]): FlatActivity[] {
         id: activity.id,
         title: activity.title,
         type: activity.type,
-        duration: activity.duration,
+        videoDurationMin: activity.videoDurationMin,
         questionCount: activity.questionCount,
         subjectTitle: subject.title,
         subjectId: subject.id,
@@ -399,7 +399,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
                         </p>
                         <p className="text-xs text-zinc-600 mt-0.5">
                           {activity.type === "VIDEO"
-                            ? `${activity.duration}분`
+                            ? `${activity.videoDurationMin}분`
                             : activity.type === "QUIZ"
                             ? `퀴즈 · ${activity.questionCount}문제`
                             : `과제 · ${activity.questionCount}항목`}

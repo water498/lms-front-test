@@ -81,11 +81,11 @@ function EmailPreview({ subject, content }: { subject: string; content: string }
 
 export default function CreateTemplateModal({ channel, initialTemplate, onClose }: Props) {
   const [name, setName]             = useState(initialTemplate?.name ?? "");
-  const [subject, setSubject]       = useState(initialTemplate?.subject ?? "");
+  const [subject, setSubject]       = useState(initialTemplate?.emailSubject ?? "");
   const [content, setContent]       = useState(initialTemplate?.content ?? "");
   const [kakaoCode, setKakaoCode]   = useState(initialTemplate?.kakaoCode ?? "");
-  const [buttonText, setButtonText] = useState(initialTemplate?.kakaoButtons?.[0]?.text ?? "");
-  const [buttonUrl, setButtonUrl]   = useState(initialTemplate?.kakaoButtons?.[0]?.url ?? "");
+  const [buttonText, setButtonText] = useState("");
+  const [buttonUrl, setButtonUrl]   = useState("");
 
   const insertVariable = (v: string) => setContent((c) => c + `{{${v}}}`);
   const badge = CHANNEL_BADGE[channel];

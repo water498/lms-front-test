@@ -33,7 +33,7 @@ export default function CourseTable({ onCreateClick }: Props) {
 
   const filtered = courses.filter((c) => {
     const matchStatus = filter === "ALL" || c.status === filter;
-    const matchSearch = c.title.includes(search) || c.instructor.includes(search);
+    const matchSearch = c.title.includes(search) || (c.instructor ?? "").includes(search);
     return matchStatus && matchSearch;
   });
 

@@ -5,13 +5,26 @@ import { Navbar } from "../home/components/navbar";
 import { announcements } from "../home/mockData";
 import store from "../home/store";
 
-const FILTERS = ["전체", "공지", "업데이트", "이벤트"] as const;
+const FILTERS = ["전체", "NOTICE", "UPDATE", "EVENT"] as const;
 type Filter = (typeof FILTERS)[number];
 
+const SUBTYPE_LABEL: Record<string, string> = {
+  NOTICE: "공지",
+  EVENT:  "이벤트",
+  UPDATE: "업데이트",
+};
+
+const FILTER_LABEL: Record<string, string> = {
+  전체:   "전체",
+  NOTICE: "공지",
+  EVENT:  "이벤트",
+  UPDATE: "업데이트",
+};
+
 const SUBTYPE_STYLES: Record<string, string> = {
-  공지:     "bg-zinc-700/50 text-zinc-300",
-  이벤트:   "bg-rose-900/40 text-rose-300",
-  업데이트: "bg-sky-900/40 text-sky-300",
+  NOTICE: "bg-zinc-700/50 text-zinc-300",
+  EVENT:  "bg-rose-900/40 text-rose-300",
+  UPDATE: "bg-sky-900/40 text-sky-300",
 };
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -54,7 +67,7 @@ export default function AnnouncementsFeature() {
                   : "bg-zinc-800 text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              {f}
+              {FILTER_LABEL[f] ?? f}
             </button>
           ))}
         </div>
@@ -65,7 +78,7 @@ export default function AnnouncementsFeature() {
             const isNew = ann.createdAt
               ? Date.now() - new Date(ann.createdAt).getTime() < SEVEN_DAYS_MS
               : false;
-            const subtype = ann.subtype ?? "공지";
+            const subtype = ann.subtype ?? "NOTICE";
             const dateStr = ann.sentAt
               ? ann.sentAt.slice(0, 10)
               : ann.createdAt.slice(0, 10);
@@ -85,7 +98,7 @@ export default function AnnouncementsFeature() {
                       SUBTYPE_STYLES[subtype] ?? "bg-zinc-700/50 text-zinc-300"
                     }`}
                   >
-                    {subtype}
+                    {SUBTYPE_LABEL[subtype] ?? subtype}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">

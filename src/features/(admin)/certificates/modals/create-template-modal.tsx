@@ -97,7 +97,7 @@ export default function CreateTemplateModal({ onClose }: Props) {
   }
 
   function handleSave() {
-    addTemplate({ name, active, validityYears, htmlTemplate, backgroundImageUrl: bgUrl });
+    addTemplate({ tenantId: "t1", name, active, validityYears, htmlTemplate, backgroundImageUrl: bgUrl });
     onClose();
   }
 

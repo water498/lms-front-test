@@ -5,6 +5,7 @@ import { ACCESS_LOGS, UserAccessLog } from "./mockData";
 
 const EVENT_TYPE_LABELS: Record<UserAccessLog["type"], string> = {
   LOGIN: "로그인",
+  LOGIN_FAILED: "로그인실패",
   LOGOUT: "로그아웃",
   SESSION_EXPIRED: "세션만료",
   AUTO_LOGIN: "자동로그인",
@@ -13,6 +14,7 @@ const EVENT_TYPE_LABELS: Record<UserAccessLog["type"], string> = {
 
 const EVENT_TYPE_COLORS: Record<UserAccessLog["type"], string> = {
   LOGIN: "bg-emerald-100 text-emerald-700",
+  LOGIN_FAILED: "bg-red-100 text-red-700",
   LOGOUT: "bg-slate-100 text-slate-600",
   SESSION_EXPIRED: "bg-amber-100 text-amber-700",
   AUTO_LOGIN: "bg-blue-100 text-blue-700",
@@ -41,11 +43,11 @@ export default function UserAccessLogsFeature({ userId }: Props = {}) {
       if (userId && log.userId !== userId) return false;
       if (typeFilter !== "ALL" && log.type !== typeFilter) return false;
       if (scopeFilter !== "ALL" && log.scope !== scopeFilter) return false;
-      if (dateFrom && log.date < dateFrom) return false;
-      if (dateTo && log.date > dateTo + " 99:99") return false;
+      if (dateFrom && log.occurredAt < dateFrom) return false;
+      if (dateTo && log.occurredAt > dateTo + " 99:99") return false;
       if (!userId && nameSearch && !log.userName.includes(nameSearch)) return false;
       return true;
-    }).sort((a, b) => b.date.localeCompare(a.date));
+    }).sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
   }, [userId, typeFilter, scopeFilter, dateFrom, dateTo, nameSearch]);
 
   return (
@@ -161,7 +163,7 @@ export default function UserAccessLogsFeature({ userId }: Props = {}) {
               ) : (
                 filtered.map((log) => (
                   <tr key={log.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td className="px-5 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{log.date}</td>
+                    <td className="px-5 py-3 text-slate-600 whitespace-nowrap font-mono text-xs">{log.occurredAt}</td>
                     {!userId && <td className="px-5 py-3 text-slate-800 font-medium whitespace-nowrap">{log.userName}</td>}
                     <td className="px-5 py-3 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${EVENT_TYPE_COLORS[log.type]}`}>

@@ -31,7 +31,7 @@ function newQuestion(kind: QuestionKind, groupId?: string): Question {
             { id: makeId(), text: "", correct: false, order: 2 },
           ]
         : undefined,
-    scale: kind === "SURVEY" ? 5 : undefined,
+    likertScale: kind === "SURVEY" ? 5 : undefined,
     tags: [],
     createdAt: new Date().toISOString().slice(0, 10),
   };
@@ -231,10 +231,10 @@ export default function QuestionBankFeature() {
           };
         } else {
           const t = type as SurveyQuestionType;
-          if (t === "LIKERT") return { ...q, type: t, scale: 5, options: undefined };
-          if (t === "TEXT")   return { ...q, type: t, scale: undefined, options: undefined };
+          if (t === "LIKERT") return { ...q, type: t, likertScale: 5, options: undefined };
+          if (t === "TEXT")   return { ...q, type: t, likertScale: undefined, options: undefined };
           return {
-            ...q, type: t, scale: undefined,
+            ...q, type: t, likertScale: undefined,
             options: q.options?.length
               ? q.options
               : [
@@ -588,11 +588,11 @@ export default function QuestionBankFeature() {
               {/* SURVEY LIKERT */}
               {selected.kind === "SURVEY" && selected.type === "LIKERT" && (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <p className="text-xs font-semibold text-slate-400 mb-4">응답 미리보기 — {selected.scale ?? 5}점 척도</p>
+                  <p className="text-xs font-semibold text-slate-400 mb-4">응답 미리보기 — {selected.likertScale ?? 5}점 척도</p>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-400 w-20 text-right flex-shrink-0">매우 불만족</span>
                     <div className="flex gap-2 flex-1 justify-center">
-                      {Array.from({ length: selected.scale ?? 5 }, (_, i) => (
+                      {Array.from({ length: selected.likertScale ?? 5 }, (_, i) => (
                         <div
                           key={i}
                           className="w-10 h-10 rounded-full border-2 border-slate-200 flex items-center justify-center text-sm font-medium text-slate-400"
@@ -692,8 +692,8 @@ export default function QuestionBankFeature() {
                     <label className="text-xs font-medium text-slate-500 block mb-1.5">척도</label>
                     <select
                       className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                      value={selected.scale ?? 5}
-                      onChange={(e) => updateQ(selected.id, { scale: Number(e.target.value) })}
+                      value={selected.likertScale ?? 5}
+                      onChange={(e) => updateQ(selected.id, { likertScale: Number(e.target.value) })}
                     >
                       <option value={5}>5점 척도</option>
                       <option value={7}>7점 척도</option>

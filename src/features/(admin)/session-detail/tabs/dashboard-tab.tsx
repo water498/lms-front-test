@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Users, TrendingUp, Award, AlertTriangle, ChevronRight, Bell } from "lucide-react";
 import { type CourseSession, type CourseEnrollee, type SessionStatus } from "../../course-detail/mockData";
-import type { SessionNotifyContext } from "@/lib/models";
 import EncourageModal from "../modals/encourage-modal";
 import NotifyModal from "../modals/notify-modal";
 
@@ -24,7 +23,7 @@ export default function DashboardTab({ session, enrollees }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
-  const [notifyContext, setNotifyContext] = useState<SessionNotifyContext | undefined>();
+  const [notifyContext, setNotifyContext] = useState<string | undefined>();
 
   const threshold = session.completionThreshold;
   const total = enrollees.length;
@@ -274,7 +273,7 @@ function LifecycleTimeline({
 }: {
   session: CourseSession;
   enrollees: CourseEnrollee[];
-  onNotify: (ctx: SessionNotifyContext | undefined) => void;
+  onNotify: (ctx: string | undefined) => void;
 }) {
   const currentOrder = STAGE_ORDER[session.status];
   const totalEnrolled = enrollees.length;
@@ -311,7 +310,7 @@ function LifecycleTimeline({
   };
 
   // 현재 단계에 맞는 알림 컨텍스트 자동 계산
-  const notifyCtx: SessionNotifyContext | undefined =
+  const notifyCtx: string | undefined =
     session.status === "OPEN"    ? "SESSION_OPEN" :
     session.status === "ONGOING" ? (endDays !== null && endDays <= 7 ? "SESSION_CLOSE" : "SESSION_ENCOURAGE") :
     undefined;

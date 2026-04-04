@@ -96,7 +96,7 @@ export default function QrModal({ session, onClose }: Props) {
             <span>후</span>
           </div>
           <p className="text-xs text-slate-400">
-            {session.startTime} 기준 ±{beforeMin}/{afterMin}분
+            {session.startsAt} 기준 ±{beforeMin}/{afterMin}분
           </p>
         </div>
 

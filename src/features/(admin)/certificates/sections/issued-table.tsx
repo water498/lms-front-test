@@ -24,7 +24,7 @@ export default function IssuedTable() {
   const [statusFilter, setStatusFilter] = useState<CertStatus | "ALL">("ALL");
   const [modal, setModal] = useState<ModalState>(null);
 
-  const courses = Array.from(new Set(certs.map((c) => c.course)));
+  const courses = Array.from(new Set(certs.map((c) => c.course ?? "")));
 
   const filtered = certs.filter(
     (c) =>
@@ -80,8 +80,8 @@ export default function IssuedTable() {
               return (
                 <tr key={c.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                   <td className="px-5 py-3 font-mono text-xs text-slate-600">{c.certNumber}</td>
-                  <td className="px-4 py-3 font-medium text-slate-800">{c.recipient}</td>
-                  <td className="px-4 py-3 text-slate-600">{c.course}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">{c.recipient ?? ""}</td>
+                  <td className="px-4 py-3 text-slate-600">{c.course ?? ""}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}>
                       {badge.label}
@@ -137,7 +137,7 @@ export default function IssuedTable() {
       {modal?.type === "revoke" && (
         <RevokeModal
           certNumber={modal.cert.certNumber}
-          recipient={modal.cert.recipient}
+          recipient={modal.cert.recipient ?? ""}
           onConfirm={(reason) => {
             revoke(modal.cert.id, reason, "관리자");
             setModal(null);
@@ -149,7 +149,7 @@ export default function IssuedTable() {
       {modal?.type === "reissue" && (
         <ReissueModal
           certNumber={modal.cert.certNumber}
-          recipient={modal.cert.recipient}
+          recipient={modal.cert.recipient ?? ""}
           onConfirm={() => {
             reissue(modal.cert.id);
             setModal(null);

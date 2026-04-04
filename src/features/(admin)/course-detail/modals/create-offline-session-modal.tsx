@@ -14,6 +14,9 @@ export default function CreateOfflineSessionModal({ onClose }: Props) {
   const [startTime, setStartTime] = useState("10:00");
   const [endTime, setEndTime] = useState("18:00");
   const [location, setLocation] = useState("");
+  const [locationAddress, setLocationAddress] = useState("");
+  const [locationLat, setLocationLat] = useState("");
+  const [locationLng, setLocationLng] = useState("");
   const [capacity, setCapacity] = useState("30");
   const [selectedInstructors, setSelectedInstructors] = useState<CourseInstructor[]>(
     [{ name: instructors[0], role: "PRIMARY" }]
@@ -87,15 +90,52 @@ export default function CreateOfflineSessionModal({ onClose }: Props) {
             </div>
           </div>
 
-          {/* 장소 */}
+          {/* 장소명 */}
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">장소</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">장소명</label>
             <input
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
               placeholder="예: 강남교육센터 3F"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             />
+          </div>
+
+          {/* 도로명 주소 */}
+          <div>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">도로명 주소</label>
+            <input
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+              placeholder="예: 서울시 강남구 테헤란로 152"
+              value={locationAddress}
+              onChange={(e) => setLocationAddress(e.target.value)}
+            />
+          </div>
+
+          {/* 위도/경도 */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-slate-600 mb-1 block">위도 (선택)</label>
+              <input
+                type="number"
+                step="any"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                placeholder="37.5065"
+                value={locationLat}
+                onChange={(e) => setLocationLat(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-slate-600 mb-1 block">경도 (선택)</label>
+              <input
+                type="number"
+                step="any"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+                placeholder="127.0536"
+                value={locationLng}
+                onChange={(e) => setLocationLng(e.target.value)}
+              />
+            </div>
           </div>
 
           {/* 강사 */}

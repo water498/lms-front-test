@@ -3,18 +3,18 @@ import type { UserGroup, UserGroupMember } from "@/lib/models";
 
 export const userGroupMembers: UserGroupMember[] = [
   // group-1: 신입 온보딩 (u5, u6, u7)
-  { id: "ugm1",  groupId: "group-1", userId: "u5",  role: "MEMBER",  joinedAt: "2025-01-15", addedBy: "u2" },
-  { id: "ugm2",  groupId: "group-1", userId: "u6",  role: "MEMBER",  joinedAt: "2025-01-15", addedBy: "u2" },
-  { id: "ugm3",  groupId: "group-1", userId: "u7",  role: "MEMBER",  joinedAt: "2025-02-05", addedBy: "u2" },
+  { groupId: "group-1", userId: "u5",  addedAt: "2025-01-15" },
+  { groupId: "group-1", userId: "u6",  addedAt: "2025-01-15" },
+  { groupId: "group-1", userId: "u7",  addedAt: "2025-02-05" },
   // group-2: 리더십 교육 (u2, u3, u8)
-  { id: "ugm4",  groupId: "group-2", userId: "u2",  role: "MANAGER", joinedAt: "2025-02-01", addedBy: "u2" },
-  { id: "ugm5",  groupId: "group-2", userId: "u3",  role: "MEMBER",  joinedAt: "2025-02-01", addedBy: "u2" },
-  { id: "ugm6",  groupId: "group-2", userId: "u8",  role: "MEMBER",  joinedAt: "2025-02-01", addedBy: "u2" },
+  { groupId: "group-2", userId: "u2",  addedAt: "2025-02-01" },
+  { groupId: "group-2", userId: "u3",  addedAt: "2025-02-01" },
+  { groupId: "group-2", userId: "u8",  addedAt: "2025-02-01" },
   // group-3: 안전교육 필수 (u4, u7, u9, u10)
-  { id: "ugm7",  groupId: "group-3", userId: "u4",  role: "MEMBER",  joinedAt: "2025-02-20", addedBy: "u2" },
-  { id: "ugm8",  groupId: "group-3", userId: "u7",  role: "MEMBER",  joinedAt: "2025-02-20", addedBy: "u2" },
-  { id: "ugm9",  groupId: "group-3", userId: "u9",  role: "MEMBER",  joinedAt: "2025-02-20", addedBy: "u2" },
-  { id: "ugm10", groupId: "group-3", userId: "u10", role: "MEMBER",  joinedAt: "2025-02-20", addedBy: "u2" },
+  { groupId: "group-3", userId: "u4",  addedAt: "2025-02-20" },
+  { groupId: "group-3", userId: "u7",  addedAt: "2025-02-20" },
+  { groupId: "group-3", userId: "u9",  addedAt: "2025-02-20" },
+  { groupId: "group-3", userId: "u10", addedAt: "2025-02-20" },
 ];
 
 function memberIdsOf(groupId: string): string[] {
