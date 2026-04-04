@@ -6,24 +6,25 @@ export type EnrollmentSource = "SELF" | "ADMIN_ASSIGNED" | "PAYMENT";
 export interface Enrollment {
   id: string;
   tenantId?: string;
-  learnerId: string;
+  learnerId: string;       // backend: user_id. UI에서 learner 시맨틱 유지
   courseId: string;
   courseSessionId: string;
   status: EnrollmentStatus;
-  progress: number;
+  source?: EnrollmentSource;
+  progress: number;        // 0-100%, cache
   enrolledAt: string;
   lastStudiedAt?: string;
-  orderId?: string; // Order.id
-  expiresAt?: string;
   completedAt?: string;
-  source?: EnrollmentSource;
+  expiresAt?: string;
+  cancelledAt?: string;
+  orderId?: string; // FK → Order. B2C only
 }
 
 export interface WaitApply {
   id: string;
   courseSessionId: string;
   userId: string;
-  userName: string;
+  userName: string; // 스냅샷
   requestedAt: string;
   status: "WAITING" | "APPROVED" | "CANCELLED";
 }

@@ -42,11 +42,11 @@ export interface User {
   email: string;
   /** role 테이블 FK UUID */
   roleId: string;
-  /** UI 편의용 — role.name 값. 조회 시 JOIN 또는 별도 필드로 제공 */
+  /** [UI-only] role.name 값. 조회 시 JOIN 또는 별도 필드로 제공 */
   role: UserRole;
   status: UserStatus;
-  enrolledCourses: number;
-  completedCourses: number;
+  enrolledCourses: number;  // cache
+  completedCourses: number; // cache
   lastLoginAt?: string;
   lastLoginIp?: string;
   lastLoginUa?: string;
@@ -54,7 +54,7 @@ export interface User {
   joinedAt: string;
   createdAt?: string;
   updatedAt?: string;
-  employeeId?: string; // 사번
+  employeeId?: string; // 사번 (B2B)
   orgSiteId?: string;
   orgTeamId?: string;
   orgPositionId?: string;
@@ -62,6 +62,8 @@ export interface User {
   authProvider: AuthProvider;
   socialProvider?: SocialProvider; // auth_provider=SOCIAL일 때
   socialProviderId?: string;
+  idpManagedFields?: string; // SSO: comma-separated (name, email 등)
+  avatarUrl?: string;
   emailVerified: boolean;
   emailVerifiedAt?: string;
   // 비밀번호 재설정
@@ -89,17 +91,19 @@ export interface UserGroup {
   id: string;
   name: string;
   description: string;
-  memberIds?: string[]; // 편의용 캐시. 정규 원천은 UserGroupMember junction.
+  memberIds?: string[]; // [UI-only] 편의용 캐시. 정규 원천은 UserGroupMember junction
   createdAt: string;
 }
 
+export type AccessLogType = "LOGIN" | "LOGIN_FAILED" | "LOGOUT" | "SESSION_EXPIRED" | "AUTO_LOGIN" | "PASSWORD_RESET";
+
 export interface UserAccessLog {
   id: string;
-  userId: string;
-  userName: string;
-  type: "LOGIN" | "LOGOUT" | "SESSION_EXPIRED" | "AUTO_LOGIN" | "PASSWORD_RESET";
+  userId?: string; // FK → User. SET NULL
+  userName: string; // 스냅샷
+  type: AccessLogType;
   scope: "USER" | "ADMIN";
-  date: string; // "YYYY-MM-DD HH:MM"
+  occurredAt: string; // backend: occurred_at
   ip: string;
   userAgent: string;
 }
@@ -124,11 +128,14 @@ export interface UserInvitation {
   id: string;
   tenantId: string;
   email: string;
-  role: UserRole;
-  invitedBy: string; // actor name
+  role: "LEARNER" | "INSTRUCTOR" | "ORG_ADMIN";
+  invitedBy: string; // actor name 스냅샷
+  invitedByUserId?: string; // FK → User. SET NULL
   invitedAt: string;
   status: "PENDING" | "ACCEPTED" | "EXPIRED";
   expiresAt: string;
+  token: string;
+  acceptedAt?: string;
 }
 
 export interface Notification {
@@ -142,36 +149,8 @@ export interface Notification {
   linkUrl?: string;
 }
 
-// 테넌트 admin 감사 로그 (Layer 2 — 관리자 작업 이력)
-export type TenantAuditAction =
-  | "ENROLLMENT_CANCEL"
-  | "ENROLLMENT_CREATE"
-  | "COURSE_CREATE"
-  | "COURSE_UPDATE"
-  | "USER_ROLE_CHANGE"
-  | "ORG_STRUCTURE_UPDATE"
-  | "SETTINGS_UPDATE"
-  | "CERT_ISSUE";
-
-export interface TenantAuditLog {
-  id: string;
-  timestamp: string;
-  actorId: string;
-  actor: string;
-  action: TenantAuditAction;
-  target: string;
-  detail: string;
-}
-
-export interface UserEnrollment {
-  courseTitle: string;
-  session: string;
-  progress: number;
-  status: "ACTIVE" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED";
-  hasCertificate: boolean;
-}
-
 // 학습 이벤트 로그 (Layer 3 — append-only, xAPI verb 기반)
+// backend: progress/models/activity_log.py
 export type ActivityVerb =
   | "ENROLLED"
   | "ACTIVITY_STARTED"
@@ -185,20 +164,20 @@ export type ActivityVerb =
 
 export interface ActivityLog {
   id: string;
-  learnerId: string;
+  learnerId: string; // backend: learner_id
   verb: ActivityVerb;
   objectType: "ACTIVITY" | "EXAM" | "ASSIGNMENT" | "COURSE" | "SESSION";
   objectId: string;
-  objectTitle?: string;
-  result?: {
+  objectTitle?: string; // 스냅샷
+  result?: { // [UI convenience] backend는 flat 필드 (result_score, result_passed 등)
     score?: number;
     passed?: boolean;
     durationSec?: number;
     progress?: number;
   };
   timestamp: string;
-  sessionId?: string;
-  courseId?: string;
+  sessionId?: string; // soft ref
+  courseId?: string;   // soft ref
 }
 
 export type UserStats = {
@@ -208,13 +187,20 @@ export type UserStats = {
   certificates: number;
 };
 
-// ── 그룹 멤버 (junction) ──────────────────────────────────
+// ── 그룹 멤버 (junction — composite PK: userId + groupId) ──
 
 export interface UserGroupMember {
-  id: string;
   groupId: string;       // FK → UserGroup
   userId: string;        // FK → User
-  role: "MEMBER" | "MANAGER";
-  joinedAt: string;
-  addedBy: string;
+  addedAt: string;
+}
+
+// ── UI 전용 타입 ─────────────────────────────────────────
+
+export interface UserEnrollment {
+  courseTitle: string;
+  session: string;
+  progress: number;
+  status: "ACTIVE" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED";
+  hasCertificate: boolean;
 }

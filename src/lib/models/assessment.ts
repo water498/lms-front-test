@@ -23,7 +23,8 @@ export interface Question {
   text: string;
   options?: QuestionOption[];
   answer?: string; // SHORT 모범답안
-  scale?: number; // LIKERT 척도
+  explanation?: string; // 해설
+  likertScale?: number; // LIKERT 척도
   tags: string[];  // 검색 보조용. 출제 기준은 groupId 사용
   createdAt: string;
 }
@@ -37,10 +38,13 @@ export interface QuestionOption {
 
 export interface AssessmentSection {
   id: string;
+  templateId: string; // 소속 템플릿 ID (ExamTemplate 또는 SurveyTemplate)
+  templateKind: "EXAM" | "SURVEY";
   label: string;
   groupId: string; // 출제에 사용할 문항 그룹 ID
   count: number;
   shuffle: boolean;
+  order: number;
 }
 
 export type ExamSubType = "SHORT" | "FINAL";
@@ -52,9 +56,9 @@ export interface ExamTemplate {
   passingScore: number;
   timeLimit: number | null;
   maxAttempts: number | null; // null = 무제한
-  rules: AssessmentSection[];
   usageCount: number;
-  isArchived?: boolean;
+  rules: AssessmentSection[]; // [UI convenience] AssessmentSection JOIN 결과
+  isArchived?: boolean; // [UI-only] backend에 없음
   createdAt: string;
 }
 
@@ -73,9 +77,9 @@ export interface AssignmentTemplate {
   instructions: string;
   submissionType: SubmissionType;
   passingScore?: number | null; // null이면 제출만으로 통과. 설정 시 grade >= passingScore 필요
-  rubric: AssignmentRubricItem[];
   usageCount: number;
-  isArchived?: boolean;
+  rubric: AssignmentRubricItem[]; // [UI convenience] RubricItem JOIN 결과
+  isArchived?: boolean; // [UI-only] backend에 없음
   createdAt: string;
 }
 
@@ -86,16 +90,15 @@ export interface SurveyTemplate {
   title: string;
   anonymous: boolean;
   triggerType: SurveyTriggerType;
-  rules: AssessmentSection[];
   responseCount: number;
   status: "ACTIVE" | "CLOSED";
+  rules: AssessmentSection[]; // [UI convenience] AssessmentSection JOIN 결과
   createdAt: string;
 }
 
 export interface SurveyAnswer {
   id: string;
-  surveyResponseId: string;
+  responseId: string; // FK → SurveyResponse
   questionId: string;
-  value: string;
-  numericValue?: number;     // 집계용 (rating, scale)
+  value: string; // 옵션 ID 또는 텍스트 응답
 }

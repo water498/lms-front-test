@@ -1,21 +1,25 @@
 // Course domain models — split from lib/models.ts
 
-export type CourseType = "online" | "offline" | "blended";
 export type CourseStatus = "PUBLISHED" | "DRAFT" | "ARCHIVED";
 export type CourseMode = "ONLINE" | "OFFLINE" | "BLENDED";
+export type CourseLevel = "BEGINNER" | "ELEMENTARY" | "INTERMEDIATE" | "ADVANCED";
+export type CourseType = "online" | "offline" | "blended"; // [UI-only] mode의 소문자 버전
 
+// [UI-only] backend는 Course에 flat 필드로 통합 (certTemplateId, defaultCompletionThreshold, isCertAutoIssue)
 export interface CertConfig {
   templateId: string;
-  completionRate: number; // 진도율 기준 기본값 (0~100). 차수에서 override 가능
+  completionRate: number;
   autoIssue: boolean;
-  // 시험/과제/설문 필수 여부는 CourseSession 레벨에서 관리 (postExamRequired 등)
 }
 
 export interface CancellationRule {
+  id: string;
+  courseId: string;
   daysBeforeStart: number; // N일 이상 전 취소
   refundPct: number; // 0~100
 }
 
+// [UI-only] backend에서 CancellationPolicy 테이블 삭제됨. CancellationRule은 course 1:N으로 직접 참조
 export interface CancellationPolicy {
   rules: CancellationRule[]; // daysBeforeStart 내림차순 정렬
   noRefundAfterStart: boolean;
@@ -23,50 +27,49 @@ export interface CancellationPolicy {
 
 /**
  * Course — B2C/B2B/admin flat optional 통합.
- * B2C/B2B 필드: categoryLabel, thumbnail, accentColor, rating, reviewCount,
- *               duration, level, price, isNew, isBestseller, type, isRequired,
- *               location, nextSessionDate, capacity, enrolledCount
- * Admin 필드:   status, mode, sessions, enrollees, createdAt,
- *               certConfig, description, cancellationPolicy
  */
 export interface Course {
   id: string;
   tenantId?: string;
   title: string;
-  instructor: string;
-  category: string;
-  tags: string[];
-  // B2C/B2B 필드
-  categoryLabel?: string;
-  thumbnail?: string; // CSS gradient string
-  accentColor?: string;
-  rating?: number;
-  reviewCount?: number;
-  duration?: string;
-  level?: "입문" | "초급" | "중급" | "고급";
-  price?: number;
-  isNew?: boolean;
-  isBestseller?: boolean;
-  type?: CourseType;
-  isRequired?: boolean; // B2B: 기업이 지정한 필수 수강 여부
-  location?: string; // 오프라인 전용
-  nextSessionDate?: string; // 오프라인 전용
-  capacity?: number; // 오프라인 전용
-  enrolledCount?: number; // 오프라인 전용
-  // Admin 필드
-  defaultMinEnrollment?: number | null; // 차수 생성 시 기본값 (null = 미설정)
+  instructorId?: string;   // FK → user.id. null = 강사 없는 자기주도형 과정
+  categoryId: string;      // FK → CourseCategory
+  tags: string[];          // [UI convenience] backend는 String(500) comma-separated
   status?: CourseStatus;
   mode?: CourseMode;
-  sessions?: number; // 세션 수
-  enrollees?: number; // 수강자 수
+  price?: number;          // KRW, B2C only
+  description?: string;
+  thumbnail?: string;
+  level?: CourseLevel;
+  duration?: string;       // 예: "20시간"
+  defaultMinLearners?: number | null; // 차수 생성 시 기본값 (null = 미설정)
+  isQnaEnabled?: boolean;
+  // 수료증 설정 (backend flat 필드)
+  certTemplateId?: string;          // FK → CertificateTemplate
+  defaultCompletionThreshold?: number; // 0-100%
+  isCertAutoIssue?: boolean;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
-  certConfig?: CertConfig | null;
-  description?: string;
-  cancellationPolicy?: CancellationPolicy;
-  instructorId?: string;   // FK → user.id. undefined/null = 강사 없는 자기주도형 과정
-  qnaEnabled?: boolean;    // Q&A 기능 활성화 여부. 강사 없는 과정은 false 권장
+  // ── [UI-only] 필드 ──
+  instructor?: string;      // [UI-only] JOIN 결과 강사명
+  category?: string;        // [UI-only] JOIN 결과 카테고리명
+  categoryLabel?: string;   // [UI-only]
+  accentColor?: string;     // [UI-only]
+  rating?: number;          // [UI-only] CourseReview 집계
+  reviewCount?: number;     // [UI-only] CourseReview 집계
+  isNew?: boolean;          // [UI-only]
+  isBestseller?: boolean;   // [UI-only]
+  type?: "online" | "offline" | "blended"; // [UI-only] mode의 소문자 버전
+  isRequired?: boolean;     // [UI-only] B2B: 기업이 지정한 필수 수강 여부
+  location?: string;        // [UI-only] 오프라인 전용
+  nextSessionDate?: string; // [UI-only] 오프라인 전용
+  capacity?: number;        // [UI-only] 오프라인 전용
+  enrolledCount?: number;   // [UI-only] 오프라인 전용
+  sessions?: number;        // [UI-only] 세션 수
+  enrollees?: number;       // [UI-only] 수강자 수
+  certConfig?: CertConfig | null; // [UI-only] certTemplateId 등을 묶은 편의 객체
+  cancellationPolicy?: CancellationPolicy; // [UI-only]
 }
 
 export type EnrolledCourse = Course & {
@@ -80,8 +83,8 @@ export type Category = { id: string; label: string };
 
 export interface CoursePrerequisite {
   courseId: string;
-  prerequisiteCourseId: string;
-  requiredCompletion: boolean; // true = 수료 필수, false = 수강 이력만
+  prerequisiteCourseId: string; // backend: prerequisite_id
+  requiredCompletion: boolean; // backend: is_completion_required
 }
 
 export interface LearningPath {
@@ -105,22 +108,29 @@ export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "SURVEY";
 
 export interface CourseActivity {
   id: string;
+  subjectId: string;       // FK → CourseSubject
   title: string;
   type: ActivityType;
-  duration?: number; // 분 (VIDEO일 때)
-  questionCount?: number; // QUIZ/ASSIGNMENT
-  mediaAssetId?: string; // 콘텐츠 라이브러리 ma* ID (VIDEO/SCORM)
-  examTemplateId?: string; // QUIZ
+  order: number;
+  videoDurationMin?: number; // VIDEO일 때 (분)
+  isDeleted: boolean;        // soft delete
+  questionCount?: number;    // QUIZ/ASSIGNMENT
+  mediaAssetId?: string;     // VIDEO/SCORM
+  examTemplateId?: string;   // QUIZ
   assignTemplateId?: string; // ASSIGNMENT
   surveyTemplateId?: string; // SURVEY
-  passRequired?: boolean; // [QUIZ] true이면 합격해야 ActivityCompletion 생성. 기본 false (제출=완료)
+  passRequired?: boolean;    // QUIZ: true이면 합격해야 완료 처리
 }
+
+export type SubjectPhase = "PRE" | "LEARNING" | "POST";
 
 export interface CourseSubject {
   id: string;
+  courseId: string;
   title: string;
+  phase: SubjectPhase;
   order: number;
-  activities: CourseActivity[];
+  activities: CourseActivity[]; // [UI convenience] JOIN 결과
 }
 
 export type SessionType = "SELF_PACED" | "COHORT";
@@ -137,38 +147,37 @@ export interface CourseSession {
   name: string;
   type: SessionType;
   cohortNumber?: number;
-  startDate?: string;
-  endDate?: string;
-  enrollmentStartDate?: string; // 수강신청 시작일. 없으면 OPEN 즉시 허용
-  enrollmentEndDate?: string;   // 수강신청 마감일. 없으면 startDate 전까지 허용
-  capacity: number; // 0 = 무제한
-  enrolled: number;
+  startDate?: string;        // backend: starts_at
+  endDate?: string;          // backend: ends_at
+  enrollmentStartDate?: string;
+  enrollmentEndDate?: string;
+  capacity: number;          // backend: max_learners. 0 = 무제한
+  enrolled: number;          // backend: enrolled_count (cache)
   status: SessionStatus;
   visible: boolean;
-  forSale: boolean;
-  instructors: CourseInstructor[];
+  forSale: boolean;          // backend: is_for_sale. B2C only
   location?: string;
   completionThreshold: number; // 수료 인정 최소 진도율 (%)
-  offlineAttendanceThreshold?: number | null; // 오프라인 출석 기준 (%). null = 미적용. OFFLINE/BLENDED 전용
-  minEnrollment?: number | null; // 최소 수강 인원 (null = 이번 차수는 체크 없음)
-  targetAudience?: {
+  offlineAttendanceThreshold?: number | null; // OFFLINE/BLENDED 전용
+  minEnrollment?: number | null; // backend: min_learners
+  targetAudience?: {         // [UI convenience] backend는 target_department_ids/target_job_grade_ids/target_site_ids JSON
     departments?: string[];
     jobGrades?: string[];
     sites?: string[];
   };
-  // 사전 평가 (수강 전, 진단 목적 — 수료 조건 아님)
+  createdAt?: string;
+  updatedAt?: string;
+  // ── [UI-only] 필드 — 실제로는 CourseSubject.phase + CourseActivity 구조로 관리 ──
+  instructors: CourseInstructor[]; // [UI-only] CourseSessionInstructor JOIN
   preExamTemplateId?: string;
   preAssignmentTemplateId?: string;
   preSurveyTemplateId?: string;
-  // 사후 평가 (수료 관문 — *Required=true이면 해당 평가 통과 없이 수료 불가)
   postExamTemplateId?: string;
   postExamRequired?: boolean;
   postAssignmentTemplateId?: string;
   postAssignmentRequired?: boolean;
   postSurveyTemplateId?: string;
   postSurveyRequired?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface CourseEnrollee {
@@ -182,19 +191,28 @@ export interface CourseEnrollee {
 }
 
 export interface CourseSessionInstructor {
-  id: string;
-  courseSessionId: string;
-  userId: string;        // FK → User (강사 계정)
+  sessionId: string;       // composite PK
+  instructorId: string;    // composite PK, FK → User
   role: "PRIMARY" | "ASSISTANT";
-  order: number;         // 차수 내 표시 순서
+  order: number;
   addedAt: string;
 }
 
 export interface CourseCategory {
   id: string;
-  tenantId: string | null;   // null = 전체 공통
+  tenantId: string;
   label: string;
-  slug: string;
-  parentId: string | null;   // 계층 구조
+  parentId?: string; // null = 최상위. 대/중/소 계층 구조 (3단계)
   order: number;
+}
+
+export interface CourseReview {
+  id: string;
+  courseId: string;
+  userId: string;
+  userName: string; // 스냅샷
+  rating: number;   // 1~5
+  body: string;
+  createdAt: string;
+  visible: boolean;
 }

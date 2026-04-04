@@ -7,25 +7,21 @@ export type CreditServiceType = "MESSAGING" | "AI";
 export interface CreditServiceRate {
   id: string;
   serviceType: CreditServiceType;
-  subType: string;        // MESSAGING: "SMS"|"EMAIL"|"KAKAO" / AI: 모델 ID (e.g. "claude-sonnet-4-6")
-  direction?: "INPUT" | "OUTPUT"; // AI 토큰 방향 (MESSAGING은 undefined)
-  creditsPerUnit: number; // 크레딧 / unitSize
-  unitSize: number;       // 1 (메시지 1건) | 1000 (1K 토큰)
-  unitLabel: string;      // "메시지" | "1K 토큰"
-  effectiveFrom: string;  // ISO date — 요율 이력 관리
+  subType: string;               // MESSAGING: "SMS"|"EMAIL"|"KAKAO" / AI: 모델 ID
+  aiTokenDirection?: "INPUT" | "OUTPUT"; // AI 토큰 방향 (MESSAGING은 undefined)
+  creditsPerUnit: number;
+  unitSize: number;              // 1 (메시지 1건) | 1000 (1K 토큰)
+  unitLabel: string;             // "메시지" | "1K 토큰"
+  effectiveFrom: string;        // ISO date
 }
 
 export interface CreditTransaction {
   id: string;
+  tenantId: string;
   type: CreditTransactionType;
-  serviceType?: CreditServiceType; // USAGE일 때만 의미 있음
+  serviceType?: CreditServiceType; // USAGE일 때만
   channel?: MessageChannel;        // serviceType === "MESSAGING"일 때
-  aiUsage?: {                      // serviceType === "AI"일 때
-    model: string;
-    inputTokens: number;
-    outputTokens: number;
-  };
-  amount: number;      // 양수=충전/지급, 음수=사용 (크레딧 단위)
+  amount: number;      // 양수=충전/지급, 음수=사용
   description: string;
   createdAt: string;
 }
@@ -56,32 +52,40 @@ export interface AutomationTriggerDef {
 
 export interface MessageHistory {
   id: string;
-  sentAt: string;
-  recipient: string;
-  recipientCount: number;
-  channel: MessageChannel;
-  subject?: string;
-  preview: string;
-  status: MessageStatus;
+  tenantId: string;
   templateId?: string;
+  sentAt: string;
+  channel: MessageChannel;
+  emailSubject?: string;     // EMAIL only
+  preview: string;
+  recipientCount: number;
+  status: MessageStatus;
 }
 
-export type SessionNotifyContext = "SESSION_OPEN" | "SESSION_CLOSE" | "SESSION_ENCOURAGE";
+export interface MessageDelivery {
+  id: string;
+  historyId: string;           // FK → MessageHistory
+  recipientUserId?: string;    // FK → User. SET NULL
+  recipientContact: string;   // email/phone 스냅샷
+  status: "PENDING" | "DELIVERED" | "FAILED" | "BOUNCED";
+  sentAt: string;
+  deliveredAt?: string;
+  errorMessage?: string;
+}
 
 export interface MessageTemplate {
   id: string;
+  tenantId: string;
   name: string;
   channel: MessageChannel;
-  subject?: string; // EMAIL
-  content: string;
-  variables: string[];
-  charCount?: number; // SMS
-  kakaoCode?: string;
-  kakaoApproval?: KakaoApprovalStatus;
-  kakaoButtons?: { text: string; url: string }[];
-  tags?: string[];
-  isSystemDefault?: boolean;           // 시스템 기본 템플릿 (삭제/채널변경 불가)
-  defaultFor?: SessionNotifyContext;   // 라이프사이클 단계별 자동 선택 컨텍스트
+  emailSubject?: string;     // EMAIL only
+  content: string;           // {{variable}} 치환
+  variables?: string;        // comma-separated
+  smsCharCount?: number;     // SMS only
+  kakaoCode?: string;        // KAKAO only
+  kakaoApproval?: KakaoApprovalStatus; // KAKAO only
+  tags?: string;             // comma-separated
+  isSystemDefault?: boolean; // true이면 삭제 불가
   createdAt: string;
 }
 
@@ -93,22 +97,26 @@ export interface VariableDef {
 }
 
 export interface MessageConfig {
-  sms: { senderNumber: string; apiKey: string; connected: boolean };
-  email: {
-    senderEmail: string;
-    smtpHost: string;
-    smtpPort: string;
-    connected: boolean;
-  };
-  kakao: { channelId: string; channelKey: string; connected: boolean };
+  tenantId: string;
+  smsSenderNumber?: string;
+  smsApiKey?: string;
+  smsConnected: boolean;
+  emailSender?: string;
+  emailSmtpHost?: string;
+  emailSmtpPort?: number;
+  emailConnected: boolean;
+  kakaoChannelId?: string;
+  kakaoChannelKey?: string;
+  kakaoConnected: boolean;
 }
 
 export interface MessageEventRule {
   id: string;
   trigger: AutomationTrigger;
-  triggerLabel: string;
-  triggerDesc: string;
   channel: MessageChannel;
-  templateId: string;
+  templateId?: string; // FK → MessageTemplate. SET NULL
   active: boolean;
+  // [UI-only]
+  triggerLabel?: string;
+  triggerDesc?: string;
 }
