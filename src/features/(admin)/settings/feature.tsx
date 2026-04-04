@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTenantContextStore } from "../shared/tenant-context-store";
 import GeneralTab from "./sections/general-tab";
 import OrgStructureTab from "./sections/org-structure-tab";
 import AuditLogTab from "./sections/audit-log-tab";
@@ -17,9 +16,6 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 export default function SettingsFeature() {
-  const { tenant } = useTenantContextStore();
-  const { features } = tenant;
-
   const visibleTabs = TABS;
 
   const [activeTab, setActiveTab] = useState<TabId>("general");
