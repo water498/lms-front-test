@@ -2,8 +2,9 @@
  * 빌드 타임에 모든 feature-description.md 파일을 하나의 JSON 맵으로 생성.
  * Vercel 서버리스 환경에서 fs 없이 md 내용을 제공하기 위함.
  *
+ * 탐색 대상: src/features/(admin|instructor|platform-admin|student)/
  * 출력: src/generated/feature-descriptions.json
- * 형태: { "/experiments/admin": "# 기업 관리자 대시보드\n...", ... }
+ * 형태: { "/experiments/admin/courses": "# 과정 관리\n...", ... }
  */
 
 import fs from "fs";
@@ -12,26 +13,45 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const APP_DIR = path.join(ROOT, "src", "app");
+const FEATURES_DIR = path.join(ROOT, "src", "features");
 const OUT_DIR = path.join(ROOT, "src", "generated");
 const OUT_FILE = path.join(OUT_DIR, "feature-descriptions.json");
 
+// 역할 그룹 → URL prefix 매핑
+const ROLE_MAP = {
+  "(admin)": "/experiments/admin",
+  "(instructor)": "/experiments/instructor",
+  "(platform-admin)": "/experiments/platform-admin",
+  "(student)": "/experiments/student",
+};
+
 /**
- * 파일시스템 경로를 URL pathname으로 변환.
- * - route group (xxx) 제거
- * - dynamic segment [param] 유지
+ * features 경로를 URL pathname으로 변환.
+ * 예: src/features/(admin)/courses/feature-description.md → /experiments/admin/courses
+ * 예: src/features/(student)/home/feature-description.md → /experiments/student
  */
 function toUrlPath(fsPath) {
-  // APP_DIR 기준 상대 경로
-  let rel = path.relative(APP_DIR, path.dirname(fsPath));
-  if (rel === ".") return "/";
+  const rel = path.relative(FEATURES_DIR, path.dirname(fsPath));
+  const segments = rel.split(path.sep);
 
-  const segments = rel.split(path.sep).filter((seg) => {
-    // route group 제거: (app), (fullscreen) 등
-    return !(seg.startsWith("(") && seg.endsWith(")"));
-  });
+  // 첫 번째 세그먼트는 역할 그룹: (admin), (student) 등
+  const roleGroup = segments[0];
+  const prefix = ROLE_MAP[roleGroup];
+  if (!prefix) return null; // 대상 역할이 아니면 스킵
 
-  return "/" + segments.join("/");
+  // 나머지 세그먼트 = feature 경로
+  const featureSegments = segments.slice(1);
+
+  // "home" 은 역할의 루트 페이지 → prefix만 반환
+  if (featureSegments.length === 1 && featureSegments[0] === "home") {
+    return prefix;
+  }
+  // "dashboard" (instructor) 도 루트 페이지
+  if (featureSegments.length === 1 && featureSegments[0] === "dashboard") {
+    return prefix;
+  }
+
+  return prefix + "/" + featureSegments.join("/");
 }
 
 function findAllMdFiles(dir) {
@@ -50,16 +70,25 @@ function findAllMdFiles(dir) {
   return results;
 }
 
-// 실행
-const mdFiles = findAllMdFiles(APP_DIR);
+// 실행 — 4개 역할 디렉토리만 탐색
+const targetDirs = Object.keys(ROLE_MAP);
 const map = {};
 
-for (const filePath of mdFiles) {
-  const content = fs.readFileSync(filePath, "utf-8").trim();
-  if (!content) continue; // 빈 파일 스킵
+for (const roleDir of targetDirs) {
+  const fullDir = path.join(FEATURES_DIR, roleDir);
+  if (!fs.existsSync(fullDir)) continue;
 
-  const urlPath = toUrlPath(filePath);
-  map[urlPath] = content;
+  const mdFiles = findAllMdFiles(fullDir);
+
+  for (const filePath of mdFiles) {
+    const content = fs.readFileSync(filePath, "utf-8").trim();
+    if (!content) continue;
+
+    const urlPath = toUrlPath(filePath);
+    if (urlPath) {
+      map[urlPath] = content;
+    }
+  }
 }
 
 // 출력 디렉토리 생성

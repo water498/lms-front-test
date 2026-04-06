@@ -3,9 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 /**
- * 빌드 타임에 생성된 JSON에서 feature description을 조회.
- * dev 환경에서는 fs 폴백으로 항상 최신 md를 읽음.
+ * feature-description.md 조회 API.
+ *
+ * URL pathname → src/features/ 하위 feature-description.md 매핑.
+ * 예: /experiments/admin/courses → src/features/(admin)/courses/feature-description.md
+ *
+ * dev: fs로 직접 읽기 (실시간 반영)
+ * prod: 빌드 타임 생성된 JSON에서 조회
  */
+
+// 역할 URL prefix → features 디렉토리명 매핑
+const ROLE_MAP: Record<string, string> = {
+  admin: "(admin)",
+  instructor: "(instructor)",
+  "platform-admin": "(platform-admin)",
+  student: "(student)",
+};
+
+// home/dashboard는 역할 루트 페이지
+const ROOT_FEATURES = new Set(["home", "dashboard"]);
 
 let descriptionsMap: Record<string, string> | null = null;
 
@@ -21,18 +37,13 @@ async function getDescriptionsMap(): Promise<Record<string, string>> {
   }
 }
 
-/**
- * URL pathname에서 dynamic segment의 실제 값을 [param] 형태로 치환하여 매칭.
- * 예: /experiments/student/sessions/ss-3 → /experiments/student/sessions/[sessionId]
- */
 function findContent(
   map: Record<string, string>,
   urlPath: string
 ): string | undefined {
-  // 1) 정확한 매치
   if (map[urlPath] !== undefined) return map[urlPath];
 
-  // 2) dynamic segment 폴백: 뒤에서부터 세그먼트를 [*]로 치환하며 탐색
+  // dynamic segment 폴백
   const segments = urlPath.split("/").filter(Boolean);
   const keys = Object.keys(map);
 
@@ -52,7 +63,7 @@ function findContent(
 export async function GET(request: NextRequest) {
   const urlPath = request.nextUrl.searchParams.get("path") || "/";
 
-  // dev 환경: fs로 직접 읽기 (md 수정 즉시 반영)
+  // dev 환경: fs로 직접 읽기
   if (process.env.NODE_ENV === "development") {
     try {
       const fs = await import("fs");
@@ -64,97 +75,100 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // prod 환경: 빌드 타임 생성된 JSON에서 조회
   const map = await getDescriptionsMap();
   const content = findContent(map, urlPath) || "";
   return NextResponse.json({ content });
 }
 
-/** dev 전용: 파일시스템에서 직접 읽기 */
+/**
+ * dev 전용: URL pathname → features 디렉토리에서 직접 읽기.
+ *
+ * URL 구조: /experiments/{role}/{featurePath...}
+ * 매핑: src/features/({role})/{featurePath}/feature-description.md
+ *
+ * 역할 루트 (e.g. /experiments/admin) → home/feature-description.md
+ */
 function readFromFs(
   fs: typeof import("fs"),
   pathMod: typeof import("path"),
   urlPath: string
 ): string {
-  const appDir = pathMod.join(process.cwd(), "src", "app");
+  const featuresDir = pathMod.join(process.cwd(), "src", "features");
   const segments = urlPath.split("/").filter(Boolean);
 
-  function walk(dir: string, idx: number): string | null {
-    const mdPath = pathMod.join(dir, "feature-description.md");
+  // URL: /experiments/{role}/{...featurePath}
+  // segments[0] = "experiments", segments[1] = role, segments[2..] = feature path
+  if (segments.length < 2 || segments[0] !== "experiments") return "";
 
-    if (idx >= segments.length) {
-      if (fs.existsSync(mdPath)) return mdPath;
-      return walkRouteGroups(dir);
-    }
+  const role = segments[1];
+  const roleDir = ROLE_MAP[role];
+  if (!roleDir) return "";
 
-    const segment = segments[idx];
+  const featureSegments = segments.slice(2);
+  const baseDir = pathMod.join(featuresDir, roleDir);
 
-    const exactDir = pathMod.join(dir, segment);
-    if (fs.existsSync(exactDir) && fs.statSync(exactDir).isDirectory()) {
-      const result = walk(exactDir, idx + 1);
-      if (result) return result;
-    }
-
-    try {
-      const entries = fs.readdirSync(dir);
-      for (const entry of entries) {
-        if (entry.startsWith("(") && entry.endsWith(")")) {
-          const groupDir = pathMod.join(dir, entry);
-          if (fs.statSync(groupDir).isDirectory()) {
-            const result = walk(groupDir, idx);
-            if (result) return result;
-          }
-        }
+  // 역할 루트 페이지 → home 또는 dashboard
+  if (featureSegments.length === 0) {
+    for (const rootFeature of ROOT_FEATURES) {
+      const mdPath = pathMod.join(
+        baseDir,
+        rootFeature,
+        "feature-description.md"
+      );
+      if (fs.existsSync(mdPath)) {
+        return fs.readFileSync(mdPath, "utf-8");
       }
-    } catch {
-      /* ignore */
     }
-
-    try {
-      const entries = fs.readdirSync(dir);
-      for (const entry of entries) {
-        if (entry.startsWith("[") && entry.endsWith("]")) {
-          const dynDir = pathMod.join(dir, entry);
-          if (fs.statSync(dynDir).isDirectory()) {
-            const result = walk(dynDir, idx + 1);
-            if (result) return result;
-          }
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-
-    return null;
+    return "";
   }
 
-  function walkRouteGroups(dir: string): string | null {
-    const mdPath = pathMod.join(dir, "feature-description.md");
-    if (fs.existsSync(mdPath)) return mdPath;
-
-    try {
-      const entries = fs.readdirSync(dir);
-      for (const entry of entries) {
-        if (entry.startsWith("(") && entry.endsWith(")")) {
-          const groupDir = pathMod.join(dir, entry);
-          if (fs.statSync(groupDir).isDirectory()) {
-            const result = walkRouteGroups(groupDir);
-            if (result) return result;
-          }
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-    return null;
-  }
-
-  const filePath = walk(appDir, 0);
-  if (!filePath) return "";
+  // feature path에서 feature-description.md 탐색
+  const mdPath = resolveFeatureMd(fs, pathMod, baseDir, featureSegments);
+  if (!mdPath) return "";
 
   try {
-    return fs.readFileSync(filePath, "utf-8");
+    return fs.readFileSync(mdPath, "utf-8");
   } catch {
     return "";
   }
+}
+
+/** feature 세그먼트를 따라 feature-description.md 탐색 */
+function resolveFeatureMd(
+  fs: typeof import("fs"),
+  pathMod: typeof import("path"),
+  dir: string,
+  segments: string[]
+): string | null {
+  if (segments.length === 0) {
+    const mdPath = pathMod.join(dir, "feature-description.md");
+    return fs.existsSync(mdPath) ? mdPath : null;
+  }
+
+  const [current, ...rest] = segments;
+
+  // 정확한 매치
+  const exactDir = pathMod.join(dir, current);
+  if (fs.existsSync(exactDir) && fs.statSync(exactDir).isDirectory()) {
+    const result = resolveFeatureMd(fs, pathMod, exactDir, rest);
+    if (result) return result;
+  }
+
+  // dynamic segment 매치 (feature 디렉토리에는 없을 수 있지만 안전장치)
+  try {
+    const entries = fs.readdirSync(dir);
+    for (const entry of entries) {
+      if (entry.startsWith("[") && entry.endsWith("]")) {
+        const dynDir = pathMod.join(dir, entry);
+        if (fs.statSync(dynDir).isDirectory()) {
+          const result = resolveFeatureMd(fs, pathMod, dynDir, rest);
+          if (result) return result;
+        }
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return null;
 }
