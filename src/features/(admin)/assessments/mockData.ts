@@ -17,18 +17,14 @@ export type {
 import type { QuestionGroup, Question, ExamTemplate, AssignmentTemplate, SurveyTemplate } from "@/lib/models";
 
 // ── Mock: 문항 그룹 ──────────────────────────
-// EXAM 그룹 — 타입별로 분리하여 랜덤 출제 시 타입 일관성 보장
+// 주제별 그룹. 유형 혼재 허용. 출제 시 유형 필터는 AssessmentSection.typeFilter에서 처리
 export const questionGroups: QuestionGroup[] = [
   // EXAM
-  { id: "ep1", title: "안전 기초 — 단일 선택",   kind: "EXAM",   type: "SINGLE",     isArchived: false, questionCount: 3, createdAt: "2025-01-05" },
-  { id: "ep2", title: "안전 기초 — O/X 판별",    kind: "EXAM",   type: "TRUE_FALSE",  isArchived: false, questionCount: 3, createdAt: "2025-01-05" },
-  { id: "ep3", title: "안전 기초 — 복수 선택",   kind: "EXAM",   type: "MULTIPLE",    isArchived: false, questionCount: 1, createdAt: "2025-01-08" },
-  { id: "ep4", title: "안전 기초 — 주관식 서술", kind: "EXAM",   type: "SHORT",       isArchived: false, questionCount: 2, createdAt: "2025-01-07" },
+  { id: "ep1", title: "산업안전 기초",   kind: "EXAM",   isArchived: false, questionCount: 7, createdAt: "2025-01-05" },
+  { id: "ep2", title: "작업환경 관리",   kind: "EXAM",   isArchived: false, questionCount: 2, createdAt: "2025-01-08" },
   // SURVEY
-  { id: "sp1", title: "만족도 — 리커트 척도",    kind: "SURVEY", type: "LIKERT",      isArchived: false, questionCount: 2, createdAt: "2025-02-01" },
-  { id: "sp2", title: "만족도 — 단일 선택",      kind: "SURVEY", type: "SINGLE",      isArchived: false, questionCount: 1, createdAt: "2025-02-03" },
-  { id: "sp3", title: "만족도 — 복수 선택",      kind: "SURVEY", type: "MULTIPLE",    isArchived: false, questionCount: 1, createdAt: "2025-02-04" },
-  { id: "sp4", title: "만족도 — 자유 서술",      kind: "SURVEY", type: "TEXT",        isArchived: false, questionCount: 1, createdAt: "2025-02-02" },
+  { id: "sp1", title: "교육 만족도",     kind: "SURVEY", isArchived: false, questionCount: 4, createdAt: "2025-02-01" },
+  { id: "sp2", title: "강사 평가",       kind: "SURVEY", isArchived: false, questionCount: 1, createdAt: "2025-02-03" },
 ];
 
 // ── Mock: 문항 ──────────────────────────
@@ -48,7 +44,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep2 (TRUE_FALSE)
   {
-    id: "bq2", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep2",
+    id: "bq2", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep1",
     text: "작업 전 TBM(Tool Box Meeting)은 법적 의무 사항이다.",
     options: [
       { id: "tf_t", text: "True", correct: false, order: 1 },
@@ -59,7 +55,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep4 (SHORT)
   {
-    id: "bq3", kind: "EXAM", type: "SHORT", groupId: "ep4",
+    id: "bq3", kind: "EXAM", type: "SHORT", groupId: "ep1",
     text: "개인보호장구를 착용하기 전 반드시 확인해야 할 사항 2가지를 서술하시오.",
     answer: "파손·결함 여부 확인, 작업 유형에 맞는 보호구 선정",
     tags: ["안전수칙", "보호구", "착용법"],
@@ -67,7 +63,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep3 (MULTIPLE)
   {
-    id: "bq4", kind: "EXAM", type: "MULTIPLE", groupId: "ep3",
+    id: "bq4", kind: "EXAM", type: "MULTIPLE", groupId: "ep1",
     text: "추락 재해 예방을 위한 조치로 올바른 것을 모두 고르시오.",
     options: [
       { id: "o1", text: "안전난간 설치", correct: true, order: 1 },
@@ -93,7 +89,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep2 (TRUE_FALSE)
   {
-    id: "bq6", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep2",
+    id: "bq6", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep1",
     text: "위험성 평가는 사업주의 의무이며, 근로자 참여 없이 진행할 수 있다.",
     options: [
       { id: "tf_t", text: "True", correct: false, order: 1 },
@@ -104,7 +100,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep4 (SHORT)
   {
-    id: "bq7", kind: "EXAM", type: "SHORT", groupId: "ep4",
+    id: "bq7", kind: "EXAM", type: "SHORT", groupId: "ep1",
     text: "위험성 평가 절차 5단계를 순서대로 서술하시오.",
     answer: "사전준비 → 유해·위험요인 파악 → 위험성 결정 → 위험성 감소대책 수립·실행 → 기록 및 공유",
     tags: ["위험성평가", "절차"],
@@ -125,7 +121,7 @@ export const allQuestions: Question[] = [
   },
   // EXAM — ep2 (TRUE_FALSE)
   {
-    id: "bq9", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep2",
+    id: "bq9", kind: "EXAM", type: "TRUE_FALSE", groupId: "ep1",
     text: "중대재해처벌법은 상시 근로자 5인 미만 사업장에도 동일하게 적용된다.",
     options: [
       { id: "tf_t", text: "True", correct: false, order: 1 },
@@ -151,14 +147,14 @@ export const allQuestions: Question[] = [
   },
   // SURVEY — sp4 (TEXT)
   {
-    id: "bq12", kind: "SURVEY", type: "TEXT", groupId: "sp4",
+    id: "bq12", kind: "SURVEY", type: "TEXT", groupId: "sp1",
     text: "개선이 필요한 점이 있다면 자유롭게 작성해 주세요.",
     tags: ["만족도", "개선의견"],
     createdAt: "2025-02-02",
   },
   // SURVEY — sp2 (SINGLE)
   {
-    id: "bq13", kind: "SURVEY", type: "SINGLE", groupId: "sp2",
+    id: "bq13", kind: "SURVEY", type: "SINGLE", groupId: "sp1",
     text: "이 과정을 동료에게 추천하시겠습니까?",
     options: [
       { id: "o1", text: "적극 추천", order: 1 },
@@ -171,7 +167,7 @@ export const allQuestions: Question[] = [
   },
   // SURVEY — sp3 (MULTIPLE)
   {
-    id: "bq14", kind: "SURVEY", type: "MULTIPLE", groupId: "sp3",
+    id: "bq14", kind: "SURVEY", type: "MULTIPLE", groupId: "sp1",
     text: "본 교육에서 가장 유익했던 부분을 모두 선택해 주세요.",
     options: [
       { id: "o1", text: "현장 사례 중심 설명", order: 1 },
@@ -190,6 +186,7 @@ export const examTemplates: ExamTemplate[] = [
     id: "ex1",
     title: "안전보건 종합 평가",
     subType: "FINAL",
+    explanationPolicy: "AFTER_CLOSE",
     passingScore: 70,
     timeLimit: 30,
     maxAttempts: 1,
@@ -197,14 +194,15 @@ export const examTemplates: ExamTemplate[] = [
     createdAt: "2025-01-10",
     rules: [
       { id: "r1", templateId: "ex1", templateKind: "EXAM", label: "단일 선택 섹션",  groupId: "ep1", count: 5, shuffle: true,  order: 1 },
-      { id: "r2", templateId: "ex1", templateKind: "EXAM", label: "O/X 판별 섹션",   groupId: "ep2", count: 3, shuffle: true,  order: 2 },
-      { id: "r3", templateId: "ex1", templateKind: "EXAM", label: "주관식 서술 섹션", groupId: "ep4", count: 2, shuffle: false, order: 3 },
+      { id: "r2", templateId: "ex1", templateKind: "EXAM", label: "O/X 판별 섹션",   groupId: "ep1", count: 3, shuffle: true,  order: 2 },
+      { id: "r3", templateId: "ex1", templateKind: "EXAM", label: "주관식 서술 섹션", groupId: "ep1", count: 2, shuffle: false, order: 3 },
     ],
   },
   {
     id: "ex2",
     title: "위험성 평가 실무 시험",
     subType: "SHORT",
+    explanationPolicy: "IMMEDIATE",
     passingScore: 75,
     timeLimit: 20,
     maxAttempts: null,
@@ -216,6 +214,7 @@ export const examTemplates: ExamTemplate[] = [
     id: "ex3",
     title: "안전관리체계 최종 평가",
     subType: "FINAL",
+    explanationPolicy: "AFTER_ALL_ATTEMPTS",
     passingScore: 80,
     timeLimit: 60,
     maxAttempts: 2,
@@ -227,6 +226,7 @@ export const examTemplates: ExamTemplate[] = [
     id: "ex4",
     title: "구 버전 안전교육 시험 (보관됨)",
     subType: "SHORT",
+    explanationPolicy: "HIDDEN",
     passingScore: 60,
     timeLimit: 15,
     maxAttempts: null,

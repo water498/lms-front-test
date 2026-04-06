@@ -87,6 +87,22 @@ export interface Tenant {
   ipWhitelist?: string[]; // IP 접근 제한 (CIDR 표기 허용, e.g. "1.2.3.4/24")
 }
 
+// ── 테넌트 기능 제어 ────────────────────────────────────────
+
+/** TenantFeature — 테넌트별 기능 활성화/제한. control_plane에서 관리. */
+export interface TenantFeature {
+  id: string;
+  tenantId: string;
+  /** 기능 식별 코드. 예: 'sso', 'payments', 'orgStructure', 'report.export' */
+  featureCode: string;
+  /** True = 기능 활성화, False = 완전 차단 (UI 숨김 + API 거부) */
+  enabled: boolean;
+  /** True = 조회만 허용, 수정 차단. Demo 테넌트용 */
+  readonly: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 // ── 플랫폼 청구/결제 ────────────────────────────────────────
 
 export type BillingPlan = "TRIAL" | "STARTER" | "BUSINESS" | "ENTERPRISE";

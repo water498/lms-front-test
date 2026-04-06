@@ -5,11 +5,11 @@ import { announcements as initialAnnouncements } from "../../announcements/mockD
 import { X } from "lucide-react";
 import RichEditor from "../../shared/rich-editor";
 
-type OrgSubtype = "공지" | "시스템";
+type OrgSubtype = "NOTICE" | "UPDATE";
 
 const TYPE_CONFIG: Record<OrgSubtype, { label: string; className: string }> = {
-  "공지":   { label: "공지",   className: "bg-blue-100 text-blue-700" },
-  "시스템": { label: "시스템", className: "bg-amber-100 text-amber-700" },
+  NOTICE: { label: "공지", className: "bg-blue-100 text-blue-700" },
+  UPDATE: { label: "시스템", className: "bg-amber-100 text-amber-700" },
 };
 
 function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
@@ -21,12 +21,21 @@ function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-slate-800">새 공지 작성</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
+          <h2 className="text-base font-semibold text-slate-800">
+            새 공지 작성
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600"
+          >
+            <X size={18} />
+          </button>
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">제목</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">
+              제목
+            </label>
             <input
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
               placeholder="공지 제목"
@@ -35,7 +44,9 @@ function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">내용</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">
+              내용
+            </label>
             <RichEditor
               value={content}
               onChange={setContent}
@@ -43,7 +54,9 @@ function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">대상</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">
+              대상
+            </label>
             <select
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
               value={target}
@@ -57,8 +70,18 @@ function NewAnnouncementForm({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">취소</button>
-          <button onClick={onClose} className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors">발송</button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            취소
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+          >
+            발송
+          </button>
         </div>
       </div>
     </div>
@@ -72,7 +95,9 @@ export default function PortalAnnouncementsFeature() {
     <>
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <p className="text-sm text-slate-500">{initialAnnouncements.length}건</p>
+          <p className="text-sm text-slate-500">
+            {initialAnnouncements.length}건
+          </p>
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
@@ -92,12 +117,19 @@ export default function PortalAnnouncementsFeature() {
           </thead>
           <tbody>
             {initialAnnouncements.map((a) => {
-              const badge = TYPE_CONFIG[(a.subtype as OrgSubtype) ?? "공지"];
+              const badge = TYPE_CONFIG[(a.subtype as OrgSubtype)] ?? TYPE_CONFIG["NOTICE"];
               return (
-                <tr key={a.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-                  <td className="px-5 py-3 font-medium text-slate-800">{a.title}</td>
+                <tr
+                  key={a.id}
+                  className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors"
+                >
+                  <td className="px-5 py-3 font-medium text-slate-800">
+                    {a.title}
+                  </td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}
+                    >
                       {badge.label}
                     </span>
                   </td>
@@ -105,7 +137,9 @@ export default function PortalAnnouncementsFeature() {
                     {a.targetType === "ALL_MEMBERS" ? "전체" : "특정 과정"}
                   </td>
                   <td className="px-4 py-3 text-slate-400">{a.sentAt}</td>
-                  <td className="px-4 py-3 text-slate-600">{a.views?.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {a.views?.toLocaleString()}
+                  </td>
                 </tr>
               );
             })}

@@ -10,15 +10,32 @@ import EnrollmentsTab from "./tabs/enrollments-tab";
 import ActivityTab from "./tabs/activity-tab";
 import SessionsTab from "./tabs/sessions-tab";
 import AccessLogsFeature from "../access-logs/feature";
+import InstructorCoursesTab from "./tabs/instructor-courses-tab";
+import InstructorReviewsTab from "./tabs/instructor-reviews-tab";
+import InstructorPayoutsTab from "./tabs/instructor-payouts-tab";
+import InstructorBankTab from "./tabs/instructor-bank-tab";
+import {
+  instructorCourses,
+  instructorReviews,
+  instructorBankAccounts,
+  instructorRevenues,
+} from "./mockData";
 
-type Tab = "profile" | "enrollments" | "activity" | "sessions" | "accessLogs";
+type Tab = "profile" | "enrollments" | "activity" | "sessions" | "accessLogs" | "instCourses" | "instReviews" | "instPayouts" | "instBank";
 
-const TABS: { id: Tab; label: string }[] = [
+const BASE_TABS: { id: Tab; label: string }[] = [
   { id: "profile",     label: "기본 정보" },
   { id: "enrollments", label: "수강 이력" },
   { id: "activity",    label: "활동 로그" },
   { id: "sessions",    label: "접속 기기" },
   { id: "accessLogs",  label: "접속 이력" },
+];
+
+const INSTRUCTOR_TABS: { id: Tab; label: string }[] = [
+  { id: "instCourses",  label: "담당 과정" },
+  { id: "instReviews",  label: "강사 평가" },
+  { id: "instPayouts",  label: "정산 내역" },
+  { id: "instBank",     label: "계좌 정보" },
 ];
 
 interface Props {
@@ -29,6 +46,9 @@ interface Props {
 export default function UserDetailFeature({ userId, hideBackLink }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [user, setUser] = useState<User | undefined>(() => users.find((u) => u.id === userId));
+
+  const isInstructor = user?.role === "INSTRUCTOR";
+  const tabs = isInstructor ? [...BASE_TABS, ...INSTRUCTOR_TABS] : BASE_TABS;
 
   if (!user) {
     return (
@@ -58,7 +78,7 @@ export default function UserDetailFeature({ userId, hideBackLink }: Props) {
 
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-slate-200">
-        {TABS.map((tab) => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -78,6 +98,10 @@ export default function UserDetailFeature({ userId, hideBackLink }: Props) {
       {activeTab === "activity"    && <ActivityTab userId={userId} />}
       {activeTab === "sessions"    && <SessionsTab userId={userId} />}
       {activeTab === "accessLogs"  && <AccessLogsFeature userId={userId} />}
+      {activeTab === "instCourses" && <InstructorCoursesTab courses={instructorCourses[userId] ?? []} />}
+      {activeTab === "instReviews" && <InstructorReviewsTab reviews={instructorReviews[userId] ?? []} />}
+      {activeTab === "instPayouts" && <InstructorPayoutsTab revenues={instructorRevenues[userId] ?? []} />}
+      {activeTab === "instBank"    && <InstructorBankTab accounts={instructorBankAccounts[userId] ?? []} instructorId={userId} />}
     </div>
   );
 }

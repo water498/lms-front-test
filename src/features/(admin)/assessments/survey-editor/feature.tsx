@@ -53,9 +53,22 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
   const totalQ        = sections.reduce((sum, s) => sum + s.count, 0);
   const selectedGroup = selected?.groupId ? groupMap[selected.groupId] : undefined;
 
-  const matchingQuestions = selected?.groupId
+  const groupQuestions = selected?.groupId
     ? allQuestions.filter((q) => q.kind === "SURVEY" && q.groupId === selected.groupId)
     : [];
+
+  const matchingQuestions = selected?.typeFilter
+    ? groupQuestions.filter((q) => q.type === selected.typeFilter)
+    : groupQuestions;
+
+  const typeCounts = groupQuestions.reduce<Record<string, number>>((acc, q) => {
+    acc[q.type] = (acc[q.type] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const SURVEY_TYPE_LABELS: Record<string, string> = {
+    LIKERT: "리커트 척도", SINGLE: "객관식(단일)", MULTIPLE: "객관식(복수)", TEXT: "자유 서술",
+  };
 
   const countExceedsPool =
     selected !== null &&
@@ -239,17 +252,41 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
                       const cnt = allQuestions.filter((q) => q.groupId === g.id).length;
                       return (
                         <option key={g.id} value={g.id}>
-                          {g.title} ({TYPE_LABELS[g.type] ?? g.type} · {cnt}문항)
+                          {g.title} ({cnt}문항)
                         </option>
                       );
                     })}
                   </select>
                   {selectedGroup && (
-                    <p className="text-[11px] text-slate-400 mt-1.5">
-                      타입: <span className="text-violet-600 font-medium">{TYPE_LABELS[selectedGroup.type] ?? selectedGroup.type}</span>
-                      {" · "}그룹 내 {matchingQuestions.length}문항
-                    </p>
+                    <div className="mt-1.5">
+                      <p className="text-[11px] text-slate-400">
+                        {Object.entries(typeCounts).map(([t, c]) => `${SURVEY_TYPE_LABELS[t] ?? t} ${c}`).join(" · ")} · 총 {groupQuestions.length}문항
+                      </p>
+                    </div>
                   )}
+                </div>
+
+                {/* Type filter */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-2">유형 필터 (선택)</label>
+                  <select
+                    className="w-full text-sm bg-white border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                    value={selected.typeFilter ?? ""}
+                    onChange={(e) => updateSection(selected.id, { typeFilter: (e.target.value || undefined) as AssessmentSection["typeFilter"] })}
+                  >
+                    <option value="">전체 유형 ({groupQuestions.length}문항)</option>
+                    {Object.entries(SURVEY_TYPE_LABELS).map(([val, label]) => {
+                      const cnt = typeCounts[val] ?? 0;
+                      return (
+                        <option key={val} value={val} disabled={cnt === 0}>
+                          {label} ({cnt}문항)
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    필터 적용 시 <span className="font-medium text-violet-600">{matchingQuestions.length}문항</span> 대상으로 출제
+                  </p>
                 </div>
 
                 {/* Count & shuffle */}

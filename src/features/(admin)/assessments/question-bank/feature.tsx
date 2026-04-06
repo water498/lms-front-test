@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type DragEvent } from "react";
 import Link from "next/link";
 import { Archive, ChevronLeft, MoreHorizontal, Plus, Trash2, X, Check } from "lucide-react";
 import {
@@ -64,11 +64,7 @@ interface PoolModalProps {
 }
 
 function PoolModal({ kind, pool, onSave, onClose }: PoolModalProps) {
-  const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
-  const typeOptions = (kind === "EXAM" ? EXAM_TYPES : SURVEY_TYPES) as string[];
-
   const [title, setTitle] = useState(pool?.title ?? "");
-  const [type, setType]   = useState<string>(pool?.type ?? typeOptions[0]);
   const [desc, setDesc]   = useState(pool?.description ?? "");
 
   function handleSave() {
@@ -77,7 +73,6 @@ function PoolModal({ kind, pool, onSave, onClose }: PoolModalProps) {
       id:          pool?.id ?? makeId(),
       kind,
       title:       title.trim(),
-      type:        type as QuestionType | SurveyQuestionType,
       description: desc.trim() || undefined,
       isArchived:  pool?.isArchived ?? false,
       createdAt:   pool?.createdAt ?? new Date().toISOString().slice(0, 10),
@@ -102,30 +97,11 @@ function PoolModal({ kind, pool, onSave, onClose }: PoolModalProps) {
             <input
               autoFocus
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 placeholder:text-slate-300"
-              placeholder="예: 산업안전 기초 — 단일 선택"
+              placeholder="예: 산업안전 기초, 네트워크"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
             />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형 (고정)</label>
-            <select
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              disabled={!!pool}
-            >
-              {typeOptions.map((t) => (
-                <option key={t} value={t}>{typeLabels[t as keyof typeof typeLabels]}</option>
-              ))}
-            </select>
-            {pool && (
-              <p className="text-[11px] text-slate-400 mt-1">
-                그룹 생성 후 유형은 변경할 수 없습니다
-              </p>
-            )}
           </div>
 
           <div>
@@ -185,6 +161,35 @@ export default function QuestionBankFeature() {
 
   const typeLabels = kind === "EXAM" ? EXAM_TYPE_LABELS : SURVEY_TYPE_LABELS;
   const selectedPool = selected?.groupId ? pools.find((p) => p.id === selected.groupId) : undefined;
+
+  /* ── Drag & Drop ── */
+  const [draggingQId, setDraggingQId] = useState<string | null>(null);
+  const [dropTargetPoolId, setDropTargetPoolId] = useState<string | null>(null);
+
+  function onDragStart(e: DragEvent, qId: string) {
+    setDraggingQId(qId);
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function onDragOverPool(e: DragEvent, poolId: string | null) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetPoolId(poolId);
+  }
+
+  function onDropOnPool(e: DragEvent, poolId: string | null) {
+    e.preventDefault();
+    if (draggingQId) {
+      updateQ(draggingQId, { groupId: poolId ?? undefined });
+    }
+    setDraggingQId(null);
+    setDropTargetPoolId(null);
+  }
+
+  function onDragEnd() {
+    setDraggingQId(null);
+    setDropTargetPoolId(null);
+  }
 
   function updateQ(id: string, patch: Partial<Question>) {
     setQuestions((qs) => qs.map((q) => (q.id === id ? { ...q, ...patch } : q)));
@@ -366,18 +371,24 @@ export default function QuestionBankFeature() {
           </div>
 
           <div className="flex-1 overflow-y-auto py-1">
-            {/* All */}
-            <button
+            {/* All (= 미배정 drop target) */}
+            <div
               onClick={() => setPoolFilter(null)}
-              className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+              onDragOver={(e) => onDragOverPool(e, "__unassigned__")}
+              onDragLeave={() => setDropTargetPoolId(null)}
+              onDrop={(e) => onDropOnPool(e, null)}
+              className={`w-full text-left px-3 py-2 text-xs transition-colors cursor-pointer ${
                 poolFilter === null
                   ? "bg-violet-50 text-violet-700 font-medium"
                   : "text-slate-600 hover:bg-slate-50"
-              }`}
+              } ${dropTargetPoolId === "__unassigned__" ? "ring-2 ring-violet-400 ring-inset bg-violet-50/50" : ""}`}
             >
               전체
               <span className="ml-1 text-[10px] opacity-60">({kindQuestions.length})</span>
-            </button>
+              {dropTargetPoolId === "__unassigned__" && (
+                <span className="ml-1 text-[10px] text-violet-500">미배정으로 이동</span>
+              )}
+            </div>
 
             {/* Pool items */}
             {kindPools.map((pool) => {
@@ -386,9 +397,12 @@ export default function QuestionBankFeature() {
               return (
                 <div
                   key={pool.id}
+                  onDragOver={(e) => onDragOverPool(e, pool.id)}
+                  onDragLeave={() => setDropTargetPoolId(null)}
+                  onDrop={(e) => onDropOnPool(e, pool.id)}
                   className={`relative group flex items-start px-3 py-2 transition-colors cursor-pointer ${
                     isActive ? "bg-violet-50" : "hover:bg-slate-50"
-                  }`}
+                  } ${dropTargetPoolId === pool.id ? "ring-2 ring-violet-400 ring-inset bg-violet-50/50" : ""}`}
                   onClick={() => { setPoolFilter(isActive ? null : pool.id); setOpenPoolMenu(null); }}
                 >
                   <div className="flex-1 min-w-0">
@@ -396,7 +410,7 @@ export default function QuestionBankFeature() {
                       {pool.title}
                     </p>
                     <p className={`text-[10px] mt-0.5 ${isActive ? "text-violet-400" : "text-slate-400"}`}>
-                      {typeLabels[pool.type as keyof typeof typeLabels]} · {count}문항
+                      {count}문항
                     </p>
                   </div>
                   <button
@@ -457,12 +471,15 @@ export default function QuestionBankFeature() {
               <p className="px-4 py-8 text-xs text-center text-slate-300">문항이 없습니다</p>
             )}
             {filteredQ.map((q) => (
-              <button
+              <div
                 key={q.id}
+                draggable
+                onDragStart={(e) => onDragStart(e, q.id)}
+                onDragEnd={onDragEnd}
                 onClick={() => setSelectedId(q.id)}
-                className={`w-full text-left px-4 py-2.5 flex items-start gap-2 transition-colors ${
+                className={`w-full text-left px-4 py-2.5 flex items-start gap-2 transition-colors cursor-grab active:cursor-grabbing ${
                   selectedId === q.id ? "bg-violet-50" : "hover:bg-slate-50"
-                }`}
+                } ${draggingQId === q.id ? "opacity-40" : ""}`}
               >
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-medium truncate ${selectedId === q.id ? "text-violet-700" : "text-slate-700"}`}>
@@ -477,7 +494,7 @@ export default function QuestionBankFeature() {
                     )}
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
 
@@ -568,6 +585,20 @@ export default function QuestionBankFeature() {
                 </div>
               )}
 
+              {/* Explanation — 문항 전체 해설 */}
+              {selected.kind === "EXAM" && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                  <p className="text-xs font-semibold text-slate-400 mb-2">문항 해설 (선택)</p>
+                  <textarea
+                    className="w-full text-sm text-slate-700 bg-slate-50 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300 border border-slate-200 placeholder:text-slate-300"
+                    rows={3}
+                    placeholder="이 문항에 대한 전체 해설을 입력하세요"
+                    value={selected.explanation ?? ""}
+                    onChange={(e) => updateQ(selected.id, { explanation: e.target.value })}
+                  />
+                </div>
+              )}
+
               {/* EXAM SHORT */}
               {selected.kind === "EXAM" && selected.type === "SHORT" && (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
@@ -651,40 +682,6 @@ export default function QuestionBankFeature() {
               {/* Settings card */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
                 <p className="text-xs font-semibold text-slate-400">문항 설정</p>
-
-                {/* Pool selector */}
-                <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 그룹</label>
-                  <select
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                    value={selected.groupId ?? ""}
-                    onChange={(e) => updateQ(selected.id, { groupId: e.target.value || undefined })}
-                  >
-                    <option value="">— 미배정 —</option>
-                    {kindPools.map((p) => (
-                      <option key={p.id} value={p.id}>{p.title}</option>
-                    ))}
-                  </select>
-                  {selectedPool && selectedPool.type !== selected.type && (
-                    <p className="text-[11px] text-amber-500 mt-1">
-                      그룹 타입({typeLabels[selectedPool.type as keyof typeof typeLabels]})과 문항 유형이 다릅니다
-                    </p>
-                  )}
-                </div>
-
-                {/* Type selector */}
-                <div>
-                  <label className="text-xs font-medium text-slate-500 block mb-1.5">문항 유형</label>
-                  <select
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
-                    value={selected.type}
-                    onChange={(e) => changeType(selected.id, e.target.value as QuestionType | SurveyQuestionType)}
-                  >
-                    {(Object.entries(typeLabels) as [string, string][]).map(([v, l]) => (
-                      <option key={v} value={v}>{l}</option>
-                    ))}
-                  </select>
-                </div>
 
                 {/* LIKERT scale */}
                 {selected.kind === "SURVEY" && selected.type === "LIKERT" && (

@@ -8,7 +8,7 @@ export interface QuestionGroup {
   id: string;
   title: string;
   kind: QuestionKind;
-  type: QuestionType | SurveyQuestionType; // 그룹 고정 타입. 소속 문항은 반드시 이 타입이어야 함
+  // type 제거됨 — 그룹은 주제별 분류, 유형 혼재 허용. 유형 필터는 AssessmentSection.typeFilter에서 처리
   description?: string;
   isArchived: boolean;
   questionCount?: number; // 소속 문항 수 (캐시)
@@ -33,6 +33,8 @@ export interface QuestionOption {
   id: string;
   text: string;
   correct?: boolean; // EXAM 전용. SURVEY는 undefined
+  /** 보기별 해설. 왜 이 보기가 정답/오답인지. null이면 Question.explanation만 표시 */
+  explanation?: string;
   order: number;
 }
 
@@ -42,12 +44,15 @@ export interface AssessmentSection {
   templateKind: "EXAM" | "SURVEY";
   label: string;
   groupId: string; // 출제에 사용할 문항 그룹 ID
+  /** 출제 유형 필터. null이면 그룹 내 모든 유형에서 랜덤, 값 있으면 해당 유형만 */
+  typeFilter?: QuestionType | SurveyQuestionType;
   count: number;
   shuffle: boolean;
   order: number;
 }
 
 export type ExamSubType = "SHORT" | "FINAL";
+export type ExplanationPolicy = "IMMEDIATE" | "AFTER_CLOSE" | "AFTER_ALL_ATTEMPTS" | "HIDDEN";
 
 export interface ExamTemplate {
   id: string;
@@ -56,6 +61,8 @@ export interface ExamTemplate {
   passingScore: number;
   timeLimit: number | null;
   maxAttempts: number | null; // null = 무제한
+  /** 해설 공개 정책. IMMEDIATE=즉시, AFTER_CLOSE=차수 종료 후, AFTER_ALL_ATTEMPTS=재시험 소진 후, HIDDEN=비공개 */
+  explanationPolicy: ExplanationPolicy;
   usageCount: number;
   rules: AssessmentSection[]; // [UI convenience] AssessmentSection JOIN 결과
   isArchived?: boolean; // [UI-only] backend에 없음

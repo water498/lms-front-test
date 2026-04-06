@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
-import type { InstructorCourseAssignment } from "../../instructors/mockData";
+import type { InstructorCourseAssignment } from "../mockData";
 
 interface Props {
   courses: InstructorCourseAssignment[];

@@ -124,7 +124,23 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: "포털 관리",
+    label: "사용자",
+    items: [
+      {
+        kind: "accordion",
+        label: "유저 관리",
+        icon: Users,
+        basePaths: [`${BASE}/users`],
+        children: [
+          { href: `${BASE}/users`, label: "유저 목록" },
+          { href: `${BASE}/users/groups`, label: "그룹 관리" },
+          { href: `${BASE}/users/access-logs`, label: "접속 이력" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "운영",
     items: [
       {
         kind: "accordion",
@@ -139,37 +155,6 @@ const NAV_GROUPS: NavGroup[] = [
           { href: `${BASE}/portal/legal`, label: "약관 · 개인정보" },
         ],
       },
-    ],
-  },
-  {
-    label: "사용자",
-    items: [
-      {
-        kind: "accordion",
-        label: "유저 관리",
-        icon: Users,
-        basePaths: [`${BASE}/users`],
-        children: [
-          { href: `${BASE}/users`, label: "유저 목록" },
-          { href: `${BASE}/users/groups`, label: "그룹 관리" },
-          { href: `${BASE}/users/access-logs`, label: "접속 이력" },
-        ],
-      },
-      {
-        kind: "accordion",
-        label: "강사 관리",
-        icon: GraduationCap,
-        basePaths: [`${BASE}/instructors`],
-        children: [
-          { href: `${BASE}/instructors`, label: "강사 목록" },
-          { href: `${BASE}/instructors/applications`, label: "강사 심사" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "운영",
-    items: [
       {
         kind: "accordion",
         label: "통계",

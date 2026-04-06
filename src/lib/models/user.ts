@@ -19,6 +19,10 @@ export interface Permission {
   name: string;
   description?: string;
   module: string;     // 'course' | 'user' | 'org' | 'report' | ...
+  /** True = 폐기된 권한. 미들웨어에서 무시 */
+  isDeprecated: boolean;
+  /** 이 권한을 대체하는 새 권한 code. null = 단순 폐기 */
+  replacedBy?: string;
 }
 
 export interface RolePermission {
