@@ -8,9 +8,9 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Bell,
-  ChevronDown,
   Search,
   ShoppingCart,
+  Heart,
   User,
   CheckCheck,
   GraduationCap,
@@ -38,7 +38,6 @@ export function Navbar({ cartCount }: { cartCount: number }) {
   const { features } = tenant;
   const { isLoggedIn, logout } = useStudentAuthStore();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<NotifItem[]>(MOCK_NOTIFS);
@@ -71,16 +70,6 @@ export function Navbar({ cartCount }: { cartCount: number }) {
     }
   };
 
-  const navCategories = [
-    "프론트엔드",
-    "백엔드",
-    "데이터",
-    "AI/ML",
-    "모바일",
-    "디자인",
-    "DevOps",
-  ];
-
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
@@ -94,40 +83,6 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             className="object-contain"
           />
         </Link>
-
-        {/* Nav links */}
-        <div className="hidden md:flex items-center gap-1">
-          <Link
-            href="/experiments/student/search"
-            className="px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-          >
-            강의 탐색
-          </Link>
-
-          <div
-            className="relative"
-            onMouseEnter={() => setCategoryOpen(true)}
-            onMouseLeave={() => setCategoryOpen(false)}
-          >
-            <button className="flex items-center gap-1 px-3 py-2 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
-              카테고리
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-            {categoryOpen && (
-              <div className="absolute top-full left-0 mt-1 w-48 bg-zinc-900 border border-zinc-700/60 rounded-xl shadow-xl shadow-black/40 py-1 z-50">
-                {navCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-        </div>
 
         {/* Right side */}
         <div className="ml-auto flex items-center gap-2">
@@ -260,6 +215,16 @@ export function Navbar({ cartCount }: { cartCount: number }) {
               </div>
             )}
           </div>
+
+          {/* Wishlist — [B2C only] */}
+          {features.cart && (
+            <Link
+              href="/experiments/student/wishlist"
+              className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            >
+              <Heart className="w-5 h-5" />
+            </Link>
+          )}
 
           {/* Cart — [B2C only] */}
           {features.cart && (

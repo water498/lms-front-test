@@ -116,12 +116,6 @@ const ALL_TABS = [
     featureFlag: "payments" as const,
   },
   {
-    id: "wishlist",
-    label: "위시리스트",
-    icon: <Heart className="w-4 h-4" />,
-    featureFlag: undefined,
-  },
-  {
     id: "reviews",
     label: "내 리뷰",
     icon: <Star className="w-4 h-4" />,
