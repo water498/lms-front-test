@@ -1,8 +1,20 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronDown, ChevronRight, GripVertical, Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
-import { type CourseSubject, type CourseActivity, type ActivityType } from "../mockData";
+import {
+  ChevronDown,
+  ChevronRight,
+  GripVertical,
+  Plus,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  type CourseSubject,
+  type CourseActivity,
+  type ActivityType,
+} from "../mockData";
 import { type SubjectPhase } from "@/lib/models";
 import { mediaAssets } from "../../media/mockData";
 import AddActivityModal from "../modals/add-activity-modal";
@@ -23,25 +35,40 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 const ACTIVITY_ICON: Record<ActivityType, string> = {
-  VIDEO:      "📹",
-  SCORM:      "📄",
-  QUIZ:       "📝",
+  VIDEO: "📹",
+  SCORM: "📄",
+  QUIZ: "📝",
   ASSIGNMENT: "📋",
-  SURVEY:     "📊",
+  SURVEY: "📊",
 };
 
 const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
-  VIDEO:      "영상",
-  SCORM:      "SCORM",
-  QUIZ:       "시험",
+  VIDEO: "영상",
+  SCORM: "SCORM",
+  QUIZ: "시험",
   ASSIGNMENT: "과제",
-  SURVEY:     "설문",
+  SURVEY: "설문",
 };
 
-const PHASE_CONFIG: Record<SubjectPhase, { label: string; badgeClass: string; bgClass: string }> = {
-  PRE:      { label: "사전 평가 (PRE)",     badgeClass: "bg-amber-100 text-amber-700",   bgClass: "bg-amber-50/40" },
-  LEARNING: { label: "학습 (LEARNING)",     badgeClass: "bg-violet-100 text-violet-700", bgClass: "bg-white" },
-  POST:     { label: "사후 평가 (POST)",    badgeClass: "bg-emerald-100 text-emerald-700", bgClass: "bg-emerald-50/40" },
+const PHASE_CONFIG: Record<
+  SubjectPhase,
+  { label: string; badgeClass: string; bgClass: string }
+> = {
+  PRE: {
+    label: "사전 평가 (PRE)",
+    badgeClass: "bg-amber-100 text-amber-700",
+    bgClass: "bg-amber-50/40",
+  },
+  LEARNING: {
+    label: "학습 (LEARNING)",
+    badgeClass: "bg-violet-100 text-violet-700",
+    bgClass: "bg-white",
+  },
+  POST: {
+    label: "사후 평가 (POST)",
+    badgeClass: "bg-emerald-100 text-emerald-700",
+    bgClass: "bg-emerald-50/40",
+  },
 };
 
 const PHASE_ORDER: SubjectPhase[] = ["PRE", "LEARNING", "POST"];
@@ -52,7 +79,11 @@ interface DeleteWarningDialogProps {
   onCancel: () => void;
 }
 
-function DeleteWarningDialog({ enrolleeCount, onConfirm, onCancel }: DeleteWarningDialogProps) {
+function DeleteWarningDialog({
+  enrolleeCount,
+  onConfirm,
+  onCancel,
+}: DeleteWarningDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
@@ -61,10 +92,14 @@ function DeleteWarningDialog({ enrolleeCount, onConfirm, onCancel }: DeleteWarni
             <AlertTriangle size={18} className="text-amber-600" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-1">운영 중인 과정입니다</h3>
+            <h3 className="text-sm font-semibold text-slate-800 mb-1">
+              운영 중인 과정입니다
+            </h3>
             <p className="text-sm text-slate-500 leading-relaxed">
-              현재 {enrolleeCount}명이 수강 중입니다. 활동을 삭제하면<br />
-              신규 수강자에게 표시되지 않으며, 기존 수강생의<br />
+              현재 {enrolleeCount}명이 수강 중입니다. 활동을 삭제하면
+              <br />
+              신규 수강자에게 표시되지 않으며, 기존 수강생의
+              <br />
               학습 기록은 유지됩니다.
             </p>
           </div>
@@ -95,18 +130,29 @@ interface ActivityRowProps {
   onDelete: () => void;
 }
 
-function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: ActivityRowProps) {
+function ActivityRow({
+  activity,
+  hasOngoingSessions,
+  enrolleeCount,
+  onDelete,
+}: ActivityRowProps) {
   const [showWarning, setShowWarning] = useState(false);
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: activity.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: activity.id });
 
   const asset = activity.mediaAssetId
     ? mediaAssets.find((a) => a.id === activity.mediaAssetId)
     : null;
 
-  const meta =
-    activity.videoDurationMin
-      ? `${activity.videoDurationMin}분`
-      : activity.questionCount
+  const meta = activity.videoDurationMin
+    ? `${activity.videoDurationMin}분`
+    : activity.questionCount
       ? `${activity.questionCount}문항`
       : "";
 
@@ -122,7 +168,11 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
     <>
       <div
         ref={setNodeRef}
-        style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+        }}
         className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 group rounded-lg"
       >
         <GripVertical
@@ -131,15 +181,20 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
           {...attributes}
           {...(hasOngoingSessions ? {} : listeners)}
         />
-        <span className="text-base flex-shrink-0">{ACTIVITY_ICON[activity.type]}</span>
+        <span className="text-base flex-shrink-0">
+          {ACTIVITY_ICON[activity.type]}
+        </span>
         <div className="flex-1 min-w-0">
           <span className="text-sm text-slate-700">{activity.title}</span>
           {asset && (
-            <p className="text-xs text-slate-400 truncate">{asset.originalName}</p>
+            <p className="text-xs text-slate-400 truncate">
+              {asset.originalName}
+            </p>
           )}
         </div>
         <span className="text-xs text-slate-400 flex-shrink-0">
-          {ACTIVITY_TYPE_LABEL[activity.type]}{meta ? ` · ${meta}` : ""}
+          {ACTIVITY_TYPE_LABEL[activity.type]}
+          {meta ? ` · ${meta}` : ""}
         </span>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button className="p-1 text-slate-400 hover:text-violet-600 rounded">
@@ -158,7 +213,10 @@ function ActivityRow({ activity, hasOngoingSessions, enrolleeCount, onDelete }: 
       {showWarning && !hasOngoingSessions && (
         <DeleteWarningDialog
           enrolleeCount={enrolleeCount}
-          onConfirm={() => { setShowWarning(false); onDelete(); }}
+          onConfirm={() => {
+            setShowWarning(false);
+            onDelete();
+          }}
           onCancel={() => setShowWarning(false)}
         />
       )}
@@ -191,7 +249,14 @@ function SubjectAccordion({
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [localActivities, setLocalActivities] = useState(subject.activities);
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: subject.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: subject.id });
 
   const activitySensors = useSensors(useSensor(PointerSensor));
 
@@ -211,7 +276,11 @@ function SubjectAccordion({
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
       className="border border-slate-200 rounded-xl overflow-hidden"
     >
       {/* Subject header */}
@@ -233,11 +302,18 @@ function SubjectAccordion({
         <span className="text-sm font-semibold text-slate-700">
           {index + 1}. {subject.title}
         </span>
-        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${phaseConfig.badgeClass}`}>
+        <span
+          className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${phaseConfig.badgeClass}`}
+        >
           {subject.phase}
         </span>
-        <span className="text-xs text-slate-400 ml-1">{subject.activities.length}개 활동</span>
-        <div className="ml-auto flex gap-1" onClick={(e) => e.stopPropagation()}>
+        <span className="text-xs text-slate-400 ml-1">
+          {subject.activities.length}개 활동
+        </span>
+        <div
+          className="ml-auto flex gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button className="p-1 text-slate-400 hover:text-violet-600 rounded">
             <Pencil size={13} />
           </button>
@@ -253,8 +329,15 @@ function SubjectAccordion({
 
       {open && (
         <div className="px-2 py-1">
-          <DndContext sensors={activitySensors} collisionDetection={closestCenter} onDragEnd={handleActivityDragEnd}>
-            <SortableContext items={localActivities.map((a) => a.id)} strategy={verticalListSortingStrategy}>
+          <DndContext
+            sensors={activitySensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleActivityDragEnd}
+          >
+            <SortableContext
+              items={localActivities.map((a) => a.id)}
+              strategy={verticalListSortingStrategy}
+            >
               {localActivities.map((activity) => (
                 <ActivityRow
                   key={activity.id}
@@ -267,8 +350,8 @@ function SubjectAccordion({
             </SortableContext>
           </DndContext>
           <button
-            onClick={hasOngoingSessions ? undefined : () => setShowAddActivity(true)}
-            disabled={hasOngoingSessions}
+            onClick={false ? undefined : () => setShowAddActivity(true)}
+            disabled={false}
             className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors mt-1 ${
               hasOngoingSessions
                 ? "text-slate-300 cursor-not-allowed"
@@ -353,7 +436,9 @@ function PhaseSection({
   }
 
   return (
-    <div className={`rounded-xl border border-slate-200 overflow-hidden ${config.bgClass}`}>
+    <div
+      className={`rounded-xl border border-slate-200 overflow-hidden ${config.bgClass}`}
+    >
       {/* Phase header */}
       <button
         onClick={() => setCollapsed((v) => !v)}
@@ -365,15 +450,24 @@ function PhaseSection({
           <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
         )}
         <span className="text-sm font-bold text-slate-700">{config.label}</span>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${config.badgeClass}`}>
+        <span
+          className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${config.badgeClass}`}
+        >
           {localSubjects.length}개 과목
         </span>
       </button>
 
       {!collapsed && (
         <div className="px-3 pb-3 flex flex-col gap-3">
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSubjectDragEnd}>
-            <SortableContext items={localSubjects.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleSubjectDragEnd}
+          >
+            <SortableContext
+              items={localSubjects.map((s) => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
               {localSubjects.map((subject, i) => (
                 <SubjectAccordion
                   key={subject.id}
@@ -383,15 +477,21 @@ function PhaseSection({
                   hasInstructor={hasInstructor}
                   enrolleeCount={enrolleeCount}
                   onDelete={() => onDeleteSubject(subject.id)}
-                  onAddActivity={(activity) => onAddActivity(subject.id, activity)}
-                  onDeleteActivity={(activityId) => onDeleteActivity(subject.id, activityId)}
+                  onAddActivity={(activity) =>
+                    onAddActivity(subject.id, activity)
+                  }
+                  onDeleteActivity={(activityId) =>
+                    onDeleteActivity(subject.id, activityId)
+                  }
                 />
               ))}
             </SortableContext>
           </DndContext>
 
           {localSubjects.length === 0 && !addingSubject && (
-            <p className="text-xs text-slate-400 px-4 py-2">이 단계에 아직 과목이 없습니다.</p>
+            <p className="text-xs text-slate-400 px-4 py-2">
+              이 단계에 아직 과목이 없습니다.
+            </p>
           )}
 
           {!hasOngoingSessions && addingSubject ? (
@@ -405,14 +505,19 @@ function PhaseSection({
                 onChange={(e) => setNewSubjectTitle(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") commitNewSubject();
-                  if (e.key === "Escape") { setAddingSubject(false); setNewSubjectTitle(""); }
+                  if (e.key === "Escape") {
+                    setAddingSubject(false);
+                    setNewSubjectTitle("");
+                  }
                 }}
                 onBlur={commitNewSubject}
               />
             </div>
           ) : (
             <button
-              onClick={hasOngoingSessions ? undefined : () => setAddingSubject(true)}
+              onClick={
+                hasOngoingSessions ? undefined : () => setAddingSubject(true)
+              }
               disabled={hasOngoingSessions}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm border-2 border-dashed rounded-xl transition-colors ${
                 hasOngoingSessions
@@ -463,7 +568,10 @@ export default function CurriculumTab({
       {hasOngoingSessions && (
         <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
           <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />
-          <span>진행 중인 차수가 있어 커리큘럼을 수정할 수 없습니다. 수정하려면 과정을 복제하거나 새 차수를 여세요.</span>
+          <span>
+            진행 중인 차수가 있어 커리큘럼을 수정할 수 없습니다. 수정하려면
+            과정을 복제하거나 새 차수를 여세요.
+          </span>
         </div>
       )}
 

@@ -12,83 +12,18 @@ import {
   Search,
   ShoppingCart,
   User,
-  BookOpen,
-  Award,
-  Megaphone,
-  MessageCircle,
-  Settings,
   CheckCheck,
   GraduationCap,
   LogOut,
 } from "lucide-react";
+import {
+  type NotifItem,
+  MOCK_NOTIFS,
+  NOTIF_ICON,
+} from "../../shared/notification-data";
 
 // Mock: 현재 사용자 역할
 const CURRENT_USER_ROLES = ["STUDENT", "INSTRUCTOR"];
-
-interface NotifItem {
-  id: string;
-  type:
-    | "ENROLLMENT"
-    | "CERT_ISSUED"
-    | "QNA_ANSWERED"
-    | "ANNOUNCEMENT"
-    | "SYSTEM";
-  title: string;
-  body: string;
-  time: string;
-  read: boolean;
-}
-
-const MOCK_NOTIFS: NotifItem[] = [
-  {
-    id: "n1",
-    type: "QNA_ANSWERED",
-    title: "Q&A 답변 도착",
-    body: '"랜덤 포레스트 n_estimators 파라미터" 질문에 강사님이 답변했습니다.',
-    time: "2분 전",
-    read: false,
-  },
-  {
-    id: "n2",
-    type: "CERT_ISSUED",
-    title: "수료증 발급 완료",
-    body: "JavaScript 핵심 개념 과정의 수료증이 발급되었습니다.",
-    time: "1시간 전",
-    read: false,
-  },
-  {
-    id: "n3",
-    type: "ANNOUNCEMENT",
-    title: "봄맞이 전 강의 30% 할인",
-    body: "3월 31일까지 모든 강의를 30% 할인된 가격으로 수강하세요.",
-    time: "2일 전",
-    read: true,
-  },
-  {
-    id: "n4",
-    type: "ENROLLMENT",
-    title: "수강 등록 완료",
-    body: "React + TypeScript 실전 프로젝트 강의 수강 등록이 완료되었습니다.",
-    time: "3일 전",
-    read: true,
-  },
-  {
-    id: "n5",
-    type: "SYSTEM",
-    title: "프로필 정보 업데이트 안내",
-    body: "2026년 4월 1일부터 프로필 사진 형식 정책이 변경됩니다.",
-    time: "1주 전",
-    read: true,
-  },
-];
-
-const NOTIF_ICON: Record<NotifItem["type"], React.ReactNode> = {
-  ENROLLMENT: <BookOpen className="w-4 h-4 text-violet-400" />,
-  CERT_ISSUED: <Award className="w-4 h-4 text-amber-400" />,
-  QNA_ANSWERED: <MessageCircle className="w-4 h-4 text-sky-400" />,
-  ANNOUNCEMENT: <Megaphone className="w-4 h-4 text-emerald-400" />,
-  SYSTEM: <Settings className="w-4 h-4 text-zinc-400" />,
-};
 
 export interface CardActions {
   cart: Set<string>;
@@ -128,6 +63,13 @@ export function Navbar({ cartCount }: { cartCount: number }) {
     setNotifs((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
+  const handleNotifClick = (notif: NotifItem) => {
+    markRead(notif.id);
+    if (notif.linkUrl) {
+      setNotifOpen(false);
+      router.push(notif.linkUrl);
+    }
+  };
 
   const navCategories = [
     "프론트엔드",
@@ -273,7 +215,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                   {notifs.map((notif) => (
                     <button
                       key={notif.id}
-                      onClick={() => markRead(notif.id)}
+                      onClick={() => handleNotifClick(notif)}
                       className={`w-full flex items-start gap-3 px-4 py-3.5 text-left border-b border-zinc-800/60 last:border-0 transition-colors hover:bg-zinc-800/50 ${
                         !notif.read ? "bg-violet-500/5" : ""
                       }`}
@@ -306,6 +248,15 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                     </button>
                   ))}
                 </div>
+
+                {/* 전체보기 link */}
+                <Link
+                  href="/experiments/student/my/notifications"
+                  onClick={() => setNotifOpen(false)}
+                  className="block text-center px-4 py-2.5 text-xs text-violet-400 hover:text-violet-300 border-t border-zinc-800 transition-colors"
+                >
+                  전체보기
+                </Link>
               </div>
             )}
           </div>

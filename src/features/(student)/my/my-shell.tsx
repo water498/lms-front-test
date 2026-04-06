@@ -13,6 +13,7 @@ import {
   Award,
   CreditCard,
   Heart,
+  Star,
   Settings,
   X,
   Sparkles,
@@ -118,6 +119,18 @@ const ALL_TABS = [
     id: "wishlist",
     label: "위시리스트",
     icon: <Heart className="w-4 h-4" />,
+    featureFlag: undefined,
+  },
+  {
+    id: "reviews",
+    label: "내 리뷰",
+    icon: <Star className="w-4 h-4" />,
+    featureFlag: undefined,
+  },
+  {
+    id: "notifications",
+    label: "알림",
+    icon: <Bell className="w-4 h-4" />,
     featureFlag: undefined,
   },
   {

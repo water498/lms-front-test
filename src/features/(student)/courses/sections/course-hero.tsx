@@ -6,9 +6,10 @@ import { type Course } from "../../home/mockData";
 interface Props {
   course: Course;
   variant: "b2c" | "b2b";
+  onInstructorClick?: () => void;
 }
 
-export function CourseHero({ course, variant }: Props) {
+export function CourseHero({ course, variant, onInstructorClick }: Props) {
   const categoryLabel = course.categoryLabel ?? course.category;
 
   return (
@@ -49,7 +50,16 @@ export function CourseHero({ course, variant }: Props) {
             <Users className="w-4 h-4" />
             <span>수강생 12,400명</span>
           </span>
-          <span>강사: {course.instructor}</span>
+          {onInstructorClick ? (
+            <button
+              onClick={onInstructorClick}
+              className="hover:text-violet-400 transition-colors"
+            >
+              강사: {course.instructor}
+            </button>
+          ) : (
+            <span>강사: {course.instructor}</span>
+          )}
         </div>
 
         {/* Level / Duration / Tags */}

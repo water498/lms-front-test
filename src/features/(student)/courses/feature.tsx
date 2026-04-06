@@ -16,6 +16,7 @@ import { completedCourseMock } from "../my/sections/learning-tab";
 import { courseDetails, defaultCourseDetail } from "./mockData";
 import store from "../home/store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
+import { InstructorProfileModal } from "@/components/instructor-profile-modal";
 
 type Tab = "intro" | "curriculum" | "instructor" | "reviews";
 const TABS: { id: Tab; label: string }[] = [
@@ -40,6 +41,7 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
   );
   const [cart, setCartState] = useState<Set<string>>(store.cart);
   const [wishlist, setWishlistState] = useState<Set<string>>(store.wishlist);
+  const [instructorModalOpen, setInstructorModalOpen] = useState(false);
 
   const allCoursesList = [...allCourses, ...inProgressCourses, ...completedCourseMock];
   const course = allCoursesList.find((c) => c.id === courseId);
@@ -100,7 +102,7 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
       </div>
 
       {/* Hero */}
-      <CourseHero course={course} variant="b2c" />
+      <CourseHero course={course} variant="b2c" onInstructorClick={() => setInstructorModalOpen(true)} />
 
       {/* Body */}
       <div className="max-w-screen-xl mx-auto px-6 py-8 flex gap-8 items-start">
@@ -126,13 +128,21 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
           {/* Tab content */}
           {activeTab === "intro" && <IntroTab detail={detail} />}
           {activeTab === "curriculum" && <CurriculumTab subjects={detail.subjects} />}
-          {activeTab === "instructor" && <InstructorTab instructor={detail.instructor} />}
+          {activeTab === "instructor" && (
+            <InstructorTab
+              instructor={detail.instructor}
+              isCompleted={isCompleted}
+              courseId={courseId}
+              onProfileClick={() => setInstructorModalOpen(true)}
+            />
+          )}
           {activeTab === "reviews" && (
             <ReviewsTab
               reviews={detail.reviews}
               averageRating={averageRating}
               canWrite={isCompleted}
               courseId={courseId}
+              instructor={detail.instructor}
             />
           )}
         </div>
@@ -151,6 +161,13 @@ export default function B2cCourseDetailFeature({ courseId }: Props) {
       </div>
 
       <Footer />
+
+      {/* Instructor profile modal */}
+      <InstructorProfileModal
+        instructor={detail.instructor}
+        open={instructorModalOpen}
+        onClose={() => setInstructorModalOpen(false)}
+      />
     </div>
   );
 }

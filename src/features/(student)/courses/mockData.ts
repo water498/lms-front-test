@@ -1,4 +1,4 @@
-import type { CourseSubject, InstructorProfile, CourseReview, CourseSession } from "@/lib/models";
+import type { CourseSubject, InstructorProfile, CourseReview, InstructorReview, CourseSession } from "@/lib/models";
 
 export interface CourseDetail {
   description: string;
@@ -7,6 +7,7 @@ export interface CourseDetail {
   subjects: CourseSubject[];
   instructor: InstructorProfile;
   reviews: CourseReview[];
+  instructorReviews: InstructorReview[];
   sessions?: CourseSession[];
 }
 
@@ -100,6 +101,52 @@ const reviewsIp3: CourseReview[] = [
     id: "rv-3-3", courseId: "ip-3", userId: "u10", userName: "임소연",
     rating: 4, body: "개념 설명이 명확하고 실습이 충실합니다. 위험관리 이론을 탄탄히 다질 수 있어서 좋았습니다.",
     createdAt: "2026-01-30", visible: true,
+  },
+];
+
+// ── Instructor Reviews ──────────────────────────────────────────────────────
+
+const instructorReviewsHero1: InstructorReview[] = [
+  {
+    id: "ir-1-1", instructorId: "user-inst-1", courseId: "hero-1", learnerId: "u1",
+    learnerName: "김태현", rating: 5, body: "법규 해석을 현장 사례와 연결해 설명해주셔서 이해가 빨랐습니다. 20년 경력이 느껴지는 깊이 있는 강의였어요.",
+    createdAt: "2026-03-01", visible: true,
+  },
+  {
+    id: "ir-1-2", instructorId: "user-inst-1", courseId: "hero-1", learnerId: "u2",
+    learnerName: "박수민", rating: 5, body: "질문에 대한 답변이 정말 상세하고, 실무에서 겪은 경험을 바탕으로 설명해주셔서 신뢰가 갔습니다.",
+    createdAt: "2026-02-18", visible: true,
+  },
+  {
+    id: "ir-1-3", instructorId: "user-inst-1", courseId: "hero-1", learnerId: "u4",
+    learnerName: "최지은", rating: 4, body: "전문성이 뛰어나시고 열정적으로 가르쳐주십니다. 다만 말이 조금 빠른 편이에요.",
+    createdAt: "2026-01-20", visible: true,
+  },
+];
+
+const instructorReviewsIp2: InstructorReview[] = [
+  {
+    id: "ir-2-1", instructorId: "user-inst-2", courseId: "ip-2", learnerId: "u5",
+    learnerName: "정민서", rating: 5, body: "현장 경험이 풍부해서 교과서에 없는 실전 노하우를 많이 알려주셨습니다.",
+    createdAt: "2026-03-10", visible: true,
+  },
+  {
+    id: "ir-2-2", instructorId: "user-inst-2", courseId: "ip-2", learnerId: "u7",
+    learnerName: "오승준", rating: 5, body: "친절하시고 설명이 명확합니다. 현장 신입으로서 정말 도움이 많이 됐어요.",
+    createdAt: "2026-02-12", visible: true,
+  },
+];
+
+const instructorReviewsIp3: InstructorReview[] = [
+  {
+    id: "ir-3-1", instructorId: "user-inst-3", courseId: "ip-3", learnerId: "u8",
+    learnerName: "윤채원", rating: 5, body: "데이터 기반 접근 방식이 인상적이었습니다. 체계적인 분석 방법론을 명쾌하게 전달해주셨어요.",
+    createdAt: "2026-03-05", visible: true,
+  },
+  {
+    id: "ir-3-2", instructorId: "user-inst-3", courseId: "ip-3", learnerId: "u9",
+    learnerName: "신동현", rating: 4, body: "전문성이 높으시고 컨설팅 경험에서 나오는 실제 사례가 유익했습니다.",
+    createdAt: "2026-02-20", visible: true,
   },
 ];
 
@@ -235,6 +282,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     subjects: subjectsHero1,
     instructor: instructorKimHyunsu,
     reviews: reviewsHero1,
+    instructorReviews: instructorReviewsHero1,
   },
   "ip-2": {
     description: "현장에서 매일 마주치는 위험에 대응하는 핵심 안전수칙을 실습 중심으로 학습합니다. 단순한 이론이 아닌 실제 현장 사례를 통해, 수강 즉시 적용 가능한 안전 역량을 키웁니다.",
@@ -253,6 +301,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     subjects: subjectsIp2,
     instructor: instructorLeeJeongmin,
     reviews: reviewsIp2,
+    instructorReviews: instructorReviewsIp2,
   },
   "ip-3": {
     description: "데이터 기반의 과학적 안전관리를 위한 위험성 평가 실무와 재해 통계 분석 방법론을 학습합니다. 현장 위험요인 도출부터 통계 지표 산출, 사고 원인 분석까지 종합적인 위험관리 역량을 갖출 수 있습니다.",
@@ -271,6 +320,7 @@ export const courseDetails: Record<string, CourseDetail> = {
     subjects: subjectsIp3,
     instructor: instructorParkSunghun,
     reviews: reviewsIp3,
+    instructorReviews: instructorReviewsIp3,
   },
 };
 
@@ -290,6 +340,7 @@ export const defaultCourseDetail: CourseDetail = {
   ],
   instructor: instructorKimHyunsu,
   reviews: [],
+  instructorReviews: [],
 };
 
 // ── 과정별 차수 (B2B 수강 대상 필터 데모용) ──────────────────────────────────
