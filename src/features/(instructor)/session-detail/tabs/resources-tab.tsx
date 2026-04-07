@@ -16,6 +16,7 @@ import {
   Upload,
   ChevronDown,
   ChevronRight,
+  X,
 } from "lucide-react";
 import type { SessionResource } from "@/lib/models";
 
@@ -44,10 +45,151 @@ const mockResources: Record<string, SessionResource[]> = {
   ],
 };
 
+// ── 자료 등록 모달 (다크 테마) ──
+
+const CATEGORY_SUGGESTIONS = ["강의자료", "참고문헌", "서식", "기타"];
+const FILE_ACCEPT = ".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.hwp,.hwpx,.zip";
+
+const EXT_MIME: Record<string, string> = {
+  pdf: "application/pdf",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  hwp: "application/x-hwp",
+};
+
+interface AddResourceModalProps {
+  onAdd: (resource: SessionResource) => void;
+  onClose: () => void;
+  sessionId: string;
+}
+
+function AddResourceModal({ onAdd, onClose, sessionId }: AddResourceModalProps) {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState<{ name: string; size: number; ext: string } | null>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
+    setFile({ name: f.name, size: f.size, ext });
+    if (!title) setTitle(f.name.replace(/\.[^.]+$/, ""));
+  }
+
+  function handleSubmit() {
+    if (!title.trim() || !file) return;
+    const newResource: SessionResource = {
+      id: `sr-${Date.now()}`,
+      courseSessionId: sessionId,
+      title: title.trim(),
+      category: category || undefined,
+      description: description || undefined,
+      fileName: file.name,
+      fileUrl: `/files/${file.name}`,
+      fileSizeBytes: file.size,
+      mimeType: EXT_MIME[file.ext] ?? "application/octet-stream",
+      order: 0,
+      isVisible: true,
+      createdAt: new Date().toISOString(),
+      uploaderName: "강사",
+    };
+    onAdd(newResource);
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-xl w-full max-w-md">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800">
+          <h2 className="text-sm font-bold text-white">자료 등록</h2>
+          <button onClick={onClose} className="p-1 text-zinc-500 hover:text-zinc-300 rounded transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-5 py-4 flex flex-col gap-4">
+          {/* File upload */}
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">파일 선택</label>
+            {file ? (
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                <span className="shrink-0">{getFileIcon(EXT_MIME[file.ext] ?? "")}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-zinc-200 truncate">{file.name}</p>
+                  <p className="text-[11px] text-zinc-500">{formatFileSize(file.size)}</p>
+                </div>
+                <button onClick={() => setFile(null)} className="text-xs text-zinc-500 hover:text-red-400">변경</button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center gap-2 px-4 py-6 border-2 border-dashed border-zinc-700 rounded-xl cursor-pointer hover:border-violet-500 hover:bg-violet-500/5 transition-colors">
+                <Upload size={20} className="text-zinc-500" />
+                <span className="text-sm text-zinc-400">파일을 선택하거나 드래그하세요</span>
+                <span className="text-[11px] text-zinc-600">PDF, PPT, DOC, XLS, HWP, ZIP</span>
+                <input type="file" accept={FILE_ACCEPT} onChange={handleFileChange} className="hidden" />
+              </label>
+            )}
+          </div>
+
+          {/* Title */}
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">자료명</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="자료 제목을 입력하세요"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500"
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">분류</label>
+            <div className="flex gap-1.5 mb-2">
+              {CATEGORY_SUGGESTIONS.map((cat) => (
+                <button key={cat} onClick={() => setCategory(cat)}
+                  className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+                    category === cat ? "bg-violet-500/20 text-violet-400 border-violet-500/40" : "text-zinc-500 border-zinc-700 hover:border-zinc-600"
+                  }`}>
+                  {cat}
+                </button>
+              ))}
+            </div>
+            <input type="text" value={category} onChange={(e) => setCategory(e.target.value)}
+              placeholder="직접 입력 또는 위에서 선택"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="text-xs font-medium text-zinc-400 mb-1.5 block">설명 <span className="text-zinc-600">(선택)</span></label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)}
+              placeholder="수강생에게 표시될 자료 설명" rows={2}
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 resize-none focus:outline-none focus:border-violet-500"
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end gap-2 px-5 py-4 border-t border-zinc-800">
+          <button onClick={onClose} className="px-4 py-2 text-sm text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors">취소</button>
+          <button onClick={handleSubmit} disabled={!title.trim() || !file}
+            className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            등록
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function InstructorResourcesTab() {
   const params = useParams<{ sessionId: string }>();
   const sessionId = params.sessionId;
   const [resources, setResources] = useState<SessionResource[]>(mockResources[sessionId] ?? []);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const categories = Array.from(new Set(resources.map((r) => r.category ?? "미분류")));
   const grouped = categories.map((cat) => ({
@@ -85,7 +227,7 @@ export default function InstructorResourcesTab() {
             수강생이 다운로드할 수 있는 문서 자료를 관리합니다.
           </p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
+        <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
           <Upload size={14} />
           자료 등록
         </button>
@@ -95,7 +237,7 @@ export default function InstructorResourcesTab() {
         <div className="py-16 text-center border-2 border-dashed border-zinc-700 rounded-xl">
           <FileText size={32} className="mx-auto text-zinc-600 mb-3" />
           <p className="text-sm text-zinc-500 mb-3">등록된 자료가 없습니다.</p>
-          <button className="flex items-center gap-1.5 mx-auto px-4 py-2 text-sm text-violet-400 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors">
+          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-1.5 mx-auto px-4 py-2 text-sm text-violet-400 border border-zinc-700 rounded-lg hover:bg-zinc-800 transition-colors">
             <Plus size={14} />
             첫 자료 등록하기
           </button>
@@ -167,6 +309,14 @@ export default function InstructorResourcesTab() {
             </div>
           ))}
         </div>
+      )}
+
+      {showAddModal && (
+        <AddResourceModal
+          sessionId={sessionId}
+          onAdd={(resource) => setResources((prev) => [...prev, resource])}
+          onClose={() => setShowAddModal(false)}
+        />
       )}
     </div>
   );
