@@ -161,6 +161,7 @@ export interface CourseSession {
   completionThreshold: number; // 수료 인정 최소 진도율 (%)
   offlineAttendanceThreshold?: number | null; // OFFLINE/BLENDED 전용
   minEnrollment?: number | null; // backend: min_learners
+  accessDurationDays?: number | null; // 개인별 수강 유효 기간 (일). null이면 무기한
   targetAudience?: {         // [UI convenience] backend는 target_department_ids/target_job_grade_ids/target_site_ids JSON
     departments?: string[];
     jobGrades?: string[];
