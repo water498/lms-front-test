@@ -23,6 +23,7 @@ export interface ExamAttempt {
   passed: boolean;
   submittedAt: string;
   durationSec?: number;
+  offlineSessionId?: string; // 오프라인 회차. null이면 온라인 응시
   // [UI-only]
   learnerName?: string;
   examTitle?: string;
@@ -70,6 +71,7 @@ export interface SurveyResponse {
   courseSessionId: string;
   submittedAt: string;
   anonymous: boolean; // template.anonymous 스냅샷
+  offlineSessionId?: string; // 오프라인 회차. null이면 온라인 응답
 }
 
 // 동영상 시청 진행 기록
