@@ -135,7 +135,7 @@ export interface CourseSubject {
 }
 
 export type SessionType = "SELF_PACED" | "COHORT";
-export type SessionStatus = "DRAFT" | "OPEN" | "ONGOING" | "CLOSED";
+export type SessionStatus = "DRAFT" | "OPEN" | "ONGOING" | "CLOSED" | "CANCELLED";
 
 export interface CourseInstructor {
   name: string;
@@ -167,6 +167,8 @@ export interface CourseSession {
     jobGrades?: string[];
     sites?: string[];
   };
+  cancelledAt?: string;
+  cancellationReason?: string;
   createdAt?: string;
   updatedAt?: string;
   // ── [UI-only] 필드 — 실제로는 CourseSubject.phase + CourseActivity 구조로 관리 ──

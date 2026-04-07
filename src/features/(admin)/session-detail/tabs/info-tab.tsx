@@ -14,7 +14,8 @@ const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }>
   DRAFT:   { label: "준비중", className: "bg-slate-100 text-slate-500" },
   OPEN:    { label: "모집중", className: "bg-blue-100 text-blue-700" },
   ONGOING: { label: "진행중", className: "bg-emerald-100 text-emerald-700" },
-  CLOSED:  { label: "종료",   className: "bg-slate-100 text-slate-400" },
+  CLOSED:    { label: "종료",   className: "bg-slate-100 text-slate-400" },
+  CANCELLED: { label: "폐강",   className: "bg-red-100 text-red-500" },
 };
 
 const TYPE_CONFIG: Record<SessionType, string> = {
@@ -23,10 +24,11 @@ const TYPE_CONFIG: Record<SessionType, string> = {
 };
 
 const STATUS_OPTIONS: { value: SessionStatus; label: string }[] = [
-  { value: "DRAFT",   label: "준비중" },
-  { value: "OPEN",    label: "모집중" },
-  { value: "ONGOING", label: "진행중" },
-  { value: "CLOSED",  label: "종료" },
+  { value: "DRAFT",     label: "준비중" },
+  { value: "OPEN",      label: "모집중" },
+  { value: "ONGOING",   label: "진행중" },
+  { value: "CLOSED",    label: "종료" },
+  { value: "CANCELLED", label: "폐강" },
 ];
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

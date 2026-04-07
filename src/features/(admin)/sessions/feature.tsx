@@ -14,7 +14,8 @@ const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }>
   DRAFT:   { label: "초안",   className: "bg-slate-100 text-slate-500"   },
   OPEN:    { label: "모집중", className: "bg-emerald-100 text-emerald-700" },
   ONGOING: { label: "진행중", className: "bg-amber-100  text-amber-700"   },
-  CLOSED:  { label: "종료",   className: "bg-slate-100  text-slate-400"   },
+  CLOSED:    { label: "종료",   className: "bg-slate-100  text-slate-400"   },
+  CANCELLED: { label: "폐강",   className: "bg-red-100    text-red-500"     },
 };
 
 const ALL_SESSIONS = getAllSessions();

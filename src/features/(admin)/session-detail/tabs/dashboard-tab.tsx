@@ -249,7 +249,7 @@ const STAGES: { id: SessionStatus; label: string }[] = [
 ];
 
 const STAGE_ORDER: Record<SessionStatus, number> = {
-  DRAFT: 0, OPEN: 1, ONGOING: 2, CLOSED: 3,
+  DRAFT: 0, OPEN: 1, ONGOING: 2, CLOSED: 3, CANCELLED: -1,
 };
 
 const TODAY = "2026-03-26";
@@ -300,14 +300,19 @@ function LifecycleTimeline({
     dateInfo.push(`종강 ${session.endDate}${label ? ` (${label})` : ""}`);
   }
 
+  const isCancelled = session.status === "CANCELLED";
+
   const nextStatus: SessionStatus | null =
+    isCancelled ? null :
     session.status === "DRAFT"   ? "OPEN"    :
     session.status === "OPEN"    ? "ONGOING" :
     session.status === "ONGOING" ? "CLOSED"  : null;
 
   const nextStatusLabel: Record<SessionStatus, string> = {
-    DRAFT: "모집 준비", OPEN: "모집 중", ONGOING: "진행 중", CLOSED: "종료",
+    DRAFT: "모집 준비", OPEN: "모집 중", ONGOING: "진행 중", CLOSED: "종료", CANCELLED: "폐강",
   };
+
+  const canCancel = session.status === "DRAFT" || session.status === "OPEN" || session.status === "ONGOING";
 
   // 현재 단계에 맞는 알림 컨텍스트 자동 계산
   const notifyCtx: string | undefined =
@@ -328,8 +333,21 @@ function LifecycleTimeline({
         </button>
       </div>
 
+      {/* Cancelled banner */}
+      {isCancelled && (
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm mb-2">
+          <AlertTriangle size={15} className="text-red-400 shrink-0" />
+          <div>
+            <span className="font-semibold">폐강된 차수입니다</span>
+            {session.cancellationReason && (
+              <span className="text-red-500 ml-2">— {session.cancellationReason}</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Stage bar */}
-      <div className="flex items-center gap-0">
+      <div className={`flex items-center gap-0 ${isCancelled ? "opacity-40" : ""}`}>
         {STAGES.map((stage, idx) => {
           const stageOrder = STAGE_ORDER[stage.id];
           const isPast    = stageOrder < currentOrder;
@@ -384,12 +402,19 @@ function LifecycleTimeline({
       </div>
 
       {/* Actions */}
-      {nextStatus && (
+      {(nextStatus || canCancel) && (
         <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
-          <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors">
-            <ChevronRight size={13} />
-            {nextStatusLabel[nextStatus]}(으)로 전환
-          </button>
+          {nextStatus && (
+            <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors">
+              <ChevronRight size={13} />
+              {nextStatusLabel[nextStatus]}(으)로 전환
+            </button>
+          )}
+          {canCancel && (
+            <button className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 text-red-500 border border-red-200 hover:bg-red-50 rounded-lg transition-colors">
+              폐강
+            </button>
+          )}
           {session.status === "OPEN" && minEnrollWarning && (
             <span className="text-xs text-rose-500 font-medium">
               ⚠ 인원 미달 상태에서 전환 시 차수가 취소될 수 있습니다
