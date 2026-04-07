@@ -13,9 +13,11 @@ import SessionAssessmentTab from "./tabs/assessment-tab";
 import LearningHistoryTab from "./tabs/learning-history-tab";
 import WaitlistTab from "./tabs/waitlist-tab";
 import ResourcesTab from "./tabs/resources-tab";
+import AdminGradingTab from "./tabs/grading-tab";
+import AdminQnaTab from "./tabs/qna-tab";
 import NotifyModal from "./modals/notify-modal";
 
-type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "history" | "resources" | "offline" | "waitlist";
+type TabId = "dashboard" | "info" | "enrollees" | "assessment" | "grading" | "qna" | "history" | "resources" | "offline" | "waitlist";
 
 interface Props {
   courseId: string;
@@ -41,6 +43,8 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
     { id: "info",       label: "차수 정보" },
     { id: "enrollees",  label: "수강생" },
     { id: "assessment", label: "평가 설정" },
+    { id: "grading",    label: "채점" },
+    { id: "qna",        label: "Q&A" },
     { id: "history",    label: "학습 이력" },
     { id: "resources",  label: "자료실" },
     ...(isOffline ? [{ id: "offline" as TabId, label: "오프라인 관리" }] : []),
@@ -101,6 +105,8 @@ export default function SessionDetailFeature({ courseId, sessionId }: Props) {
         {activeTab === "info"       && <SessionInfoTab session={session} />}
         {activeTab === "enrollees"  && <SessionEnrolleesTab enrollees={enrollees} sessionId={session.id} />}
         {activeTab === "assessment" && <SessionAssessmentTab session={session} />}
+        {activeTab === "grading"    && <AdminGradingTab sessionId={session.id} />}
+        {activeTab === "qna"        && <AdminQnaTab sessionId={session.id} />}
         {activeTab === "history"    && <LearningHistoryTab sessionId={session.id} />}
         {activeTab === "resources"  && <ResourcesTab sessionId={session.id} />}
         {activeTab === "offline"    && <SessionOfflineTab sessionId={session.id} />}

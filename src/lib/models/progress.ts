@@ -37,6 +37,11 @@ export interface ExamAnswer {
   textAnswer?: string;        // 주관식 답안 (SHORT)
   correct: boolean;
   score: number;
+  // 주관식(SHORT) 수동 채점 필드
+  gradedScore?: number;       // null이면 미채점
+  gradedBy?: string;          // 채점자 User ID
+  gradedAt?: string;
+  gradeFeedback?: string;     // 문항별 피드백
 }
 
 // 과제 제출 기록 (backend: assessment/assignment/models/assignment_submission.py)
