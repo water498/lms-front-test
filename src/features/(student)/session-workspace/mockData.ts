@@ -131,6 +131,66 @@ export const sessionQnaBySession: Record<string, SessionQnaItem[]> = {
   "ss-3": [],
 };
 
+// ── Session resources (자료실) ────────────────────────────────────────────
+
+export interface StudentResource {
+  id: string;
+  title: string;
+  category?: string;
+  description?: string;
+  fileName: string;
+  fileUrl: string;
+  fileSizeBytes: number;
+  mimeType: string;
+}
+
+export const resourcesBySession: Record<string, StudentResource[]> = {
+  "ss-1": [
+    {
+      id: "sr1",
+      title: "안전보건관리체계 교재",
+      category: "강의자료",
+      description: "과정 전체를 다루는 교재 PDF입니다.",
+      fileName: "안전보건관리체계_교재_2026.pdf",
+      fileUrl: "/files/sr1.pdf",
+      fileSizeBytes: 5242880,
+      mimeType: "application/pdf",
+    },
+    {
+      id: "sr2",
+      title: "7장 보충 슬라이드",
+      category: "강의자료",
+      description: "안전보건관리체계 구축 실전 사례 보충 슬라이드",
+      fileName: "7장_보충슬라이드.pptx",
+      fileUrl: "/files/sr2.pptx",
+      fileSizeBytes: 3145728,
+      mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    },
+    {
+      id: "sr3",
+      title: "위험성 평가 체크리스트",
+      category: "서식",
+      description: "현장에서 사용할 수 있는 위험성 평가 체크리스트 양식",
+      fileName: "위험성평가_체크리스트.xlsx",
+      fileUrl: "/files/sr3.xlsx",
+      fileSizeBytes: 102400,
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    },
+  ],
+  "ss-2": [
+    {
+      id: "sr4",
+      title: "핵심안전수칙 요약 교재",
+      category: "강의자료",
+      fileName: "핵심안전수칙_요약.pdf",
+      fileUrl: "/files/sr4.pdf",
+      fileSizeBytes: 2097152,
+      mimeType: "application/pdf",
+    },
+  ],
+  "ss-3": [],
+};
+
 // ── Session announcements ─────────────────────────────────────────────────
 
 export interface SessionAnnouncement {

@@ -9,6 +9,8 @@ import {
   Pencil,
   Trash2,
   AlertTriangle,
+  Lock,
+  Info,
 } from "lucide-react";
 import {
   type CourseSubject,
@@ -540,6 +542,8 @@ interface CurriculumTabProps {
   hasOngoingSessions: boolean;
   hasInstructor: boolean;
   enrolleeCount: number;
+  isSequential: boolean;
+  onToggleSequential: (value: boolean) => void;
   onAddSubject: (title: string, phase?: SubjectPhase) => void;
   onDeleteSubject: (subjectId: string) => void;
   onAddActivity: (subjectId: string, activity: CourseActivity) => void;
@@ -551,6 +555,8 @@ export default function CurriculumTab({
   hasOngoingSessions,
   hasInstructor,
   enrolleeCount,
+  isSequential,
+  onToggleSequential,
   onAddSubject,
   onDeleteSubject,
   onAddActivity,
@@ -565,6 +571,44 @@ export default function CurriculumTab({
 
   return (
     <div className="flex flex-col gap-4 max-w-2xl">
+      {/* 순서 강제 토글 */}
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
+        <div className="flex items-center gap-2.5">
+          <Lock size={15} className="text-slate-500" />
+          <div>
+            <span className="text-sm font-medium text-slate-700">활동 순서 강제</span>
+            <div className="flex items-center gap-1 mt-0.5">
+              <Info size={11} className="text-slate-400" />
+              <span className="text-[11px] text-slate-400">
+                Phase 순서(사전→학습→사후)는 항상 적용됩니다
+              </span>
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={() => onToggleSequential(!isSequential)}
+          className={`relative w-10 h-5.5 rounded-full transition-colors ${
+            isSequential ? "bg-violet-500" : "bg-slate-300"
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform ${
+              isSequential ? "translate-x-5" : "translate-x-0.5"
+            }`}
+          />
+        </button>
+      </div>
+
+      {isSequential && (
+        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-violet-50 border border-violet-200 rounded-xl text-violet-700 text-xs">
+          <Lock size={13} className="text-violet-400 flex-shrink-0" />
+          <span>
+            학습자는 각 Phase 내에서 과목·활동을 순서대로 완료해야 다음 항목에 접근할 수 있습니다.
+            법정교육·규제 교육에 적합합니다.
+          </span>
+        </div>
+      )}
+
       {hasOngoingSessions && (
         <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
           <AlertTriangle size={15} className="text-amber-500 flex-shrink-0" />

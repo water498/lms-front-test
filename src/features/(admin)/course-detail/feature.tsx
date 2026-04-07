@@ -20,6 +20,7 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
   const reviews = getReviews(courseId);
 
   const [subjects, setSubjects] = useState<CourseSubject[]>(() => getCurriculum(courseId));
+  const [isSequential, setIsSequential] = useState(course?.isSequential ?? false);
 
   if (!course) return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
 
@@ -100,6 +101,8 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
             hasOngoingSessions={hasOngoingSessions}
             hasInstructor={!!course.instructorId}
             enrolleeCount={enrollees.length}
+            isSequential={isSequential}
+            onToggleSequential={setIsSequential}
             onAddSubject={handleAddSubject}
             onDeleteSubject={handleDeleteSubject}
             onAddActivity={handleAddActivity}

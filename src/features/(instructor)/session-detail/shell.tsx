@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Users, CalendarCheck, ClipboardList, MessageCircle } from "lucide-react";
+import { ArrowLeft, Users, CalendarCheck, ClipboardList, MessageCircle, FileText } from "lucide-react";
 import { instructorCourses, CURRENT_INSTRUCTOR_ID } from "../shared/mockData";
 
 const TABS = [
@@ -10,6 +10,7 @@ const TABS = [
   { id: "attendance", label: "출결",    icon: CalendarCheck,   href: (base: string) => `${base}/attendance` },
   { id: "grading",    label: "채점",    icon: ClipboardList,   href: (base: string) => `${base}/grading` },
   { id: "qna",        label: "Q&A",     icon: MessageCircle,   href: (base: string) => `${base}/qna` },
+  { id: "resources",  label: "자료",    icon: FileText,        href: (base: string) => `${base}/resources` },
 ];
 
 export default function SessionShell({ children }: { children: React.ReactNode }) {

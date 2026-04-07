@@ -43,6 +43,7 @@ export interface Course {
   level?: CourseLevel;
   duration?: string;       // 예: "20시간"
   defaultMinLearners?: number | null; // 차수 생성 시 기본값 (null = 미설정)
+  isSequential?: boolean;  // Phase 내 활동 순서 강제. Phase 순서(PRE→LEARNING→POST)는 항상 강제
   isQnaEnabled?: boolean;
   // 수료증 설정 (backend flat 필드)
   certTemplateId?: string;          // FK → CertificateTemplate
@@ -204,6 +205,26 @@ export interface CourseCategory {
   label: string;
   parentId?: string; // null = 최상위. 대/중/소 계층 구조 (3단계)
   order: number;
+}
+
+export interface SessionResource {
+  id: string;
+  courseSessionId: string;
+  subjectId?: string;       // 연관 챕터. null이면 차수 전체 자료
+  title: string;
+  category?: string;        // 자유 입력 분류 (강의자료, 참고문헌, 서식 등)
+  description?: string;
+  fileName: string;          // 원본 파일명
+  fileUrl: string;           // S3 경로
+  fileSizeBytes: number;
+  mimeType: string;
+  order: number;
+  isVisible: boolean;
+  uploadedBy?: string;       // 업로더 User ID
+  createdAt: string;
+  // [UI-only]
+  subjectTitle?: string;     // JOIN 결과
+  uploaderName?: string;     // JOIN 결과
 }
 
 export interface CourseReview {
