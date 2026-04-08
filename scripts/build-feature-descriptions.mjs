@@ -34,6 +34,36 @@ const URL_OVERRIDE = {
   "(instructor)/instructor-dashboard": "/experiments/instructor",
   "(platform-admin)/platform-dashboard": "/experiments/platform-admin",
 
+  // ── Admin: 목록/단순 페이지 ──
+  "(admin)/course-list": "/experiments/admin/courses",
+  "(admin)/course-categories": "/experiments/admin/courses/categories",
+  "(admin)/course-session-list": "/experiments/admin/sessions",
+  "(admin)/user-list": "/experiments/admin/users",
+  "(admin)/user-group-list": "/experiments/admin/users/groups",
+  "(admin)/enrollment-list": "/experiments/admin/enrollments",
+  "(admin)/payment-list": "/experiments/admin/payments",
+  "(admin)/instructor-payout-list": "/experiments/admin/payouts",
+  "(admin)/messaging-credit": "/experiments/admin/credits",
+  "(admin)/learning-path-list": "/experiments/admin/learning-paths",
+  "(admin)/media-library": "/experiments/admin/media",
+  "(admin)/org-announcement-list": "/experiments/admin/announcements",
+  "(admin)/certificate-template-list": "/experiments/admin/certificates/templates",
+  "(admin)/certificate-issued-list": "/experiments/admin/certificates/issued",
+  "(admin)/assessment-exam-list": "/experiments/admin/assessments/exams",
+  "(admin)/assessment-survey-list": "/experiments/admin/assessments/surveys",
+  "(admin)/assessment-assignment-list": "/experiments/admin/assessments/assignments",
+  "(admin)/assessment-question-bank": "/experiments/admin/assessments/question-bank",
+  "(admin)/assessment-exam-editor": "/experiments/admin/assessments/exam/[id]",
+  "(admin)/assessment-survey-editor": "/experiments/admin/assessments/survey/[id]",
+  "(admin)/assessment-assignment-editor": "/experiments/admin/assessments/assignment/[id]",
+  "(admin)/messaging-automation": "/experiments/admin/messaging/email",
+  "(admin)/portal-info": "/experiments/admin/portal/info",
+  "(admin)/portal-theme": "/experiments/admin/portal/theme",
+  "(admin)/portal-banners": "/experiments/admin/portal/banners",
+  "(admin)/portal-legal": "/experiments/admin/portal/legal",
+  "(admin)/portal-announcement-editor": "/experiments/admin/portal/announcements",
+  "(admin)/settings-layout": "/experiments/admin/settings",
+
   // ── Admin: course tabs ──
   "(admin)/course-info": "/experiments/admin/courses/[courseId]/info",
   "(admin)/course-curriculum": "/experiments/admin/courses/[courseId]/curriculum",
@@ -88,9 +118,27 @@ const URL_OVERRIDE = {
 
   // ── Student: other ──
   "(student)/learning-player": "/experiments/student/learn/[courseId]/[activityId]",
+  "(student)/course-search": "/experiments/student/search",
+  "(student)/course-wishlist": "/experiments/student/wishlist",
+  "(student)/shopping-cart": "/experiments/student/cart",
+  "(student)/payment-checkout": "/experiments/student/checkout",
+  "(student)/ai-learning-chat": "/experiments/student/ai-chat",
+  "(student)/student-announcement-list": "/experiments/student/announcements",
+  "(student)/legal-terms": "/experiments/student/terms",
+  "(student)/my-page-layout": "/experiments/student/my",
 
-  // ── Instructor: session layout ──
+  // ── Instructor ──
+  "(instructor)/instructor-session-list": "/experiments/instructor/sessions",
   "(instructor)/session-layout": "/experiments/instructor/sessions/[sessionId]",
+  "(instructor)/instructor-review-list": "/experiments/instructor/reviews",
+  "(instructor)/instructor-payout-list": "/experiments/instructor/payouts",
+  "(instructor)/instructor-bank-account": "/experiments/instructor/bank",
+  "(instructor)/instructor-profile": "/experiments/instructor/profile",
+
+  // ── Platform-admin: list pages ──
+  "(platform-admin)/tenant-list": "/experiments/platform-admin/tenants",
+  "(platform-admin)/platform-announcement-list": "/experiments/platform-admin/announcements",
+  "(platform-admin)/settings-layout": "/experiments/platform-admin/settings",
 
   // ── Platform-admin: tenant layout + tabs ──
   "(platform-admin)/tenant-layout": "/experiments/platform-admin/tenants/[tenantId]",

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { FileText, X } from "lucide-react";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function FeatureDescriptionViewer() {
   const pathname = usePathname();
@@ -88,7 +89,7 @@ export default function FeatureDescriptionViewer() {
             </div>
           ) : content ? (
             <div className="prose prose-sm prose-slate max-w-none [&_h1]:text-lg [&_h1]:font-bold [&_h1]:mb-3 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-5 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mb-1.5 [&_h3]:mt-4 [&_p]:text-sm [&_p]:text-slate-600 [&_p]:leading-relaxed [&_p]:mb-3 [&_ul]:text-sm [&_ul]:text-slate-600 [&_ul]:mb-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:text-sm [&_ol]:text-slate-600 [&_ol]:mb-3 [&_ol]:pl-5 [&_ol]:list-decimal [&_li]:mb-1 [&_code]:text-xs [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_pre]:bg-slate-50 [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:text-xs [&_pre]:overflow-x-auto [&_pre]:mb-3 [&_blockquote]:border-l-3 [&_blockquote]:border-violet-300 [&_blockquote]:pl-4 [&_blockquote]:text-sm [&_blockquote]:text-slate-500 [&_blockquote]:italic [&_hr]:my-4 [&_hr]:border-slate-200 [&_table]:text-sm [&_table]:w-full [&_th]:text-left [&_th]:font-semibold [&_th]:pb-2 [&_th]:border-b [&_th]:border-slate-200 [&_td]:py-1.5 [&_td]:border-b [&_td]:border-slate-100 [&_a]:text-violet-600 [&_a]:underline">
-              <Markdown>{content}</Markdown>
+              <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
