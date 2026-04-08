@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
 import type { Course, CourseSession, CourseEnrollee } from "@/lib/models";
-import { getCourse, getSessions, getEnrolleesBySession } from "../course-layout/mockData";
+import { getCourse, getSessionById, getEnrolleesBySession } from "../course-layout/mockData";
 
 interface SessionDetailContextValue {
   course: Course;
@@ -21,10 +21,12 @@ export function useSessionDetail() {
   return ctx;
 }
 
-export function SessionDetailProvider({ courseId, sessionId, children }: { courseId: string; sessionId: string; children: ReactNode }) {
+export function SessionDetailProvider({ sessionId, children }: { sessionId: string; children: ReactNode }) {
+  const session = getSessionById(sessionId);
+  if (!session) throw new Error(`Session ${sessionId} not found`);
+
+  const courseId = session.courseId;
   const course = getCourse(courseId);
-  const sessions = getSessions(courseId);
-  const session = sessions.find((s) => s.id === sessionId) ?? sessions[0];
   const enrollees = getEnrolleesBySession(session.id);
 
   if (!course) throw new Error(`Course ${courseId} not found`);

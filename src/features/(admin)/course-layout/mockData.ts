@@ -158,6 +158,10 @@ export function getEnrollees(courseId: string): CourseEnrollee[] {
   return enrollees[courseId] ?? enrollees["c1"];
 }
 
+export function getSessionById(sessionId: string): CourseSession | undefined {
+  return Object.values(sessions).flat().find((s) => s.id === sessionId);
+}
+
 export function getEnrolleesBySession(sessionId: string): CourseEnrollee[] {
   return Object.values(enrollees).flat().filter((e) => e.sessionId === sessionId);
 }

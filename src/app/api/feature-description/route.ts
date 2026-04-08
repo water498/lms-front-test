@@ -20,28 +20,70 @@ const ROLE_MAP: Record<string, string> = {
   student: "(student)",
 };
 
-// home/dashboard는 역할 루트 페이지
-const ROOT_FEATURES = new Set(["home", "dashboard"]);
+// 역할 루트 페이지 (대시보드) 매핑
+const ROOT_FEATURES = new Set(["admin-dashboard", "student-dashboard", "instructor-dashboard", "platform-dashboard", "home", "dashboard"]);
 
 // URL 패턴 → feature 디렉토리 역매핑 (앱 라우트와 feature 디렉토리명이 다른 경우)
-// key: [role, ...urlSegments 패턴] (동적 세그먼트는 무시)
-// value: feature 디렉토리 경로 (role 제외)
 const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string }[] = [
-  // Admin course tabs (각 탭이 독립 feature)
+  // ── Admin: course tabs ──
   { role: "admin", urlSegments: ["courses", "*", "info"], featurePath: "course-info" },
   { role: "admin", urlSegments: ["courses", "*", "curriculum"], featurePath: "course-curriculum" },
   { role: "admin", urlSegments: ["courses", "*", "sessions"], featurePath: "course-sessions" },
   { role: "admin", urlSegments: ["courses", "*", "reviews"], featurePath: "course-reviews" },
   { role: "admin", urlSegments: ["courses", "*", "enrollees"], featurePath: "course-enrollees" },
   { role: "admin", urlSegments: ["courses", "*", "offline"], featurePath: "course-offline" },
-  // Other detail pages
-  { role: "admin", urlSegments: ["courses", "*", "sessions", "*"], featurePath: "session-detail" },
-  { role: "admin", urlSegments: ["users", "*"], featurePath: "users/user-detail" },
-  { role: "instructor", urlSegments: ["sessions", "*"], featurePath: "session-detail" },
-  { role: "student", urlSegments: ["courses", "*"], featurePath: "courses" },
-  { role: "student", urlSegments: ["sessions", "*"], featurePath: "session-workspace" },
-  { role: "student", urlSegments: ["learn", "*", "*"], featurePath: "learn" },
-  { role: "platform-admin", urlSegments: ["tenants", "*"], featurePath: "tenants/tenant-detail" },
+  // ── Admin: session layout + tabs ──
+  { role: "admin", urlSegments: ["sessions", "*"], featurePath: "session-layout" },
+  { role: "admin", urlSegments: ["sessions", "*", "dashboard"], featurePath: "session-dashboard" },
+  { role: "admin", urlSegments: ["sessions", "*", "info"], featurePath: "session-info" },
+  { role: "admin", urlSegments: ["sessions", "*", "enrollees"], featurePath: "session-enrollees" },
+  { role: "admin", urlSegments: ["sessions", "*", "grading"], featurePath: "session-grading" },
+  { role: "admin", urlSegments: ["sessions", "*", "qna"], featurePath: "session-qna" },
+  { role: "admin", urlSegments: ["sessions", "*", "history"], featurePath: "session-history" },
+  { role: "admin", urlSegments: ["sessions", "*", "resources"], featurePath: "session-resources" },
+  { role: "admin", urlSegments: ["sessions", "*", "offline"], featurePath: "session-offline" },
+  { role: "admin", urlSegments: ["sessions", "*", "waitlist"], featurePath: "session-waitlist" },
+  // ── Admin: user layout + tabs ──
+  { role: "admin", urlSegments: ["users", "*"], featurePath: "user-layout" },
+  { role: "admin", urlSegments: ["users", "*", "profile"], featurePath: "user-profile" },
+  { role: "admin", urlSegments: ["users", "*", "enrollments"], featurePath: "user-enrollments" },
+  { role: "admin", urlSegments: ["users", "*", "activity"], featurePath: "user-activity" },
+  { role: "admin", urlSegments: ["users", "*", "sessions"], featurePath: "user-sessions" },
+  { role: "admin", urlSegments: ["users", "*", "access-logs"], featurePath: "user-access-log-list" },
+  { role: "admin", urlSegments: ["users", "*", "instructor-courses"], featurePath: "user-instructor-courses" },
+  { role: "admin", urlSegments: ["users", "*", "instructor-reviews"], featurePath: "user-instructor-reviews" },
+  { role: "admin", urlSegments: ["users", "*", "instructor-payouts"], featurePath: "user-instructor-payouts" },
+  { role: "admin", urlSegments: ["users", "*", "instructor-bank"], featurePath: "user-instructor-bank" },
+  // ── Admin: settings tabs ──
+  { role: "admin", urlSegments: ["settings", "general"], featurePath: "settings-general" },
+  { role: "admin", urlSegments: ["settings", "org"], featurePath: "settings-org" },
+  { role: "admin", urlSegments: ["settings", "access"], featurePath: "settings-access" },
+  { role: "admin", urlSegments: ["settings", "audit"], featurePath: "settings-audit" },
+  // ── Student: course layout + tabs ──
+  { role: "student", urlSegments: ["courses", "*"], featurePath: "course-layout" },
+  { role: "student", urlSegments: ["courses", "*", "intro"], featurePath: "course-intro" },
+  { role: "student", urlSegments: ["courses", "*", "curriculum"], featurePath: "course-curriculum" },
+  { role: "student", urlSegments: ["courses", "*", "instructor"], featurePath: "course-instructor" },
+  { role: "student", urlSegments: ["courses", "*", "reviews"], featurePath: "course-reviews" },
+  // ── Student: session layout + tabs ──
+  { role: "student", urlSegments: ["sessions", "*"], featurePath: "session-layout" },
+  { role: "student", urlSegments: ["sessions", "*", "home"], featurePath: "session-home" },
+  { role: "student", urlSegments: ["sessions", "*", "announcements"], featurePath: "session-announcements" },
+  { role: "student", urlSegments: ["sessions", "*", "resources"], featurePath: "session-resources" },
+  { role: "student", urlSegments: ["sessions", "*", "qna"], featurePath: "course-qna" },
+  // ── Student: other ──
+  { role: "student", urlSegments: ["learn", "*", "*"], featurePath: "learning-player" },
+  // ── Instructor ──
+  { role: "instructor", urlSegments: ["sessions", "*"], featurePath: "session-layout" },
+  // ── Platform-admin: tenant layout + tabs ──
+  { role: "platform-admin", urlSegments: ["tenants", "*"], featurePath: "tenant-layout" },
+  { role: "platform-admin", urlSegments: ["tenants", "*", "overview"], featurePath: "tenant-overview" },
+  { role: "platform-admin", urlSegments: ["tenants", "*", "sso"], featurePath: "tenant-sso" },
+  { role: "platform-admin", urlSegments: ["tenants", "*", "credits"], featurePath: "tenant-credits" },
+  { role: "platform-admin", urlSegments: ["tenants", "*", "infra"], featurePath: "tenant-infra" },
+  // ── Platform-admin: settings tabs ──
+  { role: "platform-admin", urlSegments: ["settings", "general"], featurePath: "platform-settings-general" },
+  { role: "platform-admin", urlSegments: ["settings", "audit"], featurePath: "platform-settings-audit" },
 ];
 
 let descriptionsMap: Record<string, string> | null = null;

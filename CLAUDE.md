@@ -23,39 +23,55 @@ LMS 본 개발 전 프론트엔드 실험 공간. 각 실험은 독립적인 라
 ```
 src/
 ├── app/
-│   ├── page.tsx                    ← 실험 목록 인덱스
-│   ├── globals.css                 ← Tailwind v4 임포트
+│   ├── page.tsx                         ← 실험 목록 인덱스
+│   ├── globals.css                      ← Tailwind v4 임포트
 │   └── experiments/
-│       └── [실험명]/
-│           └── page.tsx            ← feature import wrapper (로직 없음)
+│       └── {역할}/                      ← admin, student, instructor, platform-admin
+│           ├── page.tsx                 ← feature import wrapper (로직 없음)
+│           └── {라우트}/page.tsx         ← 각 페이지도 feature import만
 └── features/
-    └── (실험그룹명)/               ← 괄호 폴더로 실험별 그룹핑
-        ├── home/                   ← 메인 라우트 피처
-        │   ├── feature.tsx         ← 메인 컴포넌트 ("use client")
-        │   ├── store.ts            ← 실험 로컬 상태
-        │   ├── mockData.ts         ← 목 데이터
-        │   ├── components/         ← Navbar, CourseCard 등
-        │   └── sections/           ← HeroBanner, Tab 등 페이지 섹션
-        └── [서브라우트]/           ← cart, my 등 서브 페이지
+    └── ({역할})/                        ← (admin), (student), (instructor), (platform-admin)
+        ├── {역할}-dashboard/            ← 역할별 메인 대시보드
+        │   ├── feature.tsx              ← 메인 컴포넌트 ("use client")
+        │   ├── feature-description.md   ← 기능 설명서
+        │   └── mockData.ts             ← 목 데이터
+        ├── {도메인}-list/               ← 목록 페이지 (course-list, user-list 등)
+        │   ├── feature.tsx
+        │   ├── feature-description.md
+        │   ├── mockData.ts
+        │   └── components/
+        ├── {도메인}-layout/             ← 탭 내비게이션 레이아웃 (course-layout 등)
+        │   ├── feature.tsx              ← 탭 네비 + children 렌더링
+        │   ├── context.tsx              ← 공유 상태 (프로토타입 전용, 프로덕션에서 제거)
+        │   └── mockData.ts
+        └── {도메인}-{탭}/               ← 독립 탭 feature (course-info, session-grading 등)
             ├── feature.tsx
-            └── sections/
+            └── feature-description.md
 ```
+
+### 네이밍 규칙
+- 모든 feature 디렉토리는 `({역할})/{feature-name}/` 2층 구조
+- 복수형 사용 금지 (courses → course-list)
+- 목록: `*-list`, 레이아웃: `*-layout`, 에디터: `*-editor`
+- 도메인 prefix로 구분 (course-*, session-*, user-*, instructor-*, platform-*)
+
+### Layout feature 패턴
+탭 구조 페이지는 layout feature + 독립 탭 feature로 구성:
+- `course-layout/feature.tsx` → 탭 네비게이션, `children` prop 수용
+- `course-info/feature.tsx`, `course-curriculum/feature.tsx` → 각 탭 콘텐츠
+- app route: `layout.tsx`에서 layout feature 호출, 각 탭은 `{tab}/page.tsx`
 
 ---
 
 ## 실험 추가 방법
 
-1. `src/features/(실험명)/home/feature.tsx` 생성 (메인 컴포넌트)
-2. `src/app/experiments/[실험명]/page.tsx` 생성 — feature import만:
+1. `src/features/({역할})/{feature-name}/feature.tsx` 생성
+2. `src/app/experiments/{역할}/{라우트}/page.tsx` 생성 — feature import만:
    ```tsx
-   import Feature from "@/features/(실험명)/home/feature";
+   import Feature from "@/features/({역할})/{feature-name}/feature";
    export default function Page() { return <Feature />; }
    ```
 3. `src/app/page.tsx`의 `experiments` 배열에 항목 추가
-
-### 구조 전환 기준
-- 단일 page.tsx가 **200줄 이하**이고 서브 라우트 없음 → app에 직접 작성 가능
-- **200줄 초과** 또는 **서브 라우트 존재** → features 구조 필수
 
 ---
 

@@ -28,21 +28,80 @@ const ROLE_MAP = {
 // feature 디렉토리 → 실제 URL 경로 오버라이드
 // feature 디렉토리명과 앱 라우트가 다른 경우 여기에 추가
 const URL_OVERRIDE = {
-  // Admin course tabs (각 탭이 독립 feature)
+  // ── Dashboard (역할 루트) ──
+  "(admin)/admin-dashboard": "/experiments/admin",
+  "(student)/student-dashboard": "/experiments/student",
+  "(instructor)/instructor-dashboard": "/experiments/instructor",
+  "(platform-admin)/platform-dashboard": "/experiments/platform-admin",
+
+  // ── Admin: course tabs ──
   "(admin)/course-info": "/experiments/admin/courses/[courseId]/info",
   "(admin)/course-curriculum": "/experiments/admin/courses/[courseId]/curriculum",
   "(admin)/course-sessions": "/experiments/admin/courses/[courseId]/sessions",
   "(admin)/course-reviews": "/experiments/admin/courses/[courseId]/reviews",
   "(admin)/course-enrollees": "/experiments/admin/courses/[courseId]/enrollees",
   "(admin)/course-offline": "/experiments/admin/courses/[courseId]/offline",
-  // Other detail pages
-  "(admin)/session-detail": "/experiments/admin/courses/[courseId]/sessions/[sessionId]",
-  "(admin)/users/user-detail": "/experiments/admin/users/[userId]",
-  "(instructor)/session-detail": "/experiments/instructor/sessions/[sessionId]",
-  "(student)/courses": "/experiments/student/courses/[courseId]",
-  "(student)/session-workspace": "/experiments/student/sessions/[sessionId]",
-  "(student)/learn": "/experiments/student/learn/[courseId]/[activityId]",
-  "(platform-admin)/tenants/tenant-detail": "/experiments/platform-admin/tenants/[tenantId]",
+
+  // ── Admin: session layout + tabs ──
+  "(admin)/session-layout": "/experiments/admin/sessions/[sessionId]",
+  "(admin)/session-dashboard": "/experiments/admin/sessions/[sessionId]/dashboard",
+  "(admin)/session-info": "/experiments/admin/sessions/[sessionId]/info",
+  "(admin)/session-enrollees": "/experiments/admin/sessions/[sessionId]/enrollees",
+  "(admin)/session-grading": "/experiments/admin/sessions/[sessionId]/grading",
+  "(admin)/session-qna": "/experiments/admin/sessions/[sessionId]/qna",
+  "(admin)/session-history": "/experiments/admin/sessions/[sessionId]/history",
+  "(admin)/session-resources": "/experiments/admin/sessions/[sessionId]/resources",
+  "(admin)/session-offline": "/experiments/admin/sessions/[sessionId]/offline",
+  "(admin)/session-waitlist": "/experiments/admin/sessions/[sessionId]/waitlist",
+
+  // ── Admin: user layout + tabs ──
+  "(admin)/user-layout": "/experiments/admin/users/[userId]",
+  "(admin)/user-profile": "/experiments/admin/users/[userId]/profile",
+  "(admin)/user-enrollments": "/experiments/admin/users/[userId]/enrollments",
+  "(admin)/user-activity": "/experiments/admin/users/[userId]/activity",
+  "(admin)/user-sessions": "/experiments/admin/users/[userId]/sessions",
+  "(admin)/user-access-log-list": "/experiments/admin/users/[userId]/access-logs",
+  "(admin)/user-instructor-courses": "/experiments/admin/users/[userId]/instructor-courses",
+  "(admin)/user-instructor-reviews": "/experiments/admin/users/[userId]/instructor-reviews",
+  "(admin)/user-instructor-payouts": "/experiments/admin/users/[userId]/instructor-payouts",
+  "(admin)/user-instructor-bank": "/experiments/admin/users/[userId]/instructor-bank",
+
+  // ── Admin: settings tabs ──
+  "(admin)/settings-general": "/experiments/admin/settings/general",
+  "(admin)/settings-org": "/experiments/admin/settings/org",
+  "(admin)/settings-access": "/experiments/admin/settings/access",
+  "(admin)/settings-audit": "/experiments/admin/settings/audit",
+
+  // ── Student: course layout + tabs ──
+  "(student)/course-layout": "/experiments/student/courses/[courseId]",
+  "(student)/course-intro": "/experiments/student/courses/[courseId]/intro",
+  "(student)/course-curriculum": "/experiments/student/courses/[courseId]/curriculum",
+  "(student)/course-instructor": "/experiments/student/courses/[courseId]/instructor",
+  "(student)/course-reviews": "/experiments/student/courses/[courseId]/reviews",
+
+  // ── Student: session layout + tabs ──
+  "(student)/session-layout": "/experiments/student/sessions/[sessionId]",
+  "(student)/session-home": "/experiments/student/sessions/[sessionId]/home",
+  "(student)/session-announcements": "/experiments/student/sessions/[sessionId]/announcements",
+  "(student)/session-resources": "/experiments/student/sessions/[sessionId]/resources",
+  "(student)/course-qna": "/experiments/student/sessions/[sessionId]/qna",
+
+  // ── Student: other ──
+  "(student)/learning-player": "/experiments/student/learn/[courseId]/[activityId]",
+
+  // ── Instructor: session layout ──
+  "(instructor)/session-layout": "/experiments/instructor/sessions/[sessionId]",
+
+  // ── Platform-admin: tenant layout + tabs ──
+  "(platform-admin)/tenant-layout": "/experiments/platform-admin/tenants/[tenantId]",
+  "(platform-admin)/tenant-overview": "/experiments/platform-admin/tenants/[tenantId]/overview",
+  "(platform-admin)/tenant-sso": "/experiments/platform-admin/tenants/[tenantId]/sso",
+  "(platform-admin)/tenant-credits": "/experiments/platform-admin/tenants/[tenantId]/credits",
+  "(platform-admin)/tenant-infra": "/experiments/platform-admin/tenants/[tenantId]/infra",
+
+  // ── Platform-admin: settings tabs ──
+  "(platform-admin)/platform-settings-general": "/experiments/platform-admin/settings/general",
+  "(platform-admin)/platform-settings-audit": "/experiments/platform-admin/settings/audit",
 };
 
 /**
@@ -68,12 +127,9 @@ function toUrlPath(fsPath) {
     return URL_OVERRIDE[overrideKey];
   }
 
-  // "home" 은 역할의 루트 페이지 → prefix만 반환
-  if (featureSegments.length === 1 && featureSegments[0] === "home") {
-    return prefix;
-  }
-  // "dashboard" (instructor) 도 루트 페이지
-  if (featureSegments.length === 1 && featureSegments[0] === "dashboard") {
+  // *-dashboard 는 역할 루트 페이지 → URL_OVERRIDE에서 처리됨
+  // (home/dashboard 레거시 이름 폴백)
+  if (featureSegments.length === 1 && (featureSegments[0] === "home" || featureSegments[0] === "dashboard")) {
     return prefix;
   }
 

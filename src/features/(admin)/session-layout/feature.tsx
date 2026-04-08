@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { ArrowLeft, Bell } from "lucide-react";
-import { getCourse } from "../course-layout/mockData";
 import { SessionDetailProvider, useSessionDetail } from "./context";
 import NotifyModal from "../session-dashboard/modals/notify-modal";
 
@@ -26,7 +25,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const { course, courseId, session, sessionId, enrollees, isOffline, isCohort } = useSessionDetail();
   const [showNotifyModal, setShowNotifyModal] = useState(false);
 
-  const base = `/experiments/admin/courses/${courseId}/sessions/${sessionId}`;
+  const base = `/experiments/admin/sessions/${sessionId}`;
 
   const TABS = [
     ...TABS_BASE,
@@ -102,17 +101,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 }
 
 export default function SessionDetailShell({ children }: { children: React.ReactNode }) {
-  const params = useParams<{ courseId: string; sessionId: string }>();
-  const courseId = params.courseId;
+  const params = useParams<{ sessionId: string }>();
   const sessionId = params.sessionId;
 
-  const course = getCourse(courseId);
-  if (!course) {
-    return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
-  }
-
   return (
-    <SessionDetailProvider courseId={courseId} sessionId={sessionId}>
+    <SessionDetailProvider sessionId={sessionId}>
       <ShellInner>{children}</ShellInner>
     </SessionDetailProvider>
   );
