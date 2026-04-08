@@ -1,6 +1,6 @@
 "use client";
 
-import SessionInfoTab from "@/features/(admin)/session-layout/tabs/info-tab";
+import SessionInfoTab from "@/features/(admin)/session-info/feature";
 import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {

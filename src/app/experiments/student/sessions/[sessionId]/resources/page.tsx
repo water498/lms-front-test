@@ -1,6 +1,6 @@
 "use client";
 
-import { ResourcesTab } from "@/features/(student)/session-layout/sections/resources-tab";
+import { ResourcesTab } from "@/features/(student)/session-resources/feature";
 import { useSessionWorkspaceContext } from "@/features/(student)/session-layout/context";
 
 export default function ResourcesPage() {

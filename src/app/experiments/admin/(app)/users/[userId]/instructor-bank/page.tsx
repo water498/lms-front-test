@@ -1,6 +1,6 @@
 "use client";
 
-import InstructorBankTab from "@/features/(admin)/user-layout/tabs/instructor-bank-tab";
+import InstructorBankTab from "@/features/(admin)/user-instructor-bank/feature";
 import { useUserDetail } from "@/features/(admin)/user-layout/context";
 
 export default function Page() {

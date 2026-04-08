@@ -1,6 +1,6 @@
 "use client";
 
-import { AnnouncementsTab } from "@/features/(student)/session-layout/sections/announcements-tab";
+import { AnnouncementsTab } from "@/features/(student)/session-announcements/feature";
 import { useSessionWorkspaceContext } from "@/features/(student)/session-layout/context";
 
 export default function AnnouncementsPage() {

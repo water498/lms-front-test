@@ -1,6 +1,6 @@
 "use client";
 
-import AuditLogTab from "@/features/(platform-admin)/settings-layout/tabs/audit-log-tab";
+import AuditLogTab from "@/features/(platform-admin)/platform-settings-audit/feature";
 
 export default function Page() {
   return <AuditLogTab />;

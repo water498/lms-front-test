@@ -1,6 +1,6 @@
 "use client";
 
-import LearningHistoryTab from "@/features/(admin)/session-layout/tabs/learning-history-tab";
+import LearningHistoryTab from "@/features/(admin)/session-history/feature";
 import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {

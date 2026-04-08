@@ -1,6 +1,6 @@
 "use client";
 
-import EnrollmentsTab from "@/features/(admin)/user-layout/tabs/enrollments-tab";
+import EnrollmentsTab from "@/features/(admin)/user-enrollments/feature";
 import { useUserDetail } from "@/features/(admin)/user-layout/context";
 
 export default function Page() {

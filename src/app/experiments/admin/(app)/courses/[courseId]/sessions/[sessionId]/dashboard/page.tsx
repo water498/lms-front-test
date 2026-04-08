@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardTab from "@/features/(admin)/session-layout/tabs/dashboard-tab";
+import DashboardTab from "@/features/(admin)/session-dashboard/feature";
 import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {

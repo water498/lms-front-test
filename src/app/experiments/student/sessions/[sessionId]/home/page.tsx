@@ -1,6 +1,6 @@
 "use client";
 
-import { HomeTab } from "@/features/(student)/session-layout/sections/home-tab";
+import { HomeTab } from "@/features/(student)/session-home/feature";
 import { useSessionWorkspaceContext } from "@/features/(student)/session-layout/context";
 
 export default function HomePage() {

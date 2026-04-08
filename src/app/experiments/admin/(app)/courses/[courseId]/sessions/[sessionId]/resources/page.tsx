@@ -1,6 +1,6 @@
 "use client";
 
-import ResourcesTab from "@/features/(admin)/session-layout/tabs/resources-tab";
+import ResourcesTab from "@/features/(admin)/session-resources/feature";
 import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {

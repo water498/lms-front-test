@@ -1,6 +1,6 @@
 "use client";
 
-import SessionEnrolleesTab from "@/features/(admin)/session-layout/tabs/enrollees-tab";
+import SessionEnrolleesTab from "@/features/(admin)/session-enrollees/feature";
 import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {

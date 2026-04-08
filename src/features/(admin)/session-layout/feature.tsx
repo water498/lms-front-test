@@ -6,7 +6,7 @@ import { useParams, usePathname } from "next/navigation";
 import { ArrowLeft, Bell } from "lucide-react";
 import { getCourse } from "../course-layout/mockData";
 import { SessionDetailProvider, useSessionDetail } from "./context";
-import NotifyModal from "./modals/notify-modal";
+import NotifyModal from "../session-dashboard/modals/notify-modal";
 
 const TABS_BASE = [
   { id: "dashboard",  label: "대시보드",      href: (base: string) => `${base}/dashboard` },

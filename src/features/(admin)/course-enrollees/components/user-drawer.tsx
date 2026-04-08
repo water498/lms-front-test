@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import ProfileTab from "../../user-layout/tabs/profile-tab";
+import ProfileTab from "../../user-profile/feature";
 import { users } from "../../users/mockData";
 
 interface Props {

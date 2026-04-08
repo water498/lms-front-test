@@ -1,6 +1,6 @@
 "use client";
 
-import SessionsTab from "@/features/(admin)/user-layout/tabs/sessions-tab";
+import SessionsTab from "@/features/(admin)/user-sessions/feature";
 import { useUserDetail } from "@/features/(admin)/user-layout/context";
 
 export default function Page() {

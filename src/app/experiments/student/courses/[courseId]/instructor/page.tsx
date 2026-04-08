@@ -1,6 +1,6 @@
 "use client";
 
-import { InstructorTab } from "@/features/(student)/course-layout/sections/instructor-tab";
+import { InstructorTab } from "@/features/(student)/course-instructor/feature";
 import { useCourseContext } from "@/features/(student)/course-layout/context";
 
 export default function InstructorPage() {

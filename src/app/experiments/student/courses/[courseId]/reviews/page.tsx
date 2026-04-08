@@ -1,6 +1,6 @@
 "use client";
 
-import { ReviewsTab } from "@/features/(student)/course-layout/sections/reviews-tab";
+import { ReviewsTab } from "@/features/(student)/course-reviews/feature";
 import { useCourseContext } from "@/features/(student)/course-layout/context";
 
 export default function ReviewsPage() {
