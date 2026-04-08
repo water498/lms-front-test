@@ -1,7 +1,8 @@
 "use client";
 
 import { X } from "lucide-react";
-import UserDetailFeature from "../../user-detail/feature";
+import ProfileTab from "../../user-detail/tabs/profile-tab";
+import { users } from "../../users/mockData";
 
 interface Props {
   userId: string | null;
@@ -10,6 +11,8 @@ interface Props {
 
 export default function UserDrawer({ userId, onClose }: Props) {
   if (!userId) return null;
+
+  const user = users.find((u) => u.id === userId) ?? users[0];
 
   return (
     <>
@@ -32,7 +35,7 @@ export default function UserDrawer({ userId, onClose }: Props) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5">
-          <UserDetailFeature userId={userId} hideBackLink />
+          <ProfileTab user={user} />
         </div>
       </div>
     </>

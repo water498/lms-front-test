@@ -1,21 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
-  ArrowLeft,
-  ExternalLink,
-  UserCog,
   PauseCircle,
   Pencil,
   CheckCircle2,
   XCircle,
   Check,
   X,
-  RefreshCw,
-  Trash2,
-  HeartPulse,
 } from "lucide-react";
 import {
   TENANTS,
@@ -23,10 +15,8 @@ import {
   validateSubdomain,
   type TenantStatus,
   type SubdomainStatus,
-} from "../tenants/mockData";
-import type { Tenant, InfraServiceStatus } from "@/lib/models";
-import SsoSection from "./sections/sso-section";
-import MessagingCreditSection from "./sections/messaging-credit-section";
+} from "@/features/(platform-admin)/tenants/mockData";
+import { useTenantDetail } from "@/features/(platform-admin)/tenant-detail/context";
 
 function ProgressBar({
   value,
@@ -61,7 +51,7 @@ function StatusBadge({
     );
     return (
       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
-        TRIAL · D-{diff}
+        TRIAL &middot; D-{diff}
       </span>
     );
   }
@@ -78,26 +68,6 @@ function StatusBadge({
   );
 }
 
-function InfraServiceBadge({
-  label,
-  status,
-}: {
-  label: string;
-  status: InfraServiceStatus;
-}) {
-  const cls =
-    status === "HEALTHY"
-      ? "bg-green-100 text-green-700"
-      : status === "WARNING"
-        ? "bg-amber-100 text-amber-700"
-        : "bg-red-100 text-red-700";
-  return (
-    <span className={`px-1.5 py-0.5 rounded text-xs font-mono font-medium ${cls}`}>
-      {label}
-    </span>
-  );
-}
-
 const SUBDOMAIN_STATUS_MSG: Record<SubdomainStatus, string> = {
   empty: "",
   format: "소문자·영숫자·하이픈만 허용 (최소 2자)",
@@ -106,48 +76,26 @@ const SUBDOMAIN_STATUS_MSG: Record<SubdomainStatus, string> = {
   valid: "사용 가능",
 };
 
-type DetailTab = "overview" | "sso" | "credits" | "infra";
-
-const DETAIL_TABS: { id: DetailTab; label: string }[] = [
-  { id: "overview", label: "개요" },
-  { id: "sso",      label: "SSO" },
-  { id: "credits",  label: "크레딧" },
-  { id: "infra",    label: "인프라" },
-];
-
-interface Props {
-  tenantId: string;
-}
-
-export default function TenantDetailFeature({ tenantId }: Props) {
-  const router = useRouter();
-  const tenant = TENANTS.find((t) => t.id === tenantId);
-
-  const [activeTab, setActiveTab] = useState<DetailTab>("overview");
-
-  const [localStatus, setLocalStatus] = useState<TenantStatus>(
-    tenant?.status ?? "ACTIVE",
-  );
+export default function Page() {
+  const {
+    tenant,
+    localStatus,
+    setLocalStatus,
+    localSubdomain,
+    setLocalSubdomain,
+    existingSubdomains,
+    platformDomain,
+  } = useTenantDetail();
 
   // Subdomain inline edit state
-  const [localSubdomain, setLocalSubdomain] = useState(tenant?.subdomain ?? "");
   const [editingSubdomain, setEditingSubdomain] = useState(false);
-  const [subdomainInput, setSubdomainInput] = useState(tenant?.subdomain ?? "");
+  const [subdomainInput, setSubdomainInput] = useState(tenant.subdomain ?? "");
 
-  const existingSubdomains = useMemo(() => TENANTS.map((t) => t.subdomain), []);
   const subdomainStatus = useMemo(
     () =>
-      validateSubdomain(subdomainInput, existingSubdomains, tenant?.subdomain),
-    [subdomainInput, existingSubdomains, tenant?.subdomain],
+      validateSubdomain(subdomainInput, existingSubdomains, tenant.subdomain),
+    [subdomainInput, existingSubdomains, tenant.subdomain],
   );
-
-  if (!tenant) {
-    return (
-      <div className="text-center py-20 text-slate-400">
-        기업을 찾을 수 없습니다. (id: {tenantId})
-      </div>
-    );
-  }
 
   const maxUsersLabel =
     tenant.maxUsers === 0 ? "무제한" : tenant.maxUsers.toLocaleString();
@@ -182,57 +130,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      {/* Back */}
-      <button
-        onClick={() => router.push("/experiments/platform-admin/tenants")}
-        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-      >
-        <ArrowLeft size={15} />
-        기업 목록으로
-      </button>
-
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-slate-800">{tenant.name}</h2>
-          <p className="text-sm text-slate-400 font-mono mt-0.5">
-            {localSubdomain}.{PLATFORM_DOMAIN}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
-            className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors"
-          >
-            <UserCog size={13} />
-            관리자 접속
-            <ExternalLink size={11} className="opacity-70" />
-          </Link>
-          <StatusBadge status={localStatus} trialEndsAt={tenant.trialEndsAt} />
-        </div>
-      </div>
-
-      {/* Tab Bar */}
-      <div className="flex gap-1 border-b border-slate-200">
-        {DETAIL_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              activeTab === tab.id
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Overview Tab */}
-      {activeTab === "overview" && <>
-
+    <>
       {/* Basic Info */}
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <h3 className="text-sm font-semibold text-slate-700 mb-4">기본 정보</h3>
@@ -319,7 +217,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
                         </span>
                       )}
                       <span className="bg-slate-50 border-l border-slate-200 px-2 py-1.5 text-xs text-slate-400">
-                        .{PLATFORM_DOMAIN}
+                        .{platformDomain}
                       </span>
                     </div>
                     <button
@@ -351,7 +249,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
               ) : (
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-sm text-slate-700">
-                    {localSubdomain}.{PLATFORM_DOMAIN}
+                    {localSubdomain}.{platformDomain}
                   </span>
                   <button
                     onClick={startEditSubdomain}
@@ -367,7 +265,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
       </div>
 
       {/* Usage */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className="bg-white rounded-xl border border-slate-200 p-5 mt-4">
         <h3 className="text-sm font-semibold text-slate-700 mb-4">사용 현황</h3>
         <div className="flex flex-col gap-5">
           <div>
@@ -406,7 +304,7 @@ export default function TenantDetailFeature({ tenantId }: Props) {
       </div>
 
       {/* Actions */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
+      <div className="bg-white rounded-xl border border-slate-200 p-5 mt-4">
         <h3 className="text-sm font-semibold text-slate-700 mb-4">관리 액션</h3>
         <div className="flex flex-wrap gap-3">
           <button
@@ -422,103 +320,6 @@ export default function TenantDetailFeature({ tenantId }: Props) {
           </button>
         </div>
       </div>
-
-      </>}
-
-      {/* SSO Tab */}
-      {activeTab === "sso" && <SsoSection tenant={tenant} />}
-
-      {/* Credits Tab */}
-      {activeTab === "credits" && <MessagingCreditSection tenantId={tenant.id} />}
-
-      {/* Infra Tab */}
-      {activeTab === "infra" && <InfraTab tenant={tenant} />}
-    </div>
-  );
-}
-
-function InfraTab({ tenant }: { tenant: Tenant }) {
-  const [loadingAction, setLoadingAction] = useState<string | null>(null);
-  const [syncedAt, setSyncedAt] = useState<string>("7분 전");
-
-  const handleAction = (action: string, label: string) => {
-    setLoadingAction(action);
-    setTimeout(() => {
-      setLoadingAction(null);
-      if (action === "sync") setSyncedAt("방금 전");
-      alert(`${label} 완료 (실험 환경)`);
-    }, 1800);
-  };
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="bg-slate-50 rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-slate-700">인프라 정보</h3>
-          {tenant.infraStatus && (
-            <div className="flex items-center gap-2">
-              <InfraServiceBadge label="EC2" status={tenant.infraStatus.ec2} />
-              <InfraServiceBadge label="RDS" status={tenant.infraStatus.rds} />
-              <InfraServiceBadge label="S3"  status={tenant.infraStatus.s3} />
-              <span className="text-xs text-slate-400 ml-1">
-                {new Date(tenant.infraStatus.checkedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })} 기준
-              </span>
-            </div>
-          )}
-        </div>
-        <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
-          <div>
-            <dt className="text-xs text-slate-400 mb-0.5">AWS 리전</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.awsRegion}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-slate-400 mb-0.5">EC2 인스턴스</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.ec2InstanceType}</dd>
-          </div>
-          <div className="col-span-2">
-            <dt className="text-xs text-slate-400 mb-0.5">DB 호스트</dt>
-            <dd className="font-mono text-xs text-slate-700 break-all">{tenant.infra.dbHost}</dd>
-          </div>
-          <div className="col-span-2">
-            <dt className="text-xs text-slate-400 mb-0.5">S3 버킷</dt>
-            <dd className="font-mono text-xs text-slate-700">{tenant.infra.s3Bucket}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-slate-400 mb-0.5">프로비저닝 일시</dt>
-            <dd className="font-mono text-xs text-slate-700">
-              {new Date(tenant.infra.provisionedAt).toLocaleString("ko-KR")}
-            </dd>
-          </div>
-        </dl>
-      </div>
-
-      {/* Control Plane 동기화 + On-demand 액션 */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-slate-700">Control Plane</h3>
-          <span className="text-xs text-slate-400">마지막 동기화: {syncedAt} (주기: 15분)</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { id: "sync",   label: "설정 재동기화", icon: RefreshCw },
-            { id: "cache",  label: "캐시 초기화",   icon: Trash2 },
-            { id: "health", label: "헬스체크 실행",  icon: HeartPulse },
-          ].map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => handleAction(id, label)}
-              disabled={loadingAction !== null}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <Icon
-                size={12}
-                className={loadingAction === id ? "animate-spin" : ""}
-              />
-              {loadingAction === id ? "처리 중..." : label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

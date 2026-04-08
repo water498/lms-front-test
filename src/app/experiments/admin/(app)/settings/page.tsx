@@ -1,5 +1,5 @@
-import SettingsFeature from "@/features/(admin)/settings/feature";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <SettingsFeature />;
+  redirect("/experiments/admin/settings/general");
 }

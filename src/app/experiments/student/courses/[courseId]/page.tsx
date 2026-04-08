@@ -1,4 +1,4 @@
-import Feature from "@/features/(student)/courses/feature";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ courseId: string }>;
@@ -6,5 +6,5 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { courseId } = await params;
-  return <Feature courseId={courseId} />;
+  redirect(`/experiments/student/courses/${courseId}/intro`);
 }

@@ -1,4 +1,4 @@
-import UserDetailFeature from "@/features/(admin)/user-detail/feature";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ userId: string }>;
@@ -6,5 +6,5 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { userId } = await params;
-  return <UserDetailFeature userId={userId} />;
+  redirect(`/experiments/admin/users/${userId}/profile`);
 }

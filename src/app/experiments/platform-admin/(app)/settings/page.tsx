@@ -1,5 +1,5 @@
-import PlatformSettingsFeature from "@/features/(platform-admin)/settings/feature";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <PlatformSettingsFeature />;
+  redirect("/experiments/platform-admin/settings/general");
 }

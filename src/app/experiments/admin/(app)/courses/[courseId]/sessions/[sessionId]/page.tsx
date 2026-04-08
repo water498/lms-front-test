@@ -1,4 +1,4 @@
-import SessionDetailFeature from "@/features/(admin)/session-detail/feature";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ courseId: string; sessionId: string }>;
@@ -6,5 +6,5 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { courseId, sessionId } = await params;
-  return <SessionDetailFeature courseId={courseId} sessionId={sessionId} />;
+  redirect(`/experiments/admin/courses/${courseId}/sessions/${sessionId}/dashboard`);
 }

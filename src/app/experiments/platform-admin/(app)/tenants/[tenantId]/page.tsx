@@ -1,4 +1,4 @@
-import TenantDetailFeature from "@/features/(platform-admin)/tenant-detail/feature";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ tenantId: string }>;
@@ -6,5 +6,5 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { tenantId } = await params;
-  return <TenantDetailFeature tenantId={tenantId} />;
+  redirect(`/experiments/platform-admin/tenants/${tenantId}/overview`);
 }
