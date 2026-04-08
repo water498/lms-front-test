@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, type Dispatch, type SetStateAction, type ReactNode } from "react";
-import { users } from "../users/mockData";
-import type { User } from "../users/mockData";
+import { users } from "../user-list/mockData";
+import type { User } from "../user-list/mockData";
 import {
   instructorCourses,
   instructorReviews,

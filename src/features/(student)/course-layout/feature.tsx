@@ -3,8 +3,8 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Navbar } from "../home/components/navbar";
-import { Footer } from "../home/components/footer";
+import { Navbar } from "../student-dashboard/components/navbar";
+import { Footer } from "../student-dashboard/components/footer";
 import { CourseHero } from "./sections/course-hero";
 import { DetailSidebar } from "./sections/detail-sidebar";
 import { CourseProvider, useCourseContext } from "./context";

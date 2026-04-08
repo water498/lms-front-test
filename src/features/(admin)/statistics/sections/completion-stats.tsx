@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { Download } from "lucide-react";
-import { enrollments } from "../../enrollments/mockData";
-import { courses } from "../../courses/mockData";
+import { enrollments } from "../../enrollment-list/mockData";
+import { courses } from "../../course-list/mockData";
 
 const PERIOD_OPTIONS = [
   { value: "all", label: "전체 기간" },

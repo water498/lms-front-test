@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { getEncourageTemplates, type MessageChannel } from "../../messaging/mockData";
+import { getEncourageTemplates, type MessageChannel } from "../../messaging-automation/mockData";
 
 interface Learner {
   id: string;

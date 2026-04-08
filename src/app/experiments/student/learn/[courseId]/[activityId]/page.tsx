@@ -1,4 +1,4 @@
-import LearnFeature from "@/features/(student)/learn/feature";
+import LearnFeature from "@/features/(student)/learning-player/feature";
 
 interface Props {
   params: Promise<{ courseId: string; activityId: string }>;

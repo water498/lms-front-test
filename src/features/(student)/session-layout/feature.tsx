@@ -3,7 +3,7 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
-import { Navbar } from "../home/components/navbar";
+import { Navbar } from "../student-dashboard/components/navbar";
 import { SessionWorkspaceProvider, useSessionWorkspaceContext } from "./context";
 
 type Tab = "home" | "curriculum" | "qna" | "announcements" | "resources";

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { categories as initialCategoryNames } from '../courses/mockData';
+import { categories as initialCategoryNames } from '../course-list/mockData';
 
 export interface Category {
   id: string;

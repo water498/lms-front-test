@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { CertificateTemplate } from "../mockData";
 import { useCertStore } from "../store";
-import { courses } from "@/features/(admin)/courses/mockData";
+import { courses } from "@/features/(admin)/course-list/mockData";
 
 interface Props {
   template: CertificateTemplate;

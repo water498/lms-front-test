@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { users } from "../users/mockData";
+import { users } from "../user-list/mockData";
 import { UserDetailProvider } from "./context";
 
 const BASE_TABS = [

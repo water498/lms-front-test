@@ -1,2 +1,2 @@
-import AnnouncementsFeature from "@/features/(platform-admin)/announcements/feature";
+import AnnouncementsFeature from "@/features/(platform-admin)/platform-announcement-list/feature";
 export default function Page() { return <AnnouncementsFeature />; }

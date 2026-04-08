@@ -1,7 +1,7 @@
 "use client";
 
 import { Star, Users, Clock, BarChart2 } from "lucide-react";
-import { type Course } from "../../home/mockData";
+import { type Course } from "../../student-dashboard/mockData";
 
 interface Props {
   course: Course;

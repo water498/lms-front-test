@@ -1,4 +1,4 @@
-import CartFeature from "@/features/(student)/cart/feature";
+import CartFeature from "@/features/(student)/shopping-cart/feature";
 
 export default function Page() {
   return <CartFeature />;

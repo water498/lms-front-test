@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import ProfileTab from "../../user-profile/feature";
-import { users } from "../../users/mockData";
+import { users } from "../../user-list/mockData";
 
 interface Props {
   userId: string | null;

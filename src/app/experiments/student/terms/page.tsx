@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import TermsFeature from "@/features/(student)/terms/feature";
+import TermsFeature from "@/features/(student)/legal-terms/feature";
 
 export default function Page() {
   return (

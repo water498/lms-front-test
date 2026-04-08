@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { Download } from "lucide-react";
-import { enrollments } from "../../enrollments/mockData";
-import { users } from "../../users/mockData";
+import { enrollments } from "../../enrollment-list/mockData";
+import { users } from "../../user-list/mockData";
 import { useOrgStructureStore, findDeptNode } from "../../shared/org-structure-store";
 
 export default function OrgStats() {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X, Lock } from "lucide-react";
 import { type CourseSession } from "../../course-layout/mockData";
-import { getSessionNotifyTemplates, type MessageChannel } from "../../messaging/mockData";
+import { getSessionNotifyTemplates, type MessageChannel } from "../../messaging-automation/mockData";
 import type { MessageTemplate } from "@/lib/models";
 
 interface Props {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play, Users } from "lucide-react";
-import { type Course } from "../../home/mockData";
+import { type Course } from "../../student-dashboard/mockData";
 import { type CourseSubject } from "@/lib/models";
 import { courseDetails, defaultCourseDetail, sessionsByCourse } from "../mockData";
 import { studentSessions } from "../../session-layout/mockData";

@@ -10,7 +10,7 @@ import {
   courses,
   instructors,
   DEFAULT_CANCELLATION_POLICY,
-} from "../courses/mockData";
+} from "../course-list/mockData";
 import { type CertConfig } from "../../../lib/models";
 import { useCertStore } from "../certificates/store";
 import RichEditor from "../shared/rich-editor";

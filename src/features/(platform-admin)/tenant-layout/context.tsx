@@ -15,7 +15,7 @@ import {
   validateSubdomain,
   type TenantStatus,
   type SubdomainStatus,
-} from "../tenants/mockData";
+} from "../tenant-list/mockData";
 import type { Tenant } from "@/lib/models";
 
 interface TenantDetailContextValue {

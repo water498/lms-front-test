@@ -1,4 +1,4 @@
-import CertificatesTemplatesFeature from "@/features/(admin)/certificate-templates/feature";
+import CertificatesTemplatesFeature from "@/features/(admin)/certificate-template-list/feature";
 
 export default function Page() {
   return <CertificatesTemplatesFeature />;

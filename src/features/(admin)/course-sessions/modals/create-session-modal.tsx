@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { instructors } from "../../courses/mockData";
+import { instructors } from "../../course-list/mockData";
 import type { SessionType, CourseInstructor } from "../../course-layout/mockData";
 
 interface Props {

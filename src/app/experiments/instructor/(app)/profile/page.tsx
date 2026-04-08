@@ -1,4 +1,4 @@
-import InstructorProfileFeature from "@/features/(instructor)/profile/feature";
+import InstructorProfileFeature from "@/features/(instructor)/instructor-profile/feature";
 
 export default function Page() {
   return <InstructorProfileFeature />;

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, Pencil, PlusCircle } from "lucide-react";
 import { CertificateTemplate } from "../mockData";
 import { useCertStore } from "../store";
-import { courses } from "@/features/(admin)/courses/mockData";
+import { courses } from "@/features/(admin)/course-list/mockData";
 import EditTemplateModal from "../modals/edit-template-modal";
 import IssueCertModal from "../modals/issue-cert-modal";
 import CreateTemplateModal from "../modals/create-template-modal";

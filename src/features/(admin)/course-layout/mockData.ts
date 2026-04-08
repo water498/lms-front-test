@@ -1,4 +1,4 @@
-import { courses } from "../courses/mockData";
+import { courses } from "../course-list/mockData";
 import type {
   Course,
   OfflineSessionStatus,

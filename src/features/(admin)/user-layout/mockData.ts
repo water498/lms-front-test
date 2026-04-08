@@ -1,4 +1,4 @@
-import { users } from "../users/mockData";
+import { users } from "../user-list/mockData";
 import type {
   UserEnrollment,
   ActivityLog,

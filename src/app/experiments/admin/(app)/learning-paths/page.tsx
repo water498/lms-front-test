@@ -1,4 +1,4 @@
-import Feature from "@/features/(admin)/learning-paths/feature";
+import Feature from "@/features/(admin)/learning-path-list/feature";
 
 export default function Page() {
   return <Feature />;

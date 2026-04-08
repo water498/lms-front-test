@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Pencil, Lock } from "lucide-react";
 import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../course-layout/mockData";
-import { instructors as instructorNames } from "../courses/mockData";
+import { instructors as instructorNames } from "../course-list/mockData";
 import { useOrgStructureStore, type DeptNode } from "../shared/org-structure-store";
 
 function flatDeptNames(nodes: DeptNode[]): string[] {

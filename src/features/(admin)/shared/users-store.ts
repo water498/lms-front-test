@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { users as initialUsers, type User } from '../users/mockData';
+import { users as initialUsers, type User } from '../user-list/mockData';
 
 interface UsersStore {
   users: User[];

@@ -1,4 +1,4 @@
-import { PLATFORM_DOMAIN } from "../tenants/mockData";
+import { PLATFORM_DOMAIN } from "../tenant-list/mockData";
 import type { PlatformAuditLog } from "@/lib/models";
 
 export interface PlatformSettings {

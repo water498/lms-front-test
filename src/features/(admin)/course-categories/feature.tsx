@@ -14,7 +14,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useTaxonomyStore, type Category } from "../shared/taxonomy-store";
-import { courses } from "../courses/mockData";
+import { courses } from "../course-list/mockData";
 
 const MAX_DEPTH = 3; // 대 / 중 / 소
 

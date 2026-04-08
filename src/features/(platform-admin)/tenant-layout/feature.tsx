@@ -7,7 +7,7 @@ import {
   ExternalLink,
   UserCog,
 } from "lucide-react";
-import { TENANTS, type TenantStatus } from "../tenants/mockData";
+import { TENANTS, type TenantStatus } from "../tenant-list/mockData";
 import { TenantDetailProvider, useTenantDetail } from "./context";
 
 function StatusBadge({
