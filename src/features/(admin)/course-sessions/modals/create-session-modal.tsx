@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { instructors } from "../../courses/mockData";
-import type { SessionType, CourseInstructor } from "../../course-detail/mockData";
+import type { SessionType, CourseInstructor } from "../../course-layout/mockData";
 
 interface Props {
   isOffline?: boolean;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type CourseEnrollee, type CourseSession } from "../course-detail/mockData";
+import { type CourseEnrollee, type CourseSession } from "../course-layout/mockData";
 import UserDrawer from "./components/user-drawer";
 
 interface Props {

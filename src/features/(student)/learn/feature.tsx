@@ -19,7 +19,7 @@ import "video.js/dist/video-js.css";
 
 import { VideoJsPlayer } from "@/features/(video-player)/lesson/components/video-js-player";
 import { mergeRanges, totalWatched } from "@/features/(video-player)/lesson/utils";
-import { courseDetails, defaultCourseDetail } from "../courses/mockData";
+import { courseDetails, defaultCourseDetail } from "../course-layout/mockData";
 import { allCourses, inProgressCourses } from "../home/mockData";
 import type { CourseSubject } from "@/lib/models";
 

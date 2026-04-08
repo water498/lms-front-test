@@ -1,7 +1,7 @@
 "use client";
 
-import ResourcesTab from "@/features/(admin)/session-detail/tabs/resources-tab";
-import { useSessionDetail } from "@/features/(admin)/session-detail/context";
+import ResourcesTab from "@/features/(admin)/session-layout/tabs/resources-tab";
+import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {
   const { sessionId } = useSessionDetail();

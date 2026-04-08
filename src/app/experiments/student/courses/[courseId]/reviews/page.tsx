@@ -1,7 +1,7 @@
 "use client";
 
-import { ReviewsTab } from "@/features/(student)/courses/sections/reviews-tab";
-import { useCourseContext } from "@/features/(student)/courses/context";
+import { ReviewsTab } from "@/features/(student)/course-layout/sections/reviews-tab";
+import { useCourseContext } from "@/features/(student)/course-layout/context";
 
 export default function ReviewsPage() {
   const { detail, averageRating, isCompleted, courseId } = useCourseContext();

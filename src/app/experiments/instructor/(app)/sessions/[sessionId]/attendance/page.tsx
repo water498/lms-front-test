@@ -1,4 +1,4 @@
-import AttendanceTab from "@/features/(instructor)/session-detail/tabs/attendance-tab";
+import AttendanceTab from "@/features/(instructor)/session-layout/tabs/attendance-tab";
 
 export default async function Page({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;

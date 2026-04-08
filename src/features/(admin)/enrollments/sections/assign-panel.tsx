@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { ChevronRight, Users, Search } from "lucide-react";
 import { courses } from "../../courses/mockData";
-import { getSessions, getEnrolleesBySession } from "../../course-detail/mockData";
+import { getSessions, getEnrolleesBySession } from "../../course-layout/mockData";
 import { users } from "../../users/mockData";
 import { userGroups, userGroupMembers } from "../../user-groups/mockData";
 import {

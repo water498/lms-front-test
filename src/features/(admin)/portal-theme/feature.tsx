@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { orgSettings } from "../settings/mockData";
+import { orgSettings } from "../settings-layout/mockData";
 
 const PRESET_COLORS = [
   "#7C3AED", // violet

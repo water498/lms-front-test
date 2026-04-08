@@ -1,7 +1,7 @@
 "use client";
 
-import { InstructorTab } from "@/features/(student)/courses/sections/instructor-tab";
-import { useCourseContext } from "@/features/(student)/courses/context";
+import { InstructorTab } from "@/features/(student)/course-layout/sections/instructor-tab";
+import { useCourseContext } from "@/features/(student)/course-layout/context";
 
 export default function InstructorPage() {
   const { detail, isCompleted, courseId, setInstructorModalOpen } = useCourseContext();

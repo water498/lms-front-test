@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Users, TrendingUp, Award, AlertTriangle, ChevronRight, Bell } from "lucide-react";
-import { type CourseSession, type CourseEnrollee, type SessionStatus } from "../../course-detail/mockData";
+import { type CourseSession, type CourseEnrollee, type SessionStatus } from "../../course-layout/mockData";
 import EncourageModal from "../modals/encourage-modal";
 import NotifyModal from "../modals/notify-modal";
 

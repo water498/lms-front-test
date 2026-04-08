@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
 import type { Course, CourseSession, CourseEnrollee } from "@/lib/models";
-import { getCourse, getSessions, getEnrolleesBySession } from "../course-detail/mockData";
+import { getCourse, getSessions, getEnrolleesBySession } from "../course-layout/mockData";
 
 interface SessionDetailContextValue {
   course: Course;

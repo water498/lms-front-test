@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { orgSettings } from "../settings/mockData";
+import { orgSettings } from "../settings-layout/mockData";
 
 export default function PortalInfoFeature() {
   const [portalName, setPortalName] = useState(orgSettings.portalName);

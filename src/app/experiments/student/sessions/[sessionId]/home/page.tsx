@@ -1,7 +1,7 @@
 "use client";
 
-import { HomeTab } from "@/features/(student)/session-workspace/sections/home-tab";
-import { useSessionWorkspaceContext } from "@/features/(student)/session-workspace/context";
+import { HomeTab } from "@/features/(student)/session-layout/sections/home-tab";
+import { useSessionWorkspaceContext } from "@/features/(student)/session-layout/context";
 
 export default function HomePage() {
   const { session, announcements } = useSessionWorkspaceContext();

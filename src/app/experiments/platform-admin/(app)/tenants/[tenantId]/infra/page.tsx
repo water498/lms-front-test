@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RefreshCw, Trash2, HeartPulse } from "lucide-react";
 import type { Tenant, InfraServiceStatus } from "@/lib/models";
-import { useTenantDetail } from "@/features/(platform-admin)/tenant-detail/context";
+import { useTenantDetail } from "@/features/(platform-admin)/tenant-layout/context";
 
 function InfraServiceBadge({
   label,

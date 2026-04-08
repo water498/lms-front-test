@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { QrCode, ClipboardList } from "lucide-react";
-import { type OfflineSession, type OfflineSessionStatus, type CourseInstructor, getOfflineSessions, getOfflineAttendances } from "../../course-detail/mockData";
+import { type OfflineSession, type OfflineSessionStatus, type CourseInstructor, getOfflineSessions, getOfflineAttendances } from "../../course-layout/mockData";
 
 function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
   const primary = instructors.find((i) => i.role === "PRIMARY");

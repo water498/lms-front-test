@@ -16,7 +16,7 @@ import {
   type CourseSubject,
   type CourseActivity,
   type ActivityType,
-} from "../course-detail/mockData";
+} from "../course-layout/mockData";
 import { type SubjectPhase } from "@/lib/models";
 import { mediaAssets } from "../media/mockData";
 import AddActivityModal from "./modals/add-activity-modal";

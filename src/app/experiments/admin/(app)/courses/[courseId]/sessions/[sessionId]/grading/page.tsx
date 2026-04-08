@@ -1,7 +1,7 @@
 "use client";
 
-import AdminGradingTab from "@/features/(admin)/session-detail/tabs/grading-tab";
-import { useSessionDetail } from "@/features/(admin)/session-detail/context";
+import AdminGradingTab from "@/features/(admin)/session-layout/tabs/grading-tab";
+import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {
   const { sessionId } = useSessionDetail();

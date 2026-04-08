@@ -16,7 +16,7 @@ import {
   type TenantStatus,
   type SubdomainStatus,
 } from "@/features/(platform-admin)/tenants/mockData";
-import { useTenantDetail } from "@/features/(platform-admin)/tenant-detail/context";
+import { useTenantDetail } from "@/features/(platform-admin)/tenant-layout/context";
 
 function ProgressBar({
   value,

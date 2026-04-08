@@ -1,7 +1,7 @@
 "use client";
 
-import SessionInfoTab from "@/features/(admin)/session-detail/tabs/info-tab";
-import { useSessionDetail } from "@/features/(admin)/session-detail/context";
+import SessionInfoTab from "@/features/(admin)/session-layout/tabs/info-tab";
+import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {
   const { session } = useSessionDetail();

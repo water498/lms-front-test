@@ -1,7 +1,7 @@
 "use client";
 
-import { IntroTab } from "@/features/(student)/courses/sections/intro-tab";
-import { useCourseContext } from "@/features/(student)/courses/context";
+import { IntroTab } from "@/features/(student)/course-layout/sections/intro-tab";
+import { useCourseContext } from "@/features/(student)/course-layout/context";
 
 export default function IntroPage() {
   const { detail } = useCourseContext();

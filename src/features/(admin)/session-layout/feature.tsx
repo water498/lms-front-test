@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { ArrowLeft, Bell } from "lucide-react";
-import { getCourse } from "../course-detail/mockData";
+import { getCourse } from "../course-layout/mockData";
 import { SessionDetailProvider, useSessionDetail } from "./context";
 import NotifyModal from "./modals/notify-modal";
 

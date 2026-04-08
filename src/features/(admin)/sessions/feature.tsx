@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { getAllSessions, type SessionType, type SessionStatus } from "../course-detail/mockData";
+import { getAllSessions, type SessionType, type SessionStatus } from "../course-layout/mockData";
 import { courses } from "../courses/mockData";
 
 const TYPE_CONFIG: Record<SessionType, { label: string; className: string }> = {

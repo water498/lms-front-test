@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, type Dispatch, type SetStateAction, type ReactNode } from "react";
 import type { Course, CourseSubject, CourseActivity, CourseSession, CourseEnrollee, CourseReview } from "@/lib/models";
-import { getCourse, getCurriculum, getSessions, getEnrollees, getReviews } from "./mockData";
+import { getCourse, getCurriculum, getSessions, getEnrollees, getReviews } from "../course-layout/mockData";
 
 interface CourseDetailContextValue {
   course: Course;

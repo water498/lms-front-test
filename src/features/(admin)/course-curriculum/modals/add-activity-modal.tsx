@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Search, Ban } from "lucide-react";
-import { type CourseActivity, type ActivityType } from "../../course-detail/mockData";
+import { type CourseActivity, type ActivityType } from "../../course-layout/mockData";
 import { mediaAssets } from "../../media/mockData";
 import { examTemplates, assignmentTemplates } from "../../assessments/mockData";
 

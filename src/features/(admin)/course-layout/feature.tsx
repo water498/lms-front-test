@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { getCourse } from "./mockData";
+import { getCourse } from "../course-layout/mockData";
 import { CourseDetailProvider } from "./context";
 
 const TABS = [

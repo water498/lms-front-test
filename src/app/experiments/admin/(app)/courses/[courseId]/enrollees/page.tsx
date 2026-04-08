@@ -1,7 +1,7 @@
 "use client";
 
 import EnrolleesTab from "@/features/(admin)/course-enrollees/feature";
-import { useCourseDetail } from "@/features/(admin)/course-detail/context";
+import { useCourseDetail } from "@/features/(admin)/course-layout/context";
 
 export default function Page() {
   const { sessions, enrollees } = useCourseDetail();

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../course-detail/mockData";
+import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../course-layout/mockData";
 
 function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
   const primary = instructors.find((i) => i.role === "PRIMARY");

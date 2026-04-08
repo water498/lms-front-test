@@ -14,7 +14,7 @@ import {
 import { type CertConfig } from "../../../lib/models";
 import { useCertStore } from "../certificates/store";
 import RichEditor from "../shared/rich-editor";
-import { type CoursePrerequisite, getPrerequisites } from "../course-detail/mockData";
+import { type CoursePrerequisite, getPrerequisites } from "../course-layout/mockData";
 import { useTaxonomyStore } from "../shared/taxonomy-store";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {

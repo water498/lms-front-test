@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { allCourses, inProgressCourses, type EnrolledCourse } from "../home/mockData";
 import { completedCourseMock } from "../my/sections/learning-tab";
-import { courseDetails, defaultCourseDetail, type CourseDetail } from "./mockData";
+import { courseDetails, defaultCourseDetail, type CourseDetail } from "../course-layout/mockData";
 import store from "../home/store";
 
 interface CourseContextValue {

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { PORTAL_BANNERS, PORTAL_POPUPS } from "../settings/mockData";
-import type { PortalBanner } from "../settings/mockData";
+import { PORTAL_BANNERS, PORTAL_POPUPS } from "../settings-layout/mockData";
+import type { PortalBanner } from "../settings-layout/mockData";
 
 type Tab = "banners" | "popups";
 

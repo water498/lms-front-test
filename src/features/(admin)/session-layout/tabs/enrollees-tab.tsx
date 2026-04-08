@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type CourseEnrollee } from "../../course-detail/mockData";
+import { type CourseEnrollee } from "../../course-layout/mockData";
 import UserDrawer from "../../course-enrollees/components/user-drawer";
 import AddLearnerModal from "../modals/add-learner-modal";
 

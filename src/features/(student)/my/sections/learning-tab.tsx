@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle, PenLine, Award } from "lucide-react";
 import { inProgressCourses, type EnrolledCourse } from "../../home/mockData";
-import { courseDetails, defaultCourseDetail } from "../../courses/mockData";
+import { courseDetails, defaultCourseDetail } from "../../course-layout/mockData";
 
 function firstActivityId(courseId: string): string {
   const detail = courseDetails[courseId] ?? defaultCourseDetail;

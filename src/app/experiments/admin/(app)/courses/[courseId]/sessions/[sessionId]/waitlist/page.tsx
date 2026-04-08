@@ -1,7 +1,7 @@
 "use client";
 
-import WaitlistTab from "@/features/(admin)/session-detail/tabs/waitlist-tab";
-import { useSessionDetail } from "@/features/(admin)/session-detail/context";
+import WaitlistTab from "@/features/(admin)/session-layout/tabs/waitlist-tab";
+import { useSessionDetail } from "@/features/(admin)/session-layout/context";
 
 export default function Page() {
   const { sessionId } = useSessionDetail();

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Pencil, Trash2, FileVideo, FileText, Package, Image, LayoutGrid, List, X, AlertTriangle, Ban, Eye, ChevronRight, ChevronDown, FolderIcon, FolderOpen, Plus, MoreHorizontal, FolderX } from "lucide-react";
 import { mediaAssets, mediaFolders as initialFolders, type MediaAsset, type AssetType, type UploadStatus, type MediaFolder } from "../mockData";
-import { getAllSessions } from "../../course-detail/mockData";
+import { getAllSessions } from "../../course-layout/mockData";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

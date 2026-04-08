@@ -1,6 +1,6 @@
 import type { EnrolledCourse } from "@/lib/models";
 import { inProgressCourses } from "../home/mockData";
-import { courseDetails, defaultCourseDetail } from "../courses/mockData";
+import { courseDetails, defaultCourseDetail } from "../course-layout/mockData";
 
 // ── Session meta (학생 포털 전용) ────────────────────────────────────────
 

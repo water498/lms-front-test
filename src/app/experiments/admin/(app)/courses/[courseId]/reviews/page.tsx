@@ -1,7 +1,7 @@
 "use client";
 
 import ReviewsTab from "@/features/(admin)/course-reviews/feature";
-import { useCourseDetail } from "@/features/(admin)/course-detail/context";
+import { useCourseDetail } from "@/features/(admin)/course-layout/context";
 
 export default function Page() {
   const { reviews } = useCourseDetail();

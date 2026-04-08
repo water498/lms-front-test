@@ -1,7 +1,7 @@
 "use client";
 
-import EnrollmentsTab from "@/features/(admin)/user-detail/tabs/enrollments-tab";
-import { useUserDetail } from "@/features/(admin)/user-detail/context";
+import EnrollmentsTab from "@/features/(admin)/user-layout/tabs/enrollments-tab";
+import { useUserDetail } from "@/features/(admin)/user-layout/context";
 
 export default function Page() {
   const { userId } = useUserDetail();
