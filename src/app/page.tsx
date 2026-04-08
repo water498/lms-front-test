@@ -3,53 +3,23 @@ import Link from "next/link";
 const experiments: { href: string; title: string; description: string }[] = [
   {
     href: "/experiments/platform-admin",
-    title: "🌐 OpenKnock 슈퍼어드민",
+    title: "OpenKnock 슈퍼어드민",
     description: "Control Plane — 전체 테넌트(B2C·B2B) 생성·플랜·SSO·인프라 생명주기 관리 내부툴",
   },
   {
     href: "/experiments/admin",
-    title: "🌐 Tenant 관리자(B2B)",
+    title: "Tenant 관리자(B2B)",
     description: "ORG_ADMIN 멀티페이지 관리자 대시보드 (과정·유저·수강·설정)",
   },
   {
+    href: "/experiments/instructor",
+    title: "강사 포털",
+    description: "강사 전용 대시보드 — 담당 차수·리뷰·정산·계좌 관리",
+  },
+  {
     href: "/experiments/student",
-    title: "🌐 통합 수강생 (B2C/B2B 토글)",
+    title: "통합 수강생 (B2C/B2B 토글)",
     description: "TenantContext feature flag 기반 — dev switcher로 B2C/B2B 전환",
-  },
-  {
-    href: "/experiments/scorm-lab",
-    title: "iSpring SCORM 테스트👩🏻‍🎓",
-    description: "ZIP 업로드 · 진행률 저장/재개 · 완료 조건 진단 (비개발자용)",
-  },
-  {
-    href: "/experiments/scorm12",
-    title: "SCORM 1.2",
-    description: "Mock SCORM 1.2 API + iframe 연동 테스트",
-  },
-  {
-    href: "/experiments/scorm2004",
-    title: "SCORM 2004",
-    description: "경량 SCORM 2004 API + iframe 테스트",
-  },
-  {
-    href: "/experiments/video-player",
-    title: "Video Player",
-    description: "Video.js HLS/MP4 재생 + 법정의무교육 모드 실험",
-  },
-  {
-    href: "/experiments/scorm-cdn-arch",
-    title: "SCORM CDN 아키텍처",
-    description: "CDN 서빙 구조, cross-origin 이슈, S3 CORS 전략 리서치 노트",
-  },
-  {
-    href: "/experiments/scorm-api-ref",
-    title: "SCORM API 레퍼런스",
-    description: "SCORM 1.2 / 2004 API 함수·CMI 필드·에러 코드 비교 정리",
-  },
-  {
-    href: "/experiments/scorm-session-arch",
-    title: "SCORM 세션 아키텍처",
-    description: "어댑터 레이어 · Redis 세션 버퍼 · 정규화 모델",
   },
 ];
 

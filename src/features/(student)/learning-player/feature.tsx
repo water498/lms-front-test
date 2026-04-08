@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 import "video.js/dist/video-js.css";
 
-import { VideoJsPlayer } from "@/features/(video-player)/lesson/components/video-js-player";
-import { mergeRanges, totalWatched } from "@/features/(video-player)/lesson/utils";
+import { VideoJsPlayer } from "./components/video-js-player";
+import { mergeRanges, totalWatched } from "./utils";
 import { courseDetails, defaultCourseDetail } from "../course-layout/mockData";
 import { allCourses, inProgressCourses } from "../student-dashboard/mockData";
 import type { CourseSubject } from "@/lib/models";
