@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import UserDetailFeature from "../../users/user-detail/feature";
+import UserDetailFeature from "../../user-detail/feature";
 
 interface Props {
   userId: string | null;

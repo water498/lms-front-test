@@ -1,2 +1,2 @@
-import Feature from "@/features/(admin)/users/access-logs/feature";
+import Feature from "@/features/(admin)/user-access-logs/feature";
 export default function Page() { return <Feature />; }

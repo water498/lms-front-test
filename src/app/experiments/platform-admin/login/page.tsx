@@ -1,2 +1,2 @@
-import LoginFeature from "@/features/(platform-admin)/auth/login/feature";
+import LoginFeature from "@/features/(platform-admin)/auth-login/feature";
 export default function Page() { return <LoginFeature />; }

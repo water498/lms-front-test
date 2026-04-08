@@ -1,4 +1,4 @@
-import AssignmentEditorFeature from "@/features/(admin)/assessments/assignment-editor/feature";
+import AssignmentEditorFeature from "@/features/(admin)/assessment-assignment-editor/feature";
 
 interface Props {
   params: Promise<{ id: string }>;

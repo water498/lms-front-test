@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { X, Search, Users } from "lucide-react";
 import { users } from "../../users/mockData";
-import { userGroups } from "../../users/groups/mockData";
+import { userGroups } from "../../user-groups/mockData";
 import { useOrgStructureStore, findDeptNode, type DeptNode } from "../../shared/org-structure-store";
 
 type ModalTab = "individual" | "group" | "org";

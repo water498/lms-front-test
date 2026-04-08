@@ -1,4 +1,4 @@
-import TenantDetailFeature from "@/features/(platform-admin)/tenants/tenant-detail/feature";
+import TenantDetailFeature from "@/features/(platform-admin)/tenant-detail/feature";
 
 interface Props {
   params: Promise<{ tenantId: string }>;

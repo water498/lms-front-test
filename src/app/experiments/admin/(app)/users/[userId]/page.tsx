@@ -1,4 +1,4 @@
-import UserDetailFeature from "@/features/(admin)/users/user-detail/feature";
+import UserDetailFeature from "@/features/(admin)/user-detail/feature";
 
 interface Props {
   params: Promise<{ userId: string }>;

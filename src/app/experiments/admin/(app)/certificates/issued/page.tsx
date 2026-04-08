@@ -1,4 +1,4 @@
-import CertificatesIssuedFeature from "@/features/(admin)/certificates/issued/feature";
+import CertificatesIssuedFeature from "@/features/(admin)/certificate-issued/feature";
 
 export default function Page() {
   return <CertificatesIssuedFeature />;

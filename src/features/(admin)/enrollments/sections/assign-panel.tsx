@@ -5,7 +5,7 @@ import { ChevronRight, Users, Search } from "lucide-react";
 import { courses } from "../../courses/mockData";
 import { getSessions, getEnrolleesBySession } from "../../course-detail/mockData";
 import { users } from "../../users/mockData";
-import { userGroups, userGroupMembers } from "../../users/groups/mockData";
+import { userGroups, userGroupMembers } from "../../user-groups/mockData";
 import {
   useOrgStructureStore,
   findDeptNode,

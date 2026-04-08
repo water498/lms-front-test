@@ -1,4 +1,4 @@
-import ExamEditorFeature from "@/features/(admin)/assessments/exam-editor/feature";
+import ExamEditorFeature from "@/features/(admin)/assessment-exam-editor/feature";
 
 interface Props {
   params: Promise<{ id: string }>;

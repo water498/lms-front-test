@@ -1,4 +1,4 @@
-import SurveyEditorFeature from "@/features/(admin)/assessments/survey-editor/feature";
+import SurveyEditorFeature from "@/features/(admin)/assessment-survey-editor/feature";
 
 interface Props {
   params: Promise<{ id: string }>;

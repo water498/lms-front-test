@@ -6,7 +6,7 @@ import { Download, Upload, Search } from "lucide-react";
 import { useUsersStore } from "../../shared/users-store";
 import { userStats, type User, type UserRole, type UserStatus } from "../mockData";
 import { useOrgStructureStore, findDeptNode, flatDeptIds, type DeptNode } from "../../shared/org-structure-store";
-import { userGroups } from "../groups/mockData";
+import { userGroups } from "../../user-groups/mockData";
 
 const ROLE_CONFIG: Record<UserRole, { label: string; className: string }> = {
   LEARNER:     { label: "수강생",     className: "bg-blue-100 text-blue-700" },

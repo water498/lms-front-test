@@ -1,2 +1,2 @@
-import ResetPasswordFeature from "@/features/(admin)/auth/reset-password/feature";
+import ResetPasswordFeature from "@/features/(admin)/auth-reset-password/feature";
 export default function Page() { return <ResetPasswordFeature />; }

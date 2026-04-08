@@ -1,4 +1,4 @@
-import AssessmentsSurveysFeature from "@/features/(admin)/assessments/surveys/feature";
+import AssessmentsSurveysFeature from "@/features/(admin)/assessment-surveys/feature";
 
 export default function Page() {
   return <AssessmentsSurveysFeature />;
