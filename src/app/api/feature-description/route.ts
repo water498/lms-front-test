@@ -23,6 +23,20 @@ const ROLE_MAP: Record<string, string> = {
 // home/dashboard는 역할 루트 페이지
 const ROOT_FEATURES = new Set(["home", "dashboard"]);
 
+// URL 패턴 → feature 디렉토리 역매핑 (앱 라우트와 feature 디렉토리명이 다른 경우)
+// key: [role, ...urlSegments 패턴] (동적 세그먼트는 무시)
+// value: feature 디렉토리 경로 (role 제외)
+const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string }[] = [
+  { role: "admin", urlSegments: ["courses", "*"], featurePath: "course-detail" },
+  { role: "admin", urlSegments: ["courses", "*", "sessions", "*"], featurePath: "session-detail" },
+  { role: "admin", urlSegments: ["users", "*"], featurePath: "users/user-detail" },
+  { role: "instructor", urlSegments: ["sessions", "*"], featurePath: "session-detail" },
+  { role: "student", urlSegments: ["courses", "*"], featurePath: "courses" },
+  { role: "student", urlSegments: ["sessions", "*"], featurePath: "session-workspace" },
+  { role: "student", urlSegments: ["learn", "*", "*"], featurePath: "learn" },
+  { role: "platform-admin", urlSegments: ["tenants", "*"], featurePath: "tenants/tenant-detail" },
+];
+
 let descriptionsMap: Record<string, string> | null = null;
 
 async function getDescriptionsMap(): Promise<Record<string, string>> {
@@ -120,6 +134,21 @@ function readFromFs(
       }
     }
     return "";
+  }
+
+  // URL→feature 역매핑 확인 (앱 라우트와 feature 디렉토리명이 다른 경우)
+  for (const mapping of URL_TO_FEATURE) {
+    if (mapping.role !== role) continue;
+    if (mapping.urlSegments.length !== featureSegments.length) continue;
+    const match = mapping.urlSegments.every(
+      (seg, i) => seg === "*" || seg === featureSegments[i]
+    );
+    if (match) {
+      const mdPath = pathMod.join(baseDir, mapping.featurePath, "feature-description.md");
+      if (fs.existsSync(mdPath)) {
+        try { return fs.readFileSync(mdPath, "utf-8"); } catch { /* fall through */ }
+      }
+    }
   }
 
   // feature path에서 feature-description.md 탐색

@@ -25,6 +25,19 @@ const ROLE_MAP = {
   "(student)": "/experiments/student",
 };
 
+// feature 디렉토리 → 실제 URL 경로 오버라이드
+// feature 디렉토리명과 앱 라우트가 다른 경우 여기에 추가
+const URL_OVERRIDE = {
+  "(admin)/course-detail": "/experiments/admin/courses/[courseId]",
+  "(admin)/session-detail": "/experiments/admin/courses/[courseId]/sessions/[sessionId]",
+  "(admin)/users/user-detail": "/experiments/admin/users/[userId]",
+  "(instructor)/session-detail": "/experiments/instructor/sessions/[sessionId]",
+  "(student)/courses": "/experiments/student/courses/[courseId]",
+  "(student)/session-workspace": "/experiments/student/sessions/[sessionId]",
+  "(student)/learn": "/experiments/student/learn/[courseId]/[activityId]",
+  "(platform-admin)/tenants/tenant-detail": "/experiments/platform-admin/tenants/[tenantId]",
+};
+
 /**
  * features 경로를 URL pathname으로 변환.
  * 예: src/features/(admin)/courses/feature-description.md → /experiments/admin/courses
@@ -41,6 +54,12 @@ function toUrlPath(fsPath) {
 
   // 나머지 세그먼트 = feature 경로
   const featureSegments = segments.slice(1);
+
+  // URL override 매핑 확인
+  const overrideKey = roleGroup + "/" + featureSegments.join("/");
+  if (URL_OVERRIDE[overrideKey]) {
+    return URL_OVERRIDE[overrideKey];
+  }
 
   // "home" 은 역할의 루트 페이지 → prefix만 반환
   if (featureSegments.length === 1 && featureSegments[0] === "home") {
