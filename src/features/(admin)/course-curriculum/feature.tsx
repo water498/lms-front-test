@@ -16,12 +16,12 @@ import {
   type CourseSubject,
   type CourseActivity,
   type ActivityType,
-} from "../mockData";
+} from "../course-detail/mockData";
 import { type SubjectPhase } from "@/lib/models";
-import { mediaAssets } from "../../media/mockData";
-import AddActivityModal from "../modals/add-activity-modal";
-import EditSubjectModal from "../modals/edit-subject-modal";
-import EditActivityModal from "../modals/edit-activity-modal";
+import { mediaAssets } from "../media/mockData";
+import AddActivityModal from "./modals/add-activity-modal";
+import EditSubjectModal from "./modals/edit-subject-modal";
+import EditActivityModal from "./modals/edit-activity-modal";
 import {
   DndContext,
   closestCenter,

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../mockData";
+import { type CourseSession, type SessionStatus, type SessionType, type CourseInstructor } from "../course-detail/mockData";
 
 function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
   const primary = instructors.find((i) => i.role === "PRIMARY");
@@ -19,7 +19,7 @@ function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
     </span>
   );
 }
-import CreateSessionModal from "../modals/create-session-modal";
+import CreateSessionModal from "./modals/create-session-modal";
 
 const STATUS_CONFIG: Record<SessionStatus, { label: string; className: string }> = {
   DRAFT:   { label: "준비중",  className: "bg-slate-100 text-slate-500" },

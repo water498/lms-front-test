@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { type CourseEnrollee } from "../../course-detail/mockData";
-import UserDrawer from "../../course-detail/components/user-drawer";
+import UserDrawer from "../../course-enrollees/components/user-drawer";
 import AddLearnerModal from "../modals/add-learner-modal";
 
 interface Props {

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { X, RefreshCw, ClipboardCheck, FileText } from "lucide-react";
-import type { OfflineSession } from "../mockData";
+import type { OfflineSession } from "../../course-detail/mockData";
 
 const BEFORE_OPTIONS = [0, 5, 10, 15, 30];
 const AFTER_OPTIONS = [10, 20, 30, 60];

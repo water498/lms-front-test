@@ -28,7 +28,14 @@ const ROLE_MAP = {
 // feature 디렉토리 → 실제 URL 경로 오버라이드
 // feature 디렉토리명과 앱 라우트가 다른 경우 여기에 추가
 const URL_OVERRIDE = {
-  "(admin)/course-detail": "/experiments/admin/courses/[courseId]",
+  // Admin course tabs (각 탭이 독립 feature)
+  "(admin)/course-info": "/experiments/admin/courses/[courseId]/info",
+  "(admin)/course-curriculum": "/experiments/admin/courses/[courseId]/curriculum",
+  "(admin)/course-sessions": "/experiments/admin/courses/[courseId]/sessions",
+  "(admin)/course-reviews": "/experiments/admin/courses/[courseId]/reviews",
+  "(admin)/course-enrollees": "/experiments/admin/courses/[courseId]/enrollees",
+  "(admin)/course-offline": "/experiments/admin/courses/[courseId]/offline",
+  // Other detail pages
   "(admin)/session-detail": "/experiments/admin/courses/[courseId]/sessions/[sessionId]",
   "(admin)/users/user-detail": "/experiments/admin/users/[userId]",
   "(instructor)/session-detail": "/experiments/instructor/sessions/[sessionId]",

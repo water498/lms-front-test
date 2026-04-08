@@ -10,12 +10,12 @@ import {
   courses,
   instructors,
   DEFAULT_CANCELLATION_POLICY,
-} from "../../courses/mockData";
-import { type CertConfig } from "../../../../lib/models";
-import { useCertStore } from "../../certificates/store";
-import RichEditor from "../../shared/rich-editor";
-import { type CoursePrerequisite, getPrerequisites } from "../mockData";
-import { useTaxonomyStore } from "../../shared/taxonomy-store";
+} from "../courses/mockData";
+import { type CertConfig } from "../../../lib/models";
+import { useCertStore } from "../certificates/store";
+import RichEditor from "../shared/rich-editor";
+import { type CoursePrerequisite, getPrerequisites } from "../course-detail/mockData";
+import { useTaxonomyStore } from "../shared/taxonomy-store";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {
   PUBLISHED: { label: "게시됨",   className: "bg-emerald-100 text-emerald-700" },

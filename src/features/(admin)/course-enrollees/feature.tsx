@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { type CourseEnrollee, type CourseSession } from "../mockData";
-import UserDrawer from "../components/user-drawer";
+import { type CourseEnrollee, type CourseSession } from "../course-detail/mockData";
+import UserDrawer from "./components/user-drawer";
 
 interface Props {
   enrollees: CourseEnrollee[];

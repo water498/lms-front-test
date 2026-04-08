@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { QrCode, ClipboardList } from "lucide-react";
-import { type CourseSession, type OfflineSession, type OfflineSessionStatus, type CourseInstructor, getOfflineSessions, getOfflineAttendances } from "../mockData";
+import { type CourseSession, type OfflineSession, type OfflineSessionStatus, type CourseInstructor, getOfflineSessions, getOfflineAttendances } from "../course-detail/mockData";
 
 function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
   const primary = instructors.find((i) => i.role === "PRIMARY");
@@ -19,9 +19,9 @@ function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
     </span>
   );
 }
-import QrModal from "../modals/qr-modal";
-import AttendanceModal from "../modals/attendance-modal";
-import CreateOfflineSessionModal from "../modals/create-offline-session-modal";
+import QrModal from "./modals/qr-modal";
+import AttendanceModal from "./modals/attendance-modal";
+import CreateOfflineSessionModal from "./modals/create-offline-session-modal";
 
 const STATUS_CONFIG: Record<OfflineSessionStatus, { label: string; className: string }> = {
   SCHEDULED:  { label: "예정",   className: "bg-blue-100 text-blue-700" },

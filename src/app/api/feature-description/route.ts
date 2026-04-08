@@ -27,7 +27,14 @@ const ROOT_FEATURES = new Set(["home", "dashboard"]);
 // key: [role, ...urlSegments 패턴] (동적 세그먼트는 무시)
 // value: feature 디렉토리 경로 (role 제외)
 const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string }[] = [
-  { role: "admin", urlSegments: ["courses", "*"], featurePath: "course-detail" },
+  // Admin course tabs (각 탭이 독립 feature)
+  { role: "admin", urlSegments: ["courses", "*", "info"], featurePath: "course-info" },
+  { role: "admin", urlSegments: ["courses", "*", "curriculum"], featurePath: "course-curriculum" },
+  { role: "admin", urlSegments: ["courses", "*", "sessions"], featurePath: "course-sessions" },
+  { role: "admin", urlSegments: ["courses", "*", "reviews"], featurePath: "course-reviews" },
+  { role: "admin", urlSegments: ["courses", "*", "enrollees"], featurePath: "course-enrollees" },
+  { role: "admin", urlSegments: ["courses", "*", "offline"], featurePath: "course-offline" },
+  // Other detail pages
   { role: "admin", urlSegments: ["courses", "*", "sessions", "*"], featurePath: "session-detail" },
   { role: "admin", urlSegments: ["users", "*"], featurePath: "users/user-detail" },
   { role: "instructor", urlSegments: ["sessions", "*"], featurePath: "session-detail" },

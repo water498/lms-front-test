@@ -19,9 +19,9 @@ function InstructorCell({ instructors }: { instructors: CourseInstructor[] }) {
     </span>
   );
 }
-import QrModal from "../../course-detail/modals/qr-modal";
-import AttendanceModal from "../../course-detail/modals/attendance-modal";
-import CreateOfflineSessionModal from "../../course-detail/modals/create-offline-session-modal";
+import QrModal from "../../course-offline/modals/qr-modal";
+import AttendanceModal from "../../course-offline/modals/attendance-modal";
+import CreateOfflineSessionModal from "../../course-offline/modals/create-offline-session-modal";
 
 const STATUS_CONFIG: Record<OfflineSessionStatus, { label: string; className: string }> = {
   SCHEDULED: { label: "예정", className: "bg-blue-100 text-blue-700" },
