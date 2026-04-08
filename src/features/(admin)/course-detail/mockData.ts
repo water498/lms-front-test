@@ -38,17 +38,19 @@ export type {
 const curricula: Record<string, CourseSubject[]> = {
   c1: [
     {
-      id: "s0", courseId: "c1", title: "사전 진단 평가", phase: "PRE" as const, order: 0,
+      id: "s0", courseId: "c1", title: "사전 진단 평가", phase: "PRE" as const, order: 0, requiredDayNum: 1,
       activities: [
         { id: "a0", subjectId: "s0", title: "안전 지식 사전 테스트", type: "QUIZ", questionCount: 10, order: 1, isDeleted: false },
+        { id: "a0b", subjectId: "s0", title: "1일차 안전교육", type: "OFFLINE", order: 2, isDeleted: false },
       ],
     },
     {
-      id: "s1", courseId: "c1", title: "안전수칙의 이해", phase: "LEARNING" as const, order: 1,
+      id: "s1", courseId: "c1", title: "안전수칙의 이해", phase: "LEARNING" as const, order: 1, requiredDayNum: 2,
       activities: [
         { id: "a1", subjectId: "s1", title: "안전수칙이란 무엇인가",          type: "VIDEO",      videoDurationMin: 12,  mediaAssetId: "ma1", order: 1, isDeleted: false },
         { id: "a2", subjectId: "s1", title: "개인보호장구 착용 방법",          type: "SCORM",                             mediaAssetId: "ma6", order: 2, isDeleted: false },
         { id: "a3", subjectId: "s1", title: "개념 확인 퀴즈",                 type: "QUIZ",       questionCount: 5,                            order: 3, isDeleted: false },
+        { id: "a3b", subjectId: "s1", title: "2일차 현장 실습", type: "OFFLINE", order: 4, isDeleted: false },
       ],
     },
     {
@@ -67,7 +69,7 @@ const curricula: Record<string, CourseSubject[]> = {
       ],
     },
     {
-      id: "s4", courseId: "c1", title: "사후 종합 평가", phase: "POST" as const, order: 4,
+      id: "s4", courseId: "c1", title: "사후 종합 평가", phase: "POST" as const, order: 4, requiredDayNum: 3,
       activities: [
         { id: "a9",  subjectId: "s4", title: "종합 평가 시험",     type: "QUIZ",   questionCount: 20, order: 1, isDeleted: false },
         { id: "a10", subjectId: "s4", title: "교육 만족도 설문",   type: "SURVEY",                    order: 2, isDeleted: false },

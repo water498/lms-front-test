@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play, HelpCircle, Clipboard, FileText, ChevronDown, Clock } from "lucide-react";
+import { Play, HelpCircle, Clipboard, FileText, ChevronDown, Clock, School } from "lucide-react";
 import { type CourseSubject, type ActivityType } from "@/lib/models";
 
 const ACTIVITY_ICON: Record<ActivityType, React.ReactNode> = {
@@ -10,6 +10,7 @@ const ACTIVITY_ICON: Record<ActivityType, React.ReactNode> = {
   ASSIGNMENT: <Clipboard className="w-3.5 h-3.5 text-violet-400" />,
   SCORM:      <FileText className="w-3.5 h-3.5 text-emerald-400" />,
   SURVEY:     <FileText className="w-3.5 h-3.5 text-indigo-400" />,
+  OFFLINE:    <School className="w-3.5 h-3.5 text-orange-400" />,
 };
 
 interface Props {

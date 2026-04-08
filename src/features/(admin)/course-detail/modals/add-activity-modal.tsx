@@ -14,12 +14,13 @@ function formatBytes(bytes: number): string {
   return `${(bytes / 1073741824).toFixed(1)} GB`;
 }
 
-type ActivityTab = "MEDIA" | "QUIZ" | "ASSIGNMENT";
+type ActivityTab = "MEDIA" | "QUIZ" | "ASSIGNMENT" | "OFFLINE";
 
 const TABS: { id: ActivityTab; icon: string; label: string }[] = [
   { id: "MEDIA", icon: "📹", label: "미디어 자료" },
   { id: "QUIZ", icon: "📝", label: "시험" },
   { id: "ASSIGNMENT", icon: "📋", label: "과제" },
+  { id: "OFFLINE", icon: "🏫", label: "오프라인" },
 ];
 
 const SUBTYPE_LABELS: Record<string, string> = {
@@ -78,7 +79,8 @@ export default function AddActivityModal({
     title.trim() !== "" &&
     ((activeTab === "MEDIA" && selectedMediaId !== null) ||
       (activeTab === "QUIZ" && selectedExamId !== null) ||
-      (activeTab === "ASSIGNMENT" && selectedAssignId !== null));
+      (activeTab === "ASSIGNMENT" && selectedAssignId !== null) ||
+      activeTab === "OFFLINE");
 
   function buildActivity(): CourseActivity {
     const id = `a${Date.now()}`;
@@ -100,6 +102,9 @@ export default function AddActivityModal({
         examTemplateId: selectedExamId ?? undefined,
         questionCount: template?.rules.reduce((s, r) => s + r.count, 0),
       };
+    }
+    if (activeTab === "OFFLINE") {
+      return { id, title, type: "OFFLINE", subjectId: "", order: 0, isDeleted: false };
     }
     // ASSIGNMENT
     return {
@@ -383,6 +388,19 @@ export default function AddActivityModal({
             >
               <ExternalLink size={13} />새 과제 만들기
             </Link>
+          </div>
+        )}
+
+        {/* OFFLINE tab */}
+        {activeTab === "OFFLINE" && (
+          <div className="mb-5">
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+              <p className="text-sm text-orange-700 font-medium mb-1">오프라인 강의/실습</p>
+              <p className="text-xs text-orange-600 leading-relaxed">
+                현장에서 진행되는 강의나 실습을 커리큘럼에 등록합니다.
+                별도 미디어나 템플릿이 필요하지 않으며, 해당 회차 출석 시 자동으로 수강 완료 처리됩니다.
+              </p>
+            </div>
           </div>
         )}
 

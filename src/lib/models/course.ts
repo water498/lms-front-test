@@ -105,7 +105,7 @@ export interface LearningPathCourse {
   order: number;
 }
 
-export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "SURVEY";
+export type ActivityType = "VIDEO" | "SCORM" | "QUIZ" | "ASSIGNMENT" | "SURVEY" | "OFFLINE";
 
 export interface CourseActivity {
   id: string;
@@ -131,6 +131,7 @@ export interface CourseSubject {
   title: string;
   phase: SubjectPhase;
   order: number;
+  requiredDayNum?: number;  // 오프라인 회차 출석 요구. null이면 제한 없음
   activities: CourseActivity[]; // [UI convenience] JOIN 결과
 }
 

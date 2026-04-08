@@ -42,6 +42,7 @@ const ACTIVITY_ICON: Record<ActivityType, string> = {
   QUIZ: "📝",
   ASSIGNMENT: "📋",
   SURVEY: "📊",
+  OFFLINE: "🏫",
 };
 
 const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
@@ -50,6 +51,7 @@ const ACTIVITY_TYPE_LABEL: Record<ActivityType, string> = {
   QUIZ: "시험",
   ASSIGNMENT: "과제",
   SURVEY: "설문",
+  OFFLINE: "오프라인",
 };
 
 const PHASE_CONFIG: Record<
