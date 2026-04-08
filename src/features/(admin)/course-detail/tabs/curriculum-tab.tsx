@@ -20,6 +20,8 @@ import {
 import { type SubjectPhase } from "@/lib/models";
 import { mediaAssets } from "../../media/mockData";
 import AddActivityModal from "../modals/add-activity-modal";
+import EditSubjectModal from "../modals/edit-subject-modal";
+import EditActivityModal from "../modals/edit-activity-modal";
 import {
   DndContext,
   closestCenter,
@@ -131,6 +133,7 @@ interface ActivityRowProps {
   activity: CourseActivity;
   hasOngoingSessions: boolean;
   enrolleeCount: number;
+  onEdit: (updated: Partial<CourseActivity> & { id: string }) => void;
   onDelete: () => void;
 }
 
@@ -138,9 +141,11 @@ function ActivityRow({
   activity,
   hasOngoingSessions,
   enrolleeCount,
+  onEdit,
   onDelete,
 }: ActivityRowProps) {
   const [showWarning, setShowWarning] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const {
     attributes,
     listeners,
@@ -201,7 +206,7 @@ function ActivityRow({
           {meta ? ` · ${meta}` : ""}
         </span>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button className="p-1 text-slate-400 hover:text-violet-600 rounded">
+          <button onClick={() => setShowEditModal(true)} className="p-1 text-slate-400 hover:text-violet-600 rounded">
             <Pencil size={13} />
           </button>
           <button
@@ -224,6 +229,14 @@ function ActivityRow({
           onCancel={() => setShowWarning(false)}
         />
       )}
+
+      {showEditModal && (
+        <EditActivityModal
+          activity={activity}
+          onSave={(updated) => { onEdit(updated); setShowEditModal(false); }}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
     </>
   );
 }
@@ -234,9 +247,12 @@ interface SubjectAccordionProps {
   hasOngoingSessions: boolean;
   hasInstructor: boolean;
   enrolleeCount: number;
+  courseMode: string;
   onDelete: () => void;
   onAddActivity: (activity: CourseActivity) => void;
   onDeleteActivity: (activityId: string) => void;
+  onEditSubject: (updated: Partial<CourseSubject> & { id: string }) => void;
+  onEditActivity: (updated: Partial<CourseActivity> & { id: string }) => void;
 }
 
 function SubjectAccordion({
@@ -245,12 +261,16 @@ function SubjectAccordion({
   hasOngoingSessions,
   hasInstructor,
   enrolleeCount,
+  courseMode,
   onDelete,
   onAddActivity,
   onDeleteActivity,
+  onEditSubject,
+  onEditActivity,
 }: SubjectAccordionProps) {
   const [open, setOpen] = useState(true);
   const [showAddActivity, setShowAddActivity] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [localActivities, setLocalActivities] = useState(subject.activities);
 
   const {
@@ -311,6 +331,12 @@ function SubjectAccordion({
         >
           {subject.phase}
         </span>
+        {subject.requiredDayNum && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-700 flex items-center gap-0.5">
+            <Lock size={9} />
+            {subject.requiredDayNum}회차 출석 필요
+          </span>
+        )}
         <span className="text-xs text-slate-400 ml-1">
           {subject.activities.length}개 활동
         </span>
@@ -318,7 +344,7 @@ function SubjectAccordion({
           className="ml-auto flex gap-1"
           onClick={(e) => e.stopPropagation()}
         >
-          <button className="p-1 text-slate-400 hover:text-violet-600 rounded">
+          <button onClick={() => setShowEditModal(true)} className="p-1 text-slate-400 hover:text-violet-600 rounded">
             <Pencil size={13} />
           </button>
           <button
@@ -348,6 +374,7 @@ function SubjectAccordion({
                   activity={activity}
                   hasOngoingSessions={hasOngoingSessions}
                   enrolleeCount={enrolleeCount}
+                  onEdit={onEditActivity}
                   onDelete={() => onDeleteActivity(activity.id)}
                 />
               ))}
@@ -379,6 +406,15 @@ function SubjectAccordion({
           onClose={() => setShowAddActivity(false)}
         />
       )}
+
+      {showEditModal && (
+        <EditSubjectModal
+          subject={subject}
+          courseMode={courseMode}
+          onSave={(updated) => { onEditSubject(updated); setShowEditModal(false); }}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
     </div>
   );
 }
@@ -389,10 +425,13 @@ interface PhraseSectionProps {
   hasOngoingSessions: boolean;
   hasInstructor: boolean;
   enrolleeCount: number;
+  courseMode: string;
   onDeleteSubject: (subjectId: string) => void;
   onAddActivity: (subjectId: string, activity: CourseActivity) => void;
   onDeleteActivity: (subjectId: string, activityId: string) => void;
   onAddSubject: (title: string, phase: SubjectPhase) => void;
+  onEditSubject: (updated: Partial<CourseSubject> & { id: string }) => void;
+  onEditActivity: (subjectId: string, updated: Partial<CourseActivity> & { id: string }) => void;
 }
 
 function PhaseSection({
@@ -401,10 +440,13 @@ function PhaseSection({
   hasOngoingSessions,
   hasInstructor,
   enrolleeCount,
+  courseMode,
   onDeleteSubject,
   onAddActivity,
   onDeleteActivity,
   onAddSubject,
+  onEditSubject,
+  onEditActivity,
 }: PhraseSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [addingSubject, setAddingSubject] = useState(false);
@@ -480,6 +522,7 @@ function PhaseSection({
                   hasOngoingSessions={hasOngoingSessions}
                   hasInstructor={hasInstructor}
                   enrolleeCount={enrolleeCount}
+                  courseMode={courseMode}
                   onDelete={() => onDeleteSubject(subject.id)}
                   onAddActivity={(activity) =>
                     onAddActivity(subject.id, activity)
@@ -487,6 +530,8 @@ function PhaseSection({
                   onDeleteActivity={(activityId) =>
                     onDeleteActivity(subject.id, activityId)
                   }
+                  onEditSubject={onEditSubject}
+                  onEditActivity={(updated) => onEditActivity(subject.id, updated)}
                 />
               ))}
             </SortableContext>
@@ -545,11 +590,14 @@ interface CurriculumTabProps {
   hasInstructor: boolean;
   enrolleeCount: number;
   isSequential: boolean;
+  courseMode: string;
   onToggleSequential: (value: boolean) => void;
   onAddSubject: (title: string, phase?: SubjectPhase) => void;
   onDeleteSubject: (subjectId: string) => void;
   onAddActivity: (subjectId: string, activity: CourseActivity) => void;
   onDeleteActivity: (subjectId: string, activityId: string) => void;
+  onEditSubject: (updated: Partial<CourseSubject> & { id: string }) => void;
+  onEditActivity: (subjectId: string, updated: Partial<CourseActivity> & { id: string }) => void;
 }
 
 export default function CurriculumTab({
@@ -558,11 +606,14 @@ export default function CurriculumTab({
   hasInstructor,
   enrolleeCount,
   isSequential,
+  courseMode,
   onToggleSequential,
   onAddSubject,
   onDeleteSubject,
   onAddActivity,
   onDeleteActivity,
+  onEditSubject,
+  onEditActivity,
 }: CurriculumTabProps) {
   // Group subjects by phase
   const subjectsByPhase: Record<SubjectPhase, CourseSubject[]> = {
@@ -629,10 +680,13 @@ export default function CurriculumTab({
           hasOngoingSessions={hasOngoingSessions}
           hasInstructor={hasInstructor}
           enrolleeCount={enrolleeCount}
+          courseMode={courseMode}
           onDeleteSubject={onDeleteSubject}
           onAddActivity={onAddActivity}
           onDeleteActivity={onDeleteActivity}
           onAddSubject={onAddSubject}
+          onEditSubject={onEditSubject}
+          onEditActivity={onEditActivity}
         />
       ))}
     </div>

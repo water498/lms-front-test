@@ -36,6 +36,35 @@ export type {
 } from "@/lib/models";
 
 const curricula: Record<string, CourseSubject[]> = {
+  c4: [
+    {
+      id: "s4-0", courseId: "c4", title: "위험성평가 사전 테스트", phase: "PRE" as const, order: 0, requiredDayNum: 1,
+      activities: [
+        { id: "a4-0", subjectId: "s4-0", title: "위험성평가 사전 진단", type: "QUIZ", questionCount: 15, order: 1, isDeleted: false },
+      ],
+    },
+    {
+      id: "s4-1", courseId: "c4", title: "위험 식별 이론", phase: "LEARNING" as const, order: 1, requiredDayNum: 1,
+      activities: [
+        { id: "a4-1", subjectId: "s4-1", title: "위험 식별 개론 강의", type: "OFFLINE", order: 1, isDeleted: false },
+        { id: "a4-2", subjectId: "s4-1", title: "위험 유형 분류 영상", type: "VIDEO", videoDurationMin: 20, mediaAssetId: "ma1", order: 2, isDeleted: false },
+      ],
+    },
+    {
+      id: "s4-2", courseId: "c4", title: "위험성 분석·평가 실습", phase: "LEARNING" as const, order: 2, requiredDayNum: 2,
+      activities: [
+        { id: "a4-3", subjectId: "s4-2", title: "현장 위험성 분석 실습", type: "OFFLINE", order: 1, isDeleted: false },
+        { id: "a4-4", subjectId: "s4-2", title: "분석 결과 보고서 과제", type: "ASSIGNMENT", questionCount: 1, order: 2, isDeleted: false },
+      ],
+    },
+    {
+      id: "s4-3", courseId: "c4", title: "종합 평가", phase: "POST" as const, order: 3, requiredDayNum: 3,
+      activities: [
+        { id: "a4-5", subjectId: "s4-3", title: "위험관리 종합 시험", type: "QUIZ", questionCount: 25, order: 1, isDeleted: false },
+        { id: "a4-6", subjectId: "s4-3", title: "교육 만족도 설문", type: "SURVEY", order: 2, isDeleted: false },
+      ],
+    },
+  ],
   c1: [
     {
       id: "s0", courseId: "c1", title: "사전 진단 평가", phase: "PRE" as const, order: 0, requiredDayNum: 1,
@@ -88,6 +117,8 @@ const sessions: Record<string, CourseSession[]> = {
   c4: [
     { id: "se4", courseId: "c4", name: "2기",               type: "COHORT",     cohortNumber: 2, startDate: "2025-02-10", endDate: "2025-03-21", capacity: 30, enrolled: 30, status: "ONGOING", visible: true,  forSale: false, instructors: [{ name: "박성훈", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80, offlineAttendanceThreshold: 75 },
     { id: "se5", courseId: "c4", name: "4기",               type: "COHORT",     cohortNumber: 4, startDate: "2025-04-07", endDate: "2025-04-25", capacity: 30, enrolled: 8,  status: "OPEN",    visible: true,  forSale: false, instructors: [{ name: "박성훈", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80, offlineAttendanceThreshold: 75 },
+    { id: "se7", courseId: "c4", name: "5기",               type: "COHORT",     cohortNumber: 5, startDate: "2025-05-12", endDate: "2025-05-30", capacity: 30, enrolled: 0,  status: "DRAFT",   visible: false, forSale: false, instructors: [],                                    location: "강남교육센터 3F", completionThreshold: 80, offlineAttendanceThreshold: 75 },
+    { id: "se8", courseId: "c4", name: "1기",               type: "COHORT",     cohortNumber: 1, startDate: "2024-11-04", endDate: "2024-11-22", capacity: 30, enrolled: 5,  status: "CANCELLED", visible: false, forSale: false, instructors: [{ name: "박성훈", role: "PRIMARY" }], location: "강남교육센터 3F", completionThreshold: 80, offlineAttendanceThreshold: 75, cancelledAt: "2024-10-28", cancellationReason: "수강 인원 미달 (최소 인원 15명)" },
   ],
 };
 

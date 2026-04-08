@@ -63,6 +63,22 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
     );
   }
 
+  function handleEditSubject(updated: Partial<CourseSubject> & { id: string }) {
+    setSubjects((prev) =>
+      prev.map((s) => (s.id === updated.id ? { ...s, ...updated } : s))
+    );
+  }
+
+  function handleEditActivity(subjectId: string, updated: Partial<CourseActivity> & { id: string }) {
+    setSubjects((prev) =>
+      prev.map((s) =>
+        s.id === subjectId
+          ? { ...s, activities: s.activities.map((a) => (a.id === updated.id ? { ...a, ...updated } : a)) }
+          : s
+      )
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5">
       {/* Breadcrumb */}
@@ -102,11 +118,14 @@ export default function CourseDetailFeature({ courseId }: { courseId: string }) 
             hasInstructor={!!course.instructorId}
             enrolleeCount={enrollees.length}
             isSequential={isSequential}
+            courseMode={course.mode ?? "ONLINE"}
             onToggleSequential={setIsSequential}
             onAddSubject={handleAddSubject}
             onDeleteSubject={handleDeleteSubject}
             onAddActivity={handleAddActivity}
             onDeleteActivity={handleDeleteActivity}
+            onEditSubject={handleEditSubject}
+            onEditActivity={handleEditActivity}
           />
         )}
         {activeTab === "sessions"   && <SessionsTab sessions={sessions} courseId={courseId} defaultMinEnrollment={course.defaultMinLearners} />}
