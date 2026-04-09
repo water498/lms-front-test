@@ -41,8 +41,8 @@ const MOCK_USERS: Record<UserRole, AuthUser> = {
 /** role별 로그인 후 리다이렉트 경로 */
 export const ROLE_REDIRECT: Record<UserRole, string> = {
   SUPER_ADMIN: "/platform-admin",
-  ORG_ADMIN: "/admin",
-  INSTRUCTOR: "/instructor",
+  ORG_ADMIN: "/backoffice",
+  INSTRUCTOR: "/backoffice",
   LEARNER: "/student",
 };
 
