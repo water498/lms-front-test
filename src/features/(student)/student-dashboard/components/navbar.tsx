@@ -22,8 +22,7 @@ import {
   NOTIF_ICON,
 } from "../../shared/notification-data";
 
-// Mock: 현재 사용자 역할
-const CURRENT_USER_ROLES = ["STUDENT", "INSTRUCTOR"];
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 export interface CardActions {
   cart: Set<string>;
@@ -37,6 +36,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
   const { tenant, switchTenant } = useTenantContextStore();
   const { features } = tenant;
   const { isLoggedIn, logout } = useStudentAuthStore();
+  const globalRole = useAuthStore((s) => s.role);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
@@ -241,14 +241,14 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             </Link>
           )}
 
-          {/* 강사 포털 — [INSTRUCTOR only] */}
-          {CURRENT_USER_ROLES.includes("INSTRUCTOR") && (
+          {/* Backoffice 전환 — INSTRUCTOR/ORG_ADMIN만 */}
+          {(globalRole === "INSTRUCTOR" || globalRole === "ORG_ADMIN") && (
             <Link
               href="/backoffice"
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <GraduationCap className="w-4 h-4" />
-              <span className="hidden md:block">강사 포털</span>
+              <span className="hidden md:block">Backoffice</span>
             </Link>
           )}
 
