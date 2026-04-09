@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useStudentAuthStore } from "../shared/auth-store";
 import { inProgressCourses } from "../student-dashboard/mockData";
-import { completedCourseMock } from "./sections/learning-tab";
+import { completedCourseMock } from "../mypage-learning/feature";
 import store from "../student-dashboard/store";
 import { useTenantContextStore } from "../shared/tenant-context-store";
 

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { allCourses, inProgressCourses, type EnrolledCourse } from "../student-dashboard/mockData";
-import { completedCourseMock } from "../my-page-layout/sections/learning-tab";
+import { completedCourseMock } from "../mypage-learning/feature";
 import { courseDetails, defaultCourseDetail, type CourseDetail } from "../course-layout/mockData";
 import store from "../student-dashboard/store";
 

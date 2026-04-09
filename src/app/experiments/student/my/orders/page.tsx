@@ -1,4 +1,4 @@
-import { OrdersTab } from "@/features/(student)/my-page-layout/sections/orders-tab";
+import { OrdersTab } from "@/features/(student)/mypage-order-list/feature";
 
 export default function OrdersPage() {
   return <OrdersTab />;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Download, File, FileText, Presentation, FileSpreadsheet } from "lucide-react";
-import type { StudentResource } from "../session-layout/mockData";
+import type { StudentResource } from "../course-session-layout/mockData";
 
 const MIME_ICON_DARK: Record<string, React.ReactNode> = {
   "application/pdf": <FileText size={16} className="text-red-400" />,

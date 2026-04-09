@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { announcements } from "../mockData";
 
 const SUBTYPE_STYLES: Record<string, string> = {
-  "공지":     "bg-zinc-700/50 text-zinc-300",
-  "이벤트":   "bg-rose-900/40 text-rose-300",
-  "업데이트": "bg-sky-900/40 text-sky-300",
+  공지: "bg-zinc-700/50 text-zinc-300",
+  이벤트: "bg-rose-900/40 text-rose-300",
+  업데이트: "bg-sky-900/40 text-sky-300",
 };
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -13,7 +14,12 @@ export function AnnouncementGrid() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-white">공지 · 이벤트</h3>
-        <button className="text-sm text-zinc-500 hover:text-violet-400 transition-colors">전체 보기 →</button>
+        <Link
+          href="/experiments/student/announcements"
+          className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
+        >
+          전체 보기 →
+        </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {announcements.map((ann) => {
@@ -21,7 +27,9 @@ export function AnnouncementGrid() {
             ? Date.now() - new Date(ann.createdAt).getTime() < SEVEN_DAYS_MS
             : false;
           const subtype = ann.subtype ?? "공지";
-          const dateStr = ann.sentAt ? ann.sentAt.slice(0, 10) : ann.createdAt.slice(0, 10);
+          const dateStr = ann.sentAt
+            ? ann.sentAt.slice(0, 10)
+            : ann.createdAt.slice(0, 10);
           return (
             <div
               key={ann.id}
@@ -40,7 +48,9 @@ export function AnnouncementGrid() {
                     {ann.title}
                   </p>
                   {isNew && (
-                    <span className="shrink-0 text-[10px] font-bold text-violet-400">NEW</span>
+                    <span className="shrink-0 text-[10px] font-bold text-violet-400">
+                      NEW
+                    </span>
                   )}
                 </div>
                 <p className="text-xs text-zinc-600 mt-1">{dateStr}</p>

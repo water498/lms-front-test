@@ -1,4 +1,4 @@
-import { CertificatesTab } from "@/features/(student)/my-page-layout/sections/certificates-tab";
+import { CertificatesTab } from "@/features/(student)/mypage-certificate-list/feature";
 
 export default function CertificatesPage() {
   return <CertificatesTab />;

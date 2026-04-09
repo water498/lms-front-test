@@ -6,7 +6,7 @@ import { ShoppingCart, CreditCard, BookOpen, Award, BarChart2, Clock, Play, User
 import { type Course } from "../../student-dashboard/mockData";
 import { type CourseSubject } from "@/lib/models";
 import { courseDetails, defaultCourseDetail, sessionsByCourse } from "../mockData";
-import { studentSessions } from "../../session-layout/mockData";
+import { studentSessions } from "../../course-session-layout/mockData";
 import { useTenantContextStore } from "../../shared/tenant-context-store";
 import { matchesOrgFilter } from "../../shared/org-filter";
 

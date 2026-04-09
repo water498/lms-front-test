@@ -1,4 +1,4 @@
-import { ProfileTab } from "@/features/(student)/my-page-layout/sections/profile-tab";
+import { ProfileTab } from "@/features/(student)/mypage-profile/feature";
 
 export default function ProfilePage() {
   return <ProfileTab />;

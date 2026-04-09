@@ -8,7 +8,7 @@ import {
   MOCK_NOTIFS,
   NOTIF_ICON,
   NOTIF_TYPE_LABEL,
-} from "../../shared/notification-data";
+} from "../shared/notification-data";
 
 // ── Component ────────────────────────────────────────────────────────────────
 

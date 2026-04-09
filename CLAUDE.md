@@ -63,6 +63,37 @@ src/
 
 ---
 
+## Feature 디렉토리 구조 규칙
+
+모든 feature는 아래 구조를 따른다:
+
+```
+src/features/({역할})/{feature-name}/
+├── feature.tsx              ← 필수. 메인 컴포넌트 (default export)
+├── feature-description.md   ← 필수. 기능 설명서
+├── mockData.ts              ← 목 데이터 (프로토타입 전용)
+├── context.tsx              ← layout feature의 공유 상태 (프로토타입 전용)
+├── store.ts                 ← zustand 로컬 상태
+├── components/              ← 재사용 UI 컴포넌트 (Navbar, Card 등)
+├── sections/                ← 페이지 섹션/하위 뷰 (결제 성공/실패 등)
+└── modals/                  ← 모달 다이얼로그
+```
+
+### 하위 폴더 규칙
+- `components/`, `sections/`, `modals/` 세 가지만 허용. 다른 하위 폴더 생성 금지
+- **components/는 순수 props-driven**: store, context, 전역 상태를 직접 import하지 않는다.
+  모든 데이터는 props로 전달받아 재사용성을 보장한다.
+  (store/context 접근은 feature.tsx나 sections/에서 하고, components/에 props로 내려준다)
+- `sections/`: 한 feature 안에서 화면을 구성하는 하위 뷰. 독립 feature가 아닌 내부 구현
+- `modals/`: 해당 feature 전용 모달. 다른 feature에서도 쓰이면 공유 위치로 이동
+
+### 새 feature 추가 시 필수 사항
+1. `feature.tsx` + `feature-description.md` 반드시 생성
+2. app route `page.tsx`는 feature import만 — 로직 없음
+3. pre-commit hook이 feature 코드 변경 시 md 동시 변경을 검증
+
+---
+
 ## 실험 추가 방법
 
 1. `src/features/({역할})/{feature-name}/feature.tsx` 생성

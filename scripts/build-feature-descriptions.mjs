@@ -109,23 +109,23 @@ const URL_OVERRIDE = {
   "(student)/course-instructor": "/experiments/student/courses/[courseId]/instructor",
   "(student)/course-reviews": "/experiments/student/courses/[courseId]/reviews",
 
-  // ── Student: session layout + tabs ──
-  "(student)/session-layout": "/experiments/student/sessions/[sessionId]",
-  "(student)/session-home": "/experiments/student/sessions/[sessionId]/home",
-  "(student)/session-announcements": "/experiments/student/sessions/[sessionId]/announcements",
-  "(student)/session-resources": "/experiments/student/sessions/[sessionId]/resources",
-  "(student)/course-qna": "/experiments/student/sessions/[sessionId]/qna",
+  // ── Student: course-session layout + tabs ──
+  "(student)/course-session-layout": "/experiments/student/sessions/[sessionId]",
+  "(student)/course-session-home": "/experiments/student/sessions/[sessionId]/home",
+  "(student)/course-session-notice-list": "/experiments/student/sessions/[sessionId]/announcements",
+  "(student)/course-session-resources": "/experiments/student/sessions/[sessionId]/resources",
+  "(student)/course-session-qna": "/experiments/student/sessions/[sessionId]/qna",
 
   // ── Student: other ──
-  "(student)/learning-player": "/experiments/student/learn/[courseId]/[activityId]",
+  "(student)/classroom": "/experiments/student/learn/[courseId]/[activityId]",
   "(student)/course-search": "/experiments/student/search",
-  "(student)/course-wishlist": "/experiments/student/wishlist",
+  "(student)/wishlist": "/experiments/student/wishlist",
   "(student)/shopping-cart": "/experiments/student/cart",
   "(student)/payment-checkout": "/experiments/student/checkout",
-  "(student)/ai-learning-chat": "/experiments/student/ai-chat",
-  "(student)/student-announcement-list": "/experiments/student/announcements",
+  "(student)/ai-chatbot": "/experiments/student/ai-chat",
+  "(student)/student-notice-list": "/experiments/student/announcements",
   "(student)/legal-terms": "/experiments/student/terms",
-  "(student)/my-page-layout": "/experiments/student/my",
+  "(student)/mypage-layout": "/experiments/student/my",
 
   // ── Instructor ──
   "(instructor)/instructor-session-list": "/experiments/instructor/sessions",

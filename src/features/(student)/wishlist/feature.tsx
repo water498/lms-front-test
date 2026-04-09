@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "../student-dashboard/components/navbar";
 import { Footer } from "../student-dashboard/components/footer";
-import { WishlistTab } from "../my-page-layout/sections/wishlist-tab";
+import { WishlistTab } from "./sections/wishlist-tab";
 import store from "../student-dashboard/store";
 
 export default function WishlistFeature() {

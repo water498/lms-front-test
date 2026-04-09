@@ -1,4 +1,4 @@
-import { NotificationsTab } from "@/features/(student)/my-page-layout/sections/notifications-tab";
+import { NotificationsTab } from "@/features/(student)/mypage-notification-list/feature";
 
 export default function NotificationsPage() {
   return <NotificationsTab />;

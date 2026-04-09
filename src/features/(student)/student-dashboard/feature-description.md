@@ -61,3 +61,4 @@
 | 필수 수강 과정 섹션 | 숨김 | `mandatoryCourses` 활성 시 표시 |
 | 내 부서 대상 과정 섹션 | 숨김 | `orgStructure` 활성 시 표시 |
 | 장바구니/위시리스트 | 표시 | feature flag에 따름 |
+

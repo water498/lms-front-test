@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, Megaphone } from "lucide-react";
-import type { SessionAnnouncement } from "../session-layout/mockData";
+import type { SessionAnnouncement } from "../course-session-layout/mockData";
 
 interface AnnouncementsTabProps {
   announcements: SessionAnnouncement[];

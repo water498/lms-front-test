@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AlertTriangle, Award } from "lucide-react";
-import type { StudentSession, SessionAnnouncement } from "../session-layout/mockData";
+import type { StudentSession, SessionAnnouncement } from "../course-session-layout/mockData";
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (

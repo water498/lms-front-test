@@ -1,4 +1,4 @@
-import { ReviewsTab } from "@/features/(student)/my-page-layout/sections/reviews-tab";
+import { ReviewsTab } from "@/features/(student)/mypage-review-list/feature";
 
 export default function ReviewsPage() {
   return <ReviewsTab />;

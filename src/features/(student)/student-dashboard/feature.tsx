@@ -15,7 +15,7 @@ import { inProgressCourses, recommendedCourses, popularCourses, requiredCourses,
 import store from "./store";
 import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
 import { useTenantContextStore } from "../shared/tenant-context-store";
-import AiChatFeature from "../ai-learning-chat/feature";
+import AiChatFeature from "../ai-chatbot/feature";
 
 export default function StudentFeature() {
   const { features } = useTenantContextStore((s) => s.tenant);

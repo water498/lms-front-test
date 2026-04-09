@@ -1,4 +1,4 @@
-import AiChatFeature from "@/features/(student)/ai-learning-chat/feature";
+import AiChatFeature from "@/features/(student)/ai-chatbot/feature";
 
 export default function Page() {
   return (

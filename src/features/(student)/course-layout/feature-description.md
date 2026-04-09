@@ -43,3 +43,4 @@
 - CourseProvider로 과정 데이터를 하위 탭에 공유
 - courseId는 URL 파라미터에서 추출
 - 수강 등록 상태에 따라 사이드바 CTA 분기 (수강 신청 vs 이어 학습)
+

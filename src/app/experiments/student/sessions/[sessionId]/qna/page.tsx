@@ -1,7 +1,7 @@
 "use client";
 
-import { QnaTab } from "@/features/(student)/course-qna/feature";
-import { useSessionWorkspaceContext } from "@/features/(student)/session-layout/context";
+import { QnaTab } from "@/features/(student)/course-session-qna/feature";
+import { useSessionWorkspaceContext } from "@/features/(student)/course-session-layout/context";
 
 export default function QnaPage() {
   const { session, sessionId, qnaPosts } = useSessionWorkspaceContext();
