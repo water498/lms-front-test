@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { CURRENT_INSTRUCTOR_NAME } from "../shared/mockData";
 
-const BASE = "/instructor";
+const BASE = "/backoffice";
 
 const NAV_ITEMS = [
   { href: BASE, label: "대시보드", icon: LayoutDashboard, exact: true },

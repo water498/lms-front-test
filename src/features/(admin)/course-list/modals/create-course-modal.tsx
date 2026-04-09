@@ -22,7 +22,7 @@ export default function CreateCourseModal({ onClose }: Props) {
   function handleCreate() {
     // 실험: DRAFT인 c5로 redirect (실제에선 생성된 ID 사용)
     onClose();
-    router.push("/admin/courses/c5");
+    router.push("/backoffice/courses/c5");
   }
 
   return (

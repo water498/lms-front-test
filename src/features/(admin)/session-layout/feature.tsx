@@ -39,7 +39,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <Link
-            href="/admin/courses"
+            href="/backoffice/courses"
             className="hover:text-violet-600 flex items-center gap-1.5 transition-colors"
           >
             <ArrowLeft size={14} />

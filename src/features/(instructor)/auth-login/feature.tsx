@@ -16,7 +16,7 @@ export default function InstructorLoginFeature() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     login();
-    router.push("/instructor");
+    router.push("/backoffice");
   }
 
   return (
@@ -50,7 +50,7 @@ export default function InstructorLoginFeature() {
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-medium text-zinc-300">비밀번호</label>
                 <Link
-                  href="/instructor/forgot-password"
+                  href="/backoffice/forgot-password"
                   className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
                 >
                   비밀번호 찾기

@@ -36,7 +36,7 @@ export default function UserDetailShell({ children }: { children: React.ReactNod
       <div className="flex flex-col items-center justify-center py-24 gap-3">
         <p className="text-slate-500 text-sm">존재하지 않는 유저입니다.</p>
         <Link
-          href="/admin/users"
+          href="/backoffice/users"
           className="text-sm text-violet-600 hover:underline"
         >
           유저 목록으로 돌아가기
@@ -50,7 +50,7 @@ export default function UserDetailShell({ children }: { children: React.ReactNod
       <div className="flex flex-col gap-5">
         {/* Breadcrumb */}
         <Link
-          href="/admin/users"
+          href="/backoffice/users"
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors w-fit"
         >
           <ChevronLeft size={15} />

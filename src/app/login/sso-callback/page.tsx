@@ -30,7 +30,7 @@ function SsoCallbackContent() {
     // Mock: 1초 후 로그인 처리 (실제로는 SAML/OIDC 응답 검증)
     const timer = setTimeout(() => {
       login("ORG_ADMIN", "B2B");
-      router.replace("/admin");
+      router.replace("/backoffice");
     }, 1000);
     return () => clearTimeout(timer);
   }, [hasError, login, router]);

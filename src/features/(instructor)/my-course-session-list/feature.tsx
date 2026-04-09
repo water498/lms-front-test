@@ -8,7 +8,7 @@ import {
   enrollmentsBySession,
 } from "../shared/mockData";
 
-const BASE = "/instructor";
+const BASE = "/backoffice";
 
 export default function InstructorSessionsFeature() {
   const courses = instructorCourses[CURRENT_INSTRUCTOR_ID] ?? [];

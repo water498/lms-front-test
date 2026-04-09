@@ -26,7 +26,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-const BASE = "/admin";
+const BASE = "/backoffice";
 
 type NavChild = { href: string; label: string };
 type NavLink = {

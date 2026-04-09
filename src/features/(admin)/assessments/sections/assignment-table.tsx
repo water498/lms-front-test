@@ -68,7 +68,7 @@ export default function AssignmentTable() {
           </div>
         </div>
         <Link
-          href="/admin/assessments/assignment/new"
+          href="/backoffice/assessments/assignment/new"
           className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
         >
           + 새 과제

@@ -244,7 +244,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {/* 강사 포털 — [INSTRUCTOR only] */}
           {CURRENT_USER_ROLES.includes("INSTRUCTOR") && (
             <Link
-              href="/instructor"
+              href="/backoffice"
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <GraduationCap className="w-4 h-4" />

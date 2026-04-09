@@ -18,12 +18,12 @@ export default function AdminLoginFeature() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     login();
-    router.push("/admin");
+    router.push("/backoffice");
   }
 
   function handleSso() {
     login();
-    router.push("/admin");
+    router.push("/backoffice");
   }
 
   return (
@@ -55,7 +55,7 @@ export default function AdminLoginFeature() {
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-medium text-slate-700">비밀번호</label>
                 <Link
-                  href="/admin/forgot-password"
+                  href="/backoffice/forgot-password"
                   className="text-xs text-violet-600 hover:text-violet-700 transition-colors"
                 >
                   비밀번호 찾기

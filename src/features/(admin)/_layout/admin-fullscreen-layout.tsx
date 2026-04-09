@@ -10,7 +10,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      router.replace("/admin/login");
+      router.replace("/backoffice/login");
     }
   }, [isLoggedIn, router]);
 
