@@ -34,7 +34,7 @@ export default function InstructorSidebar() {
 
   function handleLogout() {
     logout();
-    router.push("/instructor/login");
+    router.push("/login");
   }
 
   const isActive = (href: string, exact?: boolean) => {

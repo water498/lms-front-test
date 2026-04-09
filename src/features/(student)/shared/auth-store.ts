@@ -1,5 +1,4 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface StudentAuthStore {
   isLoggedIn: boolean;
@@ -7,13 +6,11 @@ interface StudentAuthStore {
   logout: () => void;
 }
 
-export const useStudentAuthStore = create<StudentAuthStore>()(
-  persist(
-    (set) => ({
-      isLoggedIn: false,
-      login: () => set({ isLoggedIn: true }),
-      logout: () => set({ isLoggedIn: false }),
-    }),
-    { name: "student-auth" },
-  ),
-);
+export const useStudentAuthStore = (): StudentAuthStore => {
+  const { isLoggedIn, role, login, logout } = useAuthStore();
+  return {
+    isLoggedIn: isLoggedIn && role === "LEARNER",
+    login: () => login("LEARNER", "B2C"),
+    logout,
+  };
+};

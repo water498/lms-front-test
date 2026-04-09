@@ -1,5 +1,4 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface PlatformAdminAuthStore {
   isLoggedIn: boolean;
@@ -7,13 +6,11 @@ interface PlatformAdminAuthStore {
   logout: () => void;
 }
 
-export const usePlatformAdminAuthStore = create<PlatformAdminAuthStore>()(
-  persist(
-    (set) => ({
-      isLoggedIn: false,
-      login: () => set({ isLoggedIn: true }),
-      logout: () => set({ isLoggedIn: false }),
-    }),
-    { name: "platform-admin-auth" },
-  ),
-);
+export const usePlatformAdminAuthStore = (): PlatformAdminAuthStore => {
+  const { isLoggedIn, role, login, logout } = useAuthStore();
+  return {
+    isLoggedIn: isLoggedIn && role === "SUPER_ADMIN",
+    login: () => login("SUPER_ADMIN", "B2B"),
+    logout,
+  };
+};

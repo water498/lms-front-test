@@ -1,5 +1,4 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface InstructorAuthStore {
   isLoggedIn: boolean;
@@ -7,13 +6,11 @@ interface InstructorAuthStore {
   logout: () => void;
 }
 
-export const useInstructorAuthStore = create<InstructorAuthStore>()(
-  persist(
-    (set) => ({
-      isLoggedIn: false,
-      login: () => set({ isLoggedIn: true }),
-      logout: () => set({ isLoggedIn: false }),
-    }),
-    { name: "instructor-auth" },
-  ),
-);
+export const useInstructorAuthStore = (): InstructorAuthStore => {
+  const { isLoggedIn, role, login, logout } = useAuthStore();
+  return {
+    isLoggedIn: isLoggedIn && role === "INSTRUCTOR",
+    login: () => login("INSTRUCTOR", "B2B"),
+    logout,
+  };
+};

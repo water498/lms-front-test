@@ -11,7 +11,7 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
 
   useEffect(() => {
     if (!isLoggedIn) {
-      router.replace("/instructor/login");
+      router.replace("/login");
     }
   }, [isLoggedIn, router]);
 
