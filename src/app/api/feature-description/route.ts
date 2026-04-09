@@ -115,6 +115,12 @@ const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string
   { role: "student", urlSegments: ["announcements"], featurePath: "student-notice-list" },
   { role: "student", urlSegments: ["terms"], featurePath: "legal-terms" },
   { role: "student", urlSegments: ["my"], featurePath: "mypage-layout" },
+  { role: "student", urlSegments: ["my", "learning"], featurePath: "mypage-learning" },
+  { role: "student", urlSegments: ["my", "certificates"], featurePath: "mypage-certificate-list" },
+  { role: "student", urlSegments: ["my", "orders"], featurePath: "mypage-order-list" },
+  { role: "student", urlSegments: ["my", "reviews"], featurePath: "mypage-review-list" },
+  { role: "student", urlSegments: ["my", "notifications"], featurePath: "mypage-notification-list" },
+  { role: "student", urlSegments: ["my", "profile"], featurePath: "mypage-profile" },
   // ── Instructor ──
   { role: "instructor", urlSegments: ["sessions"], featurePath: "my-course-session-list" },
   { role: "instructor", urlSegments: ["sessions", "*"], featurePath: "course-session-layout" },

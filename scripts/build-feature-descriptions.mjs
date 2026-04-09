@@ -126,6 +126,12 @@ const URL_OVERRIDE = {
   "(student)/student-notice-list": "/experiments/student/announcements",
   "(student)/legal-terms": "/experiments/student/terms",
   "(student)/mypage-layout": "/experiments/student/my",
+  "(student)/mypage-learning": "/experiments/student/my/learning",
+  "(student)/mypage-certificate-list": "/experiments/student/my/certificates",
+  "(student)/mypage-order-list": "/experiments/student/my/orders",
+  "(student)/mypage-review-list": "/experiments/student/my/reviews",
+  "(student)/mypage-notification-list": "/experiments/student/my/notifications",
+  "(student)/mypage-profile": "/experiments/student/my/profile",
 
   // ── Instructor ──
   "(instructor)/my-course-session-list": "/experiments/instructor/sessions",
