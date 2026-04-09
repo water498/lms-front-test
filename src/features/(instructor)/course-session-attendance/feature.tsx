@@ -8,7 +8,7 @@ import {
   enrollmentsBySession,
   type AttendanceStatus,
   type AttendanceMock,
-} from "../../shared/mockData";
+} from "../shared/mockData";
 
 const STATUS_LABEL: Record<AttendanceStatus, string> = {
   PRESENT: "출석",

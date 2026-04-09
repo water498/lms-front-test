@@ -1,4 +1,4 @@
-import GradingTab from "@/features/(instructor)/session-layout/tabs/grading-tab";
+import GradingTab from "@/features/(instructor)/course-session-grading/feature";
 
 export default async function Page({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;

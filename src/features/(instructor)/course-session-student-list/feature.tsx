@@ -1,6 +1,6 @@
 "use client";
 
-import { enrollmentsBySession } from "../../shared/mockData";
+import { enrollmentsBySession } from "../shared/mockData";
 
 const STATUS_LABEL = { ACTIVE: "수강 중", COMPLETED: "수료", CANCELLED: "취소" };
 const STATUS_COLOR = {

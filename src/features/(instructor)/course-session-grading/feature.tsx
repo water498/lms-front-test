@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, FileText, MessageSquareText } from "lucide-react";
-import { submissionsBySession, type SubmissionMock } from "../../shared/mockData";
+import { submissionsBySession, type SubmissionMock } from "../shared/mockData";
 
 // ── 시험 주관식 Mock ──
 interface EssayAnswerItem {

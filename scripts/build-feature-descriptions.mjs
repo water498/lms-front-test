@@ -128,12 +128,17 @@ const URL_OVERRIDE = {
   "(student)/mypage-layout": "/experiments/student/my",
 
   // ── Instructor ──
-  "(instructor)/instructor-session-list": "/experiments/instructor/sessions",
-  "(instructor)/session-layout": "/experiments/instructor/sessions/[sessionId]",
-  "(instructor)/instructor-review-list": "/experiments/instructor/reviews",
-  "(instructor)/instructor-payout-list": "/experiments/instructor/payouts",
-  "(instructor)/instructor-bank-account": "/experiments/instructor/bank",
-  "(instructor)/instructor-profile": "/experiments/instructor/profile",
+  "(instructor)/my-course-session-list": "/experiments/instructor/sessions",
+  "(instructor)/course-session-layout": "/experiments/instructor/sessions/[sessionId]",
+  "(instructor)/course-session-student-list": "/experiments/instructor/sessions/[sessionId]/students",
+  "(instructor)/course-session-attendance": "/experiments/instructor/sessions/[sessionId]/attendance",
+  "(instructor)/course-session-grading": "/experiments/instructor/sessions/[sessionId]/grading",
+  "(instructor)/course-session-qna": "/experiments/instructor/sessions/[sessionId]/qna",
+  "(instructor)/course-session-resources": "/experiments/instructor/sessions/[sessionId]/resources",
+  "(instructor)/review-list": "/experiments/instructor/reviews",
+  "(instructor)/payout-list": "/experiments/instructor/payouts",
+  "(instructor)/bank-account": "/experiments/instructor/bank",
+  "(instructor)/profile": "/experiments/instructor/profile",
 
   // ── Platform-admin: list pages ──
   "(platform-admin)/tenant-list": "/experiments/platform-admin/tenants",

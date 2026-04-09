@@ -1,4 +1,4 @@
-import InstructorSessionsFeature from "@/features/(instructor)/instructor-session-list/feature";
+import InstructorSessionsFeature from "@/features/(instructor)/my-course-session-list/feature";
 
 export default function Page() {
   return <InstructorSessionsFeature />;

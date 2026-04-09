@@ -1,7 +1,7 @@
 "use client";
 
 import { use } from "react";
-import QnaTab from "@/features/(instructor)/session-layout/tabs/qna-tab";
+import QnaTab from "@/features/(instructor)/course-session-qna/feature";
 import { qnaPostsBySession } from "@/features/(instructor)/shared/mockData";
 
 export default function Page({ params }: { params: Promise<{ sessionId: string }> }) {

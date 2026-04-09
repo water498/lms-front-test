@@ -1,4 +1,4 @@
-import InstructorResourcesTab from "@/features/(instructor)/session-layout/tabs/resources-tab";
+import InstructorResourcesTab from "@/features/(instructor)/course-session-resources/feature";
 
 export default function Page() {
   return <InstructorResourcesTab />;
