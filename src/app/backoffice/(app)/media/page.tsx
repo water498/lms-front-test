@@ -1,4 +1,4 @@
-import MediaFeature from "@/features/(admin)/media-library/feature";
+import MediaFeature from "@/features/(backoffice)/media-library/feature";
 
 export default function Page() {
   return <MediaFeature />;

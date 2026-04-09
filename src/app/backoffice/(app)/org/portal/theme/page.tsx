@@ -1,4 +1,4 @@
-import PortalThemeFeature from "@/features/(admin)/portal-theme/feature";
+import PortalThemeFeature from "@/features/(backoffice)/portal-theme/feature";
 
 export default function Page() {
   return <PortalThemeFeature />;

@@ -1,4 +1,4 @@
-import PayoutsFeature from "@/features/(admin)/instructor-payout-list/feature";
+import PayoutsFeature from "@/features/(backoffice)/instructor-payout-list/feature";
 
 export default function Page() {
   return <PayoutsFeature />;

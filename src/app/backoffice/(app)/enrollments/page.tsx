@@ -1,4 +1,4 @@
-import EnrollmentsFeature from "@/features/(admin)/enrollment-list/feature";
+import EnrollmentsFeature from "@/features/(backoffice)/enrollment-list/feature";
 
 export default function Page() {
   return <EnrollmentsFeature />;

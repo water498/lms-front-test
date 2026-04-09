@@ -1,4 +1,4 @@
-import PortalInfoFeature from "@/features/(admin)/portal-info/feature";
+import PortalInfoFeature from "@/features/(backoffice)/portal-info/feature";
 
 export default function Page() {
   return <PortalInfoFeature />;

@@ -1,4 +1,4 @@
-import CategoriesFeature from "@/features/(admin)/course-categories/feature";
+import CategoriesFeature from "@/features/(backoffice)/course-categories/feature";
 
 export default function Page() {
   return <CategoriesFeature />;

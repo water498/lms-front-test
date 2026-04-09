@@ -1,7 +1,7 @@
 "use client";
 
-import CurriculumTab from "@/features/(admin)/course-curriculum/feature";
-import { useCourseDetail } from "@/features/(admin)/course-layout/context";
+import CurriculumTab from "@/features/(backoffice)/course-curriculum/feature";
+import { useCourseDetail } from "@/features/(backoffice)/course-layout/context";
 
 export default function Page() {
   const {

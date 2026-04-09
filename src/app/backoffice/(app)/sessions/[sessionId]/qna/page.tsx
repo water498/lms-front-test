@@ -1,7 +1,7 @@
 "use client";
 
-import AdminQnaTab from "@/features/(admin)/session-qna/feature";
-import { useSessionDetail } from "@/features/(admin)/session-layout/context";
+import AdminQnaTab from "@/features/(backoffice)/session-qna/feature";
+import { useSessionDetail } from "@/features/(backoffice)/session-layout/context";
 
 export default function Page() {
   const { sessionId } = useSessionDetail();

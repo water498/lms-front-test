@@ -1,7 +1,7 @@
 "use client";
 
-import EnrollmentsTab from "@/features/(admin)/user-enrollments/feature";
-import { useUserDetail } from "@/features/(admin)/user-layout/context";
+import EnrollmentsTab from "@/features/(backoffice)/user-enrollments/feature";
+import { useUserDetail } from "@/features/(backoffice)/user-layout/context";
 
 export default function Page() {
   const { userId } = useUserDetail();

@@ -1,7 +1,7 @@
 "use client";
 
-import InstructorCoursesTab from "@/features/(admin)/user-instructor-courses/feature";
-import { useUserDetail } from "@/features/(admin)/user-layout/context";
+import InstructorCoursesTab from "@/features/(backoffice)/user-instructor-courses/feature";
+import { useUserDetail } from "@/features/(backoffice)/user-layout/context";
 
 export default function Page() {
   const { instCourses } = useUserDetail();

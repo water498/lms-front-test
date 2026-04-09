@@ -1,4 +1,4 @@
-import CompletionStats from "@/features/(admin)/statistics/sections/completion-stats";
+import CompletionStats from "@/features/(backoffice)/statistics/sections/completion-stats";
 
 export default function Page() {
   return <CompletionStats />;

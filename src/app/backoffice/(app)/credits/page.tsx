@@ -1,2 +1,2 @@
-import CreditsFeature from "@/features/(admin)/messaging-credit/feature";
+import CreditsFeature from "@/features/(backoffice)/messaging-credit/feature";
 export default function Page() { return <CreditsFeature />; }

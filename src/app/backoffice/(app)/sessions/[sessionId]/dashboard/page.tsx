@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardTab from "@/features/(admin)/session-dashboard/feature";
-import { useSessionDetail } from "@/features/(admin)/session-layout/context";
+import DashboardTab from "@/features/(backoffice)/session-dashboard/feature";
+import { useSessionDetail } from "@/features/(backoffice)/session-layout/context";
 
 export default function Page() {
   const { session, enrollees } = useSessionDetail();

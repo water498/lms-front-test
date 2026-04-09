@@ -1,7 +1,7 @@
 "use client";
 
-import LearningHistoryTab from "@/features/(admin)/session-history/feature";
-import { useSessionDetail } from "@/features/(admin)/session-layout/context";
+import LearningHistoryTab from "@/features/(backoffice)/session-history/feature";
+import { useSessionDetail } from "@/features/(backoffice)/session-layout/context";
 
 export default function Page() {
   const { sessionId } = useSessionDetail();

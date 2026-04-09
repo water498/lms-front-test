@@ -1,4 +1,4 @@
-import Feature from "@/features/(instructor)/review-list/feature";
+import Feature from "@/features/(backoffice)/review-list/feature";
 
 export default function Page() {
   return <Feature />;

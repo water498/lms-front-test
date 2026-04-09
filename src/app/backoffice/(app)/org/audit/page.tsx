@@ -1,4 +1,4 @@
-import Feature from "@/features/(admin)/settings-audit/feature";
+import Feature from "@/features/(backoffice)/settings-audit/feature";
 
 export default function Page() {
   return <Feature />;

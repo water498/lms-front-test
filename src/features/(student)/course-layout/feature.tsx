@@ -8,7 +8,7 @@ import { Footer } from "../student-dashboard/components/footer";
 import { CourseHero } from "./sections/course-hero";
 import { DetailSidebar } from "./sections/detail-sidebar";
 import { CourseProvider, useCourseContext } from "./context";
-import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
+import StudentImpersonationBanner from "@/features/(backoffice)/shared/student-impersonation-banner";
 import { InstructorProfileModal } from "@/components/instructor-profile-modal";
 
 type Tab = "intro" | "curriculum" | "instructor" | "reviews";

@@ -1,4 +1,4 @@
-import AssignPanel from "@/features/(admin)/enrollment-list/sections/assign-panel";
+import AssignPanel from "@/features/(backoffice)/enrollment-list/sections/assign-panel";
 
 export default function Page() {
   return <AssignPanel />;

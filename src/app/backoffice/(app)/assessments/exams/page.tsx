@@ -1,4 +1,4 @@
-import AssessmentsExamsFeature from "@/features/(admin)/assessment-exam-list/feature";
+import AssessmentsExamsFeature from "@/features/(backoffice)/assessment-exam-list/feature";
 
 export default function Page() {
   return <AssessmentsExamsFeature />;

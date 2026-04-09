@@ -1,4 +1,4 @@
-import HomeFeature from "@/features/(admin)/admin-dashboard/feature";
+import HomeFeature from "@/features/(backoffice)/admin-dashboard/feature";
 
 export default function Page() {
   return <HomeFeature />;

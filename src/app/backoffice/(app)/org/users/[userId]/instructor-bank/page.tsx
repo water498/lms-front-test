@@ -1,7 +1,7 @@
 "use client";
 
-import InstructorBankTab from "@/features/(admin)/user-instructor-bank/feature";
-import { useUserDetail } from "@/features/(admin)/user-layout/context";
+import InstructorBankTab from "@/features/(backoffice)/user-instructor-bank/feature";
+import { useUserDetail } from "@/features/(backoffice)/user-layout/context";
 
 export default function Page() {
   const { instBankAccounts, userId } = useUserDetail();

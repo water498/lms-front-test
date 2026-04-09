@@ -13,7 +13,7 @@ import { ContextPanel } from "./sections/context-panel";
 import { type CardActions } from "./components/course-card";
 import { inProgressCourses, recommendedCourses, popularCourses, requiredCourses, deptTargetedCourses } from "./mockData";
 import store from "./store";
-import StudentImpersonationBanner from "@/features/(admin)/shared/student-impersonation-banner";
+import StudentImpersonationBanner from "@/features/(backoffice)/shared/student-impersonation-banner";
 import { useTenantContextStore } from "../shared/tenant-context-store";
 import AiChatFeature from "../ai-chatbot/feature";
 
