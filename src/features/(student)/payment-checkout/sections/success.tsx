@@ -67,14 +67,14 @@ export default function CheckoutSuccessFeature() {
         {/* CTA buttons */}
         <div className="w-full flex flex-col gap-2.5">
           <Link
-            href="/experiments/student/my"
+            href="/student/my"
             className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
           >
             <BookOpen className="w-4 h-4" />
             내 강의 바로가기
           </Link>
           <Link
-            href="/experiments/student"
+            href="/student"
             className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />

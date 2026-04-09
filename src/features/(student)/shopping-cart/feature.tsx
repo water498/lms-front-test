@@ -21,7 +21,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
-        <Link href="/experiments/student" className="text-xl font-bold text-white shrink-0">
+        <Link href="/student" className="text-xl font-bold text-white shrink-0">
           Open<span className="text-violet-400">Knock</span>
         </Link>
 
@@ -34,7 +34,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-400 rounded-full" />
           </button>
           <Link
-            href="/experiments/student/cart"
+            href="/student/cart"
             className="relative p-2 text-violet-400 rounded-lg bg-zinc-800"
           >
             <ShoppingCart className="w-5 h-5" />
@@ -45,7 +45,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
             )}
           </Link>
           <Link
-            href="/experiments/student/my"
+            href="/student/my"
             className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
@@ -92,7 +92,7 @@ export default function CartFeature() {
       <div className="max-w-screen-xl mx-auto px-6 py-10">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-6">
-          <Link href="/experiments/student" className="hover:text-zinc-300 transition-colors">홈</Link>
+          <Link href="/student" className="hover:text-zinc-300 transition-colors">홈</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-zinc-300">장바구니</span>
         </div>
@@ -112,7 +112,7 @@ export default function CartFeature() {
             <p className="text-zinc-400 text-lg font-medium">장바구니가 비어있습니다</p>
             <p className="text-zinc-600 text-sm">관심 있는 강의를 담아보세요.</p>
             <Link
-              href="/experiments/student"
+              href="/student"
               className="mt-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl transition-colors text-sm"
             >
               강의 탐색하기
@@ -238,7 +238,7 @@ export default function CartFeature() {
 
               {/* Checkout button */}
               <Link
-                href="/experiments/student/checkout"
+                href="/student/checkout"
                 className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors text-sm text-center block"
               >
                 결제하기 (₩{total.toLocaleString()})

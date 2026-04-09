@@ -63,7 +63,7 @@ export function SessionWorkspaceProvider({ sessionId, children }: SessionWorkspa
 
   const firstActivity = subjects[0]?.activities[0];
   const learnHref = firstActivity
-    ? `/experiments/student/learn/${session.courseId}/${firstActivity.id}`
+    ? `/student/learn/${session.courseId}/${firstActivity.id}`
     : "#";
 
   return (

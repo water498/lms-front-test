@@ -16,14 +16,14 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-8 text-sm">
             <div className="flex flex-col gap-2">
               <p className="text-zinc-400 font-medium mb-1">서비스</p>
-              <Link href="/experiments/student/search" className="text-zinc-600 hover:text-zinc-400 transition-colors">강의 탐색</Link>
-              <Link href="/experiments/student/announcements" className="text-zinc-600 hover:text-zinc-400 transition-colors">공지사항</Link>
+              <Link href="/student/search" className="text-zinc-600 hover:text-zinc-400 transition-colors">강의 탐색</Link>
+              <Link href="/student/announcements" className="text-zinc-600 hover:text-zinc-400 transition-colors">공지사항</Link>
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-zinc-400 font-medium mb-1">약관</p>
-              <Link href="/experiments/student/terms" className="text-zinc-600 hover:text-zinc-400 transition-colors">이용약관</Link>
-              <Link href="/experiments/student/terms?tab=privacy" className="text-zinc-600 hover:text-zinc-400 transition-colors">개인정보처리방침</Link>
-              <Link href="/experiments/student/terms?tab=policy" className="text-zinc-600 hover:text-zinc-400 transition-colors">운영정책</Link>
+              <Link href="/student/terms" className="text-zinc-600 hover:text-zinc-400 transition-colors">이용약관</Link>
+              <Link href="/student/terms?tab=privacy" className="text-zinc-600 hover:text-zinc-400 transition-colors">개인정보처리방침</Link>
+              <Link href="/student/terms?tab=policy" className="text-zinc-600 hover:text-zinc-400 transition-colors">운영정책</Link>
             </div>
           </div>
         </div>

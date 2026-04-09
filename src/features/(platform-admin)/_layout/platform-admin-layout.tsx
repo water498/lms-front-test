@@ -12,7 +12,7 @@ export default function PlatformAdminLayout({ children }: { children: React.Reac
 
   useEffect(() => {
     if (!isLoggedIn) {
-      router.replace("/experiments/platform-admin/login");
+      router.replace("/platform-admin/login");
     }
   }, [isLoggedIn, router]);
 

@@ -20,7 +20,7 @@ export default function AdminSsoCallbackFeature() {
     } else {
       setTimeout(() => {
         login();
-        router.push("/experiments/admin");
+        router.push("/admin");
       }, 1000);
     }
   }, [login, router]);
@@ -39,7 +39,7 @@ export default function AdminSsoCallbackFeature() {
               잠시 후 다시 시도해 주세요.
             </p>
             <Link
-              href="/experiments/admin/login"
+              href="/admin/login"
               className="inline-block w-full py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors text-center"
             >
               로그인으로 돌아가기

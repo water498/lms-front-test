@@ -56,8 +56,8 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, enrolledSess
                   </span>
                   <Link
                     href={enrolledSessionId
-                      ? `/experiments/student/sessions/${enrolledSessionId}`
-                      : `/experiments/student/learn/${course.id}/${firstActivityId}`
+                      ? `/student/sessions/${enrolledSessionId}`
+                      : `/student/learn/${course.id}/${firstActivityId}`
                     }
                     className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2"
                   >
@@ -86,7 +86,7 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, enrolledSess
                         </button>
                       )}
                       <Link
-                        href="/experiments/student/checkout"
+                        href="/student/checkout"
                         onClick={() => { if (!isInCart) onAddToCart(course.id); }}
                         className="w-full py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-colors flex items-center justify-center gap-2"
                       >
@@ -98,8 +98,8 @@ export function DetailSidebar({ course, subjects, cart, isEnrolled, enrolledSess
                   {(course.price ?? 0) === 0 && (
                     <Link
                       href={freeSessionId
-                        ? `/experiments/student/sessions/${freeSessionId}`
-                        : `/experiments/student/learn/${course.id}/${firstActivityId}`
+                        ? `/student/sessions/${freeSessionId}`
+                        : `/student/learn/${course.id}/${firstActivityId}`
                       }
                       className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center justify-center gap-2"
                     >

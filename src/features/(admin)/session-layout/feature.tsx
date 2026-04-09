@@ -25,7 +25,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const { course, courseId, session, sessionId, enrollees, isOffline, isCohort } = useSessionDetail();
   const [showNotifyModal, setShowNotifyModal] = useState(false);
 
-  const base = `/experiments/admin/sessions/${sessionId}`;
+  const base = `/admin/sessions/${sessionId}`;
 
   const TABS = [
     ...TABS_BASE,
@@ -39,7 +39,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <Link
-            href="/experiments/admin/courses"
+            href="/admin/courses"
             className="hover:text-violet-600 flex items-center gap-1.5 transition-colors"
           >
             <ArrowLeft size={14} />
@@ -47,7 +47,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </Link>
           <span>/</span>
           <Link
-            href={`/experiments/admin/courses/${courseId}`}
+            href={`/admin/courses/${courseId}`}
             className="hover:text-violet-600 transition-colors"
           >
             {course.title}

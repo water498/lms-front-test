@@ -21,7 +21,7 @@ export default function ImpersonationBanner({ tenantId, tenantName }: Props) {
       </span>
       <div className="ml-auto">
         <Link
-          href={`/experiments/platform-admin/tenants/${tenantId}`}
+          href={`/platform-admin/tenants/${tenantId}`}
           className="text-xs text-amber-700 font-medium hover:text-amber-900 underline underline-offset-2 transition-colors"
         >
           돌아가기 →

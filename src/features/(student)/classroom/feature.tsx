@@ -139,7 +139,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
       <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-zinc-400 mb-4">강의를 찾을 수 없습니다.</p>
-          <Link href="/experiments/student" className="text-violet-400 hover:text-violet-300 text-sm">
+          <Link href="/student" className="text-violet-400 hover:text-violet-300 text-sm">
             홈으로
           </Link>
         </div>
@@ -154,7 +154,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
         <div className="h-14 px-4 flex items-center gap-3">
           {/* Back */}
           <button
-            onClick={() => router.push(`/experiments/student/courses/${courseId}`)}
+            onClick={() => router.push(`/student/courses/${courseId}`)}
             className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
           </div>
 
           <Link
-            href="/experiments/student"
+            href="/student"
             className="shrink-0 p-1.5 text-zinc-500 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -292,7 +292,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
             <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
               {prevActivity ? (
                 <Link
-                  href={`/experiments/student/learn/${courseId}/${prevActivity.id}`}
+                  href={`/student/learn/${courseId}/${prevActivity.id}`}
                   className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group"
                 >
                   <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
@@ -307,7 +307,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
 
               {nextActivity ? (
                 <Link
-                  href={`/experiments/student/learn/${courseId}/${nextActivity.id}`}
+                  href={`/student/learn/${courseId}/${nextActivity.id}`}
                   className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group text-right"
                 >
                   <div>
@@ -360,7 +360,7 @@ export default function LearnFeature({ courseId, activityId }: Props) {
                       key={activity.id}
                       onClick={() => {
                         if (isAccessible && !isCurrent)
-                          router.push(`/experiments/student/learn/${courseId}/${activity.id}`);
+                          router.push(`/student/learn/${courseId}/${activity.id}`);
                       }}
                       disabled={!isAccessible || isCurrent}
                       className={`w-full flex items-start gap-3 px-4 py-3 text-left border-b border-zinc-800/40 transition-colors ${

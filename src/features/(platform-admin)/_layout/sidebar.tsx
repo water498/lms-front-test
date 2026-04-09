@@ -11,7 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-const BASE = "/experiments/platform-admin";
+const BASE = "/platform-admin";
 
 type NavItem = {
   href: string;

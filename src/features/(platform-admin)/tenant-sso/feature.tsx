@@ -96,7 +96,7 @@ export default function SsoSection({ tenant }: Props) {
       {/* Impersonation 버튼 */}
       <div className="pt-1 border-t border-slate-100">
         <Link
-          href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
+          href={`/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
           className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors font-medium"
         >
           <UserCog size={13} />

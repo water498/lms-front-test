@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { id: "general", label: "일반",     href: "/experiments/platform-admin/settings/general" },
-  { id: "audit",   label: "감사 로그", href: "/experiments/platform-admin/settings/audit" },
+  { id: "general", label: "일반",     href: "/platform-admin/settings/general" },
+  { id: "audit",   label: "감사 로그", href: "/platform-admin/settings/audit" },
 ];
 
 export default function PlatformSettingsShell({ children }: { children: React.ReactNode }) {

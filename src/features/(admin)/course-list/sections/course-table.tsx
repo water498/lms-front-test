@@ -108,7 +108,7 @@ function CourseRow({ course }: { course: Course }) {
   return (
     <tr className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
       <td className="px-5 py-3">
-        <Link href={`/experiments/admin/courses/${course.id}`} className="font-medium text-slate-800 hover:text-violet-600 transition-colors">
+        <Link href={`/admin/courses/${course.id}`} className="font-medium text-slate-800 hover:text-violet-600 transition-colors">
           {course.title}
         </Link>
         <div className="flex items-center gap-1 mt-1">

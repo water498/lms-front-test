@@ -35,7 +35,7 @@ export default function InstructorForgotPasswordFeature() {
                 <span className="text-zinc-200">{email}</span>으로<br />
                 재설정 링크를 발송했습니다.
               </p>
-              <Link href="/experiments/instructor/login" className="text-sm text-violet-400 hover:text-violet-300">
+              <Link href="/instructor/login" className="text-sm text-violet-400 hover:text-violet-300">
                 로그인으로 돌아가기
               </Link>
             </div>
@@ -61,7 +61,7 @@ export default function InstructorForgotPasswordFeature() {
               </form>
 
               <div className="mt-6 text-center">
-                <Link href="/experiments/instructor/login" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+                <Link href="/instructor/login" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
                   <ArrowLeft className="w-3.5 h-3.5" />
                   로그인으로 돌아가기
                 </Link>

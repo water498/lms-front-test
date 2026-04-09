@@ -219,7 +219,7 @@ export default function UserTable({ onCreateClick, onImportClick }: Props) {
                   user={user}
                   deptName={deptName}
                   gradeName={gradeName}
-                  onClick={() => router.push(`/experiments/admin/users/${user.id}`)}
+                  onClick={() => router.push(`/admin/users/${user.id}`)}
                 />
               );
             })}

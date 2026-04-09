@@ -26,7 +26,7 @@ function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
-        <Link href="/experiments/student" className="text-xl font-bold text-white shrink-0">
+        <Link href="/student" className="text-xl font-bold text-white shrink-0">
           Open<span className="text-violet-400">Knock</span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
@@ -38,13 +38,13 @@ function Navbar() {
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-400 rounded-full" />
           </button>
           <Link
-            href="/experiments/student/cart"
+            href="/student/cart"
             className="relative p-2 text-zinc-400 rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <ShoppingCart className="w-5 h-5" />
           </Link>
           <Link
-            href="/experiments/student/my"
+            href="/student/my"
             className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
@@ -123,7 +123,7 @@ export default function CheckoutFeature() {
       store.cart = new Set();
       const orderNumber = `OK-${Date.now().toString(36).toUpperCase()}`;
       router.push(
-        `/experiments/student/checkout/success?order=${orderNumber}&total=${total}&count=${cartItems.length}`
+        `/student/checkout/success?order=${orderNumber}&total=${total}&count=${cartItems.length}`
       );
     }, 1400);
   };
@@ -137,7 +137,7 @@ export default function CheckoutFeature() {
             <ShoppingCart className="w-14 h-14 text-zinc-700" />
             <p className="text-zinc-400 text-lg font-medium">장바구니가 비어있습니다</p>
             <Link
-              href="/experiments/student"
+              href="/student"
               className="mt-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl transition-colors text-sm"
             >
               강의 탐색하기
@@ -155,9 +155,9 @@ export default function CheckoutFeature() {
       <div className="max-w-screen-xl mx-auto px-6 py-10">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-6">
-          <Link href="/experiments/student" className="hover:text-zinc-300 transition-colors">홈</Link>
+          <Link href="/student" className="hover:text-zinc-300 transition-colors">홈</Link>
           <ChevronRight className="w-3 h-3" />
-          <Link href="/experiments/student/cart" className="hover:text-zinc-300 transition-colors">장바구니</Link>
+          <Link href="/student/cart" className="hover:text-zinc-300 transition-colors">장바구니</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-zinc-300">결제</span>
         </div>
@@ -416,7 +416,7 @@ export default function CheckoutFeature() {
             </div>
 
             <Link
-              href="/experiments/student/cart"
+              href="/student/cart"
               className="text-xs text-zinc-500 hover:text-zinc-300 text-center transition-colors"
             >
               ← 장바구니로 돌아가기

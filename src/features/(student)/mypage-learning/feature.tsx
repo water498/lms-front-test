@@ -94,8 +94,8 @@ export function LearningTab() {
             <Link
               key={course.id}
               href={course.sessionId
-                ? `/experiments/student/sessions/${course.sessionId}`
-                : `/experiments/student/learn/${course.id}/${firstActivityId(course.id)}`
+                ? `/student/sessions/${course.sessionId}`
+                : `/student/learn/${course.id}/${firstActivityId(course.id)}`
               }
               className="flex gap-4 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-4 items-center cursor-pointer transition-colors"
             >
@@ -143,20 +143,20 @@ export function LearningTab() {
               </div>
               <div className="shrink-0 flex flex-col gap-1.5">
                 <button
-                  onClick={() => router.push(`/experiments/student/courses/${course.id}`)}
+                  onClick={() => router.push(`/student/courses/${course.id}`)}
                   className="text-xs text-zinc-500 hover:text-zinc-300 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
                 >
                   다시 보기
                 </button>
                 <Link
-                  href={`/experiments/student/courses/${course.id}?tab=reviews`}
+                  href={`/student/courses/${course.id}?tab=reviews`}
                   className="flex items-center justify-center gap-1 text-xs text-zinc-500 hover:text-violet-400 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
                 >
                   <PenLine className="w-3 h-3" />
                   리뷰 작성
                 </Link>
                 <Link
-                  href="/experiments/student/my/certificates"
+                  href="/student/my/certificates"
                   className="flex items-center justify-center gap-1 text-xs text-zinc-500 hover:text-amber-400 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
                 >
                   <Award className="w-3 h-3" />

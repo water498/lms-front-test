@@ -50,13 +50,13 @@ const TABS = [
 function ShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { tenant, localStatus, localSubdomain, platformDomain } = useTenantDetail();
-  const base = `/experiments/platform-admin/tenants/${tenant.id}`;
+  const base = `/platform-admin/tenants/${tenant.id}`;
 
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Back */}
       <Link
-        href="/experiments/platform-admin/tenants"
+        href="/platform-admin/tenants"
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
       >
         <ArrowLeft size={15} />
@@ -73,7 +73,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </div>
         <div className="flex items-center gap-2">
           <Link
-            href={`/experiments/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
+            href={`/admin?impersonateTenantId=${tenant.id}&impersonateTenantName=${encodeURIComponent(tenant.name)}`}
             className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition-colors"
           >
             <UserCog size={13} />

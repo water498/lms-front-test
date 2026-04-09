@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { CURRENT_INSTRUCTOR_NAME } from "../shared/mockData";
 
-const BASE = "/experiments/instructor";
+const BASE = "/instructor";
 
 const NAV_ITEMS = [
   { href: BASE, label: "대시보드", icon: LayoutDashboard, exact: true },
@@ -34,7 +34,7 @@ export default function InstructorSidebar() {
 
   function handleLogout() {
     logout();
-    router.push("/experiments/instructor/login");
+    router.push("/instructor/login");
   }
 
   const isActive = (href: string, exact?: boolean) => {
@@ -83,7 +83,7 @@ export default function InstructorSidebar() {
             {CURRENT_INSTRUCTOR_NAME}
           </p>
           <Link
-            href="/experiments/student"
+            href="/student"
             className="text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
           >
             ← 수강생 웹으로

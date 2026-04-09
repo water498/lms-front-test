@@ -30,7 +30,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-4">
-        <Link href="/experiments/student" className="text-xl font-bold text-white shrink-0">
+        <Link href="/student" className="text-xl font-bold text-white shrink-0">
           Open<span className="text-violet-400">Knock</span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
@@ -38,7 +38,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-400 rounded-full" />
           </button>
-          <Link href="/experiments/student/cart" className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+          <Link href="/student/cart" className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
             <ShoppingCart className="w-5 h-5" />
             {cartCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-violet-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
@@ -46,7 +46,7 @@ function Navbar({ cartCount }: { cartCount: number }) {
               </span>
             )}
           </Link>
-          <Link href="/experiments/student/my" className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors">
+          <Link href="/student/my" className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors">
             <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
               <User className="w-4 h-4 text-white" />
             </div>
@@ -134,7 +134,7 @@ function SearchResultCard({
   return (
     <div
       className="flex gap-4 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-4 cursor-pointer group transition-all hover:bg-zinc-900/80"
-      onClick={() => router.push(`/experiments/student/courses/${course.id}`)}
+      onClick={() => router.push(`/student/courses/${course.id}`)}
     >
       {/* Thumbnail */}
       <div
@@ -229,7 +229,7 @@ function SearchResultCard({
             </button>
           ) : (
             <Link
-              href={`/experiments/student/courses/${course.id}`}
+              href={`/student/courses/${course.id}`}
               onClick={(e) => e.stopPropagation()}
               className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-900/40 text-emerald-400 hover:bg-emerald-900/60 transition-colors"
             >
@@ -275,7 +275,7 @@ export default function SearchFeature() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setQuery(inputValue);
-    router.replace(`/experiments/student/search?q=${encodeURIComponent(inputValue)}`);
+    router.replace(`/student/search?q=${encodeURIComponent(inputValue)}`);
   };
 
   const toggleSet = <T,>(set: Set<T>, value: T): Set<T> => {
@@ -558,7 +558,7 @@ export default function SearchFeature() {
                   <div className="flex gap-2">
                     {query && (
                       <button
-                        onClick={() => { setQuery(""); setInputValue(""); router.replace("/experiments/student/search"); }}
+                        onClick={() => { setQuery(""); setInputValue(""); router.replace("/student/search"); }}
                         className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
                       >
                         검색어 지우기

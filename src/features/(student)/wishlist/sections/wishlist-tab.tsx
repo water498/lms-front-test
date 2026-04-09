@@ -33,7 +33,7 @@ export function WishlistTab() {
         <p className="text-zinc-400 text-base font-medium">위시리스트가 비어있습니다</p>
         <p className="text-zinc-600 text-sm">관심 강의에 하트를 눌러 저장하세요.</p>
         <Link
-          href="/experiments/student"
+          href="/student"
           className="mt-2 px-5 py-2.5 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white rounded-xl transition-colors text-sm"
         >
           강의 둘러보기

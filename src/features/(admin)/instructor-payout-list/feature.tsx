@@ -170,7 +170,7 @@ export default function PayoutsFeature() {
                 >
                   <td className="px-4 py-3 font-medium text-slate-800">
                     <Link
-                      href={`/experiments/admin/instructors/${payout.instructorId}`}
+                      href={`/admin/instructors/${payout.instructorId}`}
                       className="hover:text-violet-600 transition-colors"
                     >
                       {INSTRUCTOR_NAMES[payout.instructorId] ?? payout.instructorId}

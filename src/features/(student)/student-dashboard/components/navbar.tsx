@@ -74,7 +74,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
         {/* Logo */}
-        <Link href="/experiments/student" className="shrink-0">
+        <Link href="/student" className="shrink-0">
           <Image
             src="/lotte.png"
             alt="롯데건설"
@@ -94,7 +94,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
                   e.preventDefault();
                   if (searchValue.trim()) {
                     router.push(
-                      `/experiments/student/search?q=${encodeURIComponent(searchValue.trim())}`,
+                      `/student/search?q=${encodeURIComponent(searchValue.trim())}`,
                     );
                     setSearchOpen(false);
                     setSearchValue("");
@@ -206,7 +206,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
 
                 {/* 전체보기 link */}
                 <Link
-                  href="/experiments/student/my/notifications"
+                  href="/student/my/notifications"
                   onClick={() => setNotifOpen(false)}
                   className="block text-center px-4 py-2.5 text-xs text-violet-400 hover:text-violet-300 border-t border-zinc-800 transition-colors"
                 >
@@ -219,7 +219,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {/* Wishlist — [B2C only] */}
           {features.cart && (
             <Link
-              href="/experiments/student/wishlist"
+              href="/student/wishlist"
               className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <Heart className="w-5 h-5" />
@@ -229,7 +229,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {/* Cart — [B2C only] */}
           {features.cart && (
             <Link
-              href="/experiments/student/cart"
+              href="/student/cart"
               className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -244,7 +244,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {/* 강사 포털 — [INSTRUCTOR only] */}
           {CURRENT_USER_ROLES.includes("INSTRUCTOR") && (
             <Link
-              href="/experiments/instructor"
+              href="/instructor"
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-zinc-300 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <GraduationCap className="w-4 h-4" />
@@ -256,7 +256,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
           {isLoggedIn ? (
             <div className="flex items-center gap-1">
               <Link
-                href="/experiments/student/my"
+                href="/student/my"
                 className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
               >
                 <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
@@ -274,7 +274,7 @@ export function Navbar({ cartCount }: { cartCount: number }) {
             </div>
           ) : (
             <Link
-              href="/experiments/student/login"
+              href="/student/login"
               className="px-4 py-1.5 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition-colors"
             >
               로그인

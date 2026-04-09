@@ -37,7 +37,7 @@ export default function InstructorResetPasswordFeature() {
               </div>
               <h2 className="text-base font-semibold text-white mb-2">비밀번호가 재설정되었습니다</h2>
               <p className="text-sm text-zinc-400 mb-6">새 비밀번호로 로그인하세요.</p>
-              <Link href="/experiments/instructor/login" className="inline-block w-full py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-500 transition-colors text-center">
+              <Link href="/instructor/login" className="inline-block w-full py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-500 transition-colors text-center">
                 로그인하러 가기
               </Link>
             </div>

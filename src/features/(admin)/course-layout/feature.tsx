@@ -21,7 +21,7 @@ export default function CourseDetailShell({ children }: { children: React.ReactN
   const courseId = params.courseId;
 
   const course = getCourse(courseId);
-  const base = `/experiments/admin/courses/${courseId}`;
+  const base = `/admin/courses/${courseId}`;
 
   if (!course) {
     return <p className="text-slate-500">과정을 찾을 수 없습니다.</p>;
@@ -33,7 +33,7 @@ export default function CourseDetailShell({ children }: { children: React.ReactN
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <Link
-            href="/experiments/admin/courses"
+            href="/admin/courses"
             className="hover:text-violet-600 flex items-center gap-1.5 transition-colors"
           >
             <ArrowLeft size={14} />

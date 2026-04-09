@@ -15,7 +15,7 @@ export function AnnouncementGrid() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-white">공지 · 이벤트</h3>
         <Link
-          href="/experiments/student/announcements"
+          href="/student/announcements"
           className="text-sm text-zinc-500 hover:text-violet-400 transition-colors"
         >
           전체 보기 →

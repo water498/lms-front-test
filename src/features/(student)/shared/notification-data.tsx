@@ -55,7 +55,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: '"랜덤 포레스트 n_estimators 파라미터" 질문에 강사님이 답변했습니다.',
     time: "2분 전",
     read: false,
-    linkUrl: "/experiments/student/courses/c1?tab=qna",
+    linkUrl: "/student/courses/c1?tab=qna",
   },
   {
     id: "n2",
@@ -64,7 +64,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "JavaScript 핵심 개념 과정의 수료증이 발급되었습니다.",
     time: "1시간 전",
     read: false,
-    linkUrl: "/experiments/student/my/certificates",
+    linkUrl: "/student/my/certificates",
   },
   {
     id: "n3",
@@ -73,7 +73,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "3월 31일까지 모든 강의를 30% 할인된 가격으로 수강하세요.",
     time: "2일 전",
     read: true,
-    linkUrl: "/experiments/student/announcements",
+    linkUrl: "/student/announcements",
   },
   {
     id: "n4",
@@ -82,7 +82,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "React + TypeScript 실전 프로젝트 강의 수강 등록이 완료되었습니다.",
     time: "3일 전",
     read: true,
-    linkUrl: "/experiments/student/courses/c2",
+    linkUrl: "/student/courses/c2",
   },
   {
     id: "n5",
@@ -99,7 +99,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: '"Docker 컨테이너 네트워크 설정" 질문에 강사님이 답변했습니다.',
     time: "1주 전",
     read: true,
-    linkUrl: "/experiments/student/courses/c3?tab=qna",
+    linkUrl: "/student/courses/c3?tab=qna",
   },
   {
     id: "n7",
@@ -108,7 +108,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "Python 데이터 분석 입문 강의 수강 등록이 완료되었습니다.",
     time: "2주 전",
     read: true,
-    linkUrl: "/experiments/student/courses/c4",
+    linkUrl: "/student/courses/c4",
   },
   {
     id: "n8",
@@ -117,7 +117,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "AWS 클라우드 아키텍처 과정의 수료증이 발급되었습니다.",
     time: "2주 전",
     read: true,
-    linkUrl: "/experiments/student/my/certificates",
+    linkUrl: "/student/my/certificates",
   },
   {
     id: "n9",
@@ -126,7 +126,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "Kubernetes 실전 운영 강의가 새로 오픈되었습니다. 지금 확인해보세요!",
     time: "3주 전",
     read: true,
-    linkUrl: "/experiments/student/announcements",
+    linkUrl: "/student/announcements",
   },
   {
     id: "n10",
@@ -135,7 +135,7 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: '"JWT 토큰 갱신 로직" 질문에 강사님이 답변했습니다.',
     time: "3주 전",
     read: true,
-    linkUrl: "/experiments/student/courses/c1?tab=qna",
+    linkUrl: "/student/courses/c1?tab=qna",
   },
   {
     id: "n11",
@@ -152,6 +152,6 @@ export const MOCK_NOTIFS: NotifItem[] = [
     body: "DevOps CI/CD 파이프라인 구축 강의 수강 등록이 완료되었습니다.",
     time: "1개월 전",
     read: true,
-    linkUrl: "/experiments/student/courses/c5",
+    linkUrl: "/student/courses/c5",
   },
 ];

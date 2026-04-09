@@ -25,7 +25,7 @@ export default function StudentForgotPasswordFeature() {
               <h2 className="text-xl font-bold text-slate-900 mb-2">이메일을 확인해 주세요</h2>
               <p className="text-sm text-slate-500 mb-1">비밀번호 재설정 링크를 발송했습니다.</p>
               <p className="text-sm font-medium text-slate-800 mb-7">{email}</p>
-              <Link href="/experiments/student/login" className="text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors">
+              <Link href="/student/login" className="text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors">
                 로그인으로 돌아가기
               </Link>
             </div>
@@ -61,7 +61,7 @@ export default function StudentForgotPasswordFeature() {
               </form>
 
               <div className="mt-6 text-center">
-                <Link href="/experiments/student/login" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                <Link href="/student/login" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors">
                   <ArrowLeft className="w-3.5 h-3.5" />
                   로그인으로 돌아가기
                 </Link>

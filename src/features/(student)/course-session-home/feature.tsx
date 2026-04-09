@@ -58,7 +58,7 @@ export function HomeTab({ session, announcements, isClosed }: HomeTabProps) {
             </div>
           </div>
           <Link
-            href="/experiments/student/my/certificates"
+            href="/student/my/certificates"
             className="shrink-0 px-3 py-2 text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg transition-colors"
           >
             수료증 보기

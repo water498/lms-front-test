@@ -36,7 +36,7 @@ export function CourseCard({
   return (
     <div
       className="w-56 md:w-60 shrink-0 group cursor-pointer"
-      onClick={() => router.push(`/experiments/student/courses/${course.id}`)}
+      onClick={() => router.push(`/student/courses/${course.id}`)}
     >
       {/* Thumbnail */}
       <div

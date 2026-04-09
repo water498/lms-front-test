@@ -451,7 +451,7 @@ export default function PlatformAdminDashboard() {
                     {item.tenants.map((t) => (
                       <Link
                         key={t.id}
-                        href={`/experiments/platform-admin/tenants/${t.id}`}
+                        href={`/platform-admin/tenants/${t.id}`}
                         className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-xs transition-colors ${cfg.chip}`}
                       >
                         {t.name}
@@ -503,7 +503,7 @@ export default function PlatformAdminDashboard() {
             return (
               <div key={t.id} className="flex items-center gap-3 text-sm">
                 <Link
-                  href={`/experiments/platform-admin/tenants/${t.id}`}
+                  href={`/platform-admin/tenants/${t.id}`}
                   className="w-28 font-medium text-slate-800 truncate hover:text-blue-600 transition-colors"
                 >
                   {t.name}

@@ -10,7 +10,7 @@ const TABS = [
   { id: "audit",   label: "감사로그",   slug: "audit" },
 ];
 
-const BASE = "/experiments/admin/settings";
+const BASE = "/admin/settings";
 
 export default function SettingsShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

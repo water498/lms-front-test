@@ -53,7 +53,7 @@ export default function StudentVerifyEmailFeature() {
           </button>
 
           <div className="border-t border-slate-100 pt-5">
-            <Link href="/experiments/student/login" className="text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors">
+            <Link href="/student/login" className="text-sm text-violet-600 hover:text-violet-700 font-medium transition-colors">
               로그인으로 돌아가기
             </Link>
           </div>

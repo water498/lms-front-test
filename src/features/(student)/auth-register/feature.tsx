@@ -20,7 +20,7 @@ export default function StudentRegisterFeature() {
     e.preventDefault();
     if (canSubmit) {
       // Mock: redirect to verify-email would happen here
-      window.location.href = "/experiments/student/verify-email";
+      window.location.href = "/student/verify-email";
     }
   };
 
@@ -117,7 +117,7 @@ export default function StudentRegisterFeature() {
 
           <p className="text-center text-sm text-slate-500 mt-5">
             이미 계정이 있으신가요?{" "}
-            <Link href="/experiments/student/login" className="text-violet-600 font-semibold hover:text-violet-700 transition-colors">
+            <Link href="/student/login" className="text-violet-600 font-semibold hover:text-violet-700 transition-colors">
               로그인
             </Link>
           </p>

@@ -20,7 +20,7 @@ export default function StudentSsoCallbackFeature() {
     } else {
       setTimeout(() => {
         login();
-        router.push("/experiments/student");
+        router.push("/student");
       }, 1000);
     }
   }, [login, router]);
@@ -39,7 +39,7 @@ export default function StudentSsoCallbackFeature() {
               잠시 후 다시 시도해 주세요.
             </p>
             <Link
-              href="/experiments/student/login"
+              href="/student/login"
               className="inline-block w-full py-2.5 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors text-center"
             >
               로그인으로 돌아가기

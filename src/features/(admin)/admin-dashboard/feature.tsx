@@ -40,7 +40,7 @@ function PlatformBanners() {
               ) : (
                 <Wrench size={15} className="shrink-0 text-amber-500" />
               )}
-              <Link href="/experiments/admin/announcements" className="hover:underline">
+              <Link href="/admin/announcements" className="hover:underline">
                 [{isUrgent ? "긴급" : "점검"}] {b.title}
               </Link>
             </div>

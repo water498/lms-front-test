@@ -22,7 +22,7 @@ export default function SessionShell({ children }: { children: React.ReactNode }
   const courses = instructorCourses[CURRENT_INSTRUCTOR_ID] ?? [];
   const course = courses.find((c) => c.sessionId === sessionId);
 
-  const base = `/experiments/instructor/sessions/${sessionId}`;
+  const base = `/instructor/sessions/${sessionId}`;
 
   if (!course) {
     return (

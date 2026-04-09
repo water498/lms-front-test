@@ -15,7 +15,7 @@ export default function PlatformAdminLoginFeature() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     login();
-    router.push("/experiments/platform-admin");
+    router.push("/platform-admin");
   }
 
   return (

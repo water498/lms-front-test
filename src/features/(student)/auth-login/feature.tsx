@@ -31,12 +31,12 @@ export default function StudentLoginFeature() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     login();
-    router.push("/experiments/student");
+    router.push("/student");
   }
 
   function handleSso() {
     login();
-    router.push("/experiments/student");
+    router.push("/student");
   }
 
   if (isB2B) {
@@ -122,7 +122,7 @@ export default function StudentLoginFeature() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-medium text-slate-700">비밀번호</label>
-                <Link href="/experiments/student/forgot-password" className="text-xs text-violet-600 hover:text-violet-700 transition-colors">
+                <Link href="/student/forgot-password" className="text-xs text-violet-600 hover:text-violet-700 transition-colors">
                   비밀번호 찾기
                 </Link>
               </div>
@@ -146,7 +146,7 @@ export default function StudentLoginFeature() {
 
           <p className="text-center text-sm text-slate-500 mt-5">
             계정이 없으신가요?{" "}
-            <Link href="/experiments/student/register" className="text-violet-600 font-semibold hover:text-violet-700 transition-colors">
+            <Link href="/student/register" className="text-violet-600 font-semibold hover:text-violet-700 transition-colors">
               회원가입
             </Link>
           </p>

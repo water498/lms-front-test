@@ -10,7 +10,7 @@ import {
   enrollmentsBySession,
 } from "../shared/mockData";
 
-const BASE = "/experiments/instructor";
+const BASE = "/instructor";
 
 export default function InstructorDashboardFeature() {
   const courses = instructorCourses[CURRENT_INSTRUCTOR_ID] ?? [];

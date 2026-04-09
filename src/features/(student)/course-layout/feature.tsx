@@ -35,7 +35,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     setInstructorModalOpen,
   } = useCourseContext();
 
-  const baseUrl = `/experiments/student/courses/${courseId}`;
+  const baseUrl = `/student/courses/${courseId}`;
 
   const activeTab = TABS.find((t) => pathname.endsWith(`/${t.id}`))?.id ?? "intro";
 
@@ -47,7 +47,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {/* Back button */}
       <div className="max-w-screen-xl mx-auto px-6 pt-4">
         <Link
-          href="/experiments/student"
+          href="/student"
           className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

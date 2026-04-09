@@ -68,7 +68,7 @@ export default function AssignmentTable() {
           </div>
         </div>
         <Link
-          href="/experiments/admin/assessments/assignment/new"
+          href="/admin/assessments/assignment/new"
           className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
         >
           + 새 과제
@@ -100,7 +100,7 @@ export default function AssignmentTable() {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/experiments/admin/assessments/assignment/${a.id}`}
+                      href={`/admin/assessments/assignment/${a.id}`}
                       className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                     >
                       {a.title}

@@ -30,7 +30,7 @@ export default function CourseStatusOverview() {
         {STATUS_CONFIG.map(({ key, label, text, bg }) => (
           <Link
             key={key}
-            href="/experiments/admin/courses"
+            href="/admin/courses"
             className={`flex-1 ${bg} rounded-lg px-3 py-2 text-center hover:opacity-80 transition-opacity`}
           >
             <p className={`text-lg font-bold ${text}`}>{courseStatusCounts[key]}</p>

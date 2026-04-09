@@ -52,14 +52,14 @@ export default function CheckoutFailureFeature() {
         {/* CTA buttons */}
         <div className="w-full flex flex-col gap-2.5">
           <Link
-            href="/experiments/student/checkout"
+            href="/student/checkout"
             className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             다시 결제하기
           </Link>
           <Link
-            href="/experiments/student"
+            href="/student"
             className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />

@@ -36,7 +36,7 @@ export default function AdminForgotPasswordFeature() {
                 재설정 링크를 발송했습니다.
               </p>
               <Link
-                href="/experiments/admin/login"
+                href="/admin/login"
                 className="text-sm text-violet-600 hover:text-violet-700 font-medium"
               >
                 로그인으로 돌아가기
@@ -70,7 +70,7 @@ export default function AdminForgotPasswordFeature() {
 
               <div className="mt-6 text-center">
                 <Link
-                  href="/experiments/admin/login"
+                  href="/admin/login"
                   className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />

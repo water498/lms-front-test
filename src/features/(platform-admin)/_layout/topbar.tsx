@@ -5,10 +5,10 @@ import { Bell, LogOut } from "lucide-react";
 import { usePlatformAdminAuthStore } from "../shared/auth-store";
 
 const PAGE_TITLE_MAP: { prefix: string; label: string }[] = [
-  { prefix: "/experiments/platform-admin/tenants/", label: "기업 상세" },
-  { prefix: "/experiments/platform-admin/tenants",  label: "기업 목록" },
-  { prefix: "/experiments/platform-admin/settings", label: "플랫폼 설정" },
-  { prefix: "/experiments/platform-admin",          label: "대시보드" },
+  { prefix: "/platform-admin/tenants/", label: "기업 상세" },
+  { prefix: "/platform-admin/tenants",  label: "기업 목록" },
+  { prefix: "/platform-admin/settings", label: "플랫폼 설정" },
+  { prefix: "/platform-admin",          label: "대시보드" },
 ];
 
 export default function PlatformAdminTopbar() {
@@ -20,7 +20,7 @@ export default function PlatformAdminTopbar() {
 
   function handleLogout() {
     logout();
-    router.push("/experiments/platform-admin/login");
+    router.push("/platform-admin/login");
   }
 
   return (

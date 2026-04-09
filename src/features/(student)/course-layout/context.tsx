@@ -74,7 +74,7 @@ export function CourseProvider({ courseId, children }: CourseProviderProps) {
         <div className="text-center">
           <p className="text-zinc-400 mb-4">강의를 찾을 수 없습니다.</p>
           <a
-            href="/experiments/student"
+            href="/student"
             className="text-violet-400 hover:text-violet-300 text-sm"
           >
             홈으로 돌아가기

@@ -62,7 +62,7 @@ export default function ProfileTab({ user, onUserChange }: { user: User; onUserC
 
   function handleImpersonate() {
     start(user.id);
-    const dest = "/experiments/student";
+    const dest = "/student";
     router.push(dest);
   }
 

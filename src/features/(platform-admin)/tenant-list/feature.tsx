@@ -116,7 +116,7 @@ export default function TenantsFeature() {
                 key={t.id}
                 className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer transition-colors"
                 onClick={() =>
-                  router.push(`/experiments/platform-admin/tenants/${t.id}`)
+                  router.push(`/platform-admin/tenants/${t.id}`)
                 }
               >
                 <td className="px-4 py-3 font-medium text-slate-800">

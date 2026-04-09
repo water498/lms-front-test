@@ -32,7 +32,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     learnHref,
   } = useSessionWorkspaceContext();
 
-  const baseUrl = `/experiments/student/sessions/${sessionId}`;
+  const baseUrl = `/student/sessions/${sessionId}`;
   const activeTab = TABS.find((t) => pathname.endsWith(`/${t.id}`))?.id ?? "home";
   const badge = STATUS_BADGE[session.status] ?? STATUS_BADGE.CLOSED;
 
@@ -44,7 +44,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-zinc-500">
           <Link
-            href={`/experiments/student/courses/${session.courseId}`}
+            href={`/student/courses/${session.courseId}`}
             className="hover:text-zinc-300 flex items-center gap-1.5 transition-colors"
           >
             <ArrowLeft size={14} />

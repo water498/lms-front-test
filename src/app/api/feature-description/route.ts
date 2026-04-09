@@ -6,10 +6,12 @@ export const dynamic = "force-dynamic";
  * feature-description.md 조회 API.
  *
  * URL pathname → src/features/ 하위 feature-description.md 매핑.
- * 예: /experiments/admin/courses → src/features/(admin)/courses/feature-description.md
+ * 예: /admin/courses → src/features/(admin)/courses/feature-description.md
  *
  * dev: fs로 직접 읽기 (실시간 반영)
  * prod: 빌드 타임 생성된 JSON에서 조회
+ *
+ * NOTE: /experiments/ prefix는 제거됨. URL은 직접 /{role}/... 구조.
  */
 
 // 역할 URL prefix → features 디렉토리명 매핑
@@ -208,10 +210,10 @@ export async function GET(request: NextRequest) {
 /**
  * dev 전용: URL pathname → features 디렉토리에서 직접 읽기.
  *
- * URL 구조: /experiments/{role}/{featurePath...}
+ * URL 구조: /{role}/{featurePath...}
  * 매핑: src/features/({role})/{featurePath}/feature-description.md
  *
- * 역할 루트 (e.g. /experiments/admin) → home/feature-description.md
+ * 역할 루트 (e.g. /admin) → home/feature-description.md
  */
 function readFromFs(
   fs: typeof import("fs"),
@@ -221,15 +223,15 @@ function readFromFs(
   const featuresDir = pathMod.join(process.cwd(), "src", "features");
   const segments = urlPath.split("/").filter(Boolean);
 
-  // URL: /experiments/{role}/{...featurePath}
-  // segments[0] = "experiments", segments[1] = role, segments[2..] = feature path
-  if (segments.length < 2 || segments[0] !== "experiments") return "";
+  // URL: /{role}/{...featurePath}
+  // segments[0] = role, segments[1..] = feature path
+  if (segments.length < 1) return "";
 
-  const role = segments[1];
+  const role = segments[0];
   const roleDir = ROLE_MAP[role];
   if (!roleDir) return "";
 
-  const featureSegments = segments.slice(2);
+  const featureSegments = segments.slice(1);
   const baseDir = pathMod.join(featuresDir, roleDir);
 
   // 역할 루트 페이지 → home 또는 dashboard

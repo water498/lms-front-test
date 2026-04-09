@@ -34,7 +34,7 @@ function MyNavbar() {
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/50">
       <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
-        <Link href="/experiments/student" className="shrink-0">
+        <Link href="/student" className="shrink-0">
           <Image
             src="/lotte.png"
             alt="롯데건설"
@@ -53,7 +53,7 @@ function MyNavbar() {
           </button>
           {features.cart && (
             <Link
-              href="/experiments/student/cart"
+              href="/student/cart"
               className="relative p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -82,7 +82,7 @@ function MyNavbar() {
             </div>
           ) : (
             <Link
-              href="/experiments/student/login"
+              href="/student/login"
               className="px-4 py-1.5 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition-colors"
             >
               로그인
@@ -135,7 +135,7 @@ const ALL_TABS = [
   },
 ] as const;
 
-const BASE = "/experiments/student/my";
+const BASE = "/student/my";
 
 const CURRENT_USER_ROLES: string[] = ["STUDENT", "INSTRUCTOR"];
 
@@ -291,19 +291,19 @@ export default function MyShell({ children }: { children: React.ReactNode }) {
               </div>
               <div className="flex flex-col gap-2.5 w-full">
                 <button
-                  onClick={() => router.push("/experiments/student/login")}
+                  onClick={() => router.push("/student/login")}
                   className="w-full py-2.5 bg-violet-600 text-white rounded-xl text-sm font-semibold hover:bg-violet-500 transition-colors"
                 >
                   로그인하기
                 </button>
                 <Link
-                  href="/experiments/student/register"
+                  href="/student/register"
                   className="w-full py-2.5 border border-zinc-700 text-zinc-300 rounded-xl text-sm font-medium hover:bg-zinc-800 transition-colors text-center"
                 >
                   회원가입
                 </Link>
                 <button
-                  onClick={() => router.push("/experiments/student")}
+                  onClick={() => router.push("/student")}
                   className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors mt-1"
                 >
                   나중에 하기
@@ -373,7 +373,7 @@ export default function MyShell({ children }: { children: React.ReactNode }) {
 
             {isLoggedIn && (
               <button
-                onClick={() => { logout(); router.push("/experiments/student"); }}
+                onClick={() => { logout(); router.push("/student"); }}
                 className="mt-2 w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 transition-colors text-sm"
               >
                 <LogOut className="w-4 h-4 shrink-0" />

@@ -95,7 +95,7 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
                   return (
                     <tr
                       key={s.id}
-                      onClick={() => router.push(`/experiments/admin/sessions/${s.id}`)}
+                      onClick={() => router.push(`/admin/sessions/${s.id}`)}
                       className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                       <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>

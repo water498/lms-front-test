@@ -30,7 +30,7 @@ export default function StudentResetPasswordFeature() {
               <h2 className="text-xl font-bold text-slate-900 mb-2">비밀번호가 재설정되었습니다</h2>
               <p className="text-sm text-slate-500 mb-7">새 비밀번호로 로그인하세요.</p>
               <Link
-                href="/experiments/student/login"
+                href="/student/login"
                 className="inline-block w-full py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors text-center"
               >
                 로그인하러 가기
