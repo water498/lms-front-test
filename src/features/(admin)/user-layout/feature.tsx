@@ -27,7 +27,7 @@ export default function UserDetailShell({ children }: { children: React.ReactNod
   const userId = params.userId;
 
   const user = users.find((u) => u.id === userId);
-  const base = `/admin/users/${userId}`;
+  const base = `/backoffice/org/users/${userId}`;
   const isInstructor = user?.role === "INSTRUCTOR";
   const tabs = isInstructor ? [...BASE_TABS, ...INSTRUCTOR_TABS] : BASE_TABS;
 

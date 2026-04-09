@@ -89,7 +89,7 @@ export default function SessionsFeature() {
                     <td className="px-5 py-3 text-slate-600 text-xs">{s.courseTitle}</td>
                     <td className="px-4 py-3">
                       <Link
-                        href={`/admin/sessions/${s.id}`}
+                        href={`/backoffice/sessions/${s.id}`}
                         className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                       >
                         {s.name}

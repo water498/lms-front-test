@@ -100,7 +100,7 @@ export default function AssignmentTable() {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/admin/assessments/assignment/${a.id}`}
+                      href={`/backoffice/assessments/assignment/${a.id}`}
                       className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                     >
                       {a.title}

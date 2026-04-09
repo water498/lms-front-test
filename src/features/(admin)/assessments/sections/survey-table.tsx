@@ -47,7 +47,7 @@ export default function SurveyTable() {
               <tr key={s.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                 <td className="px-5 py-3">
                   <Link
-                    href={`/admin/assessments/survey/${s.id}`}
+                    href={`/backoffice/assessments/survey/${s.id}`}
                     className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                   >
                     {s.title}

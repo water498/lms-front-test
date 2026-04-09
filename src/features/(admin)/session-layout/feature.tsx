@@ -25,7 +25,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const { course, courseId, session, sessionId, enrollees, isOffline, isCohort } = useSessionDetail();
   const [showNotifyModal, setShowNotifyModal] = useState(false);
 
-  const base = `/admin/sessions/${sessionId}`;
+  const base = `/backoffice/sessions/${sessionId}`;
 
   const TABS = [
     ...TABS_BASE,
@@ -47,7 +47,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </Link>
           <span>/</span>
           <Link
-            href={`/admin/courses/${courseId}`}
+            href={`/backoffice/courses/${courseId}`}
             className="hover:text-violet-600 transition-colors"
           >
             {course.title}

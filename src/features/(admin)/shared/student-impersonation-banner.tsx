@@ -17,7 +17,7 @@ export default function StudentImpersonationBanner() {
 
   function handleExit() {
     stop();
-    router.push(`/admin/users/${impersonatingUserId}`);
+    router.push(`/backoffice/org/users/${impersonatingUserId}`);
   }
 
   return (
