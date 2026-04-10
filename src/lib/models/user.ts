@@ -30,6 +30,17 @@ export interface RolePermission {
   permissionCode: string;
 }
 
+/** 유저별 권한 오버라이드. grant=true 부여, false 차단. */
+export interface UserPermission {
+  userId: string;
+  permissionCode: string;
+  /** true=역할에 없는 권한 추가, false=역할 기본 권한 차단 */
+  grant: boolean;
+  grantedBy?: string;
+  grantedAt: string;
+  reason?: string;
+}
+
 // ── 사용자 ────────────────────────────────────────────────
 
 export type UserStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";
