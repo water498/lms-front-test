@@ -95,7 +95,7 @@ const NAV_GROUPS: NavGroup[] = [
       },
       { kind: "link", href: `${BASE}/resources/media`, label: "미디어 라이브러리", icon: HardDrive },
       { kind: "link", href: `${BASE}/resources/categories`, label: "카테고리", icon: FolderTree, permission: "course.manage" },
-      { kind: "link", href: `${BASE}/resources/learning-paths`, label: "학습 경로", icon: Route },
+      // { kind: "link", href: `${BASE}/resources/learning-paths`, label: "학습 경로", icon: Route }, // MVP 이후 활성화
     ],
   },
   {

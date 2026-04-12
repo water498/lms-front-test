@@ -15,13 +15,13 @@ export default function SurveyTable() {
         <p className="text-sm text-slate-500">{surveyTemplates.length}개 설문</p>
         <div className="flex items-center gap-2">
           <Link
-            href="/backoffice/assessments/question-bank"
+            href="/backoffice/resources/assessments/question-bank"
             className="px-3 py-1.5 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors"
           >
             문항 뱅크
           </Link>
           <Link
-            href="/backoffice/assessments/survey/new"
+            href="/backoffice/resources/assessments/survey/new"
             className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
           >
             + 새 설문
@@ -47,7 +47,7 @@ export default function SurveyTable() {
               <tr key={s.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
                 <td className="px-5 py-3">
                   <Link
-                    href={`/backoffice/assessments/survey/${s.id}`}
+                    href={`/backoffice/resources/assessments/survey/${s.id}`}
                     className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                   >
                     {s.title}

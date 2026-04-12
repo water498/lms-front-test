@@ -112,7 +112,7 @@ export default function SurveyEditorFeature({ surveyId }: Props) {
       {/* ── Top bar ── */}
       <div className="h-14 border-b border-slate-200 flex items-center gap-4 px-5 flex-shrink-0">
         <Link
-          href="/backoffice/assessments"
+          href="/backoffice/resources/assessments/surveys"
           className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors"
         >
           <ChevronLeft size={15} />

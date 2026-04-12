@@ -147,15 +147,15 @@ export function getCourse(courseId: string): Course | undefined {
 }
 
 export function getCurriculum(courseId: string): CourseSubject[] {
-  return curricula[courseId] ?? curricula["c1"];
+  return curricula[courseId] ?? [];
 }
 
 export function getSessions(courseId: string): CourseSession[] {
-  return sessions[courseId] ?? sessions["c1"];
+  return sessions[courseId] ?? [];
 }
 
 export function getEnrollees(courseId: string): CourseEnrollee[] {
-  return enrollees[courseId] ?? enrollees["c1"];
+  return enrollees[courseId] ?? [];
 }
 
 export function getSessionById(sessionId: string): CourseSession | undefined {

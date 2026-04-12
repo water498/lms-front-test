@@ -166,7 +166,7 @@ function ActivityRow({
       : "";
 
   function handleDeleteClick() {
-    if (hasOngoingSessions) {
+    if (enrolleeCount > 0) {
       setShowWarning(true);
     } else {
       onDelete();
@@ -212,6 +212,7 @@ function ActivityRow({
           <button
             onClick={hasOngoingSessions ? undefined : handleDeleteClick}
             disabled={hasOngoingSessions}
+            title={hasOngoingSessions ? "진행 중인 차수가 있어 삭제할 수 없습니다" : undefined}
             className={`p-1 rounded ${hasOngoingSessions ? "text-slate-200 cursor-not-allowed" : "text-slate-400 hover:text-red-500"}`}
           >
             <Trash2 size={13} />
@@ -219,7 +220,7 @@ function ActivityRow({
         </div>
       </div>
 
-      {showWarning && !hasOngoingSessions && (
+      {showWarning && (
         <DeleteWarningDialog
           enrolleeCount={enrolleeCount}
           onConfirm={() => {
@@ -624,6 +625,32 @@ export default function CurriculumTab({
 
   return (
     <div className="flex flex-col gap-4 max-w-2xl">
+      {/* 리소스 안내 배너 */}
+      <div className="flex items-center justify-between px-4 py-3 bg-sky-50 border border-sky-200 rounded-xl">
+        <div className="flex items-center gap-2 text-sky-700 text-xs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>시험, 과제, 영상 등 리소스는 <strong>리소스 관리</strong>에서 생성하고 여기서 연결합니다.</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="/backoffice/resources/assessments/exams"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-sky-600 hover:text-sky-800 hover:bg-sky-100 px-2.5 py-1 rounded-lg transition-colors"
+          >
+            평가 관리 ↗
+          </a>
+          <a
+            href="/backoffice/resources/media"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-sky-600 hover:text-sky-800 hover:bg-sky-100 px-2.5 py-1 rounded-lg transition-colors"
+          >
+            미디어 ↗
+          </a>
+        </div>
+      </div>
+
       {/* 순서 강제 토글 */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2.5">

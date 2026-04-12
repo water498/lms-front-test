@@ -1,8 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Play, Save, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  Play,
+  Save,
+  Send,
+  Check,
+  AlertTriangle,
+} from "lucide-react";
 import { getCourse } from "../course-layout/mockData";
 import { CourseDetailProvider } from "./context";
 
@@ -20,14 +29,22 @@ const LAYER1: Layer1Item[] = [
     id: "design",
     label: "설계",
     icon: Pencil,
-    matchPrefixes: (base) => [`${base}/info`, `${base}/curriculum`, `${base}/certificate`],
+    matchPrefixes: (base) => [
+      `${base}/info`,
+      `${base}/curriculum`,
+      `${base}/certificate`,
+    ],
     defaultHref: (base) => `${base}/info`,
   },
   {
     id: "operation",
     label: "운영",
     icon: Play,
-    matchPrefixes: (base) => [`${base}/sessions`, `${base}/reviews`],
+    matchPrefixes: (base) => [
+      `${base}/sessions`,
+      `${base}/reviews`,
+      `${base}/statistics`,
+    ],
     defaultHref: (base) => `${base}/sessions`,
   },
 ];
@@ -36,14 +53,23 @@ const LAYER1: Layer1Item[] = [
 type Layer2Item = { id: string; label: string; href: (base: string) => string };
 
 const DESIGN_MENU: Layer2Item[] = [
-  { id: "info",        label: "기본정보",   href: (base) => `${base}/info` },
-  { id: "curriculum",  label: "커리큘럼",   href: (base) => `${base}/curriculum` },
-  { id: "certificate", label: "수료설정",   href: (base) => `${base}/certificate` },
+  { id: "info", label: "기본정보", href: (base) => `${base}/info` },
+  { id: "curriculum", label: "커리큘럼", href: (base) => `${base}/curriculum` },
+  {
+    id: "certificate",
+    label: "수료설정",
+    href: (base) => `${base}/certificate`,
+  },
 ];
 
 const OPERATION_MENU: Layer2Item[] = [
+  {
+    id: "statistics",
+    label: "과정 통계",
+    href: (base) => `${base}/statistics`,
+  },
   { id: "sessions", label: "차수 관리", href: (base) => `${base}/sessions` },
-  { id: "reviews",  label: "과정 리뷰", href: (base) => `${base}/reviews` },
+  { id: "reviews", label: "과정 리뷰", href: (base) => `${base}/reviews` },
 ];
 
 /* ── Status badge ── */
@@ -59,53 +85,166 @@ function StatusBadge({ status }: { status: string }) {
     ARCHIVED: "보관됨",
   };
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${styles[status] ?? "bg-slate-100 text-slate-600"}`}>
+    <span
+      className={`text-xs font-medium px-2 py-0.5 rounded-full ${styles[status] ?? "bg-slate-100 text-slate-600"}`}
+    >
       {labels[status] ?? status}
     </span>
   );
 }
 
-/* ── Course Header ── */
-function CourseHeader({ course, base }: { course: { title: string; status?: string; category?: string; mode?: string }; base: string }) {
-  const router = useRouter();
-
+/* ── Publish confirmation modal ── */
+function PublishModal({
+  courseName,
+  onConfirm,
+  onClose,
+}: {
+  courseName: string;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
   return (
-    <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-5 shrink-0">
-      {/* Left: back + title */}
-      <div className="flex items-center gap-3 min-w-0">
-        <button
-          onClick={() => router.push("/backoffice/courses")}
-          className="text-slate-400 hover:text-violet-600 transition-colors shrink-0"
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <h1 className="text-sm font-bold text-slate-900 truncate">{course.title}</h1>
-        <StatusBadge status={course.status ?? "DRAFT"} />
-        <div className="hidden lg:flex items-center gap-3 ml-3 text-xs text-slate-400">
-          {course.category && <span>{course.category}</span>}
-          {course.mode && <span>· {course.mode}</span>}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
+            <Send size={18} className="text-violet-600" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              과정 게시
+            </h3>
+            <p className="text-sm text-slate-500">
+              게시하면 차수를 생성하고 수강 신청을 받을 수 있습니다.
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Right: actions */}
-      <div className="flex items-center gap-2 shrink-0">
-        <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-          <Save size={14} />
-          저장
-        </button>
-        {(course.status === "DRAFT" || !course.status) && (
-          <button className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
-            <Send size={14} />
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5">
+          <div className="flex items-start gap-2">
+            <AlertTriangle
+              size={14}
+              className="text-amber-600 mt-0.5 shrink-0"
+            />
+            <p className="text-xs text-amber-700">
+              게시 후에는 커리큘럼 구조 변경이 제한됩니다. 진행 중인 차수가
+              있으면 수료 기준도 수정할 수 없습니다.
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            취소
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors"
+          >
             게시하기
           </button>
-        )}
+        </div>
       </div>
-    </header>
+    </div>
+  );
+}
+
+/* ── Course Header ── */
+function CourseHeader({
+  course,
+}: {
+  course: { title: string; status?: string; category?: string; mode?: string };
+}) {
+  const router = useRouter();
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">(
+    "idle",
+  );
+  const [showPublishModal, setShowPublishModal] = useState(false);
+
+  const handleSave = () => {
+    setSaveState("saving");
+    setTimeout(() => {
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 2000);
+    }, 800);
+  };
+
+  const handlePublish = () => {
+    setShowPublishModal(false);
+    // TODO: API call
+  };
+
+  return (
+    <>
+      <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-5 shrink-0">
+        {/* Left: back + title */}
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            onClick={() => router.push("/backoffice/courses")}
+            className="text-slate-400 hover:text-violet-600 transition-colors shrink-0"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <h1 className="text-sm font-bold text-slate-900 truncate">
+            {course.title}
+          </h1>
+          <StatusBadge status={course.status ?? "DRAFT"} />
+          <div className="hidden lg:flex items-center gap-3 ml-3 text-xs text-slate-400">
+            {course.category && <span>{course.category}</span>}
+            {course.mode && <span>· {course.mode}</span>}
+          </div>
+        </div>
+
+        {/* Right: actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleSave}
+            disabled={saveState === "saving"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              saveState === "saved"
+                ? "text-emerald-600 bg-emerald-50"
+                : saveState === "saving"
+                  ? "text-slate-400 bg-slate-50 cursor-wait"
+                  : "text-slate-600 hover:bg-slate-100"
+            }`}
+          >
+            {saveState === "saved" ? <Check size={14} /> : <Save size={14} />}
+            {saveState === "saving"
+              ? "저장 중..."
+              : saveState === "saved"
+                ? "저장됨"
+                : "저장"}
+          </button>
+          {(course.status === "DRAFT" || !course.status) && (
+            <button
+              onClick={() => setShowPublishModal(true)}
+              className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors"
+            >
+              <Send size={14} />
+              게시하기
+            </button>
+          )}
+        </div>
+      </header>
+      {showPublishModal && (
+        <PublishModal
+          courseName={course.title}
+          onConfirm={handlePublish}
+          onClose={() => setShowPublishModal(false)}
+        />
+      )}
+    </>
   );
 }
 
 /* ── Main Layout ── */
-export default function CourseDetailShellV2({ children }: { children: React.ReactNode }) {
+export default function CourseDetailShellV2({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const params = useParams<{ courseId: string }>();
   const courseId = params.courseId;
@@ -117,9 +256,10 @@ export default function CourseDetailShellV2({ children }: { children: React.Reac
   }
 
   // Active layer 1
-  const activeL1 = LAYER1.find((item) =>
-    item.matchPrefixes(base).some((prefix) => pathname.startsWith(prefix))
-  ) ?? LAYER1[0];
+  const activeL1 =
+    LAYER1.find((item) =>
+      item.matchPrefixes(base).some((prefix) => pathname.startsWith(prefix)),
+    ) ?? LAYER1[0];
 
   // Layer 2 menu
   const layer2 = activeL1.id === "design" ? DESIGN_MENU : OPERATION_MENU;
@@ -128,7 +268,7 @@ export default function CourseDetailShellV2({ children }: { children: React.Reac
     <CourseDetailProvider courseId={courseId}>
       <div className="flex flex-col h-[calc(100vh-3.5rem)]">
         {/* Course-specific header */}
-        <CourseHeader course={course} base={base} />
+        <CourseHeader course={course} />
 
         <div className="flex flex-1 min-h-0">
           {/* Layer 1: icon sidebar */}
@@ -161,7 +301,8 @@ export default function CourseDetailShellV2({ children }: { children: React.Reac
             <div className="flex flex-col gap-0.5 px-2">
               {layer2.map((item) => {
                 const href = item.href(base);
-                const isActive = pathname === href || pathname.startsWith(href + "/");
+                const isActive =
+                  pathname === href || pathname.startsWith(href + "/");
                 return (
                   <Link
                     key={item.id}
@@ -180,9 +321,7 @@ export default function CourseDetailShellV2({ children }: { children: React.Reac
           </div>
 
           {/* Content area */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {children}
-          </div>
+          <div className="flex-1 overflow-y-auto p-6">{children}</div>
         </div>
       </div>
     </CourseDetailProvider>

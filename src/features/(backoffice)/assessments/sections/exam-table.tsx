@@ -68,13 +68,13 @@ export default function ExamTable() {
         </div>
         <div className="flex items-center gap-2">
           <Link
-            href="/backoffice/assessments/question-bank"
+            href="/backoffice/resources/assessments/question-bank"
             className="px-3 py-1.5 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors"
           >
             문항 뱅크
           </Link>
           <Link
-            href="/backoffice/assessments/exam/new"
+            href="/backoffice/resources/assessments/exam/new"
             className="px-4 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
           >
             + 새 시험
@@ -110,7 +110,7 @@ export default function ExamTable() {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/backoffice/assessments/exam/${e.id}`}
+                      href={`/backoffice/resources/assessments/exam/${e.id}`}
                       className="font-medium text-slate-800 hover:text-violet-600 transition-colors"
                     >
                       {e.title}

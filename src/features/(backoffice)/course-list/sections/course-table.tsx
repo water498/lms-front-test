@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { courses, type Course, type CourseMode, type CourseStatus } from "../mockData";
 
 const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> = {
@@ -28,6 +28,7 @@ interface Props {
 }
 
 export default function CourseTable({ onCreateClick }: Props) {
+  const router = useRouter();
   const [filter, setFilter] = useState<CourseStatus | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
@@ -82,16 +83,15 @@ export default function CourseTable({ onCreateClick }: Props) {
             <th className="text-left px-4 py-3 font-medium">차수</th>
             <th className="text-left px-4 py-3 font-medium">수강생</th>
             <th className="text-left px-4 py-3 font-medium">생성일</th>
-            <th className="text-left px-4 py-3 font-medium">액션</th>
           </tr>
         </thead>
         <tbody>
           {filtered.map((course) => (
-            <CourseRow key={course.id} course={course} />
+            <CourseRow key={course.id} course={course} onClick={() => router.push(`/backoffice/courses/${course.id}`)} />
           ))}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={7} className="text-center py-10 text-slate-400 text-sm">
+              <td colSpan={6} className="text-center py-10 text-slate-400 text-sm">
                 검색 결과가 없습니다.
               </td>
             </tr>
@@ -102,15 +102,13 @@ export default function CourseTable({ onCreateClick }: Props) {
   );
 }
 
-function CourseRow({ course }: { course: Course }) {
+function CourseRow({ course, onClick }: { course: Course; onClick: () => void }) {
   const badge = STATUS_CONFIG[course.status as CourseStatus];
   const modeBadge = MODE_CONFIG[course.mode as CourseMode];
   return (
-    <tr className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+    <tr onClick={onClick} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors cursor-pointer">
       <td className="px-5 py-3">
-        <Link href={`/backoffice/courses/${course.id}`} className="font-medium text-slate-800 hover:text-violet-600 transition-colors">
-          {course.title}
-        </Link>
+        <span className="font-medium text-slate-800">{course.title}</span>
         <div className="flex items-center gap-1 mt-1">
           <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${modeBadge.className}`}>
             {modeBadge.label}
@@ -129,23 +127,6 @@ function CourseRow({ course }: { course: Course }) {
       <td className="px-4 py-3 text-slate-600">{course.sessions}</td>
       <td className="px-4 py-3 text-slate-600">{course.enrollees?.toLocaleString()}</td>
       <td className="px-4 py-3 text-slate-400">{course.createdAt}</td>
-      <td className="px-4 py-3">
-        <div className="flex gap-1">
-          {course.status === "DRAFT" && (
-            <button className="text-xs px-2 py-1 text-emerald-600 hover:bg-emerald-50 rounded transition-colors">
-              게시
-            </button>
-          )}
-          {course.status === "PUBLISHED" && (
-            <button className="text-xs px-2 py-1 text-slate-500 hover:bg-slate-100 rounded transition-colors">
-              게시 취소
-            </button>
-          )}
-          <button className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors">
-            수정
-          </button>
-        </div>
-      </td>
     </tr>
   );
 }

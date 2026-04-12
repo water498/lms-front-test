@@ -52,9 +52,29 @@ interface SessionsTabProps {
   defaultMinEnrollment?: number | null;
 }
 
+function DeleteSessionModal({ sessionName, onConfirm, onClose }: { sessionName: string; onConfirm: () => void; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
+        <h3 className="text-base font-semibold text-slate-900 mb-2">차수 삭제</h3>
+        <p className="text-sm text-slate-500 mb-1">
+          <span className="font-medium text-slate-700">{sessionName}</span>을(를) 삭제하시겠습니까?
+        </p>
+        <p className="text-xs text-red-500 mb-5">삭제된 차수는 복구할 수 없으며, 수강 기록도 함께 삭제됩니다.</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">취소</button>
+          <button onClick={onConfirm} className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">삭제</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }: SessionsTabProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   return (
     <>
@@ -75,18 +95,17 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
             <p className="text-xs">첫 차수를 만들어보세요</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-slate-200">
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-xs text-slate-400 border-b border-slate-100">
                   <th className="text-left px-5 py-3 font-medium">차수명</th>
                   <th className="text-left px-4 py-3 font-medium">유형</th>
                   <th className="text-left px-4 py-3 font-medium">기간</th>
-                  <th className="text-left px-4 py-3 font-medium">정원 / 수강</th>
+                  <th className="text-left px-4 py-3 font-medium">수강 / 정원</th>
                   <th className="text-left px-4 py-3 font-medium">강사</th>
-                  <th className="text-left px-4 py-3 font-medium">장소</th>
                   <th className="text-left px-4 py-3 font-medium">상태</th>
-                  <th className="text-left px-4 py-3 font-medium">액션</th>
+                  <th className="w-20 px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -96,13 +115,13 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
                     <tr
                       key={s.id}
                       onClick={() => router.push(`/backoffice/courses/${courseId}/sessions/${s.id}`)}
-                      className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer"
+                      className="group border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                       <td className="px-5 py-3 font-medium text-slate-800">{s.name}</td>
                       <td className="px-4 py-3">
                         <SessionTypeBadge session={s} />
                       </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">
+                      <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
                         {s.type === "SELF_PACED"
                           ? <span className="text-slate-400">상시</span>
                           : `${s.startDate} ~ ${s.endDate}`
@@ -113,46 +132,30 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
                           <span className={s.capacity > 0 && s.enrolled >= s.capacity ? "text-red-500 font-medium" : ""}>
                             {s.enrolled}
                           </span>
-                          <span className="text-slate-400"> / {s.capacity === 0 ? "무제한" : s.capacity}</span>
+                          <span className="text-slate-400">/ {s.capacity === 0 ? "∞" : s.capacity}</span>
                           {s.minEnrollment != null &&
                             s.enrolled < s.minEnrollment &&
                             (s.status === "OPEN" || s.status === "ONGOING") && (
-                            <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-red-100 text-red-600">
-                              미달
-                            </span>
+                            <span className="text-[10px] px-1 py-0.5 rounded font-medium bg-red-100 text-red-600">미달</span>
                           )}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-slate-600"><InstructorCell instructors={s.instructors} /></td>
-                      <td className="px-4 py-3 text-slate-400">{s.location ?? "온라인"}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${status.className}`}>
                           {status.label}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex gap-1">
+                        <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-xs px-2 py-1 text-violet-600 hover:bg-violet-50 rounded transition-colors"
-                          >
-                            편집
-                          </button>
+                            onClick={(e) => { e.stopPropagation(); alert(`"${s.name}" 복사됨`); }}
+                            className="text-xs px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded transition-colors"
+                          >복사</button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              console.log("차수 복사", { sourceId: s.id, newName: s.name + " (복사)" });
-                            }}
-                            className="text-xs px-2 py-1 text-slate-500 hover:bg-slate-100 rounded transition-colors"
-                          >
-                            복사
-                          </button>
-                          <button
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-xs px-2 py-1 text-slate-400 hover:bg-slate-100 rounded transition-colors"
-                          >
-                            삭제
-                          </button>
+                            onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: s.id, name: s.name }); }}
+                            className="text-xs px-2 py-1 text-slate-400 hover:bg-red-50 hover:text-red-600 rounded transition-colors"
+                          >삭제</button>
                         </div>
                       </td>
                     </tr>
@@ -168,6 +171,17 @@ export default function SessionsTab({ sessions, courseId, defaultMinEnrollment }
         <CreateSessionModal
           defaultMinEnrollment={defaultMinEnrollment}
           onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteSessionModal
+          sessionName={deleteTarget.name}
+          onConfirm={() => {
+            // TODO: API call to delete session
+            setDeleteTarget(null);
+          }}
+          onClose={() => setDeleteTarget(null)}
         />
       )}
     </>

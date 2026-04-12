@@ -272,7 +272,7 @@ export default function AddActivityModal({
             )}
 
             <Link
-              href="/backoffice/media"
+              href="/backoffice/resources/media"
               target="_blank"
               className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 hover:text-violet-600 transition-colors"
             >
@@ -328,7 +328,7 @@ export default function AddActivityModal({
               </div>
             )}
             <Link
-              href="/backoffice/assessments/exam/new"
+              href="/backoffice/resources/assessments/exam/new"
               target="_blank"
               className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 hover:text-violet-600 transition-colors"
             >
@@ -382,7 +382,7 @@ export default function AddActivityModal({
               </div>
             )}
             <Link
-              href="/backoffice/assessments/assignment/new"
+              href="/backoffice/resources/assessments/assignment/new"
               target="_blank"
               className="mt-2 flex items-center gap-1.5 text-xs text-slate-500 hover:text-violet-600 transition-colors"
             >

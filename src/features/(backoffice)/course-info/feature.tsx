@@ -12,7 +12,7 @@ import {
   DEFAULT_CANCELLATION_POLICY,
 } from "../course-list/mockData";
 import { type CertConfig } from "../../../lib/models";
-import { useCertStore } from "../certificates/store";
+// 수료증 설정은 설계 > 수료설정 탭으로 이동됨
 import RichEditor from "../shared/rich-editor";
 import { type CoursePrerequisite, getPrerequisites } from "../course-layout/mockData";
 import { useTaxonomyStore } from "../shared/taxonomy-store";
@@ -26,11 +26,34 @@ const STATUS_CONFIG: Record<CourseStatus, { label: string; className: string }> 
 const allTags = [...new Set(courses.flatMap((c) => c.tags))];
 
 export default function InfoTab({ course }: { course: Course }) {
-  const { categories } = useTaxonomyStore();
-  const categoryNames = categories.filter((c) => c.parentId === null).map((c) => c.name);
+  const { categories, addCategory } = useTaxonomyStore();
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  // 계층형 카테고리 경로 생성 (대 > 중 > 소)
+  function getCategoryPath(cat: { id: string; name: string; parentId: string | null }): string {
+    const parts: string[] = [cat.name];
+    let current = cat;
+    while (current.parentId) {
+      const parent = categories.find((c) => c.id === current.parentId);
+      if (!parent) break;
+      parts.unshift(parent.name);
+      current = parent;
+    }
+    return parts.join(" > ");
+  }
+
+  // 모든 카테고리를 계층 경로로 변환 (leaf 노드만 선택 가능하게 할 수도 있지만, 일단 전체)
+  const categoryOptions = categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    path: getCategoryPath(c),
+    depth: getCategoryPath(c).split(" > ").length - 1,
+    hasChildren: categories.some((ch) => ch.parentId === c.id),
+  }));
   const [title, setTitle] = useState(course.title);
   const [instructor, setInstructor] = useState(course.instructor);
-  const [category, setCategory] = useState(course.category ?? categoryNames[0]);
+  const [category, setCategory] = useState(course.category ?? categories[0]?.name ?? "");
   const [tags, setTags] = useState<string[]>(course.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -45,8 +68,7 @@ export default function InfoTab({ course }: { course: Course }) {
     course.defaultMinLearners != null ? String(course.defaultMinLearners) : ""
   );
   const [policy, setPolicy] = useState<CancellationPolicy>(course.cancellationPolicy ?? DEFAULT_CANCELLATION_POLICY);
-  const { templates } = useCertStore();
-  const [certConfig, setCertConfig] = useState<CertConfig | null>(course.certConfig ?? null);
+  // 수료증 관련 state 제거됨 — 설계 > 수료설정 탭에서 관리
   const [prereqs, setPrereqs] = useState<CoursePrerequisite[]>(() => getPrerequisites(course.id));
 
   const otherCourses = courses.filter((c) => c.id !== course.id);
@@ -156,13 +178,67 @@ export default function InfoTab({ course }: { course: Course }) {
 
       <div>
         <label className="text-xs font-medium text-slate-600 mb-1 block">카테고리</label>
-        <select
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          {categoryNames.map((c) => <option key={c}>{c}</option>)}
-        </select>
+        <div className="flex gap-2">
+          <select
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {categoryOptions.map((c) => (
+              <option key={c.id} value={c.name}>
+                {"　".repeat(c.depth)}{c.depth > 0 ? "└ " : ""}{c.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => setShowNewCategory(true)}
+            className="px-3 py-2 text-sm text-violet-600 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors shrink-0"
+          >
+            +
+          </button>
+        </div>
+        {showNewCategory && (
+          <div className="flex gap-2 mt-2">
+            <input
+              autoFocus
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+              placeholder="새 카테고리 이름"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newCategoryName.trim()) {
+                  addCategory(newCategoryName.trim());
+                  setCategory(newCategoryName.trim());
+                  setNewCategoryName("");
+                  setShowNewCategory(false);
+                }
+                if (e.key === "Escape") { setShowNewCategory(false); setNewCategoryName(""); }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (newCategoryName.trim()) {
+                  addCategory(newCategoryName.trim());
+                  setCategory(newCategoryName.trim());
+                  setNewCategoryName("");
+                  setShowNewCategory(false);
+                }
+              }}
+              className="px-3 py-1.5 text-sm text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+            >
+              추가
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowNewCategory(false); setNewCategoryName(""); }}
+              className="px-3 py-1.5 text-sm text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              취소
+            </button>
+          </div>
+        )}
       </div>
 
       <div>
@@ -281,126 +357,9 @@ export default function InfoTab({ course }: { course: Course }) {
         </div>
       </div>
 
-      {/* 선수과정 */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-medium text-slate-600">선수과정</label>
-          <button
-            type="button"
-            onClick={addPrereq}
-            disabled={prereqs.length >= otherCourses.length}
-            className="text-xs text-violet-600 hover:text-violet-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-          >
-            <Plus size={12} />
-            선수과정 추가
-          </button>
-        </div>
+      {/* 선수과정 — MVP 이후 활성화 예정 */}
 
-        {prereqs.length === 0 ? (
-          <p className="text-sm text-slate-400">선수 과정 없음</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {prereqs.map((p, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg bg-slate-50">
-                <select
-                  className="flex-1 border border-slate-200 rounded-md px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-                  value={p.prerequisiteCourseId}
-                  onChange={(e) => updatePrereqCourse(i, e.target.value)}
-                >
-                  {otherCourses.map((c) => (
-                    <option
-                      key={c.id}
-                      value={c.id}
-                      disabled={prereqs.some((pr, pi) => pi !== i && pr.prerequisiteCourseId === c.id)}
-                    >
-                      {c.title}
-                    </option>
-                  ))}
-                </select>
-                <label className="flex items-center gap-1.5 text-xs text-slate-600 whitespace-nowrap cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={p.requiredCompletion}
-                    onChange={(e) => updatePrereqRequired(i, e.target.checked)}
-                    className="accent-violet-600"
-                  />
-                  수료 필수
-                </label>
-                <button
-                  type="button"
-                  onClick={() => removePrereq(i)}
-                  className="text-slate-400 hover:text-red-500 transition-colors"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 수료증 설정 */}
-      <div>
-        <label className="text-xs font-medium text-slate-600 mb-2 block">수료증 설정</label>
-        <div className="border border-slate-200 rounded-xl p-4 flex flex-col gap-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={certConfig !== null}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  const first = templates.find((t) => t.active);
-                  setCertConfig({ templateId: first?.id ?? "", completionRate: 80, autoIssue: false });
-                } else {
-                  setCertConfig(null);
-                }
-              }}
-              className="accent-violet-600"
-            />
-            <span className="text-sm text-slate-700 font-medium">수료증 발급 사용</span>
-          </label>
-
-          {certConfig !== null && (
-            <div className="flex flex-col gap-3 pt-1 border-t border-slate-100">
-              <div>
-                <label className="text-xs font-medium text-slate-500 mb-1 block">템플릿</label>
-                <select
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
-                  value={certConfig.templateId}
-                  onChange={(e) => setCertConfig({ ...certConfig, templateId: e.target.value })}
-                >
-                  {templates.filter((t) => t.active).map((t) => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium text-slate-500 whitespace-nowrap">이수율 기준</label>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  className="w-20 border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-violet-400"
-                  value={certConfig.completionRate}
-                  onChange={(e) => setCertConfig({ ...certConfig, completionRate: Number(e.target.value) })}
-                />
-                <span className="text-sm text-slate-500">% 이상 달성 시</span>
-              </div>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={certConfig.autoIssue}
-                  onChange={(e) => setCertConfig({ ...certConfig, autoIssue: e.target.checked })}
-                  className="accent-violet-600"
-                />
-                <span className="text-sm text-slate-700">조건 충족 시 자동 발급</span>
-              </label>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* 수료증 설정은 설계 > 수료설정 탭에서 관리 */}
 
       {/* 취소·환불 규정 */}
       <div>
