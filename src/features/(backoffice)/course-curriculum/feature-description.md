@@ -1,42 +1,119 @@
-# 커리큘럼 (Admin)
+# 과정 커리큘럼
 
-과정의 커리큘럼 구조를 편집하는 탭. PRE/LEARNING/POST 3단계 Phase 기반으로 과목과 활동을 관리.
+3단계(PRE/LEARNING/POST) 구조로 과목과 활동을 구성하고 드래그앤드롭으로 순서를 관리하는 커리큘럼 편집기.
+
+## 누가, 언제
+
+- **역할**: 관리자(ORG_ADMIN), 강사(INSTRUCTOR)
+- **진입 경로**: 과정 상세 > 커리큘럼 탭
+- **URL**: `/backoffice/courses/[courseId]/curriculum`
+- **목적**: 과정의 학습 구조(과목/활동) 설계, 순서 제어, 활동 유형별 콘텐츠 연결
+
+## 화면 구성
+
+### 레이아웃
+
+```
+┌──────────────────────────────────────────────┐
+│ [i] 리소스 안내 배너          [평가 관리↗][미디어↗] │
+├──────────────────────────────────────────────┤
+│ [잠금] 활동 순서 강제               [토글 ON/OFF] │
+│   Phase 순서(사전→학습→사후)는 항상 적용됩니다     │
+├──────────────────────────────────────────────┤
+│ ▼ 사전 평가 (PRE)                    2개 과목  │
+│   ┌──────────────────────────────────────┐   │
+│   │ ≡ ▼ 1. 사전 테스트 [PRE]   2개 활동  │   │
+│   │   📹 안전 소개 영상    영상 · 10분    │   │
+│   │   📝 사전 퀴즈        시험 · 5문항   │   │
+│   │   [+ 활동 추가]                      │   │
+│   └──────────────────────────────────────┘   │
+│   [+ 과목 추가]                              │
+│                                              │
+│ ▼ 학습 (LEARNING)                    3개 과목  │
+│   ...                                        │
+│                                              │
+│ ▼ 사후 평가 (POST)                   1개 과목  │
+│   ...                                        │
+│                                              │
+│                          [커리큘럼 저장]       │
+└──────────────────────────────────────────────┘
+```
+
+### 주요 요소
+
+| 요소 | 설명 | 클릭 시 |
+|------|------|---------|
+| 리소스 안내 배너 | 시험/과제/영상은 리소스 관리에서 생성 후 연결하라는 안내 | - |
+| 평가 관리 링크 | `/backoffice/resources/assessments/exams` | 새 탭 열기 |
+| 미디어 링크 | `/backoffice/resources/media` | 새 탭 열기 |
+| 활동 순서 강제 토글 | Phase 내 과목/활동 순차 완료 필수 여부 | ON/OFF 전환 |
+| Phase 섹션 헤더 | PRE/LEARNING/POST 구분, 과목 수 표시 | 접기/펼치기 |
+| 과목 아코디언 | 과목명, Phase 배지, 출석 요구사항, 활동 수 | 접기/펼치기 |
+| 과목 드래그 핸들 | 과목 순서 변경 (dnd-kit) | 드래그앤드롭 |
+| 활동 행 | 아이콘(유형) + 제목 + 미디어명 + 메타(분/문항 수) | - |
+| 활동 드래그 핸들 | 과목 내 활동 순서 변경 | 드래그앤드롭 |
+| 활동 편집 버튼 | 연필 아이콘, hover 시 표시 | 활동 편집 모달 |
+| 활동 삭제 버튼 | 휴지통 아이콘, hover 시 표시 | 삭제 (또는 경고 모달) |
+| + 활동 추가 | 과목 내 하단 | 활동 추가 모달 |
+| + 과목 추가 | Phase 섹션 하단, dashed border | 인라인 텍스트 입력 |
+| 커리큘럼 저장 | 우하단 CTA | API 호출 (미구현) |
+
+## 상태별 화면
+
+| 상태 | 화면 |
+|------|------|
+| 정상 편집 | 모든 추가/삭제/드래그 활성화, 저장 버튼 표시 |
+| 진행 중 차수 있음 | 경고 배너 표시, 추가/삭제/드래그 비활성화, 저장 버튼 숨김 |
+| Phase 내 과목 없음 | "이 단계에 아직 과목이 없습니다" 메시지 |
+| 순서 강제 ON | 보라색 안내 배너 추가 표시 |
+
+## 조건부 분기
+
+| 조건 | 변화 |
+|------|------|
+| hasOngoingSessions = true | 드래그 핸들 비활성, 삭제 버튼 비활성(cursor-not-allowed), 과목/활동 추가 비활성, 저장 버튼 숨김 |
+| enrolleeCount > 0 | 활동 삭제 시 경고 모달 표시 ("N명 수강 중, 기존 기록 유지") |
+| isSequential = true | 순서 강제 안내 배너 추가 |
+| subject.requiredDayNum 존재 | 과목 헤더에 출석 필요 배지 표시 |
+
+## 모달
+
+### 활동 추가 모달 (AddActivityModal)
+- **용도**: 과목에 새 활동 추가
+- **필드**: 활동 유형(VIDEO, SCORM, QUIZ, ASSIGNMENT, SURVEY, OFFLINE), 제목, 관련 설정
+
+### 과목 편집 모달 (EditSubjectModal)
+- **용도**: 과목명, Phase, 출석 요구사항 등 수정
+
+### 활동 편집 모달 (EditActivityModal)
+- **용도**: 기존 활동의 속성 수정
+
+### 삭제 경고 다이얼로그
+- **용도**: 수강생이 존재할 때 활동 삭제 전 확인
+- **내용**: "현재 N명이 수강 중입니다. 삭제하면 신규 수강자에게 표시되지 않으며, 기존 학습 기록은 유지됩니다."
+- **버튼**: 취소 / 삭제(빨간색)
+
+## 연결 페이지
+
+| 방향 | 대상 | 조건 |
+|------|------|------|
+| 부모 | 과정 레이아웃 | 탭 네비게이션 |
+| 외부 링크 | 평가 관리 (`/backoffice/resources/assessments/exams`) | 배너 클릭 |
+| 외부 링크 | 미디어 라이브러리 (`/backoffice/resources/media`) | 배너 클릭 |
 
 ## 도메인 모델
 
 | 모델 | 모듈 | 설명 |
 |------|------|------|
-| Course | course | 과정 템플릿 (isSequential, mode) |
-| CourseSubject | course | 과목(챕터). Phase + requiredDayNum(회차 잠금) |
-| CourseActivity | course | 활동. VIDEO/SCORM/QUIZ/ASSIGNMENT/SURVEY/OFFLINE |
-| MediaAsset | media | 영상/SCORM 콘텐츠 (활동 추가 시 선택) |
-| ExamTemplate | assessment.exam | 시험 템플릿 (활동 추가 시 선택) |
-| AssignmentTemplate | assessment.assignment | 과제 템플릿 (활동 추가 시 선택) |
-
-## 화면 구성
-
-- **순서 강제 토글**: Phase 순서(PRE->LEARNING->POST)는 항상 강제. 토글 ON 시 Phase 내 활동도 순서 강제
-- **3개 Phase 섹션**: 각 섹션 접기/펼치기, 과목 수 표시
-- **과목**: 제목, Phase 뱃지, 회차 잠금 뱃지(requiredDayNum), 활동 수. DnD 순서 변경. 편집/삭제
-- **활동**: 타입 아이콘, 제목, 미디어명, 타입+메타(시간/문항수). DnD 순서 변경. 편집/삭제
-- **진행중 차수 경고**: 커리큘럼 전체 수정 불가 (앰버 배너)
-
-## 모달
-
-### 활동 추가 (AddActivityModal)
-- 4개 탭: 미디어(VIDEO/SCORM) / 시험(ExamTemplate) / 과제(AssignmentTemplate) / 오프라인(제목만)
-- 제목 필수. 템플릿 선택 시 제목 자동 채움. 과제는 강사 없으면 비활성
-
-### 과목 편집 (EditSubjectModal)
-- 과목명, Phase 변경, requiredDayNum (OFFLINE/BLENDED만)
-
-### 활동 편집 (EditActivityModal)
-- 활동명, QUIZ: 합격 필수 체크, VIDEO: 영상 길이(읽기전용), OFFLINE: 안내
+| CourseSubject | course | 과목 (title, phase, requiredDayNum, activities[]) |
+| CourseActivity | course | 활동 (title, type, mediaAssetId, videoDurationMin, questionCount) |
+| SubjectPhase | course | 과목 단계 enum: PRE, LEARNING, POST |
+| ActivityType | course | 활동 유형 enum: VIDEO, SCORM, QUIZ, ASSIGNMENT, SURVEY, OFFLINE |
 
 ## 비즈니스 규칙
 
-- 진행중(ONGOING) 차수 존재 시 구조 변경 불가 (제목 편집만 허용)
-- ASSIGNMENT는 강사 배정된 과정에서만 추가 가능
-- OFFLINE 활동은 OFFLINE/BLENDED 모드에서만 유의미
-- requiredDayNum: 해당 회차 출석 전까지 과목 접근 차단
-- 활동 삭제 시 기존 학습 기록 유지, 신규 수강자에게만 미표시
+- Phase 순서(PRE -> LEARNING -> POST)는 항상 고정이며 변경 불가
+- 활동 순서 강제(isSequential) 활성화 시, 학습자는 Phase 내 과목/활동을 순차 완료해야 함
+- 진행 중인 차수가 있으면 커리큘럼 수정 불가 (과정 복제 또는 새 차수 권장)
+- 활동 유형 6종: VIDEO(영상), SCORM, QUIZ(시험), ASSIGNMENT(과제), SURVEY(설문), OFFLINE(오프라인)
+- 수강생 존재 시 활동 삭제는 소프트 삭제 (기존 학습 기록 유지)
