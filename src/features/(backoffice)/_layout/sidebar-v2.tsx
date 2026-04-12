@@ -72,6 +72,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "",
     items: [
       { kind: "link", href: BASE, label: "대시보드", icon: LayoutDashboard },
+      { kind: "link", href: `${BASE}/org/announcements`, label: "공지사항", icon: Bell },
     ],
   },
   {
@@ -144,7 +145,6 @@ const NAV_GROUPS: NavGroup[] = [
       },
       { kind: "link", href: `${BASE}/org/credits`, label: "크레딧 관리", icon: Coins },
       { kind: "link", href: `${BASE}/org/audit`, label: "감사 로그", icon: FileText },
-      { kind: "link", href: `${BASE}/org/announcements`, label: "플랫폼 공지", icon: Bell },
     ],
   },
   {

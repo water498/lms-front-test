@@ -716,6 +716,20 @@ export default function CurriculumTab({
           onEditActivity={onEditActivity}
         />
       ))}
+
+      {/* 저장 */}
+      {!hasOngoingSessions && (
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={() => {
+              // TODO: API call
+            }}
+            className="px-5 py-2.5 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 transition-colors"
+          >
+            커리큘럼 저장
+          </button>
+        </div>
+      )}
     </div>
   );
 }

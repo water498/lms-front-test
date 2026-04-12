@@ -7,9 +7,7 @@ import {
   ArrowLeft,
   Pencil,
   Play,
-  Save,
   Send,
-  Check,
   AlertTriangle,
 } from "lucide-react";
 import { getCourse } from "../course-layout/mockData";
@@ -154,22 +152,13 @@ function PublishModal({
 /* ── Course Header ── */
 function CourseHeader({
   course,
+  isDesignMode,
 }: {
   course: { title: string; status?: string; category?: string; mode?: string };
+  isDesignMode: boolean;
 }) {
   const router = useRouter();
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">(
-    "idle",
-  );
   const [showPublishModal, setShowPublishModal] = useState(false);
-
-  const handleSave = () => {
-    setSaveState("saving");
-    setTimeout(() => {
-      setSaveState("saved");
-      setTimeout(() => setSaveState("idle"), 2000);
-    }, 800);
-  };
 
   const handlePublish = () => {
     setShowPublishModal(false);
@@ -197,36 +186,16 @@ function CourseHeader({
           </div>
         </div>
 
-        {/* Right: actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right: actions — 설계 모드에서만 게시 버튼 */}
+        {isDesignMode && (course.status === "DRAFT" || !course.status) && (
           <button
-            onClick={handleSave}
-            disabled={saveState === "saving"}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              saveState === "saved"
-                ? "text-emerald-600 bg-emerald-50"
-                : saveState === "saving"
-                  ? "text-slate-400 bg-slate-50 cursor-wait"
-                  : "text-slate-600 hover:bg-slate-100"
-            }`}
+            onClick={() => setShowPublishModal(true)}
+            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors shrink-0"
           >
-            {saveState === "saved" ? <Check size={14} /> : <Save size={14} />}
-            {saveState === "saving"
-              ? "저장 중..."
-              : saveState === "saved"
-                ? "저장됨"
-                : "저장"}
+            <Send size={14} />
+            게시하기
           </button>
-          {(course.status === "DRAFT" || !course.status) && (
-            <button
-              onClick={() => setShowPublishModal(true)}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors"
-            >
-              <Send size={14} />
-              게시하기
-            </button>
-          )}
-        </div>
+        )}
       </header>
       {showPublishModal && (
         <PublishModal
@@ -268,7 +237,7 @@ export default function CourseDetailShellV2({
     <CourseDetailProvider courseId={courseId}>
       <div className="flex flex-col h-[calc(100vh-3.5rem)]">
         {/* Course-specific header */}
-        <CourseHeader course={course} />
+        <CourseHeader course={course} isDesignMode={activeL1.id === "design"} />
 
         <div className="flex flex-1 min-h-0">
           {/* Layer 1: icon sidebar */}
