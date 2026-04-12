@@ -20,10 +20,11 @@ const ROLE_MAP: Record<string, string> = {
   instructor: "(instructor)",
   "platform-admin": "(platform-admin)",
   student: "(student)",
+  backoffice: "(backoffice)",
 };
 
 // 역할 루트 페이지 (대시보드) 매핑
-const ROOT_FEATURES = new Set(["admin-dashboard", "student-dashboard", "instructor-dashboard", "platform-dashboard", "home", "dashboard"]);
+const ROOT_FEATURES = new Set(["admin-dashboard", "student-dashboard", "instructor-dashboard", "platform-dashboard", "home", "dashboard", "v2-dashboard"]);
 
 // URL 패턴 → feature 디렉토리 역매핑 (앱 라우트와 feature 디렉토리명이 다른 경우)
 const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string }[] = [
@@ -95,6 +96,69 @@ const URL_TO_FEATURE: { role: string; urlSegments: string[]; featurePath: string
   { role: "admin", urlSegments: ["settings", "org"], featurePath: "settings-org" },
   { role: "admin", urlSegments: ["settings", "access"], featurePath: "settings-access" },
   { role: "admin", urlSegments: ["settings", "audit"], featurePath: "settings-audit" },
+  // ── Backoffice: 과정 도메인 ──
+  { role: "backoffice", urlSegments: ["courses"], featurePath: "course-list" },
+  { role: "backoffice", urlSegments: ["courses", "*", "info"], featurePath: "course-info" },
+  { role: "backoffice", urlSegments: ["courses", "*", "curriculum"], featurePath: "course-curriculum" },
+  { role: "backoffice", urlSegments: ["courses", "*", "certificate"], featurePath: "course-certificate" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions"], featurePath: "course-sessions" },
+  { role: "backoffice", urlSegments: ["courses", "*", "reviews"], featurePath: "course-reviews" },
+  { role: "backoffice", urlSegments: ["courses", "*", "statistics"], featurePath: "course-statistics" },
+  // ── Backoffice: 차수 도메인 (courses/[cid]/sessions/[sid]/...) ──
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "dashboard"], featurePath: "session-dashboard" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "enrollees"], featurePath: "session-enrollees" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "grading"], featurePath: "session-grading" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "attendance"], featurePath: "session-offline" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "qna"], featurePath: "session-qna" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "resources"], featurePath: "session-resources" },
+  { role: "backoffice", urlSegments: ["courses", "*", "sessions", "*", "offline"], featurePath: "session-offline" },
+  // ── Backoffice: 리소스 도메인 ──
+  { role: "backoffice", urlSegments: ["resources", "assessments", "exams"], featurePath: "assessment-exam-list" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "assignments"], featurePath: "assessment-assignment-list" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "surveys"], featurePath: "assessment-survey-list" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "question-bank"], featurePath: "assessment-question-bank" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "exam", "*"], featurePath: "assessment-exam-editor" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "survey", "*"], featurePath: "assessment-survey-editor" },
+  { role: "backoffice", urlSegments: ["resources", "assessments", "assignment", "*"], featurePath: "assessment-assignment-editor" },
+  { role: "backoffice", urlSegments: ["resources", "media"], featurePath: "media-library" },
+  { role: "backoffice", urlSegments: ["resources", "categories"], featurePath: "course-categories" },
+  // ── Backoffice: 조직 도메인 ──
+  { role: "backoffice", urlSegments: ["org", "users"], featurePath: "user-list" },
+  { role: "backoffice", urlSegments: ["org", "users", "*"], featurePath: "user-layout" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "profile"], featurePath: "user-profile" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "enrollments"], featurePath: "user-enrollments" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "activity"], featurePath: "user-activity" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "sessions"], featurePath: "user-sessions" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "access-logs"], featurePath: "user-access-log-list" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "instructor-courses"], featurePath: "user-instructor-courses" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "instructor-reviews"], featurePath: "user-instructor-reviews" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "instructor-payouts"], featurePath: "user-instructor-payouts" },
+  { role: "backoffice", urlSegments: ["org", "users", "*", "instructor-bank"], featurePath: "user-instructor-bank" },
+  { role: "backoffice", urlSegments: ["org", "groups"], featurePath: "user-group-list" },
+  { role: "backoffice", urlSegments: ["org", "access-logs"], featurePath: "user-access-log-list" },
+  { role: "backoffice", urlSegments: ["org", "portal", "info"], featurePath: "portal-info" },
+  { role: "backoffice", urlSegments: ["org", "portal", "theme"], featurePath: "portal-theme" },
+  { role: "backoffice", urlSegments: ["org", "portal", "banners"], featurePath: "portal-banners" },
+  { role: "backoffice", urlSegments: ["org", "portal", "announcements"], featurePath: "portal-announcement-editor" },
+  { role: "backoffice", urlSegments: ["org", "portal", "legal"], featurePath: "portal-legal" },
+  { role: "backoffice", urlSegments: ["org", "structure"], featurePath: "settings-org" },
+  { role: "backoffice", urlSegments: ["org", "sso"], featurePath: "settings-access" },
+  { role: "backoffice", urlSegments: ["org", "certificates"], featurePath: "certificate-template-list" },
+  { role: "backoffice", urlSegments: ["org", "certificates", "issued"], featurePath: "certificate-issued-list" },
+  { role: "backoffice", urlSegments: ["org", "messaging", "sms"], featurePath: "messaging-automation" },
+  { role: "backoffice", urlSegments: ["org", "messaging", "kakao"], featurePath: "messaging-automation" },
+  { role: "backoffice", urlSegments: ["org", "messaging", "email"], featurePath: "messaging-automation" },
+  { role: "backoffice", urlSegments: ["org", "credits"], featurePath: "messaging-credit" },
+  { role: "backoffice", urlSegments: ["org", "audit"], featurePath: "settings-audit" },
+  { role: "backoffice", urlSegments: ["org", "announcements"], featurePath: "org-announcement-list" },
+  // ── Backoffice: 재무 도메인 ──
+  { role: "backoffice", urlSegments: ["finance", "payouts"], featurePath: "payout-list" },
+  { role: "backoffice", urlSegments: ["finance", "my-payouts"], featurePath: "instructor-payout-list" },
+  { role: "backoffice", urlSegments: ["finance", "payments"], featurePath: "payment-list" },
+  // ── Backoffice: 내 계정 ──
+  { role: "backoffice", urlSegments: ["account"], featurePath: "profile" },
+  { role: "backoffice", urlSegments: ["account", "bank"], featurePath: "bank-account" },
+  { role: "backoffice", urlSegments: ["account", "reviews"], featurePath: "review-list" },
   // ── Student: course layout + tabs ──
   { role: "student", urlSegments: ["courses", "*"], featurePath: "course-layout" },
   { role: "student", urlSegments: ["courses", "*", "intro"], featurePath: "course-intro" },
