@@ -2,7 +2,7 @@
  * 빌드 타임에 모든 feature-description.md 파일을 하나의 JSON 맵으로 생성.
  * Vercel 서버리스 환경에서 fs 없이 md 내용을 제공하기 위함.
  *
- * 탐색 대상: src/features/(admin|instructor|platform-admin|student)/
+ * 탐색 대상: src/features/(admin|instructor|platform-admin|student|backoffice)/
  * 출력: src/generated/feature-descriptions.json
  * 형태: { "/experiments/admin/courses": "# 과정 관리\n...", ... }
  */
@@ -23,6 +23,7 @@ const ROLE_MAP = {
   "(instructor)": "/experiments/instructor",
   "(platform-admin)": "/experiments/platform-admin",
   "(student)": "/experiments/student",
+  "(backoffice)": "/backoffice",
 };
 
 // feature 디렉토리 → 실제 URL 경로 오버라이드
@@ -161,6 +162,71 @@ const URL_OVERRIDE = {
   // ── Platform-admin: settings tabs ──
   "(platform-admin)/platform-settings-general": "/experiments/platform-admin/settings/general",
   "(platform-admin)/platform-settings-audit": "/experiments/platform-admin/settings/audit",
+
+  // ── Backoffice: 대시보드 ──
+  "(backoffice)/v2-dashboard": "/backoffice",
+
+  // ── Backoffice: 과정 도메인 ──
+  "(backoffice)/course-list": "/backoffice/courses",
+  "(backoffice)/course-info": "/backoffice/courses/[courseId]/info",
+  "(backoffice)/course-curriculum": "/backoffice/courses/[courseId]/curriculum",
+  "(backoffice)/course-certificate": "/backoffice/courses/[courseId]/certificate",
+  "(backoffice)/course-sessions": "/backoffice/courses/[courseId]/sessions",
+  "(backoffice)/course-reviews": "/backoffice/courses/[courseId]/reviews",
+  "(backoffice)/course-statistics": "/backoffice/courses/[courseId]/statistics",
+
+  // ── Backoffice: 차수 도메인 ──
+  "(backoffice)/session-dashboard": "/backoffice/courses/[courseId]/sessions/[sessionId]/dashboard",
+  "(backoffice)/session-enrollees": "/backoffice/courses/[courseId]/sessions/[sessionId]/enrollees",
+  "(backoffice)/session-grading": "/backoffice/courses/[courseId]/sessions/[sessionId]/grading",
+  "(backoffice)/session-qna": "/backoffice/courses/[courseId]/sessions/[sessionId]/qna",
+  "(backoffice)/session-resources": "/backoffice/courses/[courseId]/sessions/[sessionId]/resources",
+  "(backoffice)/session-offline": "/backoffice/courses/[courseId]/sessions/[sessionId]/offline",
+
+  // ── Backoffice: 리소스 도메인 ──
+  "(backoffice)/assessment-exam-list": "/backoffice/resources/assessments/exams",
+  "(backoffice)/assessment-exam-editor": "/backoffice/resources/assessments/exam/[id]",
+  "(backoffice)/assessment-assignment-list": "/backoffice/resources/assessments/assignments",
+  "(backoffice)/assessment-assignment-editor": "/backoffice/resources/assessments/assignment/[id]",
+  "(backoffice)/assessment-survey-list": "/backoffice/resources/assessments/surveys",
+  "(backoffice)/assessment-survey-editor": "/backoffice/resources/assessments/survey/[id]",
+  "(backoffice)/assessment-question-bank": "/backoffice/resources/assessments/question-bank",
+  "(backoffice)/media-library": "/backoffice/resources/media",
+  "(backoffice)/course-categories": "/backoffice/resources/categories",
+
+  // ── Backoffice: 조직 도메인 ──
+  "(backoffice)/user-list": "/backoffice/org/users",
+  "(backoffice)/user-layout": "/backoffice/org/users/[userId]",
+  "(backoffice)/user-profile": "/backoffice/org/users/[userId]/profile",
+  "(backoffice)/user-enrollments": "/backoffice/org/users/[userId]/enrollments",
+  "(backoffice)/user-activity": "/backoffice/org/users/[userId]/activity",
+  "(backoffice)/user-sessions": "/backoffice/org/users/[userId]/sessions",
+  "(backoffice)/user-access-log-list": "/backoffice/org/users/[userId]/access-logs",
+  "(backoffice)/user-instructor-courses": "/backoffice/org/users/[userId]/instructor-courses",
+  "(backoffice)/user-instructor-reviews": "/backoffice/org/users/[userId]/instructor-reviews",
+  "(backoffice)/user-instructor-payouts": "/backoffice/org/users/[userId]/instructor-payouts",
+  "(backoffice)/user-instructor-bank": "/backoffice/org/users/[userId]/instructor-bank",
+  "(backoffice)/user-group-list": "/backoffice/org/groups",
+  "(backoffice)/portal-info": "/backoffice/org/portal/info",
+  "(backoffice)/portal-theme": "/backoffice/org/portal/theme",
+  "(backoffice)/portal-banners": "/backoffice/org/portal/banners",
+  "(backoffice)/portal-announcement-editor": "/backoffice/org/portal/announcements",
+  "(backoffice)/portal-legal": "/backoffice/org/portal/legal",
+  "(backoffice)/certificate-template-list": "/backoffice/org/certificates",
+  "(backoffice)/certificate-issued-list": "/backoffice/org/certificates/issued",
+  "(backoffice)/messaging-automation": "/backoffice/org/messaging/sms",
+  "(backoffice)/messaging-credit": "/backoffice/org/credits",
+  "(backoffice)/org-announcement-list": "/backoffice/org/announcements",
+
+  // ── Backoffice: 재무 도메인 ──
+  "(backoffice)/payout-list": "/backoffice/finance/payouts",
+  "(backoffice)/instructor-payout-list": "/backoffice/finance/my-payouts",
+  "(backoffice)/payment-list": "/backoffice/finance/payments",
+
+  // ── Backoffice: 내 계정 ──
+  "(backoffice)/profile": "/backoffice/account",
+  "(backoffice)/bank-account": "/backoffice/account/bank",
+  "(backoffice)/review-list": "/backoffice/account/reviews",
 };
 
 /**
